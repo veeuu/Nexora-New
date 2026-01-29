@@ -1,0 +1,466 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Left Section - Login Form */
+.login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #ffffff;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-left::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(24, 144, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-left::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(24, 144, 255, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  justify-content: flex-start;
+}
+
+.logo-img {
+  height: 48px;
+  object-fit: contain;
+}
+
+.nexora-logo-img {
+  height: 68px;
+  object-fit: contain;
+}
+
+.logo-sep {
+  color: #d9d9d9;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  color: #8c8c8c;
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1890ff;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.15);
+}
+
+.form-input::placeholder {
+  color: #c0c0c0;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8c8c8c;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover {
+  color: #262626;
+}
+
+.toggle-password svg {
+  width: 100%;
+  height: 100%;
+}
+
+.form-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-remember input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #1890ff;
+}
+
+.form-remember label {
+  cursor: pointer;
+  color: #262626;
+  font-weight: 500;
+  margin: 0;
+}
+
+.remember-text {
+  color: #8c8c8c;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: auto;
+}
+
+.btn-signin {
+  padding: 0.95rem 1.5rem;
+  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.75rem;
+  width: 100%;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+}
+
+.btn-signin:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #0050b3 100%);
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-signin:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #8c8c8c;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 0.5rem 0;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #f0f0f0;
+}
+
+.btn-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.btn-social:hover {
+  border-color: #40a9ff;
+  background: #f6f8fb;
+}
+
+.btn-google {
+  color: #262626;
+}
+
+.btn-facebook {
+  background: #1877f2;
+  color: #ffffff;
+  border-color: #1877f2;
+}
+
+.btn-facebook:hover {
+  background: #0a66c2;
+  border-color: #0a66c2;
+}
+
+.btn-apple {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.btn-apple:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.form-signup {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #8c8c8c;
+  margin-top: 1rem;
+}
+
+.form-signup a {
+  color: #1890ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.form-signup a:hover {
+  color: #40a9ff;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #bfbfbf;
+  margin-top: 2rem;
+}
+
+/* Right Section - Login Form */
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-right::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -15%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(24, 144, 255, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-right::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(24, 144, 255, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+}
+
+.highlight {
+  color: #1890ff;
+}
+
+.highlight-nexora {
+  color: #1890ff;
+  font-weight: 800;
+}
+
+.hero-illustration {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.illustration-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+}
+
+.hero-image {
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-left {
+    border-right: none;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-bottom: 1px solid #f0f0f0;
+    min-height: 50vh;
+  }
+
+  .login-right {
+    min-height: 50vh;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-left {
+    padding: 1.5rem;
+  }
+
+  .login-form-wrapper {
+    max-width: 100%;
+  }
+
+  .login-logo {
+    margin-bottom: 2rem;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .hero-illustration {
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-left {
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .login-form-wrapper {
+    max-width: 100%;
+  }
+
+  .login-logo {
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-img,
+  .nexora-logo-img {
+    height: 24px;
+  }
+
+  .hero-title {
+    font-size: 1.25rem;
+  }
+
+  .btn-social {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.75rem;
+  }
+}

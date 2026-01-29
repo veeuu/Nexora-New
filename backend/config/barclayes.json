@@ -1,0 +1,953 @@
+{
+  "_id": {
+    "$oid": "68e493c24aab1ded83271b7c"
+  },
+  "Document_ID": "barclays-2025-09-25-001",
+  "Company Name": "Barclays",
+  "Firmographics": {
+    "About": {
+      "Company Name": "Barclays",
+      "Domain": "www.home.barclays",
+      "Industry": "Financial Services / Banking",
+      "Full Time employees": 93000,
+      "NAICS": "551111"
+    },
+    "Location": {
+      "Address": "1 Churchill Place",
+      "City": "London",
+      "State": "",
+      "Country": "United Kingdom",
+      "Contact": "44 20 7116 1000"
+    }
+  },
+  "Technographics": [
+    {
+      "Category": "Cloud",
+      "Keyword": "aws",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "Dec-21",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes job titles such as \"Aws Cloud Engineer\" and \"AWS Developer\", which strongly suggests that Barclays uses AWS and is looking for individuals with skills related to this technology.",
+      "Renewal Date": "Dec-24"
+    },
+    {
+      "Category": "SAP",
+      "Keyword": "sap",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "Jan-24",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes a 'SAP Technical Developer' job posting, which suggests that Barclays is looking for individuals with experience in SAP technologies. This directly implies usage or involvement.",
+      "Renewal Date": "Jan-29"
+    },
+    {
+      "Category": "SAP",
+      "Keyword": "sap ariba",
+      "Page URL": "https://home.barclays/content/dam/home-barclays/documents/investor-relations/ResultAnnouncements/2019FYResults/20200213-Barclays-Q419-FI-Investor-Presentation.pdf",
+      "Previous Date": "Feb-20",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text mentions 'SAP Ariba' in the context of 'software partnerships,' which suggests Barclays is partnering with companies that use or offer SAP Ariba. This implies some level of involvement, even if it's through third-party distribution.",
+      "Renewal Date": "Feb-23"
+    },
+    {
+      "Category": "AI/ML",
+      "Keyword": "microsoft copilot",
+      "Page URL": "https://home.barclays/insights/2025/07/scaling-AI-at-Barclays/",
+      "Previous Date": "Sep-24",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text explicitly states that 'Microsoft Copilot is helping teams across functions work more efficiently' and that 'Later this year 50 000 colleagues will be enabled with Microsoft Copilot with this set to double in early 2026'. This clearly indicates that Barclays is using Microsoft Copilot.",
+      "Renewal Date": "Sep-25"
+    },
+    {
+      "Category": "OS",
+      "Keyword": "windows",
+      "Page URL": "https://home.barclays/archive-barclays/stories/Technology/",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text states: 'In 1996 the success of Netlink and BarclaySquare and the rapid growth in home computing by now nearly 4 million homes had a PC led Barclays in partnership with Visa to pilot a home banking service using Windows based software...Early in 1997 Barclays launched the UK s first comprehensive on line banking service using the new Microsoft Money 97 software which enabled customers with PCs to connect with the Bank s computers'. This clearly indicates Barclays using 'Windows based software'.",
+      "Renewal Date": "Sep-28"
+    },
+    {
+      "Category": "OS",
+      "Keyword": "linux",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes a job posting for a 'Linux Run Engineer', indicating that Barclays is seeking someone with experience related to Linux and therefore uses or is involved with this technology.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "OS",
+      "Keyword": "unix",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes a job title, 'Unix Infrastructure Engineer', which indicates that Barclays is hiring for a role related to unix. This strongly suggests the company uses or needs expertise in unix.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "OS",
+      "Keyword": "android",
+      "Page URL": "https://home.barclays/news/press-releases/2018/090/barclays-becomes-the-first-uk-high-street-bank-to-allow-customer/",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text explicitly states that Barclays allows both Android and iOS customers to bring their other current accounts into its main Mobile Banking app. This indicates usage of the Android platform for their mobile banking application.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "OS",
+      "Keyword": "ios",
+      "Page URL": "https://home.barclays/news/press-releases/2018/090/barclays-becomes-the-first-uk-high-street-bank-to-allow-customer/",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text explicitly states that the Barclays Mobile Banking app is available for 'iOS' customers: 'Barclays is the first UK high street bank that is part of the CMA9 to allow both Android and iOS customers to bring their other current accounts into its main Mobile Banking app'. This indicates Barclays supports and deploys its app on the iOS platform.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "Database & Data Warehousing",
+      "Keyword": "postgresql",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text lists 'PostgreSQL SRE' and 'Senior PostgreSQL SRE' multiple times, which strongly indicates Barclays uses PostgreSQL and is hiring people with experience in it.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "Database & Data Warehousing",
+      "Keyword": "mongodb",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes multiple job titles related to MongoDB, such as 'MongoDB Engineer', 'MongoDB SRE', and 'MongoDB Site Reliability', indicating that Barclays is hiring for roles that require expertise in MongoDB. This suggests that Barclays uses or is planning to use MongoDB.",
+      "Renewal Date": "Sep-26"
+    },
+    {
+      "Category": "Cybersecurity",
+      "Keyword": "symantec",
+      "Page URL": "https://home.barclays/content/dam/home-barclays/documents/investor-relations/annualreports/ar2016/20170223_Barclays_PLC_Environmental_Social_Governance_Supplement_2016.pdf",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text states that Barclays' Digital Wings offered a module on Cyber Security 'in partnership with Symantec', indicating a direct involvement and use of Symantec technology.",
+      "Renewal Date": "Sep-28"
+    },
+    {
+      "Category": "Networking",
+      "Keyword": "juniper",
+      "Page URL": "https://home.barclays/archive-barclays/stories/testhero/",
+      "Previous Date": "Dec-24",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text states that Barclays acquired \"Juniper Financial Corporation\" in 2004. This clearly indicates Barclays' involvement with the company named 'Juniper', even if the specific technology is not directly mentioned.",
+      "Renewal Date": "Dec-27"
+    },
+    {
+      "Category": "RPA & Automation",
+      "Keyword": "uipath",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text contains job postings for roles such as 'RPA UiPath Developer' and 'RPA UiPath Technical Delivery Manager,' indicating that Barclays is using or planning to use UiPath technology within its operations. The presence of these job titles is a strong indicator of involvement.",
+      "Renewal Date": "Sep-26"
+    },
+    {
+      "Category": "Productivity & Collaboration",
+      "Keyword": "sharepoint",
+      "Page URL": "https://home.barclays/content/dam/home-barclays/documents/citizenship/the-way-we-do-business/The_Barclays_Way.pdf",
+      "Previous Date": "NaN",
+      "Latest Date": "Jul-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes a link to 'barclays.sharepoint.com', indicating that Barclays uses SharePoint as a platform for its internal resources, specifically for raising concerns.",
+      "Renewal Date": "Jul-26"
+    },
+    {
+      "Category": "Back-End Technologies",
+      "Keyword": "java",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text contains job titles such as 'AVP Senior Java Developer' and 'Full Stack Java Developer', indicating that Barclays is hiring for roles requiring Java expertise. Also, the text mentions 'Full Stack Developer ReactJS and Java', which indicates using java for development.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "Back-End Technologies",
+      "Keyword": "python",
+      "Page URL": "https://home.barclays/careers/find-a-job",
+      "Previous Date": "NaN",
+      "Latest Date": "Sep-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text includes job descriptions that explicitly mention 'Python Developer' and 'Assistant VP Quant Software Engineer Python', indicating Barclays is looking for individuals with Python skills and likely using Python in its software development and quantitative analysis roles.",
+      "Renewal Date": "NaN"
+    },
+    {
+      "Category": "AI/ML",
+      "Keyword": "openai",
+      "Page URL": "https://home.barclays/content/dam/home-barclays/documents/misc/Fintech_Embraces_GenAI.pdf",
+      "Previous Date": "NaN",
+      "Latest Date": "Feb-25",
+      "Tech Status": "Yes",
+      "Explanation": "The text mentions 'OpenAI Experimentation and adoption will continue' indicating Barclays is potentially using or exploring OpenAI, which meets the 'General Indicators' positive indicator.",
+      "Renewal Date": "Feb-26"
+    }
+  ],
+  "NTP": [
+    {
+      "Category": "Cloud",
+      "Technology": "aws",
+      "Purchase Probability (%)": "72.81%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "Barclays shows strong signals toward adopting aws, driven by industry-wide momentum and internal modernization needs. Rapid market momentum in Cloud increases pressure for Barclays to avoid lagging. Competitors are already scaling aws, amplifying pressure on Barclays to keep pace."
+    },
+    {
+      "Category": "SAP",
+      "Technology": "sap",
+      "Purchase Probability (%)": "28.77%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Low probability of investment since Barclays has entrenched alternatives and limited need for sap. Industry peers maintain steady reliance on SAP, but modernization cycles are slower. Limited competitor adoption reduces urgency, but Barclays may still evaluate sap for targeted use cases."
+    },
+    {
+      "Category": "SAP",
+      "Technology": "sap ariba",
+      "Purchase Probability (%)": "62.74%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "Barclays demonstrates moderate-to-high adoption potential for sap ariba, balancing cost considerations with innovation goals. While SAP is essential, adoption growth is incremental, shaping cautious decisions at Barclays. Rivals are selectively piloting sap ariba, suggesting Barclays may adopt cautiously."
+    },
+    {
+      "Category": "AI/ML",
+      "Technology": "microsoft copilot",
+      "Purchase Probability (%)": "77.37%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "Significant likelihood of purchase, with microsoft copilot positioned as a core enabler of enterprise transformation within Barclays. AI/ML adoption is accelerating industry-wide, which may influence Barclays's decisions. Competitors are already scaling microsoft copilot, amplifying pressure on Barclays to keep pace."
+    },
+    {
+      "Category": "OS",
+      "Technology": "windows",
+      "Purchase Probability (%)": "40.56%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Adoption probability is modest as Barclays may prioritize other technologies before scaling windows. While OS is essential, adoption growth is incremental, shaping cautious decisions at Barclays. Competitors are already scaling windows, amplifying pressure on Barclays to keep pace."
+    },
+    {
+      "Category": "OS",
+      "Technology": "linux",
+      "Purchase Probability (%)": "22.18%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Minimal likelihood of adoption as linux does not directly align with Barclays's immediate transformation agenda. While OS is essential, adoption growth is incremental, shaping cautious decisions at Barclays. Competitors are already scaling linux, amplifying pressure on Barclays to keep pace."
+    },
+    {
+      "Category": "OS",
+      "Technology": "unix",
+      "Purchase Probability (%)": "39.35%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Low-to-moderate probability, as unix is not currently a primary focus for Barclays. OS remains critical for enterprise stability, though upgrades are gradual and selective. Limited competitor adoption reduces urgency, but Barclays may still evaluate unix for targeted use cases."
+    },
+    {
+      "Category": "OS",
+      "Technology": "android",
+      "Purchase Probability (%)": "58.89%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "Barclays demonstrates moderate-to-high adoption potential for android, balancing cost considerations with innovation goals. Core demand for OS persists, but large-scale investments are less urgent. Adoption patterns by competitors create either momentum or caution for Barclays, depending on sectoral dynamics."
+    },
+    {
+      "Category": "OS",
+      "Technology": "ios",
+      "Purchase Probability (%)": "40.70%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Adoption probability is modest as Barclays may prioritize other technologies before scaling ios. Core demand for OS persists, but large-scale investments are less urgent. Adoption patterns by competitors create either momentum or caution for Barclays, depending on sectoral dynamics."
+    },
+    {
+      "Category": "Database & Data Warehousing",
+      "Technology": "postgresql",
+      "Purchase Probability (%)": "36.56%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Low-to-moderate probability, as postgresql is not currently a primary focus for Barclays. Core demand for Database & Data Warehousing persists, but large-scale investments are less urgent. Rivals are selectively piloting postgresql, suggesting Barclays may adopt cautiously."
+    },
+    {
+      "Category": "Database & Data Warehousing",
+      "Technology": "mongodb",
+      "Purchase Probability (%)": "38.46%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Barclays may adopt mongodb only in niche areas or pilot projects, keeping broader investment limited. Industry peers maintain steady reliance on Database & Data Warehousing, but modernization cycles are slower. Adoption patterns by competitors create either momentum or caution for Barclays, depending on sectoral dynamics."
+    },
+    {
+      "Category": "Cybersecurity",
+      "Technology": "symantec",
+      "Purchase Probability (%)": "60.37%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "symantec offers relevant capabilities for Barclays, suggesting above-average likelihood of purchase. Rapid market momentum in Cybersecurity increases pressure for Barclays to avoid lagging. Several industry leaders rely heavily on symantec, setting a precedent for Barclays to consider."
+    },
+    {
+      "Category": "Networking",
+      "Technology": "juniper",
+      "Purchase Probability (%)": "72.61%",
+      "Purchase Prediction": "Yes",
+      "NTP Analysis": "Barclays is very likely to expand juniper adoption, reflecting strong alignment with its strategic growth priorities. Networking adoption is accelerating industry-wide, which may influence Barclays's decisions. Adoption patterns by competitors create either momentum or caution for Barclays, depending on sectoral dynamics."
+    },
+    {
+      "Category": "RPA & Automation",
+      "Technology": "uipath",
+      "Purchase Probability (%)": "17.98%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Adoption of uipath at Barclays appears unlikely, with resources allocated to maintaining existing solutions. RPA & Automation adoption varies by sector, leaving Barclays's strategy more context-dependent. Limited competitor adoption reduces urgency, but Barclays may still evaluate uipath for targeted use cases."
+    },
+    {
+      "Category": "Productivity & Collaboration",
+      "Technology": "sharepoint",
+      "Purchase Probability (%)": "29.82%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Adoption of sharepoint at Barclays appears unlikely, with resources allocated to maintaining existing solutions. Industry peers maintain steady reliance on Productivity & Collaboration, but modernization cycles are slower. Several industry leaders rely heavily on sharepoint, setting a precedent for Barclays to consider."
+    },
+    {
+      "Category": "Back-End Technologies",
+      "Technology": "java",
+      "Purchase Probability (%)": "31.21%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Low-to-moderate probability, as java is not currently a primary focus for Barclays. Core demand for Back-End Technologies persists, but large-scale investments are less urgent. Limited competitor adoption reduces urgency, but Barclays may still evaluate java for targeted use cases."
+    },
+    {
+      "Category": "Back-End Technologies",
+      "Technology": "python",
+      "Purchase Probability (%)": "26.28%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Adoption of python at Barclays appears unlikely, with resources allocated to maintaining existing solutions. While Back-End Technologies is essential, adoption growth is incremental, shaping cautious decisions at Barclays. Several industry leaders rely heavily on python, setting a precedent for Barclays to consider."
+    },
+    {
+      "Category": "AI/ML",
+      "Technology": "openai",
+      "Purchase Probability (%)": "47.26%",
+      "Purchase Prediction": "No",
+      "NTP Analysis": "Barclays may adopt openai only in niche areas or pilot projects, keeping broader investment limited. High-growth trajectory in AI/ML makes early adoption advantageous for Barclays. Rivals are selectively piloting openai, suggesting Barclays may adopt cautiously."
+    }
+  ],
+  "Financial_Data": {
+    "Finance": {
+      "ID": "BCS",
+      "Investor Website": "",
+      "Exchange": "NYQ",
+      "Date & Time": "17-09-2025 01:30",
+      "Current Price": "20.63 $",
+      "Market Cap": "73012248576 $",
+      "Total Revenue": "25653999616 $",
+      "Revenue Growth": "13.10%",
+      "Profit Growth": "38.60%"
+    },
+    "Dividend": {
+      "Dividend Rate": "0.45",
+      "Dividend Yield": "0.0217",
+      "Date of Last Dividend": "08-08-2025 05:30",
+      "Five Years Average Dividend Yield": "2.97",
+      "Currency": "USD"
+    },
+    "Ownership Structure": "Public"
+  },
+  "Stock_Performance": {
+    "Daily_Performance": [
+      {
+        "Date": "16-09-2025",
+        "Open": "$20.80",
+        "High": "$20.82",
+        "Low": "$20.54",
+        "Close": "$20.63",
+        "Volume": 7290200,
+        "Adjclose": "$20.63"
+      },
+      {
+        "Date": "15-09-2025",
+        "Open": "$21.10",
+        "High": "$21.13",
+        "Low": "$20.98",
+        "Close": "$21.05",
+        "Volume": 7147100,
+        "Adjclose": "$21.05"
+      },
+      {
+        "Date": "12-09-2025",
+        "Open": "$20.69",
+        "High": "$20.82",
+        "Low": "$20.69",
+        "Close": "$20.72",
+        "Volume": 6549900,
+        "Adjclose": "$20.72"
+      },
+      {
+        "Date": "11-09-2025",
+        "Open": "$20.58",
+        "High": "$20.81",
+        "Low": "$20.57",
+        "Close": "$20.79",
+        "Volume": 8923700,
+        "Adjclose": "$20.79"
+      },
+      {
+        "Date": "10-09-2025",
+        "Open": "$20.42",
+        "High": "$20.55",
+        "Low": "$20.40",
+        "Close": "$20.49",
+        "Volume": 6825200,
+        "Adjclose": "$20.49"
+      },
+      {
+        "Date": "09-09-2025",
+        "Open": "$20.00",
+        "High": "$20.39",
+        "Low": "$19.97",
+        "Close": "$20.31",
+        "Volume": 11430500,
+        "Adjclose": "$20.31"
+      },
+      {
+        "Date": "08-09-2025",
+        "Open": "$19.90",
+        "High": "$19.99",
+        "Low": "$19.70",
+        "Close": "$19.94",
+        "Volume": 9129700,
+        "Adjclose": "$19.94"
+      },
+      {
+        "Date": "05-09-2025",
+        "Open": "$20.08",
+        "High": "$20.13",
+        "Low": "$19.62",
+        "Close": "$19.71",
+        "Volume": 11238400,
+        "Adjclose": "$19.71"
+      },
+      {
+        "Date": "04-09-2025",
+        "Open": "$19.88",
+        "High": "$20.12",
+        "Low": "$19.86",
+        "Close": "$20.11",
+        "Volume": 11460000,
+        "Adjclose": "$20.11"
+      },
+      {
+        "Date": "03-09-2025",
+        "Open": "$19.52",
+        "High": "$19.70",
+        "Low": "$19.49",
+        "Close": "$19.68",
+        "Volume": 8693100,
+        "Adjclose": "$19.68"
+      },
+      {
+        "Date": "02-09-2025",
+        "Open": "$19.35",
+        "High": "$19.59",
+        "Low": "$19.29",
+        "Close": "$19.56",
+        "Volume": 9791200,
+        "Adjclose": "$19.56"
+      },
+      {
+        "Date": "29-08-2025",
+        "Open": "$19.37",
+        "High": "$19.73",
+        "Low": "$19.37",
+        "Close": "$19.63",
+        "Volume": 8560600,
+        "Adjclose": "$19.63"
+      }
+    ],
+    "Weekly_Performance": [
+      {
+        "Date": "15-09-2025",
+        "Open": "$21.10",
+        "High": "$21.13",
+        "Low": "$20.54",
+        "Close": "$20.77",
+        "Volume": 21648300,
+        "Adjclose": "$20.77",
+        "Dividends": 0
+      },
+      {
+        "Date": "08-09-2025",
+        "Open": "$19.90",
+        "High": "$20.82",
+        "Low": "$19.70",
+        "Close": "$20.72",
+        "Volume": 42859000,
+        "Adjclose": "$20.72",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-09-2025",
+        "Open": "$19.35",
+        "High": "$20.13",
+        "Low": "$19.29",
+        "Close": "$19.71",
+        "Volume": 41182700,
+        "Adjclose": "$19.71",
+        "Dividends": 0
+      },
+      {
+        "Date": "25-08-2025",
+        "Open": "$20.40",
+        "High": "$20.56",
+        "Low": "$19.37",
+        "Close": "$19.63",
+        "Volume": 39655000,
+        "Adjclose": "$19.63",
+        "Dividends": 0
+      },
+      {
+        "Date": "18-08-2025",
+        "Open": "$20.18",
+        "High": "$20.58",
+        "Low": "$19.95",
+        "Close": "$20.47",
+        "Volume": 45918800,
+        "Adjclose": "$20.47",
+        "Dividends": 0
+      },
+      {
+        "Date": "11-08-2025",
+        "Open": "$19.91",
+        "High": "$20.56",
+        "Low": "$19.89",
+        "Close": "$20.27",
+        "Volume": 52813500,
+        "Adjclose": "$20.27",
+        "Dividends": 0
+      },
+      {
+        "Date": "04-08-2025",
+        "Open": "$19.43",
+        "High": "$20.02",
+        "Low": "$19.15",
+        "Close": "$19.94",
+        "Volume": 74918900,
+        "Adjclose": "$19.78",
+        "Dividends": 0.16
+      },
+      {
+        "Date": "28-07-2025",
+        "Open": "$19.62",
+        "High": "$20.07",
+        "Low": "$18.79",
+        "Close": "$19.10",
+        "Volume": 97569000,
+        "Adjclose": "$18.95",
+        "Dividends": 0
+      },
+      {
+        "Date": "21-07-2025",
+        "Open": "$18.96",
+        "High": "$19.66",
+        "Low": "$18.68",
+        "Close": "$19.62",
+        "Volume": 95566800,
+        "Adjclose": "$19.46",
+        "Dividends": 0
+      },
+      {
+        "Date": "14-07-2025",
+        "Open": "$18.49",
+        "High": "$19.04",
+        "Low": "$18.39",
+        "Close": "$18.88",
+        "Volume": 118657400,
+        "Adjclose": "$18.73",
+        "Dividends": 0
+      },
+      {
+        "Date": "07-07-2025",
+        "Open": "$18.29",
+        "High": "$18.82",
+        "Low": "$18.11",
+        "Close": "$18.40",
+        "Volume": 80856100,
+        "Adjclose": "$18.25",
+        "Dividends": 0
+      },
+      {
+        "Date": "30-06-2025",
+        "Open": "$18.47",
+        "High": "$18.65",
+        "Low": "$17.73",
+        "Close": "$18.26",
+        "Volume": 71256500,
+        "Adjclose": "$18.11",
+        "Dividends": 0
+      }
+    ],
+    "Monthly_Performance": [
+      {
+        "Date": "01-09-2025",
+        "Open": "$19.35",
+        "High": "$21.13",
+        "Low": "$19.29",
+        "Close": "$20.77",
+        "Volume": 105690000,
+        "Adjclose": "$20.77",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-08-2025",
+        "Open": "$19.13",
+        "High": "$20.58",
+        "Low": "$18.79",
+        "Close": "$19.63",
+        "Volume": 229837000,
+        "Adjclose": "$19.47",
+        "Dividends": 0.16
+      },
+      {
+        "Date": "01-07-2025",
+        "Open": "$18.34",
+        "High": "$20.07",
+        "Low": "$17.73",
+        "Close": "$19.62",
+        "Volume": 433541700,
+        "Adjclose": "$19.46",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-06-2025",
+        "Open": "$17.81",
+        "High": "$18.75",
+        "Low": "$17.22",
+        "Close": "$18.59",
+        "Volume": 258241200,
+        "Adjclose": "$18.44",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-05-2025",
+        "Open": "$15.83",
+        "High": "$17.96",
+        "Low": "$15.77",
+        "Close": "$17.83",
+        "Volume": 298249400,
+        "Adjclose": "$17.69",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-04-2025",
+        "Open": "$15.49",
+        "High": "$16.18",
+        "Low": "$12.14",
+        "Close": "$16.06",
+        "Volume": 355409400,
+        "Adjclose": "$15.93",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-03-2025",
+        "Open": "$16.00",
+        "High": "$16.34",
+        "Low": "$14.51",
+        "Close": "$15.36",
+        "Volume": 371136500,
+        "Adjclose": "$15.24",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-02-2025",
+        "Open": "$14.31",
+        "High": "$16.02",
+        "Low": "$14.22",
+        "Close": "$15.84",
+        "Volume": 509131200,
+        "Adjclose": "$15.44",
+        "Dividends": 0.274
+      },
+      {
+        "Date": "01-01-2025",
+        "Open": "$13.17",
+        "High": "$14.92",
+        "Low": "$12.55",
+        "Close": "$14.68",
+        "Volume": 332785100,
+        "Adjclose": "$14.31",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-12-2024",
+        "Open": "$13.46",
+        "High": "$13.83",
+        "Low": "$12.81",
+        "Close": "$13.29",
+        "Volume": 265138300,
+        "Adjclose": "$12.95",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-11-2024",
+        "Open": "$12.64",
+        "High": "$13.57",
+        "Low": "$12.52",
+        "Close": "$13.48",
+        "Volume": 198980600,
+        "Adjclose": "$13.14",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-10-2024",
+        "Open": "$12.13",
+        "High": "$13.20",
+        "Low": "$11.48",
+        "Close": "$12.41",
+        "Volume": 236318200,
+        "Adjclose": "$12.09",
+        "Dividends": 0
+      }
+    ],
+    "Quarterly_Performance": [
+      {
+        "Date": "01-09-2025",
+        "Open": "$19.35",
+        "High": "$21.13",
+        "Low": "$19.29",
+        "Close": "$20.77",
+        "Volume": 105690000,
+        "Adjclose": "$20.77",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-06-2025",
+        "Open": "$17.81",
+        "High": "$20.58",
+        "Low": "$17.22",
+        "Close": "$19.63",
+        "Volume": 921619900,
+        "Adjclose": "$19.47",
+        "Dividends": 0.16
+      },
+      {
+        "Date": "01-03-2025",
+        "Open": "$16.00",
+        "High": "$17.96",
+        "Low": "$12.14",
+        "Close": "$17.83",
+        "Volume": 1024795300,
+        "Adjclose": "$17.69",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-12-2024",
+        "Open": "$13.46",
+        "High": "$16.02",
+        "Low": "$12.55",
+        "Close": "$15.84",
+        "Volume": 1107054600,
+        "Adjclose": "$15.44",
+        "Dividends": 0.274
+      },
+      {
+        "Date": "01-09-2024",
+        "Open": "$11.84",
+        "High": "$13.57",
+        "Low": "$11.22",
+        "Close": "$13.48",
+        "Volume": 780878900,
+        "Adjclose": "$13.14",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-06-2024",
+        "Open": "$11.32",
+        "High": "$12.49",
+        "Low": "$10.17",
+        "Close": "$12.17",
+        "Volume": 759189300,
+        "Adjclose": "$11.71",
+        "Dividends": 0.149
+      },
+      {
+        "Date": "01-03-2024",
+        "Open": "$8.68",
+        "High": "$11.36",
+        "Low": "$8.57",
+        "Close": "$11.35",
+        "Volume": 1019392400,
+        "Adjclose": "$10.92",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-12-2023",
+        "Open": "$7.22",
+        "High": "$8.71",
+        "Low": "$7.02",
+        "Close": "$8.50",
+        "Volume": 1045662000,
+        "Adjclose": "$7.93",
+        "Dividends": 0.267
+      },
+      {
+        "Date": "01-09-2023",
+        "Open": "$7.60",
+        "High": "$8.05",
+        "Low": "$6.23",
+        "Close": "$7.22",
+        "Volume": 682600500,
+        "Adjclose": "$6.73",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-06-2023",
+        "Open": "$7.59",
+        "High": "$8.63",
+        "Low": "$7.25",
+        "Close": "$7.51",
+        "Volume": 553780100,
+        "Adjclose": "$6.87",
+        "Dividends": 0.14
+      },
+      {
+        "Date": "01-03-2023",
+        "Open": "$8.48",
+        "High": "$8.51",
+        "Low": "$6.38",
+        "Close": "$7.52",
+        "Volume": 626437700,
+        "Adjclose": "$6.88",
+        "Dividends": 0
+      },
+      {
+        "Date": "01-12-2022",
+        "Open": "$7.95",
+        "High": "$9.44",
+        "Low": "$7.51",
+        "Close": "$8.46",
+        "Volume": 272887200,
+        "Adjclose": "$7.52",
+        "Dividends": 0.244
+      }
+    ]
+  },
+  "Growth": [
+    {
+      "Period": "Current Quarter",
+      "End Date": "30-09-2025",
+      "Growth": null
+    },
+    {
+      "Period": "Next Quarter",
+      "End Date": "31-12-2025",
+      "Growth": 1.1034
+    },
+    {
+      "Period": "Current Year",
+      "End Date": "31-12-2025",
+      "Growth": 0.37330002
+    },
+    {
+      "Period": "Next Year",
+      "End Date": "31-12-2026",
+      "Growth": 0.22709998
+    }
+  ],
+  "Buyers_Group": [
+    {
+      "Name": "Nealon (Denny)",
+      "Relation": "Chief Executive Officer",
+      "Shares": 21,
+      "Description": "Bought at price 19.94 per share.",
+      "Date": "08-09-2025"
+    },
+    {
+      "Name": "Nealon (Denny)",
+      "Relation": "Chief Executive Officer",
+      "Shares": 38,
+      "Description": "Bought at price 18.13 per share.",
+      "Date": "09-06-2025"
+    },
+    {
+      "Name": "Nealon (Denny)",
+      "Relation": "Chief Executive Officer",
+      "Shares": 8,
+      "Description": "Bought at price 13.43 per share.",
+      "Date": "08-04-2025"
+    },
+    {
+      "Name": "Deasy (Cathal)",
+      "Relation": "Global Co-Head of Investment Banking",
+      "Shares": 185862,
+      "Description": "Sold at price 3.78 per share.",
+      "Date": "14-03-2025"
+    },
+    {
+      "Name": "Venkatakrishnan (C S)",
+      "Relation": "Chief Executive Officer",
+      "Shares": 171084,
+      "Description": null,
+      "Date": "13-03-2025"
+    }
+  ],
+  "Mutual_Fund_Holders": [
+    {
+      "Date": "30-04-2025",
+      "Name": "Dimensional ETF Trust-Dimensional International Value ETF",
+      "Holding": 0.0006,
+      "Shares": 2063109
+    },
+    {
+      "Date": "30-04-2025",
+      "Name": "DFA INVESTMENT TRUST CO-THE DFA INTERNATIONAL VALUE SERIES",
+      "Holding": 0.0005,
+      "Shares": 1909058
+    },
+    {
+      "Date": "31-07-2025",
+      "Name": "American Century ETF Trust-Avantis International Equity ETF",
+      "Holding": 0.0005,
+      "Shares": 1860088
+    },
+    {
+      "Date": "30-04-2025",
+      "Name": "DFA INVESTMENT DIMENSIONS GROUP INC-Intl Core Eqy. 2 PORT.",
+      "Holding": 0.0003,
+      "Shares": 896402
+    },
+    {
+      "Date": "30-06-2025",
+      "Name": "SEI INSTITUTIONAL INTERNATIONAL TRUST-SIT International Equity Fund",
+      "Holding": 0.0003,
+      "Shares": 998405
+    },
+    {
+      "Date": "30-06-2025",
+      "Name": "SEI INSTITUTIONAL INVESTMENTS TRUST-SIIT World Equity EX-US Fund",
+      "Holding": 0.0003,
+      "Shares": 1037210
+    },
+    {
+      "Date": "31-07-2025",
+      "Name": "Fidelity Rutland Square Trust II-Strategic Advisers International Fund",
+      "Holding": 0.0003,
+      "Shares": 938827
+    },
+    {
+      "Date": "30-06-2025",
+      "Name": "Mercer Funds-Mercer Non-US Core Equity Fund",
+      "Holding": 0.0002,
+      "Shares": 558142
+    },
+    {
+      "Date": "31-07-2025",
+      "Name": "American Century World Mutual Funds, Inc.-Focused Global Growth Fund",
+      "Holding": 0.0002,
+      "Shares": 573960
+    },
+    {
+      "Date": "30-06-2025",
+      "Name": "Amplify ETF TRT-Amplify CWP Intl Enhanced Dividend Income ETF",
+      "Holding": 0.0001,
+      "Shares": 503151
+    }
+  ]
+}
