@@ -32,10 +32,9 @@ const Login = ({ onLogin }) => {
       {/* Right Section - Login Form */}
       <div className="login-right">
         <div className="login-form-wrapper">
-          <div className="login-logo">
-            <img src={logo} alt="Proplus Data" className="logo-img" />
-            <span className="logo-sep">|</span>
-            <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img" />
+          <div className="login-logo-vertical">
+            <img src={logo} alt="Proplus Data" className="logo-img-large" />
+            <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -117,6 +116,7 @@ const Login = ({ onLogin }) => {
 
           <p className="copyright"></p>
         </div>
+        <div className="powered-by">Powered by ProPlus Data</div>
       </div>
     </div>
   );

@@ -75,6 +75,26 @@
   font-weight: 300;
 }
 
+/* Vertical Logo Layout */
+.login-logo-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  justify-content: center;
+}
+
+.logo-img-large {
+  height: 60px;
+  object-fit: contain;
+}
+
+.nexora-logo-img-small {
+  height: 70px;
+  object-fit: contain;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -302,6 +322,16 @@
   margin-top: 2rem;
 }
 
+.powered-by {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-size: 0.75rem;
+  color: #8c8c8c;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
 /* Right Section - Login Form */
 .login-right {
   flex: 1;
@@ -450,9 +480,21 @@
     margin-bottom: 1.5rem;
   }
 
+  .login-logo-vertical {
+    margin-bottom: 1.5rem;
+  }
+
   .logo-img,
   .nexora-logo-img {
     height: 24px;
+  }
+
+  .logo-img-large {
+    height: 60px;
+  }
+
+  .nexora-logo-img-small {
+    height: 35px;
   }
 
   .hero-title {
