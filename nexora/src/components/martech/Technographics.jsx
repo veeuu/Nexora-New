@@ -885,23 +885,34 @@ const Technographics = () => {
     );
   };
 
+  // Check if any filter is active (other than company name)
+  const hasOtherFilters = filters.region || filters.technology || filters.category;
+
   const filteredData = tableData
     .filter(row => {
-      const filterMatches = Object.keys(filters).every(key => {
-        if (key === 'companyName') {
-          // For company name, check if it's in the selected array or if array is empty
-          if (filters[key].length === 0) return true;
-          return filters[key].includes(String(row[key]));
-        }
-        if (!filters[key]) return true;
-        return String(row[key]) === filters[key];
-      });
+      // If no filters are selected at all, show nothing
+      if (!hasOtherFilters && filters.companyName.length === 0) return false;
 
+      // Apply company name filter if selected
+      if (filters.companyName.length > 0) {
+        if (!filters.companyName.includes(String(row.companyName))) return false;
+      }
+
+      // Apply region filter if selected
+      if (filters.region && String(row.region) !== filters.region) return false;
+
+      // Apply technology filter if selected
+      if (filters.technology && String(row.technology) !== filters.technology) return false;
+
+      // Apply category filter if selected
+      if (filters.category && String(row.category) !== filters.category) return false;
+
+      // Apply search term if present
       const searchMatches = !searchTerm || Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      return filterMatches && searchMatches;
+      return searchMatches;
     })
     .sort((a, b) => {
       // Sort: matching rows first, then others
@@ -997,7 +1008,7 @@ const Technographics = () => {
             </tr>
           </thead>
           <tbody>
-            {filters.companyName.length > 0 ? (
+            {(filters.companyName.length > 0 || hasOtherFilters) ? (
               filteredData.length > 0 ? (
                 filteredData.map((row, index) => {
                   const isHighlighted = rowMatchesSearch(row);
