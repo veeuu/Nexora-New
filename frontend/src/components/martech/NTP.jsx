@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
+import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../../utils/tableUtils';
 import * as SiIcons from 'react-icons/si';
 
 // Generic Custom Dropdown Component (without icons)
