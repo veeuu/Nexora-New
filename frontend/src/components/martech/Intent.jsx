@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../../utils/tableUtils';
+import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
