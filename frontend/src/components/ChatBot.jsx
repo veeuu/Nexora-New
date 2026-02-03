@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { chatbotKnowledge } from '../utils/chatbotKnowledge';
+//import { chatbotKnowledge } from '../utils/chatbotKnowledge';
 
 const ChatBot = ({ isAuthenticated, onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false);

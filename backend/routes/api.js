@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const mongoose = require('mongoose'); // Import mongoose
+const path = require('path');
 // Assuming this file is in your 'routes' folder
 const yahooFinance = require('yahoo-finance2').default;
 const Company = require('../models/Company');
+const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_chart');
 
 // Enable CORS for all routes in this router
 // This will add the necessary headers to your API responses
@@ -477,5 +479,37 @@ router.get('/product-catalogue', async (req, res) => {
   }
 });
 
+// @route   GET /api/org-chart/companies
+// @desc    Get list of all companies with org chart data
+// @access  Public
+router.get('/org-chart/companies', async (req, res) => {
+  try {
+    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    const companies = getCompaniesFromExcel(excelPath);
+    res.json({ companies });
+  } catch (err) {
+    console.error('Error fetching companies:', err.message);
+    res.status(500).json({ error: 'Failed to fetch companies' });
+  }
+});
+
+// @route   GET /api/org-chart/:companyName
+// @desc    Generate and return org chart HTML for a specific company
+// @access  Public
+router.get('/org-chart/:companyName', async (req, res) => {
+  try {
+    const { companyName } = req.params;
+    const decodedCompanyName = decodeURIComponent(companyName);
+    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    
+    const html = await generateOrgChartForCompany(excelPath, decodedCompanyName);
+    
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (err) {
+    console.error('Error generating org chart:', err.message);
+    res.status(500).json({ error: err.message || 'Failed to generate org chart' });
+  }
+});
 
 module.exports = router;
