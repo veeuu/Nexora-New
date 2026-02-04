@@ -614,7 +614,7 @@ function createErrorPlotly(message) {
 }
 
 /**
- * Convert HTML chart to PNG image using Puppeteer
+ * Convert HTML chart to PNG image using Puppeteer and capture position data
  */
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
   const htmlContent = generateOrgChartHTML(data, companyName, location);
@@ -648,15 +648,18 @@ async function generateOrgChartPNG(data, companyName = 'Organization', location 
 /**
  * Generate HTML with Plotly (static, no interactive features)
  */
+/**
+ * Generate HTML with Plotly (static, no interactive features)
+ */
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
   const plotlyData = generateOrgChartPlotly(data, companyName, location);
-
+  
   const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>${companyName}${location ? ' (' + location + ')' : ''}</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
     body {
       font-family: Calibri, Arial, sans-serif;
@@ -686,7 +689,12 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       displayModeBar: false,
       staticPlot: true
     };
-    Plotly.newPlot('chart', data, layout, config);
+    
+    if (layout && layout.annotations) {
+      Plotly.newPlot('chart', data, layout, config);
+    } else {
+      document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
+    }
   </script>
 </body>
 </html>`;
@@ -775,7 +783,7 @@ async function main() {
       // Clean up old PNG and HTML files (keep only mapping and zip)
       const files = fs.readdirSync(OUTPUT_FOLDER);
       for (const file of files) {
-        if (file.endsWith('.png') || file.endsWith('.html')) {
+        if (file.endsWith('.png') || (file.endsWith('.html') && file !== 'personDetails.csv')) {
           const filePath = path.join(OUTPUT_FOLDER, file);
           fs.unlinkSync(filePath);
           console.log(`✓ Removed old file: ${file}`);
@@ -823,6 +831,7 @@ async function main() {
 
     const generatedFiles = [];
     const chartMappingData = [];
+    const allPersonDetails = [];
 
     // Generate charts for each company
     for (const companyName of uniqueCompanies) {
@@ -845,35 +854,49 @@ async function main() {
         companyLocation = String(companyData[0]['Location']).trim();
       }
 
-      // Create filename
+      // Create filename - now using .html instead of .png
       const safeCompanyName = sanitizeFilename(companyName);
       let baseFilename = '';
 
       if (companyLocation) {
         const safeLocation = sanitizeFilename(companyLocation);
-        baseFilename = `${safeCompanyName}_${safeLocation}.png`;
+        baseFilename = `${safeCompanyName}_${safeLocation}.html`;
       } else {
-        baseFilename = `${safeCompanyName}.png`;
+        baseFilename = `${safeCompanyName}.html`;
       }
 
       chartMappingData.push({
         'Account Name': companyName,
-        'Image Name': baseFilename
+        'Chart Name': baseFilename
       });
 
       const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
+      const companyId = chartMappingData.length;
 
-      // Generate PNG file
-      const success = await generateOrgChartPNG(companyData, companyName, companyLocation, outputFilePath);
-      if (success) {
+      // Generate HTML file
+      try {
+        const htmlContent = generateOrgChartHTML(companyData, companyName, companyLocation);
+        fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
         console.log(`✓ Chart for ${companyName} saved to ${outputFilePath}`);
         generatedFiles.push(outputFilePath);
+      } catch (error) {
+        console.error(`✗ Error generating HTML for ${companyName}: ${error.message}`);
       }
+    }
+
+    // Create personDetails.csv from the Excel data
+    if (allPersonDetails.length > 0) {
+      console.log('\n📝 Creating personDetails.csv...');
+      const csvPath = path.join(OUTPUT_FOLDER, 'personDetails.csv');
+      const csvContent = convertToCSV(allPersonDetails);
+      fs.writeFileSync(csvPath, csvContent, 'utf-8');
+      console.log(`✓ Person details saved to: ${csvPath}`);
+      generatedFiles.push(csvPath);
     }
 
     // Create mapping Excel file
     if (chartMappingData.length > 0) {
-      console.log('\n📝 Creating company-to-image mapping file...');
+      console.log('\n📝 Creating company-to-chart mapping file...');
       const mappingWorkbook = XLSX.utils.book_new();
       const mappingSheet = XLSX.utils.json_to_sheet(chartMappingData);
       XLSX.utils.book_append_sheet(mappingWorkbook, mappingSheet, 'Mapping');
@@ -910,6 +933,48 @@ async function main() {
     console.error(`✗ An error occurred: ${error.message}`);
     console.error(error);
   }
+}
+
+/**
+ * Generate fake email
+ */
+function generateFakeEmail(personName) {
+  const domains = ['gmail.com', 'company.com', 'outlook.com', 'yahoo.com'];
+  const nameParts = personName.toLowerCase().split(' ');
+  const domain = domains[Math.floor(Math.random() * domains.length)];
+  return `${nameParts.join('.')}@${domain}`;
+}
+
+/**
+ * Generate fake LinkedIn URL
+ */
+function generateFakeLinkedIn(personName) {
+  const nameParts = personName.toLowerCase().split(' ');
+  const randomNum = Math.floor(Math.random() * 9000) + 1000;
+  return `https://linkedin.com/in/${nameParts.join('-')}-${randomNum}`;
+}
+
+/**
+ * Convert array of objects to CSV string
+ */
+function convertToCSV(data) {
+  if (!data || data.length === 0) return '';
+  
+  const headers = Object.keys(data[0]);
+  const csvHeaders = headers.join(',');
+  
+  const csvRows = data.map(row => {
+    return headers.map(header => {
+      const value = row[header];
+      // Escape quotes and wrap in quotes if contains comma
+      if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
+    }).join(',');
+  });
+  
+  return [csvHeaders, ...csvRows].join('\n');
 }
 
 // Run main function
