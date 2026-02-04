@@ -493,6 +493,27 @@ router.get('/org-chart/companies', async (req, res) => {
   }
 });
 
+// @route   GET /api/org-chart/person-details
+// @desc    Get person details CSV for hover popups
+// @access  Public
+router.get('/org-chart/person-details', async (req, res) => {
+  try {
+    const csvPath = path.join(__dirname, '../org_charts_output_js/personDetails.csv');
+    const fs = require('fs');
+    
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'Person details file not found' });
+    }
+    
+    const csvContent = fs.readFileSync(csvPath, 'utf-8');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.send(csvContent);
+  } catch (err) {
+    console.error('Error fetching person details:', err.message);
+    res.status(500).json({ error: 'Failed to fetch person details' });
+  }
+});
+
 // @route   GET /api/org-chart/:companyName
 // @desc    Generate and return org chart HTML for a specific company
 // @access  Public
