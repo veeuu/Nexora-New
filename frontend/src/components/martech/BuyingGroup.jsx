@@ -10,6 +10,7 @@ const BuyingGroup = () => {
     const [error, setError] = useState('');
     const [showPanel, setShowPanel] = useState(false);
     const [personDetailsData, setPersonDetailsData] = useState({});
+    const [infoIconHovered, setInfoIconHovered] = useState(false);
     const iframeRef = useRef(null);
 
     // Parse CSV data
@@ -196,33 +197,21 @@ const BuyingGroup = () => {
                         justifyContent: 'center',
                         width: '40px',
                         height: '40px',
-                        backgroundColor: '#f0f0f0',
+                        backgroundColor: infoIconHovered ? '#0a66c2' : '#f0f0f0',
                         borderRadius: '50%',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        boxShadow: infoIconHovered ? '0 4px 12px rgba(10, 102, 194, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
                     }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#0a66c2';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(10, 102, 194, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f0f0f0';
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                    }}
+                    onMouseEnter={() => setInfoIconHovered(true)}
+                    onMouseLeave={() => setInfoIconHovered(false)}
                     title="Click on the org chart to view team details"
                 >
                     <FaInfoCircle
                         size={20}
                         style={{
-                            color: '#666',
+                            color: infoIconHovered ? '#ffffff' : '#666',
                             transition: 'color 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.target.style.color = '#ffffff';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.color = '#666';
                         }}
                     />
                 </div>
