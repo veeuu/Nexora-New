@@ -39,7 +39,7 @@ const Login = ({ onLogin }) => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Username</label>
               <div className="input-wrapper">
                 <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -48,7 +48,7 @@ const Login = ({ onLogin }) => {
                 <input
                   id="email"
                   type="text"
-                  placeholder="nexora@proplus.com"
+                  placeholder="Nexora"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="form-input"
