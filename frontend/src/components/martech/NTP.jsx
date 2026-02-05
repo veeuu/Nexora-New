@@ -1,16 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
-import * as SiIcons from 'react-icons/si';
-import { FaCloud, FaDatabase, FaRobot, FaQuestionCircle } from 'react-icons/fa';
+import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
+          buttonRef.current && !buttonRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  const handleButtonClick = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        onClick={handleButtonClick}
         style={{
           width: '100%',
           padding: '10px 12px',
@@ -26,7 +55,6 @@ const CustomDropdown = ({ value, onChange, options }) => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
         <span style={{ fontSize: '12px' }}>▼</span>
@@ -34,11 +62,12 @@ const CustomDropdown = ({ value, onChange, options }) => {
 
       {isOpen && (
         <div
+          ref={dropdownRef}
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: `${dropdownPos.top}px`,
+            left: `${dropdownPos.left}px`,
+            width: `${dropdownPos.width}px`,
             backgroundColor: 'white',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
@@ -92,14 +121,44 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
-// Custom Dropdown Component with Icons for Technology/Category
-const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
+// Custom Dropdown Component with Logos/Icons for Technology/Category
+const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
+          buttonRef.current && !buttonRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  const handleButtonClick = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%' }}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        onClick={handleButtonClick}
         style={{
           width: '100%',
           padding: '10px 12px',
@@ -116,10 +175,9 @@ const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
           gap: '8px',
           justifyContent: 'space-between'
         }}
-        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {value && renderIcon(value)}
+          {value && renderLogo(value)}
           {value || 'All'}
         </span>
         <span style={{ fontSize: '12px' }}>▼</span>
@@ -127,11 +185,12 @@ const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
 
       {isOpen && (
         <div
+          ref={dropdownRef}
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: `${dropdownPos.top}px`,
+            left: `${dropdownPos.left}px`,
+            width: `${dropdownPos.width}px`,
             backgroundColor: 'white',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
@@ -179,7 +238,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
               onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
               onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
             >
-              {renderIcon(option)}
+              {renderLogo(option)}
               {option}
             </div>
           ))}
@@ -203,224 +262,56 @@ const NTP = () => {
   const [modalContent, setModalContent] = useState(null);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
 
-  // Icon mapping for technologies and categories - comprehensive
-  const getTechIcon = (techName) => {
+  // Render logo image or colored icon for technology
+  const renderTechLogo = (techName) => {
     if (!techName) return null;
     
-    const normalized = techName.toLowerCase().trim();
+    const logoPath = getLogoPath(techName);
     
-    // FA icons mapping (string names)
-    const faIcons = {
-      "ai": "FaRobot",
-      "ai/ml": "FaRobot",
-      "aiml": "FaRobot",
-      "artificial intelligence": "FaRobot",
-      "artificial intelligence (ai)": "FaRobot",
-      "machine learning": "FaRobot",
-      "machine learningmachnine learning": "FaRobot",
-      "deep learning": "FaRobot",
-      "nlp": "FaRobot",
-      "natural language processing": "FaRobot",
-      "computer vision": "FaRobot",
-      "gen ai": "FaRobot",
-      "genai": "FaRobot",
-      "generative ai": "FaRobot",
-      "llm": "FaRobot",
-      "pytorch": "FaRobot",
-      "cloud": "FaCloud",
-      "cloud | aws": "FaCloud",
-      "cloud computing": "FaCloud",
-      "boost crm": "FaCloud",
-      "avature crm": "FaCloud",
-      "veeva crm": "FaCloud",
-      "sugarcrm": "FaCloud",
-      "rackspace cloud": "FaCloud",
-      "lumen cloud": "FaCloud",
-      "intuit mailchimp": "FaCloud",
-      "ibm cloud": "FaCloud",
-      "hive": "FaDatabase",
-      "on prem": "FaDatabase",
-      "on-prem": "FaDatabase",
-      "not detected": "FaQuestionCircle",
-      "not detectedNot detected": "FaQuestionCircle",
-    };
-    
-    // SI icons mapping
-    const siIcons = {
-      "aws": "SiAmazonaws",
-      "amazon aws": "SiAmazonaws",
-      "aws rds": "SiAmazonaws",
-      "amazon rds": "SiAmazonaws",
-      "amazon relational database service (rds)": "SiAmazonaws",
-      "amazon aurora": "SiAmazonaws",
-      "amazon dynamodb": "SiAmazonaws",
-      "amazon dynamodbAmazon Dynamodb": "SiAmazonaws",
-      "amazon q": "SiAmazonaws",
-      "amazon redshift": "SiAmazonaws",
-      "rds": "SiAmazonaws",
-      "aws | cloud computing": "SiAmazonaws",
-      "azure": "SiMicrosoftazure",
-      "microsoft azure": "SiMicrosoftazure",
-      "azure sql": "SiMicrosoftazure",
-      "azure sql database": "SiMicrosoftazure",
-      "azure cosmos db": "SiMicrosoftazure",
-      "azure databricks": "SiMicrosoftazure",
-      "azure openai": "SiMicrosoftazure",
-      "sql azure": "SiMicrosoftazure",
-      "gcp": "SiGooglecloud",
-      "google cloud platform": "SiGooglecloud",
-      "google cloud": "SiGooglecloud",
-      "openai": "SiOpenai",
-      "chatgpt": "SiOpenai",
-      "gemini": "SiGoogle",
-      "claude": "SiAnthropic",
-      "copilot": "SiMicrosoft",
-      "mlflow": "SiApache",
-      "salesforce": "SiSalesforce",
-      "salesforce crm": "SiSalesforce",
-      "salesforce.com": "SiSalesforce",
-      "salesforce.": "SiSalesforce",
-      "salesforce sales cloud": "SiSalesforce",
-      "salesforce cpq": "SiSalesforce",
-      "salesforce lightning": "SiSalesforce",
-      "salesforce crmSalesforce": "SiSalesforce",
-      "hubspot": "SiHubspot",
-      "hubspot crm": "SiHubspot",
-      "hubsot crm": "SiHubspot",
-      "zoho": "SiZoho",
-      "zoho crm": "SiZoho",
-      "pipedrive": "SiPipedrive",
-      "dynamics crm": "SiMicrosoftazure",
-      "microsoft dynamics crm": "SiMicrosoftazure",
-      "microsoft dynamics 365": "SiMicrosoftazure",
-      "microsoft dynamics 365 crm": "SiMicrosoftazure",
-      "oracle crm": "SiDatabase",
-      "siebel": "SiDatabase",
-      "sap crm": "SiSap",
-      "peoplesoft crm": "SiDatabase",
-      "mongodb": "SiMongodb",
-      "mongodbMongodb": "SiMongodb",
-      "mysql": "SiMysql",
-      "mysql database": "SiMysql",
-      "mysq": "SiMysql",
-      "postgresql": "SiPostgresql",
-      "postgre sql": "SiPostgresql",
-      "postgres": "SiPostgresql",
-      "redis": "SiRedis",
-      "snowflake": "SiSnowflake",
-      "snowflake cloud": "SiSnowflake",
-      "snowflakecloud": "SiSnowflake",
-      "oracle database": "SiDatabase",
-      "oracle sql": "SiDatabase",
-      "oracle cloud": "SiDatabase",
-      "oracle database administration": "SiDatabase",
-      "ms sql": "SiMicrosoftazure",
-      "sql server": "SiMicrosoftazure",
-      "sql azure": "SiMicrosoftazure",
-      "ibm db2": "SiIbm",
-      "digitalocean": "SiDigitalocean",
-      "vmware": "SiVmware",
-      "vmware | aws | google cloud platform": "SiVmware",
-      "firebase": "SiFirebase",
-      "alibaba cloud": "SiAlibaba",
-      "adobe": "SiAdobe",
-      "adobe experience cloud": "SiAdobe",
-      "tableau": "SiTableau",
-      "tableau crm": "SiTableau",
-      "sap analytics cloud": "SiSap",
-      "sap": "SiSap",
-      "sap crmsciex cloud": "SiSap",
-      "docker": "SiDocker",
-      "kubernetes": "SiKubernetes",
-      "jenkins": "SiJenkins",
-      "git": "SiGit",
-      "github": "SiGithub",
-      "gitlab": "SiGitlab",
-      "python": "SiPython",
-      "java": "SiJava",
-      "javascript": "SiJavascript",
-      "react": "SiReact",
-      "nodejs": "SiNodedotjs",
-      "node.js": "SiNodedotjs",
-      "elasticsearch": "SiElasticsearch",
-      "kafka": "SiApachekafka",
-      "spark": "SiApachespark",
-      "hadoop": "SiApachehadoop",
-      "tensorflow": "SiTensorflow",
-      "linux": "SiLinux",
-      "windows": "SiWindows",
-      "macos": "SiApple",
-      "ios": "SiApple",
-      "android": "SiAndroid",
-      "nginx": "SiNginx",
-      "apache": "SiApache",
-      "tomcat": "SiApachetomcat",
-    };
-    
-    // Check FA icons first
-    if (faIcons[normalized]) {
-      return faIcons[normalized];
+    // If logo exists, use it
+    if (logoPath) {
+      return (
+        <img
+          src={logoPath}
+          alt={techName}
+          title={techName}
+          style={{
+            width: '20px',
+            height: '20px',
+            marginRight: '6px',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            objectFit: 'contain'
+          }}
+          onError={(e) => {
+            // Fallback if image fails to load
+            e.target.style.display = 'none';
+          }}
+        />
+      );
     }
     
-    // Check SI icons
-    if (siIcons[normalized]) {
-      return siIcons[normalized];
-    }
-    
-    // Check for partial matches (only check if key is in normalized, not the other way)
-    for (const [key, name] of Object.entries(siIcons)) {
-      if (normalized.includes(key) && key.length > 2) {
-        return name;
-      }
-    }
-    
-    return null;
-  };
-
-  // Render icon component
-  const renderTechIcon = (techName) => {
-    const iconName = getTechIcon(techName);
-    if (!iconName) return null;
-    
-    // Map FA icon names to components
-    const faIconsMap = {
-      'FaRobot': FaRobot,
-      'FaCloud': FaCloud,
-      'FaDatabase': FaDatabase,
-      'FaQuestionCircle': FaQuestionCircle,
-    };
-    
-    // Check if it's a FA icon
-    if (faIconsMap[iconName]) {
-      const IconComponent = faIconsMap[iconName];
+    // Otherwise use colored icon
+    const iconData = getTechIcon(techName);
+    if (iconData) {
+      const { component: IconComponent, color } = iconData;
       return (
         <IconComponent
           size={16}
           style={{
             marginRight: '6px',
             display: 'inline-block',
-            verticalAlign: 'middle'
+            verticalAlign: 'middle',
+            color: color,
+            opacity: 0.85,
+            filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
           }}
           title={techName}
         />
       );
     }
     
-    // Otherwise it's a SI icon
-    const IconComponent = SiIcons[iconName];
-    if (!IconComponent) return null;
-    
-    return (
-      <IconComponent
-        size={16}
-        style={{
-          marginRight: '6px',
-          display: 'inline-block',
-          verticalAlign: 'middle'
-        }}
-        title={techName}
-      />
-    );
+    return null;
   };
 
   const handleFilterChange = (filterName, value) => {
@@ -484,10 +375,21 @@ const NTP = () => {
 
   const filteredData = tableData
     .filter(row => {
+      // Check if any filter is active
+      const hasActiveFilters = Object.values(filters).some(val => val !== '');
+      
+      // If no filters are active, show all data
+      if (!hasActiveFilters) {
+        return !searchTerm || Object.values(row).some(value =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      // Apply active filters
       const filterMatches = Object.keys(filters).every(key => {
-        if (!filters[key]) return true;
+        if (!filters[key]) return true; // Skip empty filters
         const rowKey = key === 'companyName' ? 'companyName' : key;
-        return String(row[rowKey]) === filters[key];
+        return String(row[rowKey]).toLowerCase() === String(filters[key]).toLowerCase();
       });
 
       const searchMatches = !searchTerm || Object.values(row).some(value =>
@@ -562,7 +464,7 @@ const NTP = () => {
             value={filters.category}
             onChange={(value) => handleFilterChange('category', value)}
             options={getUniqueOptions('category')}
-            renderIcon={renderTechIcon}
+            renderLogo={renderTechLogo}
           />
         </div>
 
@@ -572,7 +474,7 @@ const NTP = () => {
             value={filters.technology}
             onChange={(value) => handleFilterChange('technology', value)}
             options={getUniqueOptions('technology')}
-            renderIcon={renderTechIcon}
+            renderLogo={renderTechLogo}
           />
         </div>
 
@@ -583,7 +485,7 @@ const NTP = () => {
           <thead className="sticky-header">
             <tr>
               <th>Company Name</th>
-              <th>Domain</th> {/* Domain column remains */}
+              <th>Domain</th>
               <th>Category</th>
               <th>Technology</th>
               <th>Purchase Propensity (%)</th>
@@ -604,13 +506,13 @@ const NTP = () => {
                   </td>
                   <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                      {renderTechIcon(row.category)}
+                      {renderTechLogo(row.category)}
                       {highlightText(row.category, searchTerm)}
                     </span>
                   </td>
                   <td onMouseEnter={(e) => handleMouseEnter(e, row.technology)} onMouseLeave={handleMouseLeave}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                      {renderTechIcon(row.technology)}
+                      {renderTechLogo(row.technology)}
                       {highlightText(row.technology, searchTerm)}
                     </span>
                   </td>
@@ -644,8 +546,7 @@ const NTP = () => {
           </div>
         </div>
       )}
-
-            <style jsx>{`
+      <style>{`
         .table-container {
           max-height: 400px;
           overflow-x: auto;

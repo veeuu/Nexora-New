@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
-import * as SiIcons from 'react-icons/si';
-import { FaCloud, FaDatabase, FaRobot, FaQuestionCircle } from 'react-icons/fa';
 import Flag from 'country-flag-icons/react/3x2';
+import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -98,8 +97,8 @@ const renderCountryFlag = (region) => {
   );
 };
 
-// Custom Dropdown Component with Icons
-const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
+// Custom Dropdown Component with Logos
+const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef(null);
@@ -154,7 +153,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {value && renderIcon(value)}
+          {value && renderLogo(value)}
           {value || 'All'}
         </span>
         <span style={{ fontSize: '12px' }}>▼</span>
@@ -215,7 +214,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderIcon }) => {
               onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
               onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
             >
-              {renderIcon(option)}
+              {renderLogo(option)}
               {option}
             </div>
           ))}
@@ -635,224 +634,53 @@ const Technographics = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
 
-  // Render icon component using the utility
-  const renderTechIcon = (techName) => {
+  // Render logo image or colored icon for technology
+  const renderTechLogo = (techName) => {
     if (!techName) return null;
     
-    const normalized = techName.toLowerCase().trim();
+    const logoPath = getLogoPath(techName);
     
-    // FA icons mapping
-    const faIcons = {
-      "ai": "FaRobot",
-      "ai/ml": "FaRobot",
-      "aiml": "FaRobot",
-      "artificial intelligence": "FaRobot",
-      "artificial intelligence (ai)": "FaRobot",
-      "machine learning": "FaRobot",
-      "machine learningmachnine learning": "FaRobot",
-      "deep learning": "FaRobot",
-      "nlp": "FaRobot",
-      "natural language processing": "FaRobot",
-      "computer vision": "FaRobot",
-      "gen ai": "FaRobot",
-      "genai": "FaRobot",
-      "generative ai": "FaRobot",
-      "llm": "FaRobot",
-      "pytorch": "FaRobot",
-      "cloud": "FaCloud",
-      "cloud | aws": "FaCloud",
-      "cloud computing": "FaCloud",
-      "boost crm": "FaCloud",
-      "avature crm": "FaCloud",
-      "veeva crm": "FaCloud",
-      "sugarcrm": "FaCloud",
-      "rackspace cloud": "FaCloud",
-      "lumen cloud": "FaCloud",
-      "intuit mailchimp": "FaCloud",
-      "ibm cloud": "FaCloud",
-      "hive": "FaDatabase",
-      "on prem": "FaDatabase",
-      "on-prem": "FaDatabase",
-      "not detected": "FaQuestionCircle",
-      "not detectedNot detected": "FaQuestionCircle",
-    };
-    
-    // SI icons mapping
-    const siIcons = {
-      "aws": "SiAmazonaws",
-      "amazon aws": "SiAmazonaws",
-      "aws rds": "SiAmazonaws",
-      "amazon rds": "SiAmazonaws",
-      "amazon relational database service (rds)": "SiAmazonaws",
-      "amazon aurora": "SiAmazonaws",
-      "amazon dynamodb": "SiAmazonaws",
-      "amazon dynamodbAmazon Dynamodb": "SiAmazonaws",
-      "amazon q": "SiAmazonaws",
-      "amazon redshift": "SiAmazonaws",
-      "rds": "SiAmazonaws",
-      "aws | cloud computing": "SiAmazonaws",
-      "azure": "SiMicrosoftazure",
-      "microsoft azure": "SiMicrosoftazure",
-      "azure sql": "SiMicrosoftazure",
-      "azure sql database": "SiMicrosoftazure",
-      "azure cosmos db": "SiMicrosoftazure",
-      "azure databricks": "SiMicrosoftazure",
-      "azure openai": "SiMicrosoftazure",
-      "sql azure": "SiMicrosoftazure",
-      "gcp": "SiGooglecloud",
-      "google cloud platform": "SiGooglecloud",
-      "google cloud": "SiGooglecloud",
-      "openai": "SiOpenai",
-      "chatgpt": "SiOpenai",
-      "gemini": "SiGoogle",
-      "claude": "SiAnthropic",
-      "copilot": "SiMicrosoft",
-      "mlflow": "SiApache",
-      "salesforce": "SiSalesforce",
-      "salesforce crm": "SiSalesforce",
-      "salesforce.com": "SiSalesforce",
-      "salesforce.": "SiSalesforce",
-      "salesforce sales cloud": "SiSalesforce",
-      "salesforce cpq": "SiSalesforce",
-      "salesforce lightning": "SiSalesforce",
-      "salesforce crmSalesforce": "SiSalesforce",
-      "hubspot": "SiHubspot",
-      "hubspot crm": "SiHubspot",
-      "hubsot crm": "SiHubspot",
-      "zoho": "SiZoho",
-      "zoho crm": "SiZoho",
-      "pipedrive": "SiPipedrive",
-      "dynamics crm": "SiMicrosoftazure",
-      "microsoft dynamics crm": "SiMicrosoftazure",
-      "microsoft dynamics 365": "SiMicrosoftazure",
-      "microsoft dynamics 365 crm": "SiMicrosoftazure",
-      "oracle crm": "SiDatabase",
-      "siebel": "SiDatabase",
-      "sap crm": "SiSap",
-      "peoplesoft crm": "SiDatabase",
-      "mongodb": "SiMongodb",
-      "mongodbMongodb": "SiMongodb",
-      "mysql": "SiMysql",
-      "mysql database": "SiMysql",
-      "mysq": "SiMysql",
-      "postgresql": "SiPostgresql",
-      "postgre sql": "SiPostgresql",
-      "postgres": "SiPostgresql",
-      "redis": "SiRedis",
-      "snowflake": "SiSnowflake",
-      "snowflake cloud": "SiSnowflake",
-      "snowflakecloud": "SiSnowflake",
-      "oracle database": "SiDatabase",
-      "oracle sql": "SiDatabase",
-      "oracle cloud": "SiDatabase",
-      "oracle database administration": "SiDatabase",
-      "ms sql": "SiMicrosoftazure",
-      "sql server": "SiMicrosoftazure",
-      "sql azure": "SiMicrosoftazure",
-      "ibm db2": "SiIbm",
-      "digitalocean": "SiDigitalocean",
-      "vmware": "SiVmware",
-      "vmware | aws | google cloud platform": "SiVmware",
-      "firebase": "SiFirebase",
-      "alibaba cloud": "SiAlibaba",
-      "adobe": "SiAdobe",
-      "adobe experience cloud": "SiAdobe",
-      "tableau": "SiTableau",
-      "tableau crm": "SiTableau",
-      "sap analytics cloud": "SiSap",
-      "sap": "SiSap",
-      "sap crmsciex cloud": "SiSap",
-      "docker": "SiDocker",
-      "kubernetes": "SiKubernetes",
-      "jenkins": "SiJenkins",
-      "git": "SiGit",
-      "github": "SiGithub",
-      "gitlab": "SiGitlab",
-      "python": "SiPython",
-      "java": "SiJava",
-      "javascript": "SiJavascript",
-      "react": "SiReact",
-      "nodejs": "SiNodedotjs",
-      "node.js": "SiNodedotjs",
-      "elasticsearch": "SiElasticsearch",
-      "kafka": "SiApachekafka",
-      "spark": "SiApachespark",
-      "hadoop": "SiApachehadoop",
-      "tensorflow": "SiTensorflow",
-      "linux": "SiLinux",
-      "windows": "SiWindows",
-      "macos": "SiApple",
-      "ios": "SiApple",
-      "android": "SiAndroid",
-      "nginx": "SiNginx",
-      "apache": "SiApache",
-      "tomcat": "SiApachetomcat",
-    };
-    
-    // Map FA icon names to components
-    const faIconsMap = {
-      'FaRobot': FaRobot,
-      'FaCloud': FaCloud,
-      'FaDatabase': FaDatabase,
-      'FaQuestionCircle': FaQuestionCircle,
-    };
-    
-    // Check FA icons first
-    if (faIcons[normalized]) {
-      const iconName = faIcons[normalized];
-      const IconComponent = faIconsMap[iconName];
-      if (IconComponent) {
-        return (
-          <IconComponent
-            size={16}
-            style={{
-              marginRight: '6px',
-              display: 'inline-block',
-              verticalAlign: 'middle'
-            }}
-            title={techName}
-          />
-        );
-      }
+    // If logo exists, use it
+    if (logoPath) {
+      return (
+        <img
+          src={logoPath}
+          alt={techName}
+          title={techName}
+          style={{
+            width: '20px',
+            height: '20px',
+            marginRight: '6px',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            objectFit: 'contain'
+          }}
+          onError={(e) => {
+            // Fallback if image fails to load
+            e.target.style.display = 'none';
+          }}
+        />
+      );
     }
     
-    // Check SI icons
-    const siIconName = siIcons[normalized];
-    if (siIconName) {
-      const IconComponent = SiIcons[siIconName];
-      if (IconComponent) {
-        return (
-          <IconComponent
-            size={16}
-            style={{
-              marginRight: '6px',
-              display: 'inline-block',
-              verticalAlign: 'middle'
-            }}
-            title={techName}
-          />
-        );
-      }
-    }
-    
-    // Check for partial matches in SI icons (only check if key is in normalized, not the other way)
-    for (const [key, name] of Object.entries(siIcons)) {
-      if (normalized.includes(key) && key.length > 2) {
-        const IconComponent = SiIcons[name];
-        if (IconComponent) {
-          return (
-            <IconComponent
-              size={16}
-              style={{
-                marginRight: '6px',
-                display: 'inline-block',
-                verticalAlign: 'middle'
-              }}
-              title={techName}
-            />
-          );
-        }
-      }
+    // Otherwise use colored icon
+    const iconData = getTechIcon(techName);
+    if (iconData) {
+      const { component: IconComponent, color } = iconData;
+      return (
+        <IconComponent
+          size={16}
+          style={{
+            marginRight: '6px',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            color: color,
+            opacity: 0.85,
+            filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
+          }}
+          title={techName}
+        />
+      );
     }
     
     return null;
@@ -1104,10 +932,11 @@ const Technographics = () => {
 
         <div className="filter-group">
           <label>Category</label>
-          <CustomDropdown
+          <CustomTechDropdown
             value={filters.category}
             onChange={(value) => handleFilterChange('category', value)}
             options={getUniqueOptions('category')}
+            renderLogo={renderTechLogo}
           />
         </div>
 
@@ -1117,7 +946,7 @@ const Technographics = () => {
             value={filters.technology}
             onChange={(value) => handleFilterChange('technology', value)}
             options={getUniqueOptions('technology')}
-            renderIcon={renderTechIcon}
+            renderLogo={renderTechLogo}
           />
         </div>
       </div>
@@ -1190,11 +1019,14 @@ const Technographics = () => {
                         </span>
                       </td>
                       {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.category, searchTerm)}
+                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                          {renderTechLogo(row.category)}
+                          {highlightText(row.category, searchTerm)}
+                        </span>
                       </td> */}
                       <td onMouseEnter={(e) => handleMouseEnter(e, row.technology)} onMouseLeave={handleMouseLeave}>
                         <span style={{ display: 'flex', alignItems: 'center' }}>
-                          {renderTechIcon(row.technology)}
+                          {renderTechLogo(row.technology)}
                           {highlightText(row.technology, searchTerm)}
                         </span>
                       </td>
@@ -1330,7 +1162,7 @@ const Technographics = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', gap: '12px' }}>
                           <div style={{ flex: 1 }}>
                             <p style={{ margin: '0 0 4px 0', fontWeight: '600', color: '#010810', display: 'flex', alignItems: 'center' }}>
-                              {renderTechIcon(item.technology)}
+                              {renderTechLogo(item.technology)}
                               {item.technology}
                             </p>
                             <p style={{ margin: '0', fontSize: '12px', color: '#666' }}>{item.category}</p>
@@ -1360,7 +1192,7 @@ const Technographics = () => {
         </>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes slideIn {
           from {
             transform: translateX(100%);
