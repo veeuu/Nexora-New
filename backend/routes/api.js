@@ -515,15 +515,40 @@ router.get('/org-chart/person-details', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/:companyName
-// @desc    Generate and return org chart HTML for a specific company
+// @desc    Generate and return org chart HTML for a specific company (save to disk)
 // @access  Public
 router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    const outputFolder = path.join(__dirname, '../org_charts_output_js');
+    const fs = require('fs');
     
+    // Ensure output folder exists
+    if (!fs.existsSync(outputFolder)) {
+      fs.mkdirSync(outputFolder, { recursive: true });
+    }
+    
+    // Generate chart
+    console.log(`⏳ Generating org chart for: ${decodedCompanyName}`);
     const html = await generateOrgChartForCompany(excelPath, decodedCompanyName);
+    
+    // Sanitize filename
+    const sanitizeFilename = (name) => {
+      name = String(name);
+      name = name.replace(/[^\w\s-]/g, '').trim();
+      name = name.replace(/[-\s]+/g, '_');
+      return name || 'untitled_chart';
+    };
+    
+    const safeCompanyName = sanitizeFilename(decodedCompanyName);
+    const htmlFileName = `${safeCompanyName}.html`;
+    const htmlFilePath = path.join(outputFolder, htmlFileName);
+    
+    // Save to disk
+    fs.writeFileSync(htmlFilePath, html, 'utf-8');
+    console.log(`✓ Org chart saved to disk: ${htmlFilePath}`);
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
@@ -533,4 +558,50 @@ router.get('/org-chart/:companyName', async (req, res) => {
   }
 });
 
+// Initialize default org chart on server startup
+async function initializeDefaultOrgChart() {
+  try {
+    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    const outputFolder = path.join(__dirname, '../org_charts_output_js');
+    const fs = require('fs');
+    
+    const companies = getCompaniesFromExcel(excelPath);
+    
+    if (companies.length === 0) {
+      console.warn('⚠ No companies found to generate default org chart');
+      return;
+    }
+    
+    // Ensure output folder exists
+    if (!fs.existsSync(outputFolder)) {
+      fs.mkdirSync(outputFolder, { recursive: true });
+    }
+    
+    const defaultCompany = companies[0];
+    console.log(`\n📊 Generating default org chart for: ${defaultCompany}`);
+    
+    const html = await generateOrgChartForCompany(excelPath, defaultCompany);
+    
+    // Sanitize filename
+    const sanitizeFilename = (name) => {
+      name = String(name);
+      name = name.replace(/[^\w\s-]/g, '').trim();
+      name = name.replace(/[-\s]+/g, '_');
+      return name || 'untitled_chart';
+    };
+    
+    const safeCompanyName = sanitizeFilename(defaultCompany);
+    const htmlFileName = `${safeCompanyName}.html`;
+    const htmlFilePath = path.join(outputFolder, htmlFileName);
+    
+    // Save to disk
+    fs.writeFileSync(htmlFilePath, html, 'utf-8');
+    console.log(`✓ Default org chart saved to disk: ${htmlFilePath}\n`);
+  } catch (err) {
+    console.error('Error initializing default org chart:', err.message);
+  }
+}
+
+// Export initialization function
 module.exports = router;
+module.exports.initializeDefaultOrgChart = initializeDefaultOrgChart;
