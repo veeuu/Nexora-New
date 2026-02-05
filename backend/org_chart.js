@@ -978,6 +978,7 @@ function convertToCSV(data) {
 }
 
 // Run main function
-main().catch(console.error);
+// DISABLED: main() is now called on-demand via API routes
+// main().catch(console.error);
 
 module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromExcel };

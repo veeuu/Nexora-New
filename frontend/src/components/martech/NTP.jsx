@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import * as SiIcons from 'react-icons/si';
+import { FaCloud, FaDatabase, FaRobot, FaQuestionCircle } from 'react-icons/fa';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -202,78 +203,178 @@ const NTP = () => {
   const [modalContent, setModalContent] = useState(null);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
 
-  // Icon mapping for technologies and categories
+  // Icon mapping for technologies and categories - comprehensive
   const getTechIcon = (techName) => {
     if (!techName) return null;
     
-    const techLower = techName.toLowerCase();
+    const normalized = techName.toLowerCase().trim();
     
-    // Check for SAP or VMware anywhere in the name (priority check)
-    if (techLower.includes('sap')) {
-      return 'SiSap';
-    }
-    if (techLower.includes('vmware')) {
-      return 'SiVmware';
-    }
-    
-    // Map technology names to react-icons component names
-    const iconMap = {
-      'aws': 'SiAmazonaws',
-      'amazon': 'SiAmazonaws',
-      'azure': 'SiMicrosoftazure',
-      'microsoft': 'SiMicrosoft',
-      'google cloud': 'SiGooglecloud',
-      'gcp': 'SiGooglecloud',
-      'docker': 'SiDocker',
-      'kubernetes': 'SiKubernetes',
-      'jenkins': 'SiJenkins',
-      'git': 'SiGit',
-      'github': 'SiGithub',
-      'gitlab': 'SiGitlab',
-      'python': 'SiPython',
-      'java': 'SiJava',
-      'javascript': 'SiJavascript',
-      'react': 'SiReact',
-      'nodejs': 'SiNodedotjs',
-      'node.js': 'SiNodedotjs',
-      'mongodb': 'SiMongodb',
-      'postgresql': 'SiPostgresql',
-      'mysql': 'SiMysql',
-      'redis': 'SiRedis',
-      'elasticsearch': 'SiElasticsearch',
-      'kafka': 'SiApachekafka',
-      'spark': 'SiApachespark',
-      'hadoop': 'SiApachehadoop',
-      'tensorflow': 'SiTensorflow',
-      'pytorch': 'SiPytorch',
-      'ai': 'SiOpenai',
-      'ml': 'SiTensorflow',
-      'machine learning': 'SiTensorflow',
-      'salesforce': 'SiSalesforce',
-      'oracle': 'SiOracle',
-      'linux': 'SiLinux',
-      'windows': 'SiWindows',
-      'macos': 'SiApple',
-      'ios': 'SiApple',
-      'android': 'SiAndroid',
-      'nginx': 'SiNginx',
-      'apache': 'SiApache',
-      'tomcat': 'SiApachetomcat',
-      'esxi': 'SiVmware',
-      'esx': 'SiVmware',
-      'aria': 'SiVmware',
-      'horizon': 'SiVmware',
-      'nsx': 'SiVmware',
-      'carbon black': 'SiVmware',
-      'generative ai': 'SiOpenai',
-      'ai / cloud + ai': 'SiOpenai',
-      'oracle cloud': 'SiOracle',
-      'oracle erp': 'SiOracle',
-      'oracle cloud applications': 'SiOracle'
+    // FA icons mapping (string names)
+    const faIcons = {
+      "ai": "FaRobot",
+      "ai/ml": "FaRobot",
+      "aiml": "FaRobot",
+      "artificial intelligence": "FaRobot",
+      "artificial intelligence (ai)": "FaRobot",
+      "machine learning": "FaRobot",
+      "machine learningmachnine learning": "FaRobot",
+      "deep learning": "FaRobot",
+      "nlp": "FaRobot",
+      "natural language processing": "FaRobot",
+      "computer vision": "FaRobot",
+      "gen ai": "FaRobot",
+      "genai": "FaRobot",
+      "generative ai": "FaRobot",
+      "llm": "FaRobot",
+      "pytorch": "FaRobot",
+      "cloud": "FaCloud",
+      "cloud | aws": "FaCloud",
+      "cloud computing": "FaCloud",
+      "boost crm": "FaCloud",
+      "avature crm": "FaCloud",
+      "veeva crm": "FaCloud",
+      "sugarcrm": "FaCloud",
+      "rackspace cloud": "FaCloud",
+      "lumen cloud": "FaCloud",
+      "intuit mailchimp": "FaCloud",
+      "ibm cloud": "FaCloud",
+      "hive": "FaDatabase",
+      "on prem": "FaDatabase",
+      "on-prem": "FaDatabase",
+      "not detected": "FaQuestionCircle",
+      "not detectedNot detected": "FaQuestionCircle",
     };
     
-    const iconName = iconMap[techLower];
-    return iconName;
+    // SI icons mapping
+    const siIcons = {
+      "aws": "SiAmazonaws",
+      "amazon aws": "SiAmazonaws",
+      "aws rds": "SiAmazonaws",
+      "amazon rds": "SiAmazonaws",
+      "amazon relational database service (rds)": "SiAmazonaws",
+      "amazon aurora": "SiAmazonaws",
+      "amazon dynamodb": "SiAmazonaws",
+      "amazon dynamodbAmazon Dynamodb": "SiAmazonaws",
+      "amazon q": "SiAmazonaws",
+      "amazon redshift": "SiAmazonaws",
+      "rds": "SiAmazonaws",
+      "aws | cloud computing": "SiAmazonaws",
+      "azure": "SiMicrosoftazure",
+      "microsoft azure": "SiMicrosoftazure",
+      "azure sql": "SiMicrosoftazure",
+      "azure sql database": "SiMicrosoftazure",
+      "azure cosmos db": "SiMicrosoftazure",
+      "azure databricks": "SiMicrosoftazure",
+      "azure openai": "SiMicrosoftazure",
+      "sql azure": "SiMicrosoftazure",
+      "gcp": "SiGooglecloud",
+      "google cloud platform": "SiGooglecloud",
+      "google cloud": "SiGooglecloud",
+      "openai": "SiOpenai",
+      "chatgpt": "SiOpenai",
+      "gemini": "SiGoogle",
+      "claude": "SiAnthropic",
+      "copilot": "SiMicrosoft",
+      "mlflow": "SiApache",
+      "salesforce": "SiSalesforce",
+      "salesforce crm": "SiSalesforce",
+      "salesforce.com": "SiSalesforce",
+      "salesforce.": "SiSalesforce",
+      "salesforce sales cloud": "SiSalesforce",
+      "salesforce cpq": "SiSalesforce",
+      "salesforce lightning": "SiSalesforce",
+      "salesforce crmSalesforce": "SiSalesforce",
+      "hubspot": "SiHubspot",
+      "hubspot crm": "SiHubspot",
+      "hubsot crm": "SiHubspot",
+      "zoho": "SiZoho",
+      "zoho crm": "SiZoho",
+      "pipedrive": "SiPipedrive",
+      "dynamics crm": "SiMicrosoftazure",
+      "microsoft dynamics crm": "SiMicrosoftazure",
+      "microsoft dynamics 365": "SiMicrosoftazure",
+      "microsoft dynamics 365 crm": "SiMicrosoftazure",
+      "oracle crm": "SiDatabase",
+      "siebel": "SiDatabase",
+      "sap crm": "SiSap",
+      "peoplesoft crm": "SiDatabase",
+      "mongodb": "SiMongodb",
+      "mongodbMongodb": "SiMongodb",
+      "mysql": "SiMysql",
+      "mysql database": "SiMysql",
+      "mysq": "SiMysql",
+      "postgresql": "SiPostgresql",
+      "postgre sql": "SiPostgresql",
+      "postgres": "SiPostgresql",
+      "redis": "SiRedis",
+      "snowflake": "SiSnowflake",
+      "snowflake cloud": "SiSnowflake",
+      "snowflakecloud": "SiSnowflake",
+      "oracle database": "SiDatabase",
+      "oracle sql": "SiDatabase",
+      "oracle cloud": "SiDatabase",
+      "oracle database administration": "SiDatabase",
+      "ms sql": "SiMicrosoftazure",
+      "sql server": "SiMicrosoftazure",
+      "sql azure": "SiMicrosoftazure",
+      "ibm db2": "SiIbm",
+      "digitalocean": "SiDigitalocean",
+      "vmware": "SiVmware",
+      "vmware | aws | google cloud platform": "SiVmware",
+      "firebase": "SiFirebase",
+      "alibaba cloud": "SiAlibaba",
+      "adobe": "SiAdobe",
+      "adobe experience cloud": "SiAdobe",
+      "tableau": "SiTableau",
+      "tableau crm": "SiTableau",
+      "sap analytics cloud": "SiSap",
+      "sap": "SiSap",
+      "sap crmsciex cloud": "SiSap",
+      "docker": "SiDocker",
+      "kubernetes": "SiKubernetes",
+      "jenkins": "SiJenkins",
+      "git": "SiGit",
+      "github": "SiGithub",
+      "gitlab": "SiGitlab",
+      "python": "SiPython",
+      "java": "SiJava",
+      "javascript": "SiJavascript",
+      "react": "SiReact",
+      "nodejs": "SiNodedotjs",
+      "node.js": "SiNodedotjs",
+      "elasticsearch": "SiElasticsearch",
+      "kafka": "SiApachekafka",
+      "spark": "SiApachespark",
+      "hadoop": "SiApachehadoop",
+      "tensorflow": "SiTensorflow",
+      "linux": "SiLinux",
+      "windows": "SiWindows",
+      "macos": "SiApple",
+      "ios": "SiApple",
+      "android": "SiAndroid",
+      "nginx": "SiNginx",
+      "apache": "SiApache",
+      "tomcat": "SiApachetomcat",
+    };
+    
+    // Check FA icons first
+    if (faIcons[normalized]) {
+      return faIcons[normalized];
+    }
+    
+    // Check SI icons
+    if (siIcons[normalized]) {
+      return siIcons[normalized];
+    }
+    
+    // Check for partial matches (only check if key is in normalized, not the other way)
+    for (const [key, name] of Object.entries(siIcons)) {
+      if (normalized.includes(key) && key.length > 2) {
+        return name;
+      }
+    }
+    
+    return null;
   };
 
   // Render icon component
@@ -281,6 +382,31 @@ const NTP = () => {
     const iconName = getTechIcon(techName);
     if (!iconName) return null;
     
+    // Map FA icon names to components
+    const faIconsMap = {
+      'FaRobot': FaRobot,
+      'FaCloud': FaCloud,
+      'FaDatabase': FaDatabase,
+      'FaQuestionCircle': FaQuestionCircle,
+    };
+    
+    // Check if it's a FA icon
+    if (faIconsMap[iconName]) {
+      const IconComponent = faIconsMap[iconName];
+      return (
+        <IconComponent
+          size={16}
+          style={{
+            marginRight: '6px',
+            display: 'inline-block',
+            verticalAlign: 'middle'
+          }}
+          title={techName}
+        />
+      );
+    }
+    
+    // Otherwise it's a SI icon
     const IconComponent = SiIcons[iconName];
     if (!IconComponent) return null;
     
