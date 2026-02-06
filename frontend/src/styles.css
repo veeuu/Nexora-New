@@ -682,20 +682,33 @@ tr:hover {
 
 .download-csv-btn,
 .download-csv-button {
-  background-color: #4CAF50;
+  background-color: #10b981;
   color: white;
-  padding: 10px 15px;
+  padding: 4px 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
-  transition: background-color 0.3s ease;
+  font-size: 12px;
+  transition: all 0.3s ease;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
 }
 
 .download-csv-btn:hover,
 .download-csv-button:hover {
-  background-color: #45a049;
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.csv-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke-width: 2;
 }
 
 /* ========== STOCK PERFORMANCE SPECIFIC ========== */
