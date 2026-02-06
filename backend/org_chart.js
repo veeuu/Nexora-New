@@ -780,14 +780,11 @@ async function main() {
       fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
       console.log(`✓ Created directory: ${OUTPUT_FOLDER}`);
     } else {
-      // Clean up old PNG and HTML files (keep only mapping and zip)
-      const files = fs.readdirSync(OUTPUT_FOLDER);
-      for (const file of files) {
-        if (file.endsWith('.png') || (file.endsWith('.html') && file !== 'personDetails.csv')) {
-          const filePath = path.join(OUTPUT_FOLDER, file);
-          fs.unlinkSync(filePath);
-          console.log(`✓ Removed old file: ${file}`);
-        }
+      // Check for existing HTML files to avoid regenerating
+      const existingFiles = fs.readdirSync(OUTPUT_FOLDER);
+      const existingHtmlFiles = existingFiles.filter(f => f.endsWith('.html'));
+      if (existingHtmlFiles.length > 0) {
+        console.log(`✓ Found ${existingHtmlFiles.length} existing org chart(s). Will only generate new ones.`);
       }
     }
 
@@ -833,10 +830,21 @@ async function main() {
     const chartMappingData = [];
     const allPersonDetails = [];
 
+    // Get existing HTML files to avoid regenerating
+    const existingFiles = fs.readdirSync(OUTPUT_FOLDER).filter(f => f.endsWith('.html'));
+    const existingCompanies = new Set();
+    
+    for (const file of existingFiles) {
+      // Extract company name from filename (remove .html extension)
+      const companyKey = file.replace('.html', '');
+      existingCompanies.add(companyKey);
+    }
+
+    let newChartsGenerated = 0;
+    let chartsSkipped = 0;
+
     // Generate charts for each company
     for (const companyName of uniqueCompanies) {
-      console.log(`\nGenerating chart for company: ${companyName}...`);
-
       const companyData = data.filter(row => row['Company Name'] === companyName);
 
       if (!companyData.length) {
@@ -854,7 +862,7 @@ async function main() {
         companyLocation = String(companyData[0]['Location']).trim();
       }
 
-      // Create filename - now using .html instead of .png
+      // Create filename
       const safeCompanyName = sanitizeFilename(companyName);
       let baseFilename = '';
 
@@ -865,13 +873,23 @@ async function main() {
         baseFilename = `${safeCompanyName}.html`;
       }
 
-      chartMappingData.push({
-        'Account Name': companyName,
-        'Chart Name': baseFilename
-      });
+      // Check if chart already exists
+      const fileKeyWithoutExtension = baseFilename.replace('.html', '');
+      if (existingCompanies.has(fileKeyWithoutExtension)) {
+        console.log(`⊘ Chart already exists for: ${companyName}${companyLocation ? ` (${companyLocation})` : ''}`);
+        chartsSkipped++;
+        
+        // Still add to mapping data
+        chartMappingData.push({
+          'Account Name': companyName,
+          'Chart Name': baseFilename
+        });
+        continue;
+      }
+
+      console.log(`\nGenerating chart for company: ${companyName}...`);
 
       const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
-      const companyId = chartMappingData.length;
 
       // Generate HTML file
       try {
@@ -879,10 +897,19 @@ async function main() {
         fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
         console.log(`✓ Chart for ${companyName} saved to ${outputFilePath}`);
         generatedFiles.push(outputFilePath);
+        newChartsGenerated++;
       } catch (error) {
         console.error(`✗ Error generating HTML for ${companyName}: ${error.message}`);
       }
+
+      // Add to mapping data
+      chartMappingData.push({
+        'Account Name': companyName,
+        'Chart Name': baseFilename
+      });
     }
+
+    console.log(`\n📈 Summary: ${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`);
 
     // Create personDetails.csv from the Excel data
     if (allPersonDetails.length > 0) {
