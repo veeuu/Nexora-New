@@ -653,6 +653,8 @@ const Technographics = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 25;
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -708,6 +710,7 @@ const Technographics = () => {
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
+    setCurrentPage(1);
   };
 
   const handleDownloadCSV = () => {
@@ -1838,8 +1841,15 @@ const Technographics = () => {
           <tbody>
             {(filters.companyName.length > 0 || hasOtherFilters) ? (
               filteredData.length > 0 ? (
-                filteredData.map((row, index) => {
-                  const isHighlighted = rowMatchesSearch(row);
+                (() => {
+                  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                  const startIndex = (currentPage - 1) * rowsPerPage;
+                  const endIndex = startIndex + rowsPerPage;
+                  const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                  return paginatedData.map((row, index) => {
+                    const actualIndex = startIndex + index;
+                    const isHighlighted = rowMatchesSearch(row);
 
                   const handleMouseEnter = (e, text) => {
                     const rect = e.target.getBoundingClientRect();
@@ -1876,14 +1886,14 @@ const Technographics = () => {
                       <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          checked={selectedRows.has(index)}
+                          checked={selectedRows.has(actualIndex)}
                           onChange={(e) => {
                             e.stopPropagation();
                             const newSelected = new Set(selectedRows);
                             if (e.target.checked) {
-                              newSelected.add(index);
+                              newSelected.add(actualIndex);
                             } else {
-                              newSelected.delete(index);
+                              newSelected.delete(actualIndex);
                             }
                             setSelectedRows(newSelected);
                           }}
@@ -1940,7 +1950,8 @@ const Technographics = () => {
                       </td> */}
                     </tr>
                   );
-                })
+                  });
+                })()
               ) : (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
@@ -1952,6 +1963,218 @@ const Technographics = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {(filters.companyName.length > 0 || hasOtherFilters) && filteredData.length > rowsPerPage && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop: '24px',
+          padding: '0 20px',
+          marginBottom: '20px'
+        }}>
+          {(() => {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            const pages = [];
+            const maxPagesToShow = 5;
+
+            // Previous button
+            pages.push(
+              <button
+                key="prev"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                style={{
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  backgroundColor: currentPage === 1 ? '#f3f4f6' : '#f9fafb',
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  fontSize: '16px',
+                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  opacity: currentPage === 1 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (currentPage > 1) {
+                    e.target.style.backgroundColor = '#e5e7eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (currentPage > 1) {
+                    e.target.style.backgroundColor = '#f9fafb';
+                  }
+                }}
+              >
+                ←
+              </button>
+            );
+
+            // Calculate page range
+            let startPage = 1;
+            let endPage = Math.min(maxPagesToShow, totalPages);
+
+            if (currentPage > maxPagesToShow) {
+              startPage = currentPage - Math.floor(maxPagesToShow / 2);
+              endPage = startPage + maxPagesToShow - 1;
+
+              if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+              }
+            }
+
+            // Show first page if not in range
+            if (startPage > 1) {
+              pages.push(
+                <button
+                  key={1}
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    padding: '8px 14px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: '#f3f4f6',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    color: '#6b7280',
+                    fontWeight: '500',
+                    minWidth: '40px',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#e5e7eb';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#f3f4f6';
+                  }}
+                >
+                  1
+                </button>
+              );
+
+              if (startPage > 2) {
+                pages.push(
+                  <span key="dots1" style={{ color: '#9ca3af', fontSize: '16px', fontWeight: '600', padding: '0 4px' }}>
+                    ...
+                  </span>
+                );
+              }
+            }
+
+            // Page numbers
+            for (let i = startPage; i <= endPage; i++) {
+              pages.push(
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i)}
+                  style={{
+                    padding: '8px 14px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: i === currentPage ? '#dbeafe' : '#f3f4f6',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    color: i === currentPage ? '#1e40af' : '#6b7280',
+                    fontWeight: i === currentPage ? '600' : '500',
+                    minWidth: '40px',
+                    transition: 'all 0.2s',
+                    boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (i !== currentPage) {
+                      e.target.style.backgroundColor = '#e5e7eb';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (i !== currentPage) {
+                      e.target.style.backgroundColor = '#f3f4f6';
+                    }
+                  }}
+                >
+                  {i}
+                </button>
+              );
+            }
+
+            // Show last page if not in range
+            if (endPage < totalPages) {
+              if (endPage < totalPages - 1) {
+                pages.push(
+                  <span key="dots2" style={{ color: '#9ca3af', fontSize: '16px', fontWeight: '600', padding: '0 4px' }}>
+                    ...
+                  </span>
+                );
+              }
+
+              pages.push(
+                <button
+                  key={totalPages}
+                  onClick={() => setCurrentPage(totalPages)}
+                  style={{
+                    padding: '8px 14px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    backgroundColor: '#f3f4f6',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    color: '#6b7280',
+                    fontWeight: '500',
+                    minWidth: '40px',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#e5e7eb';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = '#f3f4f6';
+                  }}
+                >
+                  {totalPages}
+                </button>
+              );
+            }
+
+            // Next button
+            pages.push(
+              <button
+                key="next"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                style={{
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#f9fafb',
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  fontSize: '16px',
+                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  opacity: currentPage === totalPages ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (currentPage < totalPages) {
+                    e.target.style.backgroundColor = '#e5e7eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (currentPage < totalPages) {
+                    e.target.style.backgroundColor = '#f9fafb';
+                  }
+                }}
+              >
+                →
+              </button>
+            );
+
+            return pages;
+          })()}
+        </div>
+      )}
 
       {/* Custom Tooltip */}
       {tooltip.show && (
