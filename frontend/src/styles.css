@@ -611,6 +611,24 @@ tr:hover {
   background-color: #fafafa;
 }
 
+/* Scrollbar styling for technology column */
+td > div::-webkit-scrollbar {
+  width: 6px;
+}
+
+td > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+td > div::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+td > div::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
 /* ========== ACTION ITEMS & SEARCH ========== */
 .action-items,
 .actions-right {
