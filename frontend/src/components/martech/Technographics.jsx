@@ -882,7 +882,82 @@ const Technographics = () => {
     });
 
   if (loading) {
-    return <div></div>;
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '600px',
+        backgroundColor: '#f9fafb',
+        borderRadius: '8px',
+        padding: '40px 20px'
+      }}>
+        {/* Loading Text */}
+        <h3 style={{
+          margin: '0 0 10px 0',
+          color: '#1f2937',
+          fontSize: '18px',
+          fontWeight: '600'
+        }}>
+          Loading Technographics Data
+        </h3>
+
+        {/* Subtext */}
+        <p style={{
+          margin: '0 0 30px 0',
+          color: '#6b7280',
+          fontSize: '14px',
+          textAlign: 'center',
+          maxWidth: '300px'
+        }}>
+          Fetching and processing company technology data...
+        </p>
+
+        {/* Progress Dots */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          alignItems: 'center'
+        }}>
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#3b82f6',
+            animation: 'bounce 1.4s infinite'
+          }} />
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#3b82f6',
+            animation: 'bounce 1.4s infinite 0.2s'
+          }} />
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#3b82f6',
+            animation: 'bounce 1.4s infinite 0.4s'
+          }} />
+        </div>
+
+        {/* Styles for animations */}
+        <style>{`
+          @keyframes bounce {
+            0%, 80%, 100% {
+              opacity: 0.3;
+              transform: translateY(0);
+            }
+            40% {
+              opacity: 1;
+              transform: translateY(-10px);
+            }
+          }
+        `}</style>
+      </div>
+    );
   }
 
   if (error) {
