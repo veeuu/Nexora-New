@@ -989,13 +989,19 @@ const Technographics = () => {
         <h2>Technographics</h2>
         <div className="actions-right">
           <div className="search-bar">
+            <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
             <input
               type="text"
               placeholder="Search by Company Name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <span className="search-icon">🔍</span>
+            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="10" cy="10" r="7"></circle>
+              <path d="m20 20-4.5-4.5"></path>
+            </svg>
           </div>
           <button className="download-csv-button" onClick={handleDownloadCSV}>
             Download CSV
