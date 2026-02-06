@@ -642,7 +642,10 @@ const Technographics = () => {
     companyName: [],
     region: '',
     technology: '',
-    category: ''
+    category: '',
+    industry: '',
+    employeeSize: '',
+    revenue: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -715,16 +718,22 @@ const Technographics = () => {
 
   const handleDownloadCSV = () => {
     const dataToDownload = selectedRows.size > 0 
-      ? filteredData.filter((_, index) => selectedRows.has(index))
-      : filteredData;
+      ? groupedDataArray.filter((_, index) => selectedRows.has(index))
+      : groupedDataArray;
 
     if (dataToDownload.length === 0) return;
 
-    const headers = Object.keys(dataToDownload[0]);
+    const headers = ['companyName', 'domain', 'industry', 'region', 'employeeSize', 'revenue', 'technologies'];
     const csvContent = [
       headers.join(','),
       ...dataToDownload.map(row =>
-        headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
+        headers.map(header => {
+          let value = row[header];
+          if (header === 'technologies') {
+            value = Array.isArray(value) ? value.join('; ') : value;
+          }
+          return `"${String(value ?? '').replace(/"/g, '""')}"`;
+        }).join(',')
       )
     ].join('\n');
 
@@ -883,18 +892,19 @@ const Technographics = () => {
     );
   };
 
-  // Check if any filter is active (other than company name)
-  const hasOtherFilters = filters.region || filters.technology || filters.category;
+  // Check if mandatory filters are selected
+  const hasMandatoryFilters = filters.companyName.length > 0 && filters.category;
 
   const filteredData = tableData
     .filter(row => {
-      // If no filters are selected at all, show nothing
-      if (!hasOtherFilters && filters.companyName.length === 0) return false;
+      // Mandatory filters - must have both company name and category
+      if (!hasMandatoryFilters) return false;
 
-      // Apply company name filter if selected
-      if (filters.companyName.length > 0) {
-        if (!filters.companyName.includes(String(row.companyName))) return false;
-      }
+      // Apply company name filter
+      if (!filters.companyName.includes(String(row.companyName))) return false;
+
+      // Apply category filter
+      if (String(row.category) !== filters.category) return false;
 
       // Apply region filter if selected
       if (filters.region && String(row.region) !== filters.region) return false;
@@ -902,8 +912,14 @@ const Technographics = () => {
       // Apply technology filter if selected
       if (filters.technology && String(row.technology) !== filters.technology) return false;
 
-      // Apply category filter if selected
-      if (filters.category && String(row.category) !== filters.category) return false;
+      // Apply industry filter if selected
+      if (filters.industry && String(row.industry) !== filters.industry) return false;
+
+      // Apply employee size filter if selected
+      if (filters.employeeSize && String(row.employeeSize) !== filters.employeeSize) return false;
+
+      // Apply revenue filter if selected
+      if (filters.revenue && String(row.revenue) !== filters.revenue) return false;
 
       // Apply search term if present
       const searchMatches = !searchTerm || Object.values(row).some(value =>
@@ -921,6 +937,26 @@ const Technographics = () => {
       if (!aMatches && bMatches) return 1;
       return 0;
     });
+
+  // Group rows by company and combine technologies
+  const groupedData = filteredData.reduce((acc, row) => {
+    const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
+    
+    if (!acc[key]) {
+      acc[key] = {
+        ...row,
+        technologies: [row.technology]
+      };
+    } else {
+      if (!acc[key].technologies.includes(row.technology)) {
+        acc[key].technologies.push(row.technology);
+      }
+    }
+    
+    return acc;
+  }, {});
+
+  const groupedDataArray = Object.values(groupedData);
 
   if (loading) {
     return (
@@ -1090,10 +1126,13 @@ const Technographics = () => {
                 }}
               >
                 {[
-                  { label: 'Company Name', key: 'companyName' },
-                  { label: 'Region', key: 'region' },
-                  { label: 'Category', key: 'category' },
-                  { label: 'Technology', key: 'technology' }
+                  { label: 'Company Name', key: 'companyName', mandatory: true },
+                  { label: 'Category', key: 'category', mandatory: true },
+                  { label: 'Region', key: 'region', mandatory: false },
+                  { label: 'Industry', key: 'industry', mandatory: false },
+                  { label: 'Employee Size', key: 'employeeSize', mandatory: false },
+                  { label: 'Revenue', key: 'revenue', mandatory: false },
+                  { label: 'Technology', key: 'technology', mandatory: false }
                 ].map((filterOption) => (
                   <div
                     key={filterOption.key}
@@ -1107,12 +1146,18 @@ const Technographics = () => {
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
                       color: '#1f2937',
-                      transition: 'background-color 0.2s'
+                      transition: 'background-color 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                   >
                     {filterOption.label}
+                    {filterOption.mandatory && (
+                      <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1136,7 +1181,7 @@ const Technographics = () => {
               }}
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'companyName' ? null : 'companyName')}
               >
-                <span>Company Name</span>
+                <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1306,7 +1351,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('companyName')}
             >
-              <span>Company Name</span>
+              <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1499,7 +1544,7 @@ const Technographics = () => {
               }}
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'category' ? null : 'category')}
               >
-                <span>Category</span>
+                <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1618,11 +1663,458 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('category')}
             >
-              <span>Category</span>
+              <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleFilterChange('category', '');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {activeFilterMenu === 'industry' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af',
+                cursor: 'pointer'
+              }}
+              onClick={() => setOpenFilterDropdown(openFilterDropdown === 'industry' ? null : 'industry')}
+              >
+                <span>Industry</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {openFilterDropdown === 'industry' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '8px',
+                    backgroundColor: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    zIndex: 1000,
+                    minWidth: '250px',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}
+                >
+                  {getUniqueOptions('industry').map((industry) => (
+                    <div
+                      key={industry}
+                      onClick={() => {
+                        handleFilterChange('industry', filters.industry === industry ? '' : industry);
+                      }}
+                      style={{
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        color: filters.industry === industry ? '#1e40af' : '#1f2937',
+                        backgroundColor: filters.industry === industry ? '#f0f9ff' : 'white',
+                        fontWeight: filters.industry === industry ? '600' : '400',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry === industry ? '#f0f9ff' : 'white'}
+                    >
+                      {industry}
+                    </div>
+                  ))}
+
+                  <div style={{
+                    padding: '12px',
+                    borderTop: '1px solid #e5e7eb',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    gap: '8px',
+                    backgroundColor: '#f9fafb',
+                    position: 'sticky',
+                    bottom: 0
+                  }}>
+                    <button
+                      onClick={() => {
+                        setOpenFilterDropdown(null);
+                        setActiveFilterMenu(null);
+                      }}
+                      style={{
+                        padding: '6px 16px',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {filters.industry && activeFilterMenu !== 'industry' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('industry')}
+            >
+              <span>Industry</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilterChange('industry', '');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {activeFilterMenu === 'employeeSize' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af',
+                cursor: 'pointer'
+              }}
+              onClick={() => setOpenFilterDropdown(openFilterDropdown === 'employeeSize' ? null : 'employeeSize')}
+              >
+                <span>Employee Size</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {openFilterDropdown === 'employeeSize' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '8px',
+                    backgroundColor: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    zIndex: 1000,
+                    minWidth: '250px',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}
+                >
+                  {getUniqueOptions('employeeSize').map((size) => (
+                    <div
+                      key={size}
+                      onClick={() => {
+                        handleFilterChange('employeeSize', filters.employeeSize === size ? '' : size);
+                      }}
+                      style={{
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        color: filters.employeeSize === size ? '#1e40af' : '#1f2937',
+                        backgroundColor: filters.employeeSize === size ? '#f0f9ff' : 'white',
+                        fontWeight: filters.employeeSize === size ? '600' : '400',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize === size ? '#f0f9ff' : 'white'}
+                    >
+                      {formatEmployeeSize(size)}
+                    </div>
+                  ))}
+
+                  <div style={{
+                    padding: '12px',
+                    borderTop: '1px solid #e5e7eb',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    gap: '8px',
+                    backgroundColor: '#f9fafb',
+                    position: 'sticky',
+                    bottom: 0
+                  }}>
+                    <button
+                      onClick={() => {
+                        setOpenFilterDropdown(null);
+                        setActiveFilterMenu(null);
+                      }}
+                      style={{
+                        padding: '6px 16px',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {filters.employeeSize && activeFilterMenu !== 'employeeSize' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('employeeSize')}
+            >
+              <span>Employee Size</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilterChange('employeeSize', '');
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {activeFilterMenu === 'revenue' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af',
+                cursor: 'pointer'
+              }}
+              onClick={() => setOpenFilterDropdown(openFilterDropdown === 'revenue' ? null : 'revenue')}
+              >
+                <span>Revenue</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {openFilterDropdown === 'revenue' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '8px',
+                    backgroundColor: 'white',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    zIndex: 1000,
+                    minWidth: '250px',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}
+                >
+                  {getUniqueOptions('revenue').map((rev) => (
+                    <div
+                      key={rev}
+                      onClick={() => {
+                        handleFilterChange('revenue', filters.revenue === rev ? '' : rev);
+                      }}
+                      style={{
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        color: filters.revenue === rev ? '#1e40af' : '#1f2937',
+                        backgroundColor: filters.revenue === rev ? '#f0f9ff' : 'white',
+                        fontWeight: filters.revenue === rev ? '600' : '400',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue === rev ? '#f0f9ff' : 'white'}
+                    >
+                      {rev}
+                    </div>
+                  ))}
+
+                  <div style={{
+                    padding: '12px',
+                    borderTop: '1px solid #e5e7eb',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    gap: '8px',
+                    backgroundColor: '#f9fafb',
+                    position: 'sticky',
+                    bottom: 0
+                  }}>
+                    <button
+                      onClick={() => {
+                        setOpenFilterDropdown(null);
+                        setActiveFilterMenu(null);
+                      }}
+                      style={{
+                        padding: '6px 16px',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {filters.revenue && activeFilterMenu !== 'revenue' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('revenue')}
+            >
+              <span>Revenue</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFilterChange('revenue', '');
                 }}
                 style={{
                   background: 'none',
@@ -1803,6 +2295,49 @@ const Technographics = () => {
         </div>
       </div>
 
+      {/* Message for mandatory filters */}
+      {!hasMandatoryFilters && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fcd34d',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '20px',
+            color: '#d97706'
+          }}>
+            ⓘ
+          </div>
+          <div>
+            <div style={{
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#92400e',
+              marginBottom: '4px'
+            }}>
+              Select Required Filters
+            </div>
+            <div style={{
+              fontSize: '13px',
+              color: '#b45309'
+            }}>
+              {filters.companyName.length === 0 && filters.category ? (
+                'Please select a Company Name to view data'
+              ) : filters.companyName.length > 0 && !filters.category ? (
+                'Please select a Category to view data'
+              ) : (
+                'Please select both Company Name and Category to view data'
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="table-container">
         <table>
           <thead className="sticky-header">
@@ -1839,13 +2374,13 @@ const Technographics = () => {
             </tr>
           </thead>
           <tbody>
-            {(filters.companyName.length > 0 || hasOtherFilters) ? (
+            {hasMandatoryFilters ? (
               filteredData.length > 0 ? (
                 (() => {
-                  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                  const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
                   const startIndex = (currentPage - 1) * rowsPerPage;
                   const endIndex = startIndex + rowsPerPage;
-                  const paginatedData = filteredData.slice(startIndex, endIndex);
+                  const paginatedData = groupedDataArray.slice(startIndex, endIndex);
 
                   return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
@@ -1936,11 +2471,23 @@ const Technographics = () => {
                           {highlightText(row.category, searchTerm)}
                         </span>
                       </td> */}
-                      <td style={{ paddingLeft: '80px' }} onMouseEnter={(e) => handleMouseEnter(e, row.technology)} onMouseLeave={handleMouseLeave}>
-                        <span style={{ display: 'flex', alignItems: 'center' }}>
-                          {renderTechLogo(row.technology)}
-                          {highlightText(row.technology, searchTerm)}
-                        </span>
+                      <td style={{ paddingLeft: '80px' }}>
+                        <div style={{ 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          gap: '8px',
+                          maxHeight: '96px',
+                          overflowY: 'auto',
+                          paddingRight: '4px',
+                          width: '100%'
+                        }}>
+                          {(row.technologies || [row.technology]).map((tech, idx) => (
+                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                              {renderTechLogo(tech)}
+                              {highlightText(tech, searchTerm)}
+                            </span>
+                          ))}
+                        </div>
                       </td>
                       {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.previousDetectedDate, searchTerm)}
@@ -1965,7 +2512,7 @@ const Technographics = () => {
       </div>
 
       {/* Pagination Controls */}
-      {(filters.companyName.length > 0 || hasOtherFilters) && filteredData.length > rowsPerPage && (
+      {hasMandatoryFilters && groupedDataArray.length > rowsPerPage && (
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -1976,7 +2523,7 @@ const Technographics = () => {
           marginBottom: '20px'
         }}>
           {(() => {
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
             const pages = [];
             const maxPagesToShow = 5;
 
