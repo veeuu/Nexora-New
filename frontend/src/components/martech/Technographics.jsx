@@ -556,6 +556,20 @@ const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompany
   );
 };
 
+const formatEmployeeSize = (value) => {
+  if (!value || value === 'N/A') return value;
+  
+  const num = parseInt(value);
+  if (isNaN(num)) return value;
+  
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  return num.toString();
+};
+
 const Speedometer = ({ value }) => {
   // Parse the value to get just the number
   const numValue = parseInt(value) || 0;
@@ -638,6 +652,7 @@ const Technographics = () => {
   const filterRef = useRef(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState(new Set());
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -696,12 +711,16 @@ const Technographics = () => {
   };
 
   const handleDownloadCSV = () => {
-    if (filteredData.length === 0) return;
+    const dataToDownload = selectedRows.size > 0 
+      ? filteredData.filter((_, index) => selectedRows.has(index))
+      : filteredData;
 
-    const headers = Object.keys(filteredData[0]);
+    if (dataToDownload.length === 0) return;
+
+    const headers = Object.keys(dataToDownload[0]);
     const csvContent = [
       headers.join(','),
-      ...filteredData.map(row =>
+      ...dataToDownload.map(row =>
         headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
       )
     ].join('\n');
@@ -1785,10 +1804,33 @@ const Technographics = () => {
         <table>
           <thead className="sticky-header">
             <tr>
+              <th style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }}>
+                <input
+                  type="checkbox"
+                  checked={selectedRows.size > 0 && selectedRows.size === filteredData.length && filteredData.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const newSelected = new Set();
+                      filteredData.forEach((_, index) => newSelected.add(index));
+                      setSelectedRows(newSelected);
+                    } else {
+                      setSelectedRows(new Set());
+                    }
+                  }}
+                  style={{
+                    cursor: 'pointer',
+                    width: '16px',
+                    height: '16px',
+                    accentColor: '#3b82f6'
+                  }}
+                />
+              </th>
               <th>Company Name</th>
               <th>Domain</th>
               <th>Industry</th>
               <th>Region</th>
+              <th>Employee Size</th>
+              <th>Revenue</th>
               {/* <th>Category</th> */}
               <th>Technology</th>
               {/* <th>Previous Detected Date</th> */}
@@ -1833,6 +1875,28 @@ const Technographics = () => {
                       style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent', cursor: 'pointer' }}
                       onClick={() => setSelectedCompany(row.companyName)}
                     >
+                      <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(index)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const newSelected = new Set(selectedRows);
+                            if (e.target.checked) {
+                              newSelected.add(index);
+                            } else {
+                              newSelected.delete(index);
+                            }
+                            setSelectedRows(newSelected);
+                          }}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px',
+                            accentColor: '#3b82f6'
+                          }}
+                        />
+                      </td>
                       <td onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.companyName, searchTerm)}
                       </td>
@@ -1847,6 +1911,12 @@ const Technographics = () => {
                           {renderCountryFlag(row.region)}
                           {highlightText(row.region, searchTerm)}
                         </span>
+                      </td>
+                      <td onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
+                        {highlightText(formatEmployeeSize(row.employeeSize), searchTerm)}
+                      </td>
+                      <td onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
+                        {highlightText(row.revenue, searchTerm)}
                       </td>
                       {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
                         <span style={{ display: 'flex', alignItems: 'center' }}>
@@ -1871,7 +1941,7 @@ const Technographics = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
                     No data found for the selected company
                   </td>
                 </tr>
