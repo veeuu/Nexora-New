@@ -1426,6 +1426,25 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      handleFilterChange('region', '');
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: filters.region === '' ? '#1e40af' : '#1f2937',
+                      backgroundColor: filters.region === '' ? '#f0f9ff' : 'white',
+                      fontWeight: filters.region === '' ? '600' : '400',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.region === '' ? '#f0f9ff' : 'white'}
+                  >
+                    ALL
+                  </div>
                   {getUniqueOptions('region').map((region) => (
                     <div
                       key={region}
@@ -1737,6 +1756,25 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      handleFilterChange('industry', '');
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: filters.industry === '' ? '#1e40af' : '#1f2937',
+                      backgroundColor: filters.industry === '' ? '#f0f9ff' : 'white',
+                      fontWeight: filters.industry === '' ? '600' : '400',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry === '' ? '#f0f9ff' : 'white'}
+                  >
+                    ALL
+                  </div>
                   {getUniqueOptions('industry').map((industry) => (
                     <div
                       key={industry}
@@ -1886,6 +1924,25 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      handleFilterChange('employeeSize', '');
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: filters.employeeSize === '' ? '#1e40af' : '#1f2937',
+                      backgroundColor: filters.employeeSize === '' ? '#f0f9ff' : 'white',
+                      fontWeight: filters.employeeSize === '' ? '600' : '400',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize === '' ? '#f0f9ff' : 'white'}
+                  >
+                    ALL
+                  </div>
                   {getUniqueOptions('employeeSize').map((size) => (
                     <div
                       key={size}
@@ -2035,6 +2092,25 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      handleFilterChange('revenue', '');
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: filters.revenue === '' ? '#1e40af' : '#1f2937',
+                      backgroundColor: filters.revenue === '' ? '#f0f9ff' : 'white',
+                      fontWeight: filters.revenue === '' ? '600' : '400',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue === '' ? '#f0f9ff' : 'white'}
+                  >
+                    ALL
+                  </div>
                   {getUniqueOptions('revenue').map((rev) => (
                     <div
                       key={rev}
@@ -2185,6 +2261,28 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      handleFilterChange('technology', '');
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: filters.technology === '' ? '#1e40af' : '#1f2937',
+                      backgroundColor: filters.technology === '' ? '#f0f9ff' : 'white',
+                      fontWeight: filters.technology === '' ? '600' : '400',
+                      transition: 'background-color 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology === '' ? '#f0f9ff' : 'white'}
+                  >
+                    ALL
+                  </div>
                   {getUniqueOptions('technology').map((tech) => (
                     <div
                       key={tech}
@@ -2301,39 +2399,31 @@ const Technographics = () => {
           backgroundColor: '#fef3c7',
           border: '1px solid #fcd34d',
           borderRadius: '8px',
-          padding: '16px',
+          padding: '12px 16px',
           marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
           gap: '12px'
         }}>
           <div style={{
-            fontSize: '20px',
-            color: '#d97706'
+            fontSize: '18px',
+            color: '#d97706',
+            flexShrink: 0
           }}>
             ⓘ
           </div>
-          <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#92400e',
-              marginBottom: '4px'
-            }}>
-              Select Required Filters
-            </div>
-            <div style={{
-              fontSize: '13px',
-              color: '#b45309'
-            }}>
-              {filters.companyName.length === 0 && filters.category ? (
-                'Please select a Company Name to view data'
-              ) : filters.companyName.length > 0 && !filters.category ? (
-                'Please select a Category to view data'
-              ) : (
-                'Please select both Company Name and Category to view data'
-              )}
-            </div>
+          <div style={{
+            fontSize: '13px',
+            color: '#92400e',
+            fontWeight: '500'
+          }}>
+            {filters.companyName.length === 0 && filters.category ? (
+              'Please select a Company Name to view data'
+            ) : filters.companyName.length > 0 && !filters.category ? (
+              'Please select a Category to view data'
+            ) : (
+              'Please select both Company Name and Category to view data'
+            )}
           </div>
         </div>
       )}
