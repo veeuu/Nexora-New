@@ -55,12 +55,14 @@ router.get('/technographics', async (req, res) => {
       const firmographics = company.Firmographics?.[0] || {};
       const about = firmographics.About || {};
       const location = firmographics.Location || {};
+      const finance = firmographics.Finance || {};
 
       return (company.Technographics || []).map(techItem => ({
         companyName: company['Company Name'],
         region: location.Country || 'N/A',
         industry: about.Industry || 'N/A',
         employeeSize: about['Full Time employees'] || 'N/A',
+        revenue: finance['Total Revenue'] || 'N/A',
         category: techItem.Category,
         technology: techItem.Keyword,
         domain: about.Domain || 'N/A',
