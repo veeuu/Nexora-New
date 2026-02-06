@@ -574,6 +574,7 @@ h2 {
   min-width: 900px;
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 th,
