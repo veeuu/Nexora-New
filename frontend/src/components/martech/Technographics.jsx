@@ -1826,13 +1826,11 @@ const Technographics = () => {
                 />
               </th>
               <th>Company Name</th>
-              <th>Domain</th>
               <th>Industry</th>
               <th>Region</th>
-              <th>Employee Size</th>
-              <th>Revenue</th>
-              {/* <th>Category</th> */}
-              <th>Technology</th>
+              <th style={{ paddingLeft: '40px' }}>Employee Size</th>
+              <th style={{ paddingLeft: '20px' }}>Revenue</th>
+              <th style={{ paddingLeft: '80px' }}>Technology</th>
               {/* <th>Previous Detected Date</th> */}
               {/* <th>Latest Detected Date</th> */}
             </tr>
@@ -1898,10 +1896,14 @@ const Technographics = () => {
                         />
                       </td>
                       <td onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.companyName, searchTerm)}
-                      </td>
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.domain)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.domain, searchTerm)}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                            {highlightText(row.companyName, searchTerm)}
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                            {highlightText(row.domain, searchTerm)}
+                          </div>
+                        </div>
                       </td>
                       <td onMouseEnter={(e) => handleMouseEnter(e, row.industry)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.industry, searchTerm)}
@@ -1912,10 +1914,10 @@ const Technographics = () => {
                           {highlightText(row.region, searchTerm)}
                         </span>
                       </td>
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
+                      <td style={{ paddingLeft: '40px' }} onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
                         {highlightText(formatEmployeeSize(row.employeeSize), searchTerm)}
                       </td>
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
+                      <td style={{ paddingLeft: '20px' }} onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.revenue, searchTerm)}
                       </td>
                       {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
@@ -1924,7 +1926,7 @@ const Technographics = () => {
                           {highlightText(row.category, searchTerm)}
                         </span>
                       </td> */}
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.technology)} onMouseLeave={handleMouseLeave}>
+                      <td style={{ paddingLeft: '80px' }} onMouseEnter={(e) => handleMouseEnter(e, row.technology)} onMouseLeave={handleMouseLeave}>
                         <span style={{ display: 'flex', alignItems: 'center' }}>
                           {renderTechLogo(row.technology)}
                           {highlightText(row.technology, searchTerm)}
@@ -1941,7 +1943,7 @@ const Technographics = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
                     No data found for the selected company
                   </td>
                 </tr>
