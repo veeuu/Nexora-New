@@ -623,28 +623,61 @@ tr:hover {
   position: relative;
   display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   border-radius: 5px;
-  padding: 5px 10px;
-  min-width: 200px;
+  padding: 4px 6px;
+  min-width: 160px;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.search-bar:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .search-bar input {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 8px;
-  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  padding: 4px 5px;
+  font-size: 12px;
   outline: none;
-  color: #000;
+  color: #1f2937;
   min-width: 0;
 }
 
-.search-icon {
-  margin-left: 5px;
-  color: #555;
-  font-size: 16px;
+.search-bar input::placeholder {
+  color: #9ca3af;
+}
+
+.search-folder-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 3px;
+  color: #9ca3af;
   flex-shrink: 0;
+  transition: color 0.3s ease;
+  opacity: 0.6;
+}
+
+.search-bar:focus-within .search-folder-icon {
+  color: #3b82f6;
+  opacity: 0.8;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  color: #3b82f6;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+  stroke-width: 2.5;
+}
+
+.search-bar:focus-within .search-icon {
+  color: #2563eb;
 }
 
 .download-csv-btn,
