@@ -99,6 +99,20 @@ const BuyingGroup = () => {
             setLoading(true);
             setError('');
             try {
+                // First, request to generate the org chart for this specific company
+                const generateResponse = await fetch('http://localhost:5000/api/org-chart/generate-selected', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ companies: [selectedCompany] })
+                });
+
+                if (!generateResponse.ok) {
+                    console.warn('Could not pre-generate chart, will fetch on-demand');
+                }
+
+                // Then fetch the org chart
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
                 const response = await fetch(`http://localhost:5000/api/org-chart/${encodedCompanyName}`);
                 
