@@ -446,7 +446,6 @@ body {
 
 .summary-container,
 .ntp-container,
-.technographics-container,
 .financial-section-container {
   background: #ffffff;
   border-radius: 12px;
@@ -456,6 +455,17 @@ body {
   width: calc(100% - 3rem);
   max-width: calc(100% - 3rem);
   overflow-x: hidden;
+}
+
+.technographics-container {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 2.5rem;
+  width: calc(100% - 3rem);
+  max-width: calc(100% - 3rem);
+  overflow: visible;
 }
 
 .product-catalogue-container,
