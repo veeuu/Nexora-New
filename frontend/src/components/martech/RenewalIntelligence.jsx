@@ -1058,18 +1058,9 @@ const RenewalIntelligence = () => {
                         <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             Loading data...
                         </div>
-                    ) : filteredData.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {filters.companyName || filters.product || filters.qtr ? 'No data available' : 'Select filters to view renewal data'}
-                        </div>
                     ) : (
                         <div className="table-container">
                             <table>
-                                <colgroup>
-                                    <col style={{ width: '40%' }} />
-                                    <col style={{ width: '15%' }} />
-                                    <col style={{ width: '20%' }} />
-                                </colgroup>
                                 <thead className="sticky-header">
                                     <tr>
                                         <th style={{ textAlign: 'left' }}>Account Name</th>
@@ -1078,46 +1069,54 @@ const RenewalIntelligence = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredData.map((row, index) => (
-                                        <tr key={index}>
-                                            <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.companyName,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                {row.companyName}
-                                            </td>
-                                            <td onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.product,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                <span style={{ display: 'flex', alignItems: 'center' }}>
-                                                    {renderProductIcon(row.product)}
-                                                    {row.product}
-                                                </span>
-                                            </td>
-                                            <td onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.qtr,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                {row.qtr}
+                                    {filteredData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
+                                                {filters.companyName || filters.product || filters.qtr ? 'No data available' : ''}
                                             </td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        filteredData.map((row, index) => (
+                                            <tr key={index}>
+                                                <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.companyName,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    {row.companyName}
+                                                </td>
+                                                <td onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.product,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                                                        {renderProductIcon(row.product)}
+                                                        {row.product}
+                                                    </span>
+                                                </td>
+                                                <td onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.qtr,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    {row.qtr}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -1281,26 +1280,27 @@ const RenewalIntelligence = () => {
                 .sticky-header {
                     position: sticky;
                     top: 0;
-                    background-color: #f8f9fa;
+                    background-color: #fff;
                     z-index: 10;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
                 /* keep THs non-sticky individually to avoid width/offset misalignment */
                 .sticky-header th {
-                    position: relative;
+                    position: sticky;
+                    top: 0;
                 }
 
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    table-layout: auto;
+                    table-layout: fixed;
                     min-width: 0;
                     box-sizing: border-box;
                 }
 
                 th, td {
-                    padding: 3px 6px;
+                    padding: 12px 15px;
                     font-size: 13px;
                     text-align: left;
                     border-bottom: 1px solid #ddd;
