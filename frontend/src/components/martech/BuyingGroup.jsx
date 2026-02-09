@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
@@ -101,7 +102,10 @@ const BuyingGroup = () => {
                 setError('Failed to generate org chart. Please try again.');
                 setOrgChartHtml('');
             } finally {
-                setLoading(false);
+                // Add 2-second delay before hiding loading screen
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
             }
         };
 
@@ -167,11 +171,14 @@ const BuyingGroup = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '600px',
+          minHeight: '800px',
           backgroundColor: '#f9fafb',
           borderRadius: '8px',
           padding: '40px 20px'
         }}>
+          {/* Nexora Logo */}
+          <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
+
           {/* Loading Text */}
           <h3 style={{
             margin: '0 0 10px 0',
@@ -179,7 +186,7 @@ const BuyingGroup = () => {
             fontSize: '18px',
             fontWeight: '600'
           }}>
-            Loading Buying Group
+            
           </h3>
 
           {/* Subtext */}

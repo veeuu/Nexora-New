@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -997,20 +998,32 @@ const Technographics = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '600px',
+        minHeight: '800px',
         backgroundColor: '#f9fafb',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
+        {/* Nexora Logo */}
+        <img 
+          src={nexoraLogo} 
+          alt="Nexora Logo" 
+          style={{
+            width: '250px',
+            height: 'auto',
+            marginBottom: '30px',
+            objectFit: 'contain'
+          }}
+        />
+
         {/* Loading Text */}
-        <h3 style={{
+        {/* <h3 style={{
           margin: '0 0 10px 0',
           color: '#1f2937',
           fontSize: '18px',
           fontWeight: '600'
         }}>
           Loading Technographics Data
-        </h3>
+        </h3> */}
 
         {/* Subtext */}
         <p style={{
@@ -1077,32 +1090,20 @@ const Technographics = () => {
     <div className="technographics-container">
       <div className="header-actions">
         <h2>Technographics</h2>
-        <div className="actions-right">
-          <div className="search-bar">
-            <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <input
-              type="text"
-              placeholder="Search companies..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="10" cy="10" r="7"></circle>
-              <path d="m20 20-4.5-4.5"></path>
-            </svg>
-          </div>
-          <button className="download-csv-button" onClick={handleDownloadCSV}>
-            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="12" y1="13" x2="12" y2="17"></line>
-              <line x1="8" y1="13" x2="8" y2="17"></line>
-              <line x1="16" y1="13" x2="16" y2="17"></line>
-            </svg>
-            Download CSV
-          </button>
+        <div className="search-bar">
+          <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search companies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="10" cy="10" r="7"></circle>
+            <path d="m20 20-4.5-4.5"></path>
+          </svg>
         </div>
       </div>
 
@@ -1110,7 +1111,8 @@ const Technographics = () => {
       
       {/* Filter UI - Similar to the reference image */}
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {/* Filter Button with Dropdown Menu */}
           <div style={{ position: 'relative' }}>
             <button
@@ -1214,6 +1216,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'companyName' ? null : 'companyName')}
               >
                 <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1275,6 +1278,41 @@ const Technographics = () => {
                         boxSizing: 'border-box'
                       }}
                     />
+                  </div>
+
+                  {/* ALL Option */}
+                  <div
+                    onClick={() => {
+                      const allCompanies = getUniqueOptions('companyName');
+                      handleFilterChange('companyName', allCompanies);
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: '#1f2937',
+                      backgroundColor: filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0 ? '#f0f9ff' : 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      transition: 'background-color 0.2s',
+                      fontWeight: '600'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0 ? '#f0f9ff' : 'white'}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0}
+                      onChange={() => {}}
+                      style={{
+                        cursor: 'pointer',
+                        width: '16px',
+                        height: '16px'
+                      }}
+                    />
+                    <span>ALL</span>
                   </div>
 
                   {/* Company Options with Checkboxes */}
@@ -1421,6 +1459,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'region' ? null : 'region')}
               >
                 <span>Region</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1621,6 +1660,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'category' ? null : 'category')}
               >
                 <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1789,6 +1829,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'industry' ? null : 'industry')}
               >
                 <span>Industry</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1985,6 +2026,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'employeeSize' ? null : 'employeeSize')}
               >
                 <span>Employee Size</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2181,6 +2223,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'revenue' ? null : 'revenue')}
               >
                 <span>Revenue</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2377,6 +2420,7 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'technology' ? null : 'technology')}
               >
                 <span>Technology</span>
+                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2565,41 +2609,76 @@ const Technographics = () => {
             <>
             </>
           )}
+          </div>
+          
+          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+          {hasMandatoryFilters && (
+            <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0 }}>
+              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="13" x2="12" y2="17"></line>
+                <line x1="8" y1="13" x2="8" y2="17"></line>
+                <line x1="16" y1="13" x2="16" y2="17"></line>
+              </svg>
+              Download CSV
+            </button>
+          )}
         </div>
       </div>
 
       {/* Message for mandatory filters */}
       {!hasMandatoryFilters && (
         <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fcd34d',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px'
+          gap: '12px',
+          marginBottom: '20px',
+          justifyContent: 'space-between'
         }}>
           <div style={{
-            fontSize: '18px',
-            color: '#d97706',
-            flexShrink: 0
+            backgroundColor: '#fef3c7',
+            border: '1px solid #fcd34d',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            flex: 1,
+            maxWidth: 'fit-content'
           }}>
-            ⓘ
+            <div style={{
+              fontSize: '18px',
+              color: '#d97706',
+              flexShrink: 0
+            }}>
+              ⓘ
+            </div>
+            <div style={{
+              fontSize: '13px',
+              color: '#92400e',
+              fontWeight: '500',
+              whiteSpace: 'nowrap'
+            }}>
+              {filters.companyName.length === 0 && filters.category ? (
+                'Please select a Company Name to view data'
+              ) : filters.companyName.length > 0 && !filters.category ? (
+                'Please select a Category to view data'
+              ) : (
+                'Please select both Company Name and Category to view data'
+              )}
+            </div>
           </div>
-          <div style={{
-            fontSize: '13px',
-            color: '#92400e',
-            fontWeight: '500'
-          }}>
-            {filters.companyName.length === 0 && filters.category ? (
-              'Please select a Company Name to view data'
-            ) : filters.companyName.length > 0 && !filters.category ? (
-              'Please select a Category to view data'
-            ) : (
-              'Please select both Company Name and Category to view data'
-            )}
-          </div>
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0, marginLeft: 'auto' }}>
+            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="13" x2="12" y2="17"></line>
+              <line x1="8" y1="13" x2="8" y2="17"></line>
+              <line x1="16" y1="13" x2="16" y2="17"></line>
+            </svg>
+            Download CSV
+          </button>
         </div>
       )}
 
@@ -3130,6 +3209,21 @@ const Technographics = () => {
       )}
 
       <style>{`
+        .technographics-container {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 0.4rem 0.5rem 0.5rem;
+          margin-bottom: 0.5rem;
+          margin-left: 2.5rem;
+          margin-top: 0;
+          width: calc(100% - 3rem);
+          max-width: calc(100% - 3rem);
+          overflow-x: hidden;
+          min-height: 800px;
+          position: relative;
+          top: 0;
+        }
+
         @keyframes slideIn {
           from {
             transform: translateX(100%);
@@ -3140,10 +3234,24 @@ const Technographics = () => {
         }
 
         .table-container {
-          max-height: 400px;
+          max-height: 700px;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        .table-container::-webkit-scrollbar {
+          display: none;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+          display: none;
         }
         
         .technographics-sticky-header {
