@@ -319,8 +319,8 @@ const RenewalIntelligence = () => {
         }));
     };
 
-    const downloadCSV = () => {
-        if (filteredData.length === 0) {
+    const downloadCSV = (dataToDownload) => {
+        if (dataToDownload.length === 0) {
             alert('No data to download');
             return;
         }
@@ -329,7 +329,7 @@ const RenewalIntelligence = () => {
         const headers = ['Account Name', 'Product', 'Renewal QTR'];
         const csvContent = [
             headers.join(','),
-            ...filteredData.map(row =>
+            ...dataToDownload.map(row =>
                 [row.companyName, row.product, row.qtr]
                     .map(field => `"${field}"`)
                     .join(',')
@@ -511,8 +511,9 @@ const RenewalIntelligence = () => {
                     </svg>
                     <input 
                       type="text" 
-                      placeholder="Search by Account Name" 
-                      style={{ flex: 1, border: 'none', background: 'transparent', padding: '4px 5px', fontSize: '12px', outline: 'none', color: '#1f2937', minWidth: 0 }}
+                      placeholder="Search accounts..." 
+                      value={filters.companyName}
+                      onChange={(e) => handleFilterChange('companyName', e.target.value)}
                     />
                     <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="10" cy="10" r="7"></circle>
@@ -520,7 +521,7 @@ const RenewalIntelligence = () => {
                     </svg>
                   </div>
                   <button
-                      onClick={downloadCSV}
+                      onClick={() => downloadCSV(filteredData)}
                       className="download-csv-button"
                       style={{
                           display: 'flex',

@@ -23,14 +23,14 @@ const ProductCatalogue = () => {
     setSelectedYear(year);
   };
 
-  const handleDownloadCSV = () => {
-    if (filteredData.length === 0) return;
+  const handleDownloadCSV = (dataToDownload) => {
+    if (dataToDownload.length === 0) return;
 
     const headers = ['prodName', 'category', 'subCategory', 'description'];
 
     const csvContent = [
       headers.join(','),
-      ...filteredData.map(row =>
+      ...dataToDownload.map(row =>
         headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
       )
     ].join('\n');
@@ -194,7 +194,7 @@ const ProductCatalogue = () => {
             </svg>
             <input 
               type="text" 
-              placeholder="Search by Product Name" 
+              placeholder="Search products..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -203,7 +203,7 @@ const ProductCatalogue = () => {
               <path d="m20 20-4.5-4.5"></path>
             </svg>
           </div>
-          <button className="download-csv-button" onClick={handleDownloadCSV}>
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -349,19 +349,45 @@ const ProductCatalogue = () => {
           position: relative;
           display: flex;
           align-items: center;
+          width: 250px;
+        }
+
+        .search-folder-icon {
+          position: absolute;
+          left: 10px;
+          width: 18px;
+          height: 18px;
+          color: #999;
+          pointer-events: none;
         }
 
         .search-bar input {
-          padding: 8px 12px;
+          padding: 8px 12px 8px 35px;
           border: 1px solid #ddd;
           border-radius: 4px;
-          width: 220px;
+          width: 100%;
+          font-size: 14px;
+          transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+          outline: none;
+          border-color: #4CAF50;
+          box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
         }
 
         .search-icon {
           position: absolute;
           right: 10px;
+          width: 18px;
+          height: 18px;
+          color: #999;
           cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .search-icon:hover {
+          color: #4CAF50;
         }
 
         .year-dropdown {
@@ -397,10 +423,25 @@ const ProductCatalogue = () => {
           border-radius: 4px;
           cursor: pointer;
           font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: background-color 0.2s, box-shadow 0.2s;
         }
 
         .download-csv-button:hover {
-          background-color: #4CAF50;
+          background-color: #45a049;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-csv-button:active {
+          background-color: #3d8b40;
+        }
+
+        .csv-icon {
+          width: 18px;
+          height: 18px;
         }
 
         .section-subtle-divider {

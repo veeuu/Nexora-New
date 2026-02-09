@@ -318,8 +318,8 @@ const NTP = () => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
   };
 
-  const handleDownloadCSV = () => {
-    if (filteredData.length === 0) return;
+  const handleDownloadCSV = (dataToDownload) => {
+    if (dataToDownload.length === 0) return;
 
     const headers = [
       'companyName', 'domain', 'category', 'technology',
@@ -328,7 +328,7 @@ const NTP = () => {
 
     const csvContent = [
       headers.join(','),
-      ...filteredData.map(row =>
+      ...dataToDownload.map(row =>
         headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
       )
     ].join('\n');
@@ -504,7 +504,7 @@ const NTP = () => {
             </svg>
             <input 
               type="text" 
-              placeholder="Search by Company Name" 
+              placeholder="Search companies..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -513,7 +513,7 @@ const NTP = () => {
               <path d="m20 20-4.5-4.5"></path>
             </svg>
           </div>
-          <button className="download-csv-button" onClick={handleDownloadCSV}>
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -573,7 +573,6 @@ const NTP = () => {
           <thead className="sticky-header">
             <tr>
               <th>Company Name</th>
-              <th>Domain</th>
               <th>Category</th>
               <th>Technology</th>
               <th>Purchase Propensity (%)</th>
@@ -587,10 +586,14 @@ const NTP = () => {
               return (
                 <tr key={index} style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent' }}>
                   <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
-                    {highlightText(row.companyName, searchTerm)}
-                  </td>
-                  <td onMouseEnter={(e) => handleMouseEnter(e, row.domain)} onMouseLeave={handleMouseLeave}>
-                    {highlightText(row.domain, searchTerm)}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                        {highlightText(row.companyName, searchTerm)}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                        {highlightText(row.domain, searchTerm)}
+                      </div>
+                    </div>
                   </td>
                   <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
@@ -662,22 +665,20 @@ const NTP = () => {
         }
         
         th, td {
-          padding: 12px 15px;
+          padding: 10px 8px;
           text-align: left;
           border-bottom: 1px solid #ddd;
-          white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           cursor: default;
         }
         
-        th:nth-child(1), td:nth-child(1) { width: 15%; }
-        th:nth-child(2), td:nth-child(2) { width: 15%; }
-        th:nth-child(3), td:nth-child(3) { width: 12%; }
-        th:nth-child(4), td:nth-child(4) { width: 12%; }
-        th:nth-child(5), td:nth-child(5) { width: 12%; }
-        th:nth-child(6), td:nth-child(6) { width: 12%; }
-        th:nth-child(7), td:nth-child(7) { width: 22%; }
+        th:nth-child(1), td:nth-child(1) { width: 24%; white-space: normal; }
+        th:nth-child(2), td:nth-child(2) { width: 15%; white-space: nowrap; }
+        th:nth-child(3), td:nth-child(3) { width: 15%; white-space: nowrap; }
+        th:nth-child(4), td:nth-child(4) { width: 15%; white-space: nowrap; }
+        th:nth-child(5), td:nth-child(5) { width: 15%; white-space: nowrap; }
+        th:nth-child(6), td:nth-child(6) { width: 16%; white-space: nowrap; }
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }

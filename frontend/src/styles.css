@@ -456,18 +456,18 @@ body {
   max-width: calc(100% - 3rem);
   overflow-x: hidden;
 }
-
-.technographics-container {
-  background: #ffffff;
+.technographics-container
+{
+    background: #ffffff;
   border-radius: 12px;
-  padding: 1.2rem 1.5rem 1.5rem;
+  padding: 0.4rem 0.5rem 0.5rem;
   margin-bottom: 0.5rem;
   margin-left: 2.5rem;
   width: calc(100% - 3rem);
   max-width: calc(100% - 3rem);
-  overflow: visible;
+  overflow-x: hidden;
+  min-height: 800px;
 }
-
 .product-catalogue-container,
 .intent-container,
 .buying-group-container {
@@ -574,7 +574,6 @@ h2 {
   min-width: 900px;
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto;
 }
 
 th,
@@ -611,24 +610,6 @@ tr:hover {
   background-color: #fafafa;
 }
 
-/* Scrollbar styling for technology column */
-td > div::-webkit-scrollbar {
-  width: 6px;
-}
-
-td > div::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-td > div::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
-}
-
-td > div::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-
 /* ========== ACTION ITEMS & SEARCH ========== */
 .action-items,
 .actions-right {
@@ -642,92 +623,78 @@ td > div::-webkit-scrollbar-thumb:hover {
   position: relative;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 5px;
-  padding: 4px 6px;
-  min-width: 160px;
-  border: 1px solid #d1d5db;
-  transition: all 0.3s ease;
-}
-
-.search-bar:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-.search-bar input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 4px 5px;
-  font-size: 12px;
-  outline: none;
-  color: #1f2937;
-  min-width: 0;
-}
-
-.search-bar input::placeholder {
-  color: #9ca3af;
+  width: 250px;
 }
 
 .search-folder-icon {
-  width: 14px;
-  height: 14px;
-  margin-right: 3px;
-  color: #9ca3af;
-  flex-shrink: 0;
-  transition: color 0.3s ease;
-  opacity: 0.6;
+  position: absolute;
+  left: 10px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+  pointer-events: none;
 }
 
-.search-bar:focus-within .search-folder-icon {
-  color: #3b82f6;
-  opacity: 0.8;
+.search-bar input {
+  padding: 8px 12px 8px 35px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
 }
 
 .search-icon {
-  width: 16px;
-  height: 16px;
-  margin-left: 6px;
-  color: #3b82f6;
-  flex-shrink: 0;
-  transition: color 0.3s ease;
-  stroke-width: 2.5;
+  position: absolute;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-.search-bar:focus-within .search-icon {
-  color: #2563eb;
+.search-icon:hover {
+  color: #4CAF50;
 }
 
 .download-csv-btn,
 .download-csv-button {
-  background-color: #10b981;
+  background-color: #4CAF50;
   color: white;
-  padding: 4px 10px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 32px;
+  gap: 8px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
 }
 
 .download-csv-btn:hover,
 .download-csv-button:hover {
-  background-color: #059669;
-  transform: translateY(-1px);
+  background-color: #45a049;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.download-csv-btn:active,
+.download-csv-button:active {
+  background-color: #3d8b40;
+}
+
 .csv-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  stroke-width: 2;
+  width: 18px;
+  height: 18px;
 }
 
 /* ========== STOCK PERFORMANCE SPECIFIC ========== */

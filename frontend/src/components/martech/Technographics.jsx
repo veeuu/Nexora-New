@@ -1052,7 +1052,7 @@ const Technographics = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search by Company Name"
+              placeholder="Search companies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -2430,7 +2430,7 @@ const Technographics = () => {
 
       <div className="table-container">
         <table>
-          <thead className="sticky-header">
+          <thead className="technographics-sticky-header">
             <tr>
               <th style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }}>
                 <input
@@ -2453,12 +2453,12 @@ const Technographics = () => {
                   }}
                 />
               </th>
-              <th>Company Name</th>
-              <th>Industry</th>
-              <th>Region</th>
-              <th style={{ paddingLeft: '40px' }}>Employee Size</th>
-              <th style={{ paddingLeft: '20px' }}>Revenue</th>
-              <th style={{ paddingLeft: '80px' }}>Technology</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company Name</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Industry</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Region</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Employee Size</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Revenue</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Technology</th>
               {/* <th>Previous Detected Date</th> */}
               {/* <th>Latest Detected Date</th> */}
             </tr>
@@ -2561,7 +2561,7 @@ const Technographics = () => {
                           {highlightText(row.category, searchTerm)}
                         </span>
                       </td> */}
-                      <td style={{ paddingLeft: '80px' }}>
+                      <td style={{ paddingLeft: '8px' }}>
                         <div style={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
@@ -2971,7 +2971,7 @@ const Technographics = () => {
           position: relative;
         }
         
-        .sticky-header {
+        .technographics-sticky-header {
           position: sticky;
           top: 0;
           background-color: #fff;
@@ -2979,7 +2979,7 @@ const Technographics = () => {
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        .sticky-header th {
+        .technographics-sticky-header th {
           position: sticky;
           top: 0;
         }
@@ -3009,14 +3009,23 @@ const Technographics = () => {
         }
         
         /* Set specific column widths */
-        th:nth-child(1), td:nth-child(1) { width: 150px; } /* Company Name */
-        th:nth-child(2), td:nth-child(2) { width: 180px; } /* Domain */
+        th:nth-child(1), td:nth-child(1) { width: 40px; } /* Checkbox */
+        th:nth-child(2), td:nth-child(2) { width: 150px; } /* Company Name */
         th:nth-child(3), td:nth-child(3) { width: 150px; } /* Industry */
         th:nth-child(4), td:nth-child(4) { width: 120px; } /* Region */
-        th:nth-child(5), td:nth-child(5) { width: 150px; } /* Technology */
-        {/* th:nth-child(6), td:nth-child(6) { width: 150px; } Category - COMMENTED OUT */}
-        {/* th:nth-child(7), td:nth-child(7) { width: 140px; } Previous Detected Date - COMMENTED OUT */}
-        {/* th:nth-child(8), td:nth-child(8) { width: 140px; } Latest Detected Date - COMMENTED OUT */}
+        th:nth-child(5), td:nth-child(5) { width: 150px; } /* Employee Size */
+        th:nth-child(6), td:nth-child(6) { width: 120px; } /* Revenue */
+        th:nth-child(7), td:nth-child(7) { width: 150px; } /* Technology */
+        {/* th:nth-child(8), td:nth-child(8) { width: 150px; } Category - COMMENTED OUT */}
+        {/* th:nth-child(9), td:nth-child(9) { width: 140px; } Previous Detected Date - COMMENTED OUT */}
+        {/* th:nth-child(10), td:nth-child(10) { width: 140px; } Latest Detected Date - COMMENTED OUT */}
+        
+        /* Technology column padding for desktop */
+        @media (min-width: 1024px) {
+          td:nth-child(7) {
+            padding-left: 8px !important;
+          }
+        }
         
         th {
           background-color: #f8f9fa;
