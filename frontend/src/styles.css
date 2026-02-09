@@ -263,14 +263,24 @@ body {
 .menu-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1.5rem 2rem;
+  justify-content: flex-start;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid #1a252f;
   margin-bottom: 1.5rem;
   font-weight: 600;
   font-size: 1rem;
   cursor: default;
   color: #fff;
+  gap: 12px;
+  min-height: 80px;
+}
+
+.menu-solutions-image {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .profile-avatar {
