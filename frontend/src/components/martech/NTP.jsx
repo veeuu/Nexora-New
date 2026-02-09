@@ -261,6 +261,9 @@ const NTP = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalContent, setModalContent] = useState(null);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
+  const filterRef = useRef(null);
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -375,19 +378,20 @@ const NTP = () => {
 
   const filteredData = tableData
     .filter(row => {
-      // Check if any filter is active
-      const hasActiveFilters = Object.values(filters).some(val => val !== '');
-      
-      // If no filters are active, show all data
-      if (!hasActiveFilters) {
-        return !searchTerm || Object.values(row).some(value =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      // Purchase Prediction is mandatory
+      if (!filters.purchasePrediction) {
+        return false;
       }
-      
-      // Apply active filters
-      const filterMatches = Object.keys(filters).every(key => {
-        if (!filters[key]) return true; // Skip empty filters
+
+      // Check if Purchase Prediction matches
+      if (String(row.purchasePrediction).toLowerCase() !== String(filters.purchasePrediction).toLowerCase()) {
+        return false;
+      }
+
+      // Apply optional filters (Company Name, Category, Technology)
+      const optionalFilterMatches = Object.keys(filters).every(key => {
+        if (key === 'purchasePrediction') return true; // Already checked
+        if (!filters[key]) return true; // Skip empty optional filters
         const rowKey = key === 'companyName' ? 'companyName' : key;
         return String(row[rowKey]).toLowerCase() === String(filters[key]).toLowerCase();
       });
@@ -396,7 +400,7 @@ const NTP = () => {
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      return filterMatches && searchMatches;
+      return optionalFilterMatches && searchMatches;
     })
     .sort((a, b) => {
       const aMatches = rowMatchesSearch(a, searchTerm);
@@ -527,46 +531,640 @@ const NTP = () => {
       </div>
       <div className="section-subtle-divider" />
       
-      <div className="filters">
-        <div className="filter-group">
-          <label>Company Name</label>
-          <CustomDropdown
-            value={filters.companyName}
-            onChange={(value) => handleFilterChange('companyName', value)}
-            options={getUniqueOptions('companyName')}
-          />
-        </div>
-        
-        <div className="filter-group">
-          <label>Purchase Prediction</label>
-          <CustomDropdown
-            value={filters.purchasePrediction}
-            onChange={(value) => handleFilterChange('purchasePrediction', value)}
-            options={getUniqueOptions('purchasePrediction')}
-          />
-        </div>
-        
-        <div className="filter-group">
-          <label>Category</label>
-          <CustomTechDropdown
-            value={filters.category}
-            onChange={(value) => handleFilterChange('category', value)}
-            options={getUniqueOptions('category')}
-            renderLogo={renderTechLogo}
-          />
-        </div>
+      <div style={{ marginBottom: '20px' }} ref={filterRef}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Filter Button */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                padding: '8px 14px',
+                backgroundColor: 'white',
+                color: '#3b82f6',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#f3f4f6';
+                e.target.style.borderColor = '#3b82f6';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'white';
+                e.target.style.borderColor = '#d1d5db';
+              }}
+            >
+              <span>+ Filter</span>
+            </button>
 
-        <div className="filter-group">
-          <label>Technology</label>
-          <CustomTechDropdown
-            value={filters.technology}
-            onChange={(value) => handleFilterChange('technology', value)}
-            options={getUniqueOptions('technology')}
-            renderLogo={renderTechLogo}
-          />
-        </div>
+            {/* Filter Menu Dropdown */}
+            {showFilters && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '8px',
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  minWidth: '200px'
+                }}
+              >
+                {[
+                  { label: 'Company Name', key: 'companyName', mandatory: false },
+                  { label: 'Purchase Prediction', key: 'purchasePrediction', mandatory: true },
+                  { label: 'Category', key: 'category', mandatory: false },
+                  { label: 'Technology', key: 'technology', mandatory: false }
+                ].map((filterOption) => (
+                  <div
+                    key={filterOption.key}
+                    onClick={() => {
+                      setActiveFilterMenu(filterOption.key);
+                      setShowFilters(false);
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: '#1f2937',
+                      transition: 'background-color 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  >
+                    {filterOption.label}
+                    {filterOption.mandatory && (
+                      <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
+          {/* Company Name Filter Chip */}
+          {activeFilterMenu === 'companyName' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af'
+              }}>
+                <span>Company Name</span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, companyName: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('companyName', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.companyName === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('companyName').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('companyName', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.companyName === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === option ? '#dbeafe' : 'white'}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Purchase Prediction Filter Chip */}
+          {activeFilterMenu === 'purchasePrediction' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #fcd34d',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#92400e'
+              }}>
+                <span>Purchase Prediction <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, purchasePrediction: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#92400e',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('purchasePrediction', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.purchasePrediction === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.purchasePrediction === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('purchasePrediction').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('purchasePrediction', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.purchasePrediction === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.purchasePrediction === option ? '#dbeafe' : 'white'}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Category Filter Chip */}
+          {activeFilterMenu === 'category' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af'
+              }}>
+                <span>Category</span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, category: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('category', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.category === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('category').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('category', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.category === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === option ? '#dbeafe' : 'white'}
+                  >
+                    {renderTechLogo(option)}
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Technology Filter Chip */}
+          {activeFilterMenu === 'technology' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bfdbfe',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#1e40af'
+              }}>
+                <span>Technology</span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, technology: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#1e40af',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('technology', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.technology === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('technology').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('technology', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.technology === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology === option ? '#dbeafe' : 'white'}
+                  >
+                    {renderTechLogo(option)}
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Display saved filter tags */}
+          {filters.companyName && activeFilterMenu !== 'companyName' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('companyName')}
+            >
+              <span>Company Name: {filters.companyName}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, companyName: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {filters.purchasePrediction && activeFilterMenu !== 'purchasePrediction' && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fcd34d',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#92400e',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('purchasePrediction')}
+            >
+              <span>
+                Purchase Prediction: {filters.purchasePrediction} 
+                <span style={{ color: '#ef4444', fontWeight: '600', marginLeft: '4px' }}>*</span>
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, purchasePrediction: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#92400e',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {filters.category && activeFilterMenu !== 'category' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('category')}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {renderTechLogo(filters.category)}
+                Category: {filters.category}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, category: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {filters.technology && activeFilterMenu !== 'technology' && (
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bfdbfe',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1e40af',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('technology')}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {renderTechLogo(filters.technology)}
+                Technology: {filters.technology}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, technology: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#1e40af',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Message for mandatory filter */}
+      {!filters.purchasePrediction && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fcd34d',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '18px',
+            color: '#d97706',
+            flexShrink: 0
+          }}>
+            ⓘ
+          </div>
+          <div style={{
+            fontSize: '13px',
+            color: '#92400e',
+            fontWeight: '500'
+          }}>
+            Please select a Purchase Prediction to view data
+          </div>
+        </div>
+      )}
       
       <div className="table-container">
         <table>

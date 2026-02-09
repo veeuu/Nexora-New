@@ -443,9 +443,19 @@ body {
   background-color: #ffffff !important;
   margin-left: 0;
 }
-
+.ntp-container
+{
+    background: #ffffff;
+  border-radius: 12px;
+  padding: 0.4rem 0.5rem 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 2.5rem;
+  width: calc(100% - 3rem);
+  max-width: calc(100% - 3rem);
+  overflow-x: hidden;
+  min-height: 800px;
+}
 .summary-container,
-.ntp-container,
 .financial-section-container {
   background: #ffffff;
   border-radius: 12px;
