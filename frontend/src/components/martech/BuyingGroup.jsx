@@ -4,7 +4,8 @@ import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
-    const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [orgChartHtml, setOrgChartHtml] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -12,48 +13,6 @@ const BuyingGroup = () => {
     const [personDetailsData, setPersonDetailsData] = useState({});
     const [infoIconHovered, setInfoIconHovered] = useState(false);
     const iframeRef = useRef(null);
-
-    // Parse CSV data
-    const parseCSV = (csvText) => {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',');
-        const data = {};
-
-        for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            const row = {};
-            headers.forEach((header, index) => {
-                row[header.trim()] = values[index]?.trim();
-            });
-
-            const companyId = parseInt(row.companyId);
-            if (!data[companyId]) {
-                data[companyId] = [];
-            }
-
-            // Helper function to remove quotes from values
-            const cleanValue = (value) => {
-                if (!value) return value;
-                return value.replace(/^["']|["']$/g, '').trim();
-            };
-
-            data[companyId].push({
-                id: row.personName.toLowerCase().replace(/\s+/g, '-'),
-                name: cleanValue(row.personName),
-                designation: cleanValue(row.designation),
-                email: cleanValue(row.email),
-                linkedin: cleanValue(row.linkedin),
-                position: {
-                    x: parseInt(row.positionX),
-                    y: parseInt(row.positionY),
-                    width: parseInt(row.positionWidth),
-                    height: parseInt(row.positionHeight)
-                }
-            });
-        }
-
-        return data;
-    };
 
     // Fetch list of companies on component mount
     useEffect(() => {
@@ -64,7 +23,6 @@ const BuyingGroup = () => {
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
                     setSelectedCompany(data.companies[0]);
-                    setSelectedCompanyId(1); // First company has ID 1
                 }
             } catch (err) {
                 console.error('Error fetching companies:', err);
@@ -74,15 +32,31 @@ const BuyingGroup = () => {
         fetchCompanies();
     }, []);
 
-    // Fetch person details CSV on component mount
+    // Fetch categories on component mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/org-chart/categories');
+                const data = await response.json();
+                setCategories(data.categories || []);
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Fetch person details from Excel file on component mount (no category filter)
     useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/org-chart/person-details');
                 if (response.ok) {
-                    const csvText = await response.text();
-                    const parsedData = parseCSV(csvText);
-                    setPersonDetailsData(parsedData);
+                    const data = await response.json();
+                    console.log('Person details data received:', data);
+                    setPersonDetailsData(data);
+                } else {
+                    console.error('Failed to fetch person details, status:', response.status);
                 }
             } catch (err) {
                 console.error('Error loading person details:', err);
@@ -134,13 +108,38 @@ const BuyingGroup = () => {
         fetchOrgChart();
     }, [selectedCompany]);
 
+    // Apply category highlighting to org chart when category changes
+    useEffect(() => {
+        if (!iframeRef.current || !orgChartHtml) return;
+
+        const iframe = iframeRef.current.querySelector('iframe');
+        if (!iframe) return;
+
+        // Wait for iframe to load and send message
+        const applyHighlighting = () => {
+            try {
+                console.log('Sending highlight message for category:', selectedCategory);
+                iframe.contentWindow.postMessage({
+                    type: 'highlightCategory',
+                    category: selectedCategory
+                }, '*');
+            } catch (err) {
+                console.log('Cannot send message to iframe:', err);
+            }
+        };
+
+        // Apply highlighting after iframe loads
+        setTimeout(applyHighlighting, 500);
+    }, [selectedCategory, orgChartHtml]);
+
     const handleCompanyChange = (e) => {
         const companyName = e.target.value;
         setSelectedCompany(companyName);
-        // Find the index of the selected company to use as ID
-        const companyIndex = companies.indexOf(companyName);
-        setSelectedCompanyId(companyIndex >= 0 ? companyIndex + 1 : null);
         setShowPanel(false);
+    };
+
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
     };
 
     const handleImageClick = () => {
@@ -153,10 +152,10 @@ const BuyingGroup = () => {
 
     // Get persons for selected company
     const getCompanyPersons = () => {
-        if (!selectedCompanyId || !personDetailsData[selectedCompanyId]) {
+        if (!selectedCompany || !personDetailsData[selectedCompany]) {
             return [];
         }
-        return personDetailsData[selectedCompanyId];
+        return personDetailsData[selectedCompany];
     };
 
     const companyPersons = getCompanyPersons();
@@ -259,6 +258,20 @@ const BuyingGroup = () => {
                         {companies.map((company, index) => (
                             <option key={index} value={company}>
                                 {company}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="filter-group">
+                    <label>Category</label>
+                    <select
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                    >
+                        <option value="All">All</option>
+                        {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
                             </option>
                         ))}
                     </select>

@@ -14,28 +14,61 @@ const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_ch
 router.use(cors());
 
 // @route   GET /api/ntp
-// @desc    Get NTP data for all companies
+// @desc    Get NTP data for all companies from Excel file
 // @access  Public
 router.get('/ntp', async (req, res) => {
   try {
-    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
+    const XLSX = require('xlsx');
+    const fs = require('fs');
     
-    const ntpData = companies.flatMap(company => {
-      // Create a lookup map for faster access to technographics data
-      const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
+    // Try to read from the new buying group Excel file first
+    let excelFilePath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelFilePath)) {
+      excelFilePath = path.join(__dirname, '../AI_sample (1).xlsx');
+    }
+    
+    if (!fs.existsSync(excelFilePath)) {
+      // If no Excel file exists, fall back to database
+      const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
       
-      return company.NTP?.map(ntpItem => ({
-        companyName: company['Company Name'],
-        domain: company.Firmographics?.[0]?.About?.Domain || 'N/A',
-        category: ntpItem.Category,
-        technology: ntpItem.Technology,
-        purchaseProbability: ntpItem['Purchase Probability (%)'],
-        purchasePrediction: ntpItem['Purchase Prediction'],
-        ntpAnalysis: ntpItem['NTP Analysis'],
-        latestDetectedDate: techMap.get(ntpItem.Technology)?.['Latest Date'] || 'N/A',
-        previousDetectedDate: techMap.get(ntpItem.Technology)?.['Previous Date'] || 'N/A'
-      })) || [];
-    });
+      const ntpData = companies.flatMap(company => {
+        const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
+        
+        return company.NTP?.map(ntpItem => ({
+          companyName: company['Company Name'],
+          domain: company.Firmographics?.[0]?.About?.Domain || 'N/A',
+          category: ntpItem.Category,
+          technology: ntpItem.Technology,
+          purchaseProbability: ntpItem['Purchase Probability (%)'],
+          purchasePrediction: ntpItem['Purchase Prediction'],
+          ntpAnalysis: ntpItem['NTP Analysis'],
+          latestDetectedDate: techMap.get(ntpItem.Technology)?.['Latest Date'] || 'N/A',
+          previousDetectedDate: techMap.get(ntpItem.Technology)?.['Previous Date'] || 'N/A'
+        })) || [];
+      });
+      
+      return res.json(ntpData);
+    }
+    
+    // Read from Excel file
+    const workbook = XLSX.readFile(excelFilePath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+    
+    // Transform Excel data to match NTP format
+    const ntpData = data.map(row => ({
+      companyName: row['Company Name'] || 'N/A',
+      domain: 'N/A', // Not available in buying group file
+      category: row.Category || 'N/A',
+      technology: row.Technology || 'N/A',
+      purchaseProbability: row['Purchase Probability (%)'] || 'N/A',
+      purchasePrediction: row['Purchase Prediction'] || 'N/A',
+      ntpAnalysis: row['NTP Analysis'] || 'N/A',
+      latestDetectedDate: 'N/A',
+      previousDetectedDate: 'N/A'
+    }));
 
     res.json(ntpData);
   } catch (err) {
@@ -486,7 +519,16 @@ router.get('/product-catalogue', async (req, res) => {
 // @access  Public
 router.get('/org-chart/companies', async (req, res) => {
   try {
-    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    const fs = require('fs');
+    
+    // Try to read from the new buying group Excel file first
+    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelPath)) {
+      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    }
+    
     const companies = getCompaniesFromExcel(excelPath);
     res.json({ companies });
   } catch (err) {
@@ -495,21 +537,89 @@ router.get('/org-chart/companies', async (req, res) => {
   }
 });
 
+// @route   GET /api/org-chart/categories
+// @desc    Get unique categories from Excel file
+// @access  Public
+router.get('/org-chart/categories', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const XLSX = require('xlsx');
+    
+    // Try to read from the new buying group Excel file first
+    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelPath)) {
+      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    }
+    
+    if (!fs.existsSync(excelPath)) {
+      return res.status(404).json({ error: 'Excel file not found' });
+    }
+    
+    // Read Excel file
+    const workbook = XLSX.readFile(excelPath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+    
+    // Extract unique categories
+    const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
+    
+    res.json({ categories });
+  } catch (err) {
+    console.error('Error fetching categories:', err.message);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
 // @route   GET /api/org-chart/person-details
-// @desc    Get person details CSV for hover popups
+// @desc    Get person details from Excel file for buying group side panel
 // @access  Public
 router.get('/org-chart/person-details', async (req, res) => {
   try {
-    const csvPath = path.join(__dirname, '../org_charts_output_js/personDetails.csv');
     const fs = require('fs');
+    const XLSX = require('xlsx');
     
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'Person details file not found' });
+    // Try to read from the new buying group Excel file first
+    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelPath)) {
+      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
     }
     
-    const csvContent = fs.readFileSync(csvPath, 'utf-8');
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.send(csvContent);
+    if (!fs.existsSync(excelPath)) {
+      return res.status(404).json({ error: 'Excel file not found' });
+    }
+    
+    // Read Excel file
+    const workbook = XLSX.readFile(excelPath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+    
+    // Group data by company
+    const companiesMap = {};
+    
+    data.forEach((row) => {
+      const companyName = row['Company Name'] || 'Unknown';
+      
+      if (!companiesMap[companyName]) {
+        companiesMap[companyName] = [];
+      }
+      
+      companiesMap[companyName].push({
+        id: row['Unique ID'] || '',
+        name: row.Name || 'N/A',
+        designation: row.Role || 'N/A',
+        email: row.email || 'N/A',
+        linkedin: row.Linkedin || '',
+        reportsTo: row['Reports To'] || 'N/A',
+        category: row.Category || 'N/A'
+      });
+    });
+    
+    // Send as JSON directly
+    res.json(companiesMap);
   } catch (err) {
     console.error('Error fetching person details:', err.message);
     res.status(500).json({ error: 'Failed to fetch person details' });
@@ -523,10 +633,18 @@ router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
-    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
-    const outputFolder = path.join(__dirname, '../org_charts_output_js');
     const fs = require('fs');
     const XLSX = require('xlsx');
+    
+    // Try to read from the new buying group Excel file first
+    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelPath)) {
+      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    }
+    
+    const outputFolder = path.join(__dirname, '../org_charts_output_js');
     
     // Read Excel to get location for proper filename
     const workbook = XLSX.readFile(excelPath);
@@ -578,10 +696,18 @@ router.get('/org-chart/:companyName', async (req, res) => {
 // Generate org charts only for selected companies (called on-demand)
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
-    const excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
-    const outputFolder = path.join(__dirname, '../org_charts_output_js');
     const fs = require('fs');
     const XLSX = require('xlsx');
+    
+    // Try to read from the new buying group Excel file first
+    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    
+    // Fallback to old file if new one doesn't exist
+    if (!fs.existsSync(excelPath)) {
+      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    }
+    
+    const outputFolder = path.join(__dirname, '../org_charts_output_js');
     
     if (!selectedCompanies || selectedCompanies.length === 0) {
       return { success: false, message: 'No companies selected' };

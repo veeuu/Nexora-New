@@ -134,9 +134,16 @@ function buildTreeFromData(data) {
     const role = String(row.Role || 'N/A');
     const reportsTo = row['Reports To'];
     const hierarchy = String(row.hierarchy || 'Other').trim();
+    
+    // Extract person details from the row
+    const uniqueId = row['Unique ID'] || '';
+    const companyName = row['Company Name'] || '';
+    const linkedin = row['Linkedin'] || '';
+    const email = row['email'] || '';
+    const category = row['Category'] || 'N/A';
 
     let managerName = null;
-    if (reportsTo && String(reportsTo).trim()) {
+    if (reportsTo && String(reportsTo).trim() && String(reportsTo).trim() !== '-') {
       managerName = String(reportsTo).trim();
       if (!allNamesInInput.has(managerName)) {
         managerName = null;
@@ -152,7 +159,13 @@ function buildTreeFromData(data) {
       level: -1,
       y: 0.0,
       x: 0.0,
-      cached_width: 0.0
+      cached_width: 0.0,
+      // Person details for side panel
+      uniqueId,
+      companyName,
+      linkedin,
+      email,
+      category
     };
   }
 
@@ -518,7 +531,9 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       fillcolor: nodeFillColor,
       line: { color: nodeFillColor, width: 0 },
       xref: 'x',
-      yref: 'y'
+      yref: 'y',
+      name: originalName,
+      category: empData.category || 'N/A'
     });
 
     // Add text annotation using Plotly annotations
@@ -538,7 +553,9 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       yref: 'y',
       align: 'center',
       xanchor: 'center',
-      yanchor: 'middle'
+      yanchor: 'middle',
+      name: originalName,
+      category: empData.category || 'N/A'
     });
   }
 
@@ -677,6 +694,10 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       height: 100%;
       background-color: white;
     }
+    .highlight-IT rect { stroke: #1976d2 !important; stroke-width: 3 !important; }
+    .highlight-Generalized rect { stroke: #7b1fa2 !important; stroke-width: 3 !important; }
+    .highlight-AI rect { stroke: #f57c00 !important; stroke-width: 3 !important; }
+    .highlight-Cloud rect { stroke: #00796b !important; stroke-width: 3 !important; }
   </style>
 </head>
 <body>
@@ -695,6 +716,65 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
+
+    // Store shapes data for highlighting
+    window.shapesData = layout.shapes || [];
+
+    // Listen for messages from parent window
+    window.addEventListener('message', function(event) {
+      console.log('Message received in iframe:', event.data);
+      
+      if (event.data && event.data.type === 'highlightCategory') {
+        const category = event.data.category;
+        console.log('Highlighting category:', category);
+        
+        // Get the Plotly plot div
+        const plotDiv = document.querySelector('#chart');
+        console.log('Plot div found:', !!plotDiv);
+        
+        if (!plotDiv || !plotDiv.data) return;
+
+        // Access Plotly's internal data
+        const layout = plotDiv.layout;
+        if (!layout || !layout.shapes) {
+          console.log('No shapes found in layout');
+          return;
+        }
+
+        console.log('Total shapes:', layout.shapes.length);
+
+        // Update shapes based on category
+        layout.shapes.forEach((shape, index) => {
+          console.log('Shape', index, '- category:', shape.category);
+          
+          // Reset line
+          shape.line = shape.line || {};
+          
+          if (category === 'All') {
+            shape.line.width = 0;
+            shape.line.color = shape.fillcolor;
+          } else if (shape.category === category) {
+            // Highlight matching category
+            const categoryColors = {
+              'IT': '#1976d2',
+              'Generalized': '#7b1fa2',
+              'AI': '#f57c00',
+              'Cloud': '#00796b'
+            };
+            shape.line.width = 3;
+            shape.line.color = categoryColors[category] || '#000';
+            console.log('Highlighting shape with category:', category);
+          } else {
+            shape.line.width = 0;
+            shape.line.color = shape.fillcolor;
+          }
+        });
+
+        // Redraw the plot
+        Plotly.relayout(plotDiv, layout);
+        console.log('Plot redrawn');
+      }
+    });
   </script>
 </body>
 </html>`;
@@ -771,7 +851,7 @@ function getCompaniesFromExcel(excelFilePath) {
 // ================================
 
 async function main() {
-  const excelFilePath = 'AI_sample (1).xlsx';
+  const excelFilePath = 'nexora Buying group.xlsx';
   const OUTPUT_FOLDER = 'org_charts_output_js';
 
   try {
@@ -902,6 +982,21 @@ async function main() {
         console.error(`✗ Error generating HTML for ${companyName}: ${error.message}`);
       }
 
+      // Collect person details from company data
+      for (const person of companyData) {
+        if (person.Name && person.email) {
+          allPersonDetails.push({
+            'Unique ID': person['Unique ID'] || '',
+            'Company Name': person['Company Name'] || '',
+            'Name': person.Name || '',
+            'Role': person.Role || '',
+            'Email': person.email || '',
+            'LinkedIn': person.Linkedin || '',
+            'Reports To': person['Reports To'] || ''
+          });
+        }
+      }
+
       // Add to mapping data
       chartMappingData.push({
         'Account Name': companyName,
@@ -963,25 +1058,6 @@ async function main() {
 }
 
 /**
- * Generate fake email
- */
-function generateFakeEmail(personName) {
-  const domains = ['gmail.com', 'company.com', 'outlook.com', 'yahoo.com'];
-  const nameParts = personName.toLowerCase().split(' ');
-  const domain = domains[Math.floor(Math.random() * domains.length)];
-  return `${nameParts.join('.')}@${domain}`;
-}
-
-/**
- * Generate fake LinkedIn URL
- */
-function generateFakeLinkedIn(personName) {
-  const nameParts = personName.toLowerCase().split(' ');
-  const randomNum = Math.floor(Math.random() * 9000) + 1000;
-  return `https://linkedin.com/in/${nameParts.join('-')}-${randomNum}`;
-}
-
-/**
  * Convert array of objects to CSV string
  */
 function convertToCSV(data) {
@@ -1009,3 +1085,8 @@ function convertToCSV(data) {
 // main().catch(console.error);
 
 module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromExcel };
+
+// Uncomment to run directly
+if (require.main === module) {
+  main().catch(console.error);
+}
