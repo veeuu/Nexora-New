@@ -1263,20 +1263,21 @@ const NTP = () => {
         }
         
         th, td {
-          padding: 10px 8px;
+          padding: 12px 16px;
           text-align: left;
           border-bottom: 1px solid #ddd;
           overflow: hidden;
           text-overflow: ellipsis;
           cursor: default;
+          vertical-align: middle;
         }
         
-        th:nth-child(1), td:nth-child(1) { width: 24%; white-space: normal; }
-        th:nth-child(2), td:nth-child(2) { width: 15%; white-space: nowrap; }
-        th:nth-child(3), td:nth-child(3) { width: 15%; white-space: nowrap; }
-        th:nth-child(4), td:nth-child(4) { width: 15%; white-space: nowrap; }
-        th:nth-child(5), td:nth-child(5) { width: 15%; white-space: nowrap; }
-        th:nth-child(6), td:nth-child(6) { width: 16%; white-space: nowrap; }
+        th:nth-child(1), td:nth-child(1) { width: 16.66%; white-space: normal; }
+        th:nth-child(2), td:nth-child(2) { width: 16.66%; white-space: nowrap; }
+        th:nth-child(3), td:nth-child(3) { width: 16.66%; white-space: nowrap; }
+        th:nth-child(4), td:nth-child(4) { width: 16.66%; white-space: nowrap; }
+        th:nth-child(5), td:nth-child(5) { width: 16.66%; white-space: nowrap; }
+        th:nth-child(6), td:nth-child(6) { width: 16.66%; white-space: nowrap; }
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
@@ -1284,6 +1285,8 @@ const NTP = () => {
         th {
           background-color: #f8f9fa;
           font-weight: 600;
+          font-size: 14px;
+          color: #1f2937;
         }
         
         tr:hover {
@@ -1333,6 +1336,49 @@ const NTP = () => {
 
         .modal-content button:hover {
           background-color: #0056b3;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+          th, td {
+            padding: 11px 14px;
+            font-size: 13px;
+          }
+
+          th:nth-child(1), td:nth-child(1) { width: 16.66%; }
+          th:nth-child(2), td:nth-child(2) { width: 16.66%; }
+          th:nth-child(3), td:nth-child(3) { width: 16.66%; }
+          th:nth-child(4), td:nth-child(4) { width: 16.66%; }
+          th:nth-child(5), td:nth-child(5) { width: 16.66%; }
+          th:nth-child(6), td:nth-child(6) { width: 16.66%; }
+        }
+
+        @media (max-width: 768px) {
+          th, td {
+            padding: 10px 12px;
+            font-size: 12px;
+          }
+
+          th:nth-child(1), td:nth-child(1) { width: 16.66%; }
+          th:nth-child(2), td:nth-child(2) { width: 16.66%; }
+          th:nth-child(3), td:nth-child(3) { width: 16.66%; }
+          th:nth-child(4), td:nth-child(4) { width: 16.66%; }
+          th:nth-child(5), td:nth-child(5) { width: 16.66%; }
+          th:nth-child(6), td:nth-child(6) { width: 16.66%; }
+        }
+
+        @media (max-width: 480px) {
+          th, td {
+            padding: 8px 10px;
+            font-size: 11px;
+          }
+
+          th:nth-child(1), td:nth-child(1) { width: 16.66%; }
+          th:nth-child(2), td:nth-child(2) { width: 16.66%; }
+          th:nth-child(3), td:nth-child(3) { width: 16.66%; }
+          th:nth-child(4), td:nth-child(4) { width: 16.66%; }
+          th:nth-child(5), td:nth-child(5) { width: 16.66%; }
+          th:nth-child(6), td:nth-child(6) { width: 16.66%; }
         }
       `}</style>
     </div>
