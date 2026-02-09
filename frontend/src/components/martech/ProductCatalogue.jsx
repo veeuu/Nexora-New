@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils.jsx';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 const ProductCatalogue = () => {
   const [tableData, setTableData] = useState([]);
@@ -62,7 +63,10 @@ const ProductCatalogue = () => {
         setError(e.message);
         console.error("Failed to fetch Product Catalogue data:", e);
       } finally {
-        setLoading(false);
+        // Add 2-second delay before hiding loading screen
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
       }
     };
 
@@ -109,11 +113,14 @@ const ProductCatalogue = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '600px',
+        minHeight: '800px',
         backgroundColor: '#f9fafb',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
+        {/* Nexora Logo */}
+        <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
+
         {/* Loading Text */}
         <h3 style={{
           margin: '0 0 10px 0',
@@ -121,7 +128,7 @@ const ProductCatalogue = () => {
           fontSize: '18px',
           fontWeight: '600'
         }}>
-          Loading Product Catalogue
+          
         </h3>
 
         {/* Subtext */}
@@ -205,16 +212,6 @@ const ProductCatalogue = () => {
               <path d="m20 20-4.5-4.5"></path>
             </svg>
           </div>
-          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)}>
-            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="12" y1="13" x2="12" y2="17"></line>
-              <line x1="8" y1="13" x2="8" y2="17"></line>
-              <line x1="16" y1="13" x2="16" y2="17"></line>
-            </svg>
-            Download CSV
-          </button>
         </div>
         <div className="actions-right">
           <div className="year-dropdown">
@@ -233,7 +230,8 @@ const ProductCatalogue = () => {
       <div className="section-subtle-divider" />
       
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {/* Filter Button */}
           <div style={{ position: 'relative' }}>
             <button
@@ -687,43 +685,76 @@ const ProductCatalogue = () => {
               </button>
             </div>
           )}
+          </div>
+          
+          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+          {filters.prodName && filters.category && filters.subCategory && (
+            <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
+              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="13" x2="12" y2="17"></line>
+                <line x1="8" y1="13" x2="8" y2="17"></line>
+                <line x1="16" y1="13" x2="16" y2="17"></line>
+              </svg>
+              Download CSV
+            </button>
+          )}
         </div>
       </div>
 
       {/* Message for mandatory filters */}
       {(!filters.prodName || !filters.category || !filters.subCategory) && (
         <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fcd34d',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px'
+          gap: '12px',
+          marginBottom: '20px',
+          justifyContent: 'space-between'
         }}>
           <div style={{
-            fontSize: '18px',
-            color: '#d97706',
-            flexShrink: 0
+            backgroundColor: '#fef3c7',
+            border: '1px solid #fcd34d',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            maxWidth: 'fit-content'
           }}>
-            ⓘ
+            <div style={{
+              fontSize: '18px',
+              color: '#d97706',
+              flexShrink: 0
+            }}>
+              ⓘ
+            </div>
+            <div style={{
+              fontSize: '13px',
+              color: '#92400e',
+              fontWeight: '500'
+            }}>
+              {!filters.prodName && !filters.category && !filters.subCategory ? (
+                'Please select Product Name, Category, and Sub Category to view data'
+              ) : !filters.prodName ? (
+                'Please select a Product Name to view data'
+              ) : !filters.category ? (
+                'Please select a Category to view data'
+              ) : (
+                'Please select a Sub Category to view data'
+              )}
+            </div>
           </div>
-          <div style={{
-            fontSize: '13px',
-            color: '#92400e',
-            fontWeight: '500'
-          }}>
-            {!filters.prodName && !filters.category && !filters.subCategory ? (
-              'Please select Product Name, Category, and Sub Category to view data'
-            ) : !filters.prodName ? (
-              'Please select a Product Name to view data'
-            ) : !filters.category ? (
-              'Please select a Category to view data'
-            ) : (
-              'Please select a Sub Category to view data'
-            )}
-          </div>
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
+            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="13" x2="12" y2="17"></line>
+              <line x1="8" y1="13" x2="8" y2="17"></line>
+              <line x1="16" y1="13" x2="16" y2="17"></line>
+            </svg>
+            Download CSV
+          </button>
         </div>
       )}
       

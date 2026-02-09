@@ -115,7 +115,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   return (
     <IndustryProvider>
       <div className="dashboard">
-        <Header onDropdownChange={handleDropdownChange} onRegionChange={handleRegionChange} username={username} onLogout={onLogout} />
+        {/* <Header onDropdownChange={handleDropdownChange} onRegionChange={handleRegionChange} username={username} onLogout={onLogout} /> */}
         <div className="dashboard-content">
           <Menu
             activeSection={activeSection}

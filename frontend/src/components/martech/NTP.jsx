@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import nexoraLogo from '../../assets/nexora-logo.png';
 import paretoChart from '../../final_charts/01_pareto_chart_80_20.png';
 import probabilityChart from '../../final_charts/02_probability_percentile_chart.png';
 import boxplotChart from '../../final_charts/03_probability_by_tech_category_boxplot.png';
@@ -426,11 +427,23 @@ const NTP = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '600px',
+        minHeight: '800px',
         backgroundColor: '#f9fafb',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
+        {/* Nexora Logo */}
+        <img 
+          src={nexoraLogo} 
+          alt="Nexora" 
+          style={{
+            width: '200px',
+            height: 'auto',
+            marginBottom: '30px',
+            opacity: 0.9
+          }}
+        />
+
         {/* Loading Text */}
         <h3 style={{
           margin: '0 0 10px 0',
@@ -438,7 +451,7 @@ const NTP = () => {
           fontSize: '18px',
           fontWeight: '600'
         }}>
-          Loading NTP Data
+         
         </h3>
 
         {/* Subtext */}
@@ -506,7 +519,7 @@ const NTP = () => {
     <div className="ntp-container">
       <div className="header-actions">
         <h2>NTP®</h2>
-        <div className="actions-right">
+        <div className="actions-right" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div className="search-bar">
             <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -522,16 +535,6 @@ const NTP = () => {
               <path d="m20 20-4.5-4.5"></path>
             </svg>
           </div>
-          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)}>
-            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="12" y1="13" x2="12" y2="17"></line>
-              <line x1="8" y1="13" x2="8" y2="17"></line>
-              <line x1="16" y1="13" x2="16" y2="17"></line>
-            </svg>
-            Download CSV
-          </button>
           <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -544,7 +547,8 @@ const NTP = () => {
       <div className="section-subtle-divider" />
       
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {/* Filter Button */}
           <div style={{ position: 'relative' }}>
             <button
@@ -1146,35 +1150,68 @@ const NTP = () => {
               </button>
             </div>
           )}
+          </div>
+          
+          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+          {filters.purchasePrediction && (
+            <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
+              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="13" x2="12" y2="17"></line>
+                <line x1="8" y1="13" x2="8" y2="17"></line>
+                <line x1="16" y1="13" x2="16" y2="17"></line>
+              </svg>
+              Download CSV
+            </button>
+          )}
         </div>
       </div>
 
       {/* Message for mandatory filter */}
       {!filters.purchasePrediction && (
         <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fcd34d',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px'
+          gap: '12px',
+          marginBottom: '20px',
+          justifyContent: 'space-between'
         }}>
           <div style={{
-            fontSize: '18px',
-            color: '#d97706',
-            flexShrink: 0
+            backgroundColor: '#fef3c7',
+            border: '1px solid #fcd34d',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            maxWidth: 'fit-content'
           }}>
-            ⓘ
+            <div style={{
+              fontSize: '18px',
+              color: '#d97706',
+              flexShrink: 0
+            }}>
+              ⓘ
+            </div>
+            <div style={{
+              fontSize: '13px',
+              color: '#92400e',
+              fontWeight: '500'
+            }}>
+              Please select a Purchase Prediction to view data
+            </div>
           </div>
-          <div style={{
-            fontSize: '13px',
-            color: '#92400e',
-            fontWeight: '500'
-          }}>
-            Please select a Purchase Prediction to view data
-          </div>
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
+            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="13" x2="12" y2="17"></line>
+              <line x1="8" y1="13" x2="8" y2="17"></line>
+              <line x1="16" y1="13" x2="16" y2="17"></line>
+            </svg>
+            Download CSV
+          </button>
         </div>
       )}
       

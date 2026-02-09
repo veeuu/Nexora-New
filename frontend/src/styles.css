@@ -445,7 +445,7 @@ body {
 .main-content {
   flex: 1;
   padding: 1rem;
-  padding-top: 90px;
+  padding-top: 0;
   padding-left: 1rem;
   overflow-y: auto;
   overflow-x: hidden;
@@ -482,9 +482,10 @@ body {
   border-radius: 12px;
   padding: 0.4rem 0.5rem 0.5rem;
   margin-bottom: 0.5rem;
-  margin-left: 2.5rem;
-  width: calc(100% - 3rem);
-  max-width: calc(100% - 3rem);
+  margin-left: 0;
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
   min-height: 800px;
 }
@@ -517,7 +518,28 @@ body {
 h2 {
   font-size: clamp(1.2rem, 2vw, 1.4rem);
   margin-bottom: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
   color: #0f172a;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.header-actions h2 {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.header-actions .search-bar {
+  flex: 0 0 auto;
+  width: 200px;
+  margin-left: auto;
 }
 
 .section-subtle-divider {
@@ -584,10 +606,25 @@ h2 {
 .table-container {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   background-color: #fff;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table-container::-webkit-scrollbar {
+  display: none;
+}
+
+.table-container::-webkit-scrollbar-track {
+  display: none;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  display: none;
 }
 
 .table-container table {
@@ -643,7 +680,8 @@ tr:hover {
   position: relative;
   display: flex;
   align-items: center;
-  width: 250px;
+  width: 200px;
+  margin-left: auto;
 }
 
 .search-folder-icon {
@@ -660,6 +698,7 @@ tr:hover {
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 100%;
+  max-width: 200px;
   font-size: 14px;
   transition: border-color 0.2s;
 }

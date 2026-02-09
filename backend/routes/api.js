@@ -14,62 +14,29 @@ const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_ch
 router.use(cors());
 
 // @route   GET /api/ntp
-// @desc    Get NTP data for all companies from Excel file
+// @desc    Get NTP data for all companies from MongoDB database
 // @access  Public
 router.get('/ntp', async (req, res) => {
   try {
-    const XLSX = require('xlsx');
-    const fs = require('fs');
+    // Always fetch from MongoDB database
+    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
     
-    // Try to read from the new buying group Excel file first
-    let excelFilePath = path.join(__dirname, '../nexora Buying group.xlsx');
-    
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelFilePath)) {
-      excelFilePath = path.join(__dirname, '../AI_sample (1).xlsx');
-    }
-    
-    if (!fs.existsSync(excelFilePath)) {
-      // If no Excel file exists, fall back to database
-      const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
+    const ntpData = companies.flatMap(company => {
+      const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
       
-      const ntpData = companies.flatMap(company => {
-        const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
-        
-        return company.NTP?.map(ntpItem => ({
-          companyName: company['Company Name'],
-          domain: company.Firmographics?.[0]?.About?.Domain || 'N/A',
-          category: ntpItem.Category,
-          technology: ntpItem.Technology,
-          purchaseProbability: ntpItem['Purchase Probability (%)'],
-          purchasePrediction: ntpItem['Purchase Prediction'],
-          ntpAnalysis: ntpItem['NTP Analysis'],
-          latestDetectedDate: techMap.get(ntpItem.Technology)?.['Latest Date'] || 'N/A',
-          previousDetectedDate: techMap.get(ntpItem.Technology)?.['Previous Date'] || 'N/A'
-        })) || [];
-      });
-      
-      return res.json(ntpData);
-    }
+      return company.NTP?.map(ntpItem => ({
+        companyName: company['Company Name'],
+        domain: company.Firmographics?.[0]?.About?.Domain || 'N/A',
+        category: ntpItem.Category,
+        technology: ntpItem.Technology,
+        purchaseProbability: ntpItem['Purchase Probability (%)'],
+        purchasePrediction: ntpItem['Purchase Prediction'],
+        ntpAnalysis: ntpItem['NTP Analysis'],
+        latestDetectedDate: techMap.get(ntpItem.Technology)?.['Latest Date'] || 'N/A',
+        previousDetectedDate: techMap.get(ntpItem.Technology)?.['Previous Date'] || 'N/A'
+      })) || [];
+    });
     
-    // Read from Excel file
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Transform Excel data to match NTP format
-    const ntpData = data.map(row => ({
-      companyName: row['Company Name'] || 'N/A',
-      domain: 'N/A', // Not available in buying group file
-      category: row.Category || 'N/A',
-      technology: row.Technology || 'N/A',
-      purchaseProbability: row['Purchase Probability (%)'] || 'N/A',
-      purchasePrediction: row['Purchase Prediction'] || 'N/A',
-      ntpAnalysis: row['NTP Analysis'] || 'N/A',
-      latestDetectedDate: 'N/A',
-      previousDetectedDate: 'N/A'
-    }));
-
     res.json(ntpData);
   } catch (err) {
     console.error(err.message);

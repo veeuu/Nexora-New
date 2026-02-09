@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as SiIcons from 'react-icons/si';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -308,7 +309,10 @@ const RenewalIntelligence = () => {
                 console.error('Error fetching renewal data:', error);
                 setTableData([]);
             } finally {
-                setLoading(false);
+                // Add 2-second delay before hiding loading screen
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
             }
         };
         fetchRenewalData();
@@ -430,11 +434,14 @@ const RenewalIntelligence = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '600px',
+          minHeight: '800px',
           backgroundColor: '#f9fafb',
           borderRadius: '8px',
           padding: '40px 20px'
         }}>
+          {/* Nexora Logo */}
+          <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
+
           {/* Loading Text */}
           <h3 style={{
             margin: '0 0 10px 0',
@@ -442,7 +449,7 @@ const RenewalIntelligence = () => {
             fontSize: '18px',
             fontWeight: '600'
           }}>
-            Loading Renewal Intelligence
+            
           </h3>
 
           {/* Subtext */}
@@ -506,7 +513,7 @@ const RenewalIntelligence = () => {
         <div className="renewal-intelligence-container">
             <div className="header-actions">
                 <h2>Renewal Intelligence</h2>
-                <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
                   <div className="search-bar">
                     <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -522,31 +529,14 @@ const RenewalIntelligence = () => {
                       <path d="m20 20-4.5-4.5"></path>
                     </svg>
                   </div>
-                  <button
-                      onClick={() => downloadCSV(filteredData)}
-                      className="download-csv-button"
-                      style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px'
-                      }}
-                  >
-                      <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="12" y1="13" x2="12" y2="17"></line>
-                        <line x1="8" y1="13" x2="8" y2="17"></line>
-                        <line x1="16" y1="13" x2="16" y2="17"></line>
-                      </svg>
-                      Download CSV
-                  </button>
                 </div>
             </div>
 
             <div className="section-subtle-divider" />
 
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 {/* Filter Button */}
                 <div style={{ position: 'relative' }}>
                   <button
@@ -1010,43 +1000,84 @@ const RenewalIntelligence = () => {
                     </button>
                   </div>
                 )}
+                </div>
+                
+                {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+                {filters.companyName && filters.product && filters.qtr && (
+                  <button
+                    onClick={() => downloadCSV(filteredData)}
+                    className="download-csv-button"
+                    style={{ flexShrink: 0 }}
+                  >
+                    <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="12" y1="13" x2="12" y2="17"></line>
+                      <line x1="8" y1="13" x2="8" y2="17"></line>
+                      <line x1="16" y1="13" x2="16" y2="17"></line>
+                    </svg>
+                    Download CSV
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Message for mandatory filters */}
             {(!filters.companyName || !filters.product || !filters.qtr) && (
               <div style={{
-                backgroundColor: '#fef3c7',
-                border: '1px solid #fcd34d',
-                borderRadius: '8px',
-                padding: '12px 16px',
-                marginBottom: '20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px'
+                gap: '12px',
+                marginBottom: '20px',
+                justifyContent: 'space-between'
               }}>
                 <div style={{
-                  fontSize: '18px',
-                  color: '#d97706',
-                  flexShrink: 0
+                  backgroundColor: '#fef3c7',
+                  border: '1px solid #fcd34d',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  maxWidth: 'fit-content'
                 }}>
-                  ⓘ
+                  <div style={{
+                    fontSize: '18px',
+                    color: '#d97706',
+                    flexShrink: 0
+                  }}>
+                    ⓘ
+                  </div>
+                  <div style={{
+                    fontSize: '13px',
+                    color: '#92400e',
+                    fontWeight: '500'
+                  }}>
+                    {!filters.companyName && !filters.product && !filters.qtr ? (
+                      'Please select Account Name, Product, and Renewal Timeline to view data'
+                    ) : !filters.companyName ? (
+                      'Please select an Account Name to view data'
+                    ) : !filters.product ? (
+                      'Please select a Product to view data'
+                    ) : (
+                      'Please select a Renewal Timeline to view data'
+                    )}
+                  </div>
                 </div>
-                <div style={{
-                  fontSize: '13px',
-                  color: '#92400e',
-                  fontWeight: '500'
-                }}>
-                  {!filters.companyName && !filters.product && !filters.qtr ? (
-                    'Please select Account Name, Product, and Renewal Timeline to view data'
-                  ) : !filters.companyName ? (
-                    'Please select an Account Name to view data'
-                  ) : !filters.product ? (
-                    'Please select a Product to view data'
-                  ) : (
-                    'Please select a Renewal Timeline to view data'
-                  )}
-                </div>
+                <button
+                  onClick={() => downloadCSV(filteredData)}
+                  className="download-csv-button"
+                  style={{ flexShrink: 0 }}
+                >
+                  <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="13" x2="12" y2="17"></line>
+                    <line x1="8" y1="13" x2="8" y2="17"></line>
+                    <line x1="16" y1="13" x2="16" y2="17"></line>
+                  </svg>
+                  Download CSV
+                </button>
               </div>
             )}
 
