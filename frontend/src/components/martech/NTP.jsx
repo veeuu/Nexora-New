@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import paretoChart from '../../final_charts/01_pareto_chart_80_20.png';
+import probabilityChart from '../../final_charts/02_probability_percentile_chart.png';
+import boxplotChart from '../../final_charts/03_probability_by_tech_category_boxplot.png';
+import heatmapChart from '../../final_charts/04_technology_category_heatmap.png';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -260,6 +264,7 @@ const NTP = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [modalContent, setModalContent] = useState(null);
+  const [showSummary, setShowSummary] = useState(false);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
@@ -527,7 +532,7 @@ const NTP = () => {
             </svg>
             Download CSV
           </button>
-          <button className="view-summary-button" onClick={() => {/* Add summary view handler */}}>
+          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -1242,6 +1247,53 @@ const NTP = () => {
           </div>
         </div>
       )}
+
+      {showSummary && (
+        <div className="modal-overlay" onClick={() => setShowSummary(false)}>
+          <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="summary-modal-header">
+              <h2>NTP Summary - Analytics Overview</h2>
+              <button 
+                className="close-button"
+                onClick={() => setShowSummary(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '0',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="summary-charts-grid">
+              <div className="chart-item">
+                <h3>Pareto Chart</h3>
+                <img src={paretoChart} alt="Pareto Chart 80/20" />
+              </div>
+              <div className="chart-item">
+                <h3>Probability Percentile Chart</h3>
+                <img src={probabilityChart} alt="Probability Percentile Chart" />
+              </div>
+              <div className="chart-item">
+                <h3>Probability by Tech Category (Boxplot)</h3>
+                <img src={boxplotChart} alt="Probability by Tech Category Boxplot" />
+              </div>
+              <div className="chart-item">
+                <h3>Technology Category Heatmap</h3>
+                <img src={heatmapChart} alt="Technology Category Heatmap" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         .table-container {
           max-height: 400px;
@@ -1327,7 +1379,7 @@ const NTP = () => {
         }
 
         .modal-content p {
-          white-space: pre-wrap; /* Allows text to wrap inside the modal */
+          white-space: pre-wrap;
           word-break: break-word;
         }
 
@@ -1345,22 +1397,88 @@ const NTP = () => {
           background-color: #0056b3;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-          th, td {
-            padding: 11px 14px;
-            font-size: 13px;
-          }
+        .summary-modal-content {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          max-width: 1200px;
+          width: 95%;
+          max-height: 90vh;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+        }
 
-          th:nth-child(1), td:nth-child(1) { width: 16.66%; }
-          th:nth-child(2), td:nth-child(2) { width: 16.66%; }
-          th:nth-child(3), td:nth-child(3) { width: 16.66%; }
-          th:nth-child(4), td:nth-child(4) { width: 16.66%; }
-          th:nth-child(5), td:nth-child(5) { width: 16.66%; }
-          th:nth-child(6), td:nth-child(6) { width: 16.66%; }
+        .summary-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 24px;
+          border-bottom: 1px solid #e5e7eb;
+          flex-shrink: 0;
+        }
+
+        .summary-modal-header h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .summary-charts-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+          gap: 24px;
+          padding: 24px;
+          overflow-y: auto;
+        }
+
+        .chart-item {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          background: #f9fafb;
+          padding: 16px;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+        }
+
+        .chart-item h3 {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .chart-item img {
+          width: 100%;
+          height: auto;
+          border-radius: 6px;
+          background: white;
+          border: 1px solid #d1d5db;
+        }
+
+        @media (max-width: 1024px) {
+          .summary-charts-grid {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          }
         }
 
         @media (max-width: 768px) {
+          .summary-charts-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 16px;
+          }
+
+          .summary-modal-header {
+            padding: 16px;
+          }
+
+          .summary-modal-header h2 {
+            font-size: 18px;
+          }
+
           th, td {
             padding: 10px 12px;
             font-size: 12px;
@@ -1375,6 +1493,20 @@ const NTP = () => {
         }
 
         @media (max-width: 480px) {
+          .summary-charts-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 12px;
+          }
+
+          .summary-modal-header {
+            padding: 12px;
+          }
+
+          .summary-modal-header h2 {
+            font-size: 16px;
+          }
+
           th, td {
             padding: 8px 10px;
             font-size: 11px;

@@ -556,6 +556,17 @@ const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompany
   );
 };
 
+const employeeSizeRanges = [
+  { label: '1-10', min: 1, max: 10 },
+  { label: '11-50', min: 11, max: 50 },
+  { label: '51-200', min: 51, max: 200 },
+  { label: '201-500', min: 201, max: 500 },
+  { label: '501-1000', min: 501, max: 1000 },
+  { label: '1000-5000', min: 1000, max: 5000 },
+  { label: '5000-10,000', min: 5000, max: 10000 },
+  { label: '10k+', min: 10000, max: Infinity }
+];
+
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
   
@@ -568,6 +579,27 @@ const formatEmployeeSize = (value) => {
     return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
   }
   return num.toString();
+};
+
+const getEmployeeSizeRange = (value) => {
+  if (!value || value === 'N/A') return null;
+  
+  const num = parseInt(value);
+  if (isNaN(num)) return null;
+  
+  return employeeSizeRanges.find(range => num >= range.min && num <= range.max);
+};
+
+const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
+  if (!employeeSize || employeeSize === 'N/A') return false;
+  
+  const num = parseInt(employeeSize);
+  if (isNaN(num)) return false;
+  
+  const range = employeeSizeRanges.find(r => r.label === rangeLabel);
+  if (!range) return false;
+  
+  return num >= range.min && num <= range.max;
 };
 
 const Speedometer = ({ value }) => {
@@ -916,7 +948,7 @@ const Technographics = () => {
       if (filters.industry && String(row.industry) !== filters.industry) return false;
 
       // Apply employee size filter if selected
-      if (filters.employeeSize && String(row.employeeSize) !== filters.employeeSize) return false;
+      if (filters.employeeSize && !isEmployeeSizeInRange(row.employeeSize, filters.employeeSize)) return false;
 
       // Apply revenue filter if selected
       if (filters.revenue && String(row.revenue) !== filters.revenue) return false;
@@ -1943,26 +1975,26 @@ const Technographics = () => {
                   >
                     ALL
                   </div>
-                  {getUniqueOptions('employeeSize').map((size) => (
+                  {employeeSizeRanges.map((range) => (
                     <div
-                      key={size}
+                      key={range.label}
                       onClick={() => {
-                        handleFilterChange('employeeSize', filters.employeeSize === size ? '' : size);
+                        handleFilterChange('employeeSize', filters.employeeSize === range.label ? '' : range.label);
                       }}
                       style={{
                         padding: '12px 16px',
                         cursor: 'pointer',
                         borderBottom: '1px solid #e5e7eb',
                         fontSize: '14px',
-                        color: filters.employeeSize === size ? '#1e40af' : '#1f2937',
-                        backgroundColor: filters.employeeSize === size ? '#f0f9ff' : 'white',
-                        fontWeight: filters.employeeSize === size ? '600' : '400',
+                        color: filters.employeeSize === range.label ? '#1e40af' : '#1f2937',
+                        backgroundColor: filters.employeeSize === range.label ? '#f0f9ff' : 'white',
+                        fontWeight: filters.employeeSize === range.label ? '600' : '400',
                         transition: 'background-color 0.2s'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize === size ? '#f0f9ff' : 'white'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize === range.label ? '#f0f9ff' : 'white'}
                     >
-                      {formatEmployeeSize(size)}
+                      {range.label}
                     </div>
                   ))}
 
