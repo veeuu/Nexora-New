@@ -14,6 +14,8 @@ const ProductCatalogue = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalContent, setModalContent] = useState(null);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
@@ -230,46 +232,500 @@ const ProductCatalogue = () => {
       </div>
       <div className="section-subtle-divider" />
       
-      <div className="filters">
-        <div className="filter-group">
-          <label>Product Name</label>
-          <select 
-            value={filters.prodName}
-            onChange={(e) => handleFilterChange('prodName', e.target.value)}
-          >
-            <option value="">All</option>
-            {getUniqueOptions('prodName').map(name => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div className="filter-group">
-          <label>Category</label>
-          <select 
-            value={filters.category}
-            onChange={(e) => handleFilterChange('category', e.target.value)}
-          >
-            <option value="">All</option>
-            {getUniqueOptions('category').map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Filter Button */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                padding: '8px 14px',
+                backgroundColor: 'white',
+                color: '#3b82f6',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#f3f4f6';
+                e.target.style.borderColor = '#3b82f6';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'white';
+                e.target.style.borderColor = '#d1d5db';
+              }}
+            >
+              <span>+ Filter</span>
+            </button>
 
-        <div className="filter-group">
-          <label>Sub Category</label>
-          <select 
-            value={filters.subCategory}
-            onChange={(e) => handleFilterChange('subCategory', e.target.value)}
-          >
-            <option value="">All</option>
-            {getUniqueOptions('subCategory').map(subCat => (
-              <option key={subCat} value={subCat}>{subCat}</option>
-            ))}
-          </select>
+            {/* Filter Menu Dropdown */}
+            {showFilters && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '8px',
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  minWidth: '200px'
+                }}
+              >
+                {[
+                  { label: 'Product Name', key: 'prodName', mandatory: true },
+                  { label: 'Category', key: 'category', mandatory: true },
+                  { label: 'Sub Category', key: 'subCategory', mandatory: true }
+                ].map((filterOption) => (
+                  <div
+                    key={filterOption.key}
+                    onClick={() => {
+                      setActiveFilterMenu(filterOption.key);
+                      setShowFilters(false);
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: '#1f2937',
+                      transition: 'background-color 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  >
+                    {filterOption.label}
+                    {filterOption.mandatory && (
+                      <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Product Name Filter Chip */}
+          {activeFilterMenu === 'prodName' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #fcd34d',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#92400e'
+              }}>
+                <span>Product Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, prodName: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#92400e',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('prodName', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.prodName === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.prodName === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('prodName').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('prodName', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.prodName === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.prodName === option ? '#dbeafe' : 'white'}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Category Filter Chip */}
+          {activeFilterMenu === 'category' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #fcd34d',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#92400e'
+              }}>
+                <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, category: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#92400e',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('category', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.category === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('category').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('category', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.category === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === option ? '#dbeafe' : 'white'}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sub Category Filter Chip */}
+          {activeFilterMenu === 'subCategory' && (
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #fcd34d',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#92400e'
+              }}>
+                <span>Sub Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, subCategory: '' }));
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '0',
+                    color: '#92400e',
+                    lineHeight: '1'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
+                <div
+                  onClick={() => {
+                    handleFilterChange('subCategory', '');
+                    setActiveFilterMenu(null);
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: filters.subCategory === '' ? '#f3f4f6' : 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.subCategory === '' ? '#f3f4f6' : 'white'}
+                >
+                  All
+                </div>
+                {getUniqueOptions('subCategory').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      handleFilterChange('subCategory', option);
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      backgroundColor: filters.subCategory === option ? '#dbeafe' : 'white',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.subCategory === option ? '#dbeafe' : 'white'}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Display saved filter tags */}
+          {filters.prodName && activeFilterMenu !== 'prodName' && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fcd34d',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#92400e',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('prodName')}
+            >
+              <span>Product Name: {filters.prodName} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, prodName: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#92400e',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {filters.category && activeFilterMenu !== 'category' && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fcd34d',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#92400e',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('category')}
+            >
+              <span>Category: {filters.category} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, category: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#92400e',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {filters.subCategory && activeFilterMenu !== 'subCategory' && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fcd34d',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#92400e',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveFilterMenu('subCategory')}
+            >
+              <span>Sub Category: {filters.subCategory} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFilters(prev => ({ ...prev, subCategory: '' }));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  padding: '0',
+                  color: '#92400e',
+                  lineHeight: '1'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Message for mandatory filters */}
+      {(!filters.prodName || !filters.category || !filters.subCategory) && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fcd34d',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '18px',
+            color: '#d97706',
+            flexShrink: 0
+          }}>
+            ⓘ
+          </div>
+          <div style={{
+            fontSize: '13px',
+            color: '#92400e',
+            fontWeight: '500'
+          }}>
+            {!filters.prodName && !filters.category && !filters.subCategory ? (
+              'Please select Product Name, Category, and Sub Category to view data'
+            ) : !filters.prodName ? (
+              'Please select a Product Name to view data'
+            ) : !filters.category ? (
+              'Please select a Category to view data'
+            ) : (
+              'Please select a Sub Category to view data'
+            )}
+          </div>
+        </div>
+      )}
       
       <div className="table-container">
         <table>
