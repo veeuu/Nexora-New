@@ -98,8 +98,8 @@ const Intent = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    accountName: '',
-    intentStatus: ''
+    accountName: [],
+    intentStatus: []
   });
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
@@ -135,7 +135,16 @@ const Intent = () => {
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
   const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({ ...prev, [filterName]: value }));
+    setFilters(prev => {
+      const currentValues = prev[filterName];
+      if (currentValues.includes(value)) {
+        // Remove if already selected
+        return { ...prev, [filterName]: currentValues.filter(v => v !== value) };
+      } else {
+        // Add if not selected
+        return { ...prev, [filterName]: [...currentValues, value] };
+      }
+    });
     setCurrentPage(1);
   };
 
@@ -145,22 +154,22 @@ const Intent = () => {
     return [...new Set(allValues)].filter(v => v && v.trim()).sort();
   };
 
-  const hasMandatoryFilters = filters.intentStatus !== '';
+  const hasMandatoryFilters = filters.intentStatus.length > 0;
 
   const filteredData = tableData
     .filter(row => {
       // Intent Status is mandatory
-      if (!filters.intentStatus) {
+      if (filters.intentStatus.length === 0) {
         return false;
       }
 
-      // Check if Intent Status matches
-      if (String(row.intentStatus).toLowerCase() !== String(filters.intentStatus).toLowerCase()) {
+      // Check if Intent Status matches any selected status
+      if (!filters.intentStatus.some(status => String(row.intentStatus).toLowerCase() === String(status).toLowerCase())) {
         return false;
       }
 
-      // Apply optional Account Name filter
-      if (filters.accountName && String(row.companyName).toLowerCase() !== String(filters.accountName).toLowerCase()) {
+      // Apply optional Account Name filter (if any selected, must match one)
+      if (filters.accountName.length > 0 && !filters.accountName.some(name => String(row.companyName).toLowerCase() === String(name).toLowerCase())) {
         return false;
       }
 
@@ -207,14 +216,15 @@ const Intent = () => {
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setActiveFilterMenu(null);
+        setShowFilters(false);
       }
     };
 
-    if (activeFilterMenu) {
+    if (activeFilterMenu || showFilters) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [activeFilterMenu]);
+  }, [activeFilterMenu, showFilters]);
 
   if (loading) {
     return (
@@ -424,11 +434,11 @@ const Intent = () => {
                 gap: '8px',
                 color: '#1e40af'
               }}>
-                <span>Account Name</span>
+                <span>Account Name {Array.isArray(filters.accountName) && filters.accountName.length > 0 && `(${filters.accountName.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, accountName: '' }));
+                    setFilters(prev => ({ ...prev, accountName: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -459,41 +469,68 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('accountName', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.accountName === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.accountName === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('companyName').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('accountName', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.accountName === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.accountName === option ? '#dbeafe' : 'white'}
-                  >
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('companyName').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.accountName) && filters.accountName.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => handleFilterChange('accountName', option)}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -512,11 +549,11 @@ const Intent = () => {
                 gap: '8px',
                 color: '#92400e'
               }}>
-                <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, intentStatus: '' }));
+                    setFilters(prev => ({ ...prev, intentStatus: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -547,47 +584,74 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('intentStatus', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.intentStatus === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.intentStatus === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('intentStatus').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('intentStatus', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.intentStatus === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.intentStatus === option ? '#dbeafe' : 'white'}
-                  >
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('intentStatus').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.intentStatus) && filters.intentStatus.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => handleFilterChange('intentStatus', option)}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {/* Display saved filter tags */}
-          {filters.accountName && activeFilterMenu !== 'accountName' && (
+          {filters.accountName.length > 0 && activeFilterMenu !== 'accountName' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -602,11 +666,11 @@ const Intent = () => {
             }}
             onClick={() => setActiveFilterMenu('accountName')}
             >
-              <span>Account Name: {filters.accountName}</span>
+              <span>Account Name: {filters.accountName.length} selected</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, accountName: '' }));
+                  setFilters(prev => ({ ...prev, accountName: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -623,7 +687,7 @@ const Intent = () => {
             </div>
           )}
 
-          {filters.intentStatus && activeFilterMenu !== 'intentStatus' && (
+          {filters.intentStatus.length > 0 && activeFilterMenu !== 'intentStatus' && (
             <div style={{
               backgroundColor: '#fef3c7',
               border: '1px solid #fcd34d',
@@ -639,13 +703,13 @@ const Intent = () => {
             onClick={() => setActiveFilterMenu('intentStatus')}
             >
               <span>
-                Intent Status: {filters.intentStatus}
+                Intent Status: {filters.intentStatus.length} selected
                 <span style={{ color: '#ef4444', fontWeight: '600', marginLeft: '4px' }}>*</span>
               </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, intentStatus: '' }));
+                  setFilters(prev => ({ ...prev, intentStatus: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -664,7 +728,7 @@ const Intent = () => {
           </div>
           
           {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-          {filters.intentStatus && (
+          {filters.intentStatus.length > 0 && (
             <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
               <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -680,7 +744,7 @@ const Intent = () => {
       </div>
 
       {/* Message for mandatory filter */}
-      {!filters.intentStatus && (
+      {filters.intentStatus.length === 0 && (
         <div style={{
           display: 'flex',
           alignItems: 'center',
