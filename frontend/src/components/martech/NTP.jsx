@@ -258,10 +258,10 @@ const NTP = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    companyName: '',
-    technology: '',
-    purchasePrediction: '',
-    category: ''
+    companyName: [],
+    technology: [],
+    purchasePrediction: [],
+    category: []
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [modalContent, setModalContent] = useState(null);
@@ -326,7 +326,14 @@ const NTP = () => {
   };
 
   const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({ ...prev, [filterName]: value }));
+    // For all filters, toggle the value in the array
+    setFilters(prev => {
+      const currentValues = Array.isArray(prev[filterName]) ? prev[filterName] : [];
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter(v => v !== value)
+        : [...currentValues, value];
+      return { ...prev, [filterName]: newValues };
+    });
     setCurrentPage(1);
   };
 
@@ -377,6 +384,21 @@ const NTP = () => {
     fetchData();
   }, []);
 
+  // Handle click outside to close filter dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setActiveFilterMenu(null);
+        setShowFilters(false);
+      }
+    };
+
+    if (activeFilterMenu || showFilters) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [activeFilterMenu, showFilters]);
+
   const getUniqueOptions = (key) => {
     if (!tableData) return [];
     const allValues = tableData.map(item => item[key]);
@@ -385,39 +407,40 @@ const NTP = () => {
 
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
-  const filteredData = tableData
-    .filter(row => {
-      // Purchase Prediction is mandatory
-      if (!filters.purchasePrediction) {
-        return false;
-      }
+  const filteredData = (() => {
+    // Check if mandatory Purchase Prediction filter is applied
+    const hasMandatoryFilter = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0;
 
-      // Check if Purchase Prediction matches
-      if (String(row.purchasePrediction).toLowerCase() !== String(filters.purchasePrediction).toLowerCase()) {
-        return false;
-      }
+    // If mandatory filter is not applied, return empty array
+    if (!hasMandatoryFilter) {
+      return [];
+    }
 
-      // Apply optional filters (Company Name, Category, Technology)
-      const optionalFilterMatches = Object.keys(filters).every(key => {
-        if (key === 'purchasePrediction') return true; // Already checked
-        if (!filters[key]) return true; // Skip empty optional filters
-        const rowKey = key === 'companyName' ? 'companyName' : key;
-        return String(row[rowKey]).toLowerCase() === String(filters[key]).toLowerCase();
+    return tableData
+      .filter(row => {
+        // Apply all filters with OR logic within each filter type
+        const filterMatches = Object.keys(filters).every(key => {
+          const selectedValues = Array.isArray(filters[key]) ? filters[key] : [];
+          if (selectedValues.length === 0) return true; // No filter applied for this key
+          
+          const rowValue = String(row[key]).toLowerCase();
+          return selectedValues.some(val => String(val).toLowerCase() === rowValue);
+        });
+
+        const searchMatches = !searchTerm || Object.values(row).some(value =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        return filterMatches && searchMatches;
+      })
+      .sort((a, b) => {
+        const aMatches = rowMatchesSearch(a, searchTerm);
+        const bMatches = rowMatchesSearch(b, searchTerm);
+        if (aMatches && !bMatches) return -1;
+        if (!aMatches && bMatches) return 1;
+        return 0;
       });
-
-      const searchMatches = !searchTerm || Object.values(row).some(value =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-      return optionalFilterMatches && searchMatches;
-    })
-    .sort((a, b) => {
-      const aMatches = rowMatchesSearch(a, searchTerm);
-      const bMatches = rowMatchesSearch(b, searchTerm);
-      if (aMatches && !bMatches) return -1;
-      if (!aMatches && bMatches) return 1;
-      return 0;
-    });
+  })();
 
   const handleAnalysisClick = (analysis) => {
     setModalContent(analysis);
@@ -648,11 +671,11 @@ const NTP = () => {
                 gap: '8px',
                 color: '#1e40af'
               }}>
-                <span>Company Name</span>
+                <span>Company Name {Array.isArray(filters.companyName) && filters.companyName.length > 0 && `(${filters.companyName.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, companyName: '' }));
+                    setFilters(prev => ({ ...prev, companyName: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -683,41 +706,70 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('companyName', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.companyName === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.companyName) && filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('companyName').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('companyName', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.companyName === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === option ? '#dbeafe' : 'white'}
-                  >
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('companyName').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        handleFilterChange('companyName', option);
+                      }}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -736,11 +788,11 @@ const NTP = () => {
                 gap: '8px',
                 color: '#92400e'
               }}>
-                <span>Purchase Prediction <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, purchasePrediction: '' }));
+                    setFilters(prev => ({ ...prev, purchasePrediction: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -771,41 +823,70 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('purchasePrediction', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, purchasePrediction: getUniqueOptions('purchasePrediction') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.purchasePrediction === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.purchasePrediction === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').length && getUniqueOptions('purchasePrediction').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('purchasePrediction').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('purchasePrediction', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.purchasePrediction === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.purchasePrediction === option ? '#dbeafe' : 'white'}
-                  >
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('purchasePrediction').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        handleFilterChange('purchasePrediction', option);
+                      }}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -824,11 +905,11 @@ const NTP = () => {
                 gap: '8px',
                 color: '#1e40af'
               }}>
-                <span>Category</span>
+                <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, category: '' }));
+                    setFilters(prev => ({ ...prev, category: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -859,13 +940,12 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('category', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, category: getUniqueOptions('category') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.category === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
                     fontSize: '14px',
                     display: 'flex',
@@ -873,34 +953,58 @@ const NTP = () => {
                     gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('category').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('category', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.category === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category === option ? '#dbeafe' : 'white'}
-                  >
-                    {renderTechLogo(option)}
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('category').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.category) && filters.category.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        handleFilterChange('category', option);
+                      }}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {renderTechLogo(option)}
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -919,11 +1023,11 @@ const NTP = () => {
                 gap: '8px',
                 color: '#1e40af'
               }}>
-                <span>Technology</span>
+                <span>Technology {Array.isArray(filters.technology) && filters.technology.length > 0 && `(${filters.technology.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, technology: '' }));
+                    setFilters(prev => ({ ...prev, technology: [] }));
                   }}
                   style={{
                     background: 'none',
@@ -954,13 +1058,12 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    handleFilterChange('technology', '');
-                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
                   }}
                   style={{
                     padding: '10px 12px',
                     cursor: 'pointer',
-                    backgroundColor: filters.technology === '' ? '#f3f4f6' : 'white',
+                    backgroundColor: 'white',
                     borderBottom: '1px solid #e5e7eb',
                     fontSize: '14px',
                     display: 'flex',
@@ -968,40 +1071,64 @@ const NTP = () => {
                     gap: '8px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology === '' ? '#f3f4f6' : 'white'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0}
+                    onChange={() => {}}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer',
+                      accentColor: '#3b82f6'
+                    }}
+                  />
                   All
                 </div>
-                {getUniqueOptions('technology').map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('technology', option);
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.technology === option ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology === option ? '#dbeafe' : 'white'}
-                  >
-                    {renderTechLogo(option)}
-                    {option}
-                  </div>
-                ))}
+                {getUniqueOptions('technology').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.technology) && filters.technology.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        handleFilterChange('technology', option);
+                      }}
+                      style={{
+                        padding: '10px 12px',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? '#dbeafe' : 'white',
+                        borderBottom: '1px solid #e5e7eb',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                          accentColor: '#3b82f6'
+                        }}
+                      />
+                      {renderTechLogo(option)}
+                      {option}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {/* Display saved filter tags */}
-          {filters.companyName && activeFilterMenu !== 'companyName' && (
+          {Array.isArray(filters.companyName) && filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -1016,11 +1143,11 @@ const NTP = () => {
             }}
             onClick={() => setActiveFilterMenu('companyName')}
             >
-              <span>Company Name: {filters.companyName}</span>
+              <span>Company Name: {filters.companyName.length} selected</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, companyName: '' }));
+                  setFilters(prev => ({ ...prev, companyName: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -1037,7 +1164,7 @@ const NTP = () => {
             </div>
           )}
 
-          {filters.purchasePrediction && activeFilterMenu !== 'purchasePrediction' && (
+          {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && activeFilterMenu !== 'purchasePrediction' && (
             <div style={{
               backgroundColor: '#fef3c7',
               border: '1px solid #fcd34d',
@@ -1053,13 +1180,13 @@ const NTP = () => {
             onClick={() => setActiveFilterMenu('purchasePrediction')}
             >
               <span>
-                Purchase Prediction: {filters.purchasePrediction} 
+                Purchase Prediction: {filters.purchasePrediction.length} selected
                 <span style={{ color: '#ef4444', fontWeight: '600', marginLeft: '4px' }}>*</span>
               </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, purchasePrediction: '' }));
+                  setFilters(prev => ({ ...prev, purchasePrediction: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -1076,7 +1203,7 @@ const NTP = () => {
             </div>
           )}
 
-          {filters.category && activeFilterMenu !== 'category' && (
+          {Array.isArray(filters.category) && filters.category.length > 0 && activeFilterMenu !== 'category' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -1092,13 +1219,12 @@ const NTP = () => {
             onClick={() => setActiveFilterMenu('category')}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {renderTechLogo(filters.category)}
-                Category: {filters.category}
+                Category: {filters.category.length} selected
               </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, category: '' }));
+                  setFilters(prev => ({ ...prev, category: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -1115,7 +1241,7 @@ const NTP = () => {
             </div>
           )}
 
-          {filters.technology && activeFilterMenu !== 'technology' && (
+          {Array.isArray(filters.technology) && filters.technology.length > 0 && activeFilterMenu !== 'technology' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -1131,13 +1257,12 @@ const NTP = () => {
             onClick={() => setActiveFilterMenu('technology')}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {renderTechLogo(filters.technology)}
-                Technology: {filters.technology}
+                Technology: {filters.technology.length} selected
               </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFilters(prev => ({ ...prev, technology: '' }));
+                  setFilters(prev => ({ ...prev, technology: [] }));
                 }}
                 style={{
                   background: 'none',
@@ -1156,7 +1281,7 @@ const NTP = () => {
           </div>
           
           {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-          {filters.purchasePrediction && (
+          {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && (
             <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
               <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -1172,7 +1297,7 @@ const NTP = () => {
       </div>
 
       {/* Message for mandatory filter */}
-      {!filters.purchasePrediction && (
+      {(!Array.isArray(filters.purchasePrediction) || filters.purchasePrediction.length === 0) && (
         <div style={{
           display: 'flex',
           alignItems: 'center',
