@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as SiIcons from 'react-icons/si';
+import { getLogoPath } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Generic Custom Dropdown Component (without icons)
@@ -276,6 +277,33 @@ const RenewalIntelligence = () => {
 
     // Render icon component
     const renderProductIcon = (productName) => {
+        if (!productName) return null;
+        
+        // First try to get logo image
+        const logoPath = getLogoPath(productName);
+        
+        if (logoPath) {
+            return (
+                <img
+                    src={logoPath}
+                    alt={productName}
+                    title={productName}
+                    style={{
+                        width: '16px',
+                        height: '16px',
+                        marginRight: '6px',
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        objectFit: 'contain'
+                    }}
+                    onError={(e) => {
+                        e.target.style.display = 'none';
+                    }}
+                />
+            );
+        }
+        
+        // Fallback to icon if no logo found
         const iconName = getProductIcon(productName);
         if (!iconName) return null;
         
@@ -1118,7 +1146,7 @@ const RenewalIntelligence = () => {
             )}
 
             {/* Main Content Container */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px', minWidth: 0 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', minWidth: 0 }}>
                 {/* Table Section - Left */}
                 <div style={{ minWidth: 0 }}>
                     {loading ? (
@@ -1191,7 +1219,7 @@ const RenewalIntelligence = () => {
                 </div>
 
                 {/* Bar Chart Section - Right */}
-                <div style={{
+                {/* <div style={{
                     backgroundColor: 'white',
                     borderRadius: '8px',
                     padding: '15px',
@@ -1280,7 +1308,7 @@ const RenewalIntelligence = () => {
                             ))}
                         </div>
                     )}
-                </div>
+                </div> */}
             </div>
 
             {/* Custom Tooltip */}
