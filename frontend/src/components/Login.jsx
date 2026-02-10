@@ -39,7 +39,7 @@ const Login = ({ onLogin }) => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Username</label>
+              <label htmlFor="email">Email</label>
               <div className="input-wrapper">
                 <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -103,11 +103,105 @@ const Login = ({ onLogin }) => {
               Sign In
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '0.875rem', marginTop: '1rem', color: '#666' }}>
-              <a href="https://www.linkedin.com/newsletters/the-proplus-data-newsletter-7419630672841150464/" target="_blank" rel="noopener noreferrer" style={{ color: '#1890ff', textDecoration: 'none', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = '#40a9ff'} onMouseLeave={(e) => e.target.style.color = '#1890ff'}>
-                Subscribe to our newsletter
-              </a>
-            </p>
+            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+              <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.75rem', fontWeight: '500' }}>
+                Connect with Us
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                {/* Gmail Icon */}
+                <a
+                  href="mailto:info@proplusdata.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#f0f0f0',
+                    color: '#EA4335',
+                    transition: 'transform 0.3s ease',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Email us"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-10 5L2 7"></path>
+                  </svg>
+                </a>
+
+                {/* LinkedIn Icon */}
+                <a
+                  href="https://www.linkedin.com/company/proplus-data/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#f0f0f0',
+                    color: '#0A66C2',
+                    transition: 'transform 0.3s ease',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Follow us on LinkedIn"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.722-2.004 1.418-.103.249-.129.597-.129.946v5.441h-3.554s.05-8.81 0-9.728h3.554v1.375c.427-.659 1.191-1.595 2.897-1.595 2.117 0 3.704 1.385 3.704 4.362v5.586zM5.337 8.855c-1.144 0-1.915-.759-1.915-1.71 0-.955.77-1.71 1.954-1.71 1.184 0 1.915.755 1.915 1.71 0 .951-.731 1.71-1.954 1.71zm1.575 11.597H3.762V9.624h3.15v10.828zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                  </svg>
+                </a>
+
+                {/* Instagram Icon */}
+                <a
+                  href="https://www.instagram.com/proplusdata/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    backgroundColor: '#f0f0f0',
+                    color: '#E4405F',
+                    transition: 'transform 0.3s ease',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Follow us on Instagram"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <circle cx="17.5" cy="6.5" r="1.5"></circle>
+                  </svg>
+                </a>
+              </div>
+            </div>
 
             {/* <p className="form-signup">
               Don't have an account? <a href="#signup">Sign up</a>
