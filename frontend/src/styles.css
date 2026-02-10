@@ -504,7 +504,20 @@ body {
   min-height: 800px;
 }
 
-.intent-container,
+.intent-container
+{
+   background: #ffffff;
+  border-radius: 12px;
+  padding: 0.4rem 0.5rem 0.5rem;
+  padding-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 2.5rem;
+  margin-right: 2rem;
+  width: calc(100% - 4.5rem);
+  max-width: calc(100% - 4.5rem);
+  overflow-x: hidden;
+  min-height: 800px;
+}
 .buying-group-container {
   background: #ffffff;
   border-radius: 12px;
