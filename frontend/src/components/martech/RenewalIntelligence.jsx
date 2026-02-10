@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as SiIcons from 'react-icons/si';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -196,6 +197,8 @@ const RenewalIntelligence = () => {
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
+    const [showFilters, setShowFilters] = useState(false);
+    const [activeFilterMenu, setActiveFilterMenu] = useState(null);
 
     // Icon mapping for products
     const getProductIcon = (productName) => {
@@ -306,7 +309,10 @@ const RenewalIntelligence = () => {
                 console.error('Error fetching renewal data:', error);
                 setTableData([]);
             } finally {
-                setLoading(false);
+                // Add 2-second delay before hiding loading screen
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
             }
         };
         fetchRenewalData();
@@ -319,8 +325,8 @@ const RenewalIntelligence = () => {
         }));
     };
 
-    const downloadCSV = () => {
-        if (filteredData.length === 0) {
+    const downloadCSV = (dataToDownload) => {
+        if (dataToDownload.length === 0) {
             alert('No data to download');
             return;
         }
@@ -329,7 +335,7 @@ const RenewalIntelligence = () => {
         const headers = ['Account Name', 'Product', 'Renewal QTR'];
         const csvContent = [
             headers.join(','),
-            ...filteredData.map(row =>
+            ...dataToDownload.map(row =>
                 [row.companyName, row.product, row.qtr]
                     .map(field => `"${field}"`)
                     .join(',')
@@ -364,6 +370,30 @@ const RenewalIntelligence = () => {
         if (!tableData) return [];
         const allQtrs = tableData.map(item => item.qtr);
         return [...new Set(allQtrs)].sort();
+    };
+
+    // Helper function to count accounts by product
+    const getAccountCountByProduct = (product) => {
+        if (!tableData) return 0;
+        const uniqueAccounts = new Set();
+        tableData.forEach(row => {
+            if (row.product === product) {
+                uniqueAccounts.add(row.companyName);
+            }
+        });
+        return uniqueAccounts.size;
+    };
+
+    // Helper function to count accounts by renewal timeline (qtr)
+    const getAccountCountByQtr = (qtr) => {
+        if (!tableData) return 0;
+        const uniqueAccounts = new Set();
+        tableData.forEach(row => {
+            if (row.qtr === qtr) {
+                uniqueAccounts.add(row.companyName);
+            }
+        });
+        return uniqueAccounts.size;
     };
 
     const filteredData = tableData.filter(row => {
@@ -421,61 +451,671 @@ const RenewalIntelligence = () => {
     const chartData = getChartData();
     const maxChartValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value)) : 0;
 
+    if (loading) {
+      return (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '800px',
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '40px 20px'
+        }}>
+          {/* Nexora Logo */}
+          <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
+
+          {/* Loading Text */}
+          <h3 style={{
+            margin: '0 0 10px 0',
+            color: '#1f2937',
+            fontSize: '18px',
+            fontWeight: '600'
+          }}>
+            
+          </h3>
+
+          {/* Subtext */}
+          <p style={{
+            margin: '0 0 30px 0',
+            color: '#6b7280',
+            fontSize: '14px',
+            textAlign: 'center',
+            maxWidth: '300px'
+          }}>
+            Fetching and processing renewal data...
+          </p>
+
+          {/* Progress Dots */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center'
+          }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite 0.2s'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite 0.4s'
+            }} />
+          </div>
+
+          {/* Styles for animations */}
+          <style>{`
+            @keyframes bounce {
+              0%, 80%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+              }
+              40% {
+                opacity: 1;
+                transform: translateY(-10px);
+              }
+            }
+          `}</style>
+        </div>
+      );
+    }
+
     return (
         <div className="renewal-intelligence-container">
             <div className="header-actions">
-                <h2>Renewal Intelligence</h2>
-                <button
-                    onClick={downloadCSV}
-                    style={{
-                        backgroundColor: '#4CAF50',
-                        color: 'white',
-                        padding: '10px 15px',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
-                >
-                    Download CSV
-                </button>
+                <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
+                <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+                  {/* <div className="search-bar">
+                    <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <input 
+                      type="text" 
+                      placeholder="Search accounts..." 
+                      value={filters.companyName}
+                      onChange={(e) => handleFilterChange('companyName', e.target.value)}
+                    />
+                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="10" cy="10" r="7"></circle>
+                      <path d="m20 20-4.5-4.5"></path>
+                    </svg>
+                  </div> */}
+                </div>
             </div>
 
             <div className="section-subtle-divider" />
 
-            <div className="filters">
-                <div className="filter-group">
-                    <label>Account Name</label>
-                    <CustomDropdown
-                        value={filters.companyName}
-                        onChange={(value) => handleFilterChange('companyName', value)}
-                        options={getUniqueCompanies()}
-                    />
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                {/* Filter Button */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    style={{
+                      padding: '8px 14px',
+                      backgroundColor: 'white',
+                      color: '#3b82f6',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#f3f4f6';
+                      e.target.style.borderColor = '#3b82f6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <span>+ Filter</span>
+                  </button>
+
+                  {/* Filter Menu Dropdown */}
+                  {showFilters && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        marginTop: '8px',
+                        backgroundColor: 'white',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        zIndex: 1000,
+                        minWidth: '200px'
+                      }}
+                    >
+                      {[
+                        { label: 'Account Name', key: 'companyName', mandatory: true },
+                        { label: 'Product', key: 'product', mandatory: true },
+                        { label: 'Renewal Timeline', key: 'qtr', mandatory: true }
+                      ].map((filterOption) => (
+                        <div
+                          key={filterOption.key}
+                          onClick={() => {
+                            setActiveFilterMenu(filterOption.key);
+                            setShowFilters(false);
+                          }}
+                          style={{
+                            padding: '12px 16px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px',
+                            color: '#1f2937',
+                            transition: 'background-color 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                        >
+                          {filterOption.label}
+                          {filterOption.mandatory && (
+                            <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="filter-group">
-                    <label>Product</label>
-                    <CustomProductDropdown
-                        value={filters.product}
-                        onChange={(value) => handleFilterChange('product', value)}
-                        options={getUniqueProducts()}
-                        renderIcon={renderProductIcon}
-                    />
-                </div>
+                {/* Account Name Filter Chip */}
+                {activeFilterMenu === 'companyName' && (
+                  <div style={{ position: 'relative' }}>
+                    <div style={{
+                      backgroundColor: '#fef3c7',
+                      border: '1px solid #fcd34d',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#92400e'
+                    }}>
+                      <span>Account Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <button
+                        onClick={() => {
+                          setActiveFilterMenu(null);
+                          setFilters(prev => ({ ...prev, companyName: '' }));
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          padding: '0',
+                          color: '#92400e',
+                          lineHeight: '1'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '250px',
+                      maxHeight: '300px',
+                      overflowY: 'auto'
+                    }}>
+                      <div
+                        onClick={() => {
+                          handleFilterChange('companyName', '');
+                          setActiveFilterMenu(null);
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                          backgroundColor: filters.companyName === '' ? '#f3f4f6' : 'white',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === '' ? '#f3f4f6' : 'white'}
+                      >
+                        All
+                      </div>
+                      {getUniqueCompanies().map((option, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            handleFilterChange('companyName', option);
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: filters.companyName === option ? '#dbeafe' : 'white',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === option ? '#dbeafe' : 'white'}
+                        >
+                          {option}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                <div className="filter-group">
-                    <label>Renewal Timelines</label>
-                    <CustomDropdown
-                        value={filters.qtr}
-                        onChange={(value) => handleFilterChange('qtr', value)}
-                        options={getUniqueQtrs()}
-                    />
+                {/* Product Filter Chip */}
+                {activeFilterMenu === 'product' && (
+                  <div style={{ position: 'relative' }}>
+                    <div style={{
+                      backgroundColor: '#fef3c7',
+                      border: '1px solid #fcd34d',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#92400e'
+                    }}>
+                      <span>Product <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <button
+                        onClick={() => {
+                          setActiveFilterMenu(null);
+                          setFilters(prev => ({ ...prev, product: '' }));
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          padding: '0',
+                          color: '#92400e',
+                          lineHeight: '1'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '250px',
+                      maxHeight: '300px',
+                      overflowY: 'auto'
+                    }}>
+                      <div
+                        onClick={() => {
+                          handleFilterChange('product', '');
+                          setActiveFilterMenu(null);
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                          backgroundColor: filters.product === '' ? '#f3f4f6' : 'white',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === '' ? '#f3f4f6' : 'white'}
+                      >
+                        All
+                      </div>
+                      {getUniqueProducts().map((option, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            handleFilterChange('product', option);
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: filters.product === option ? '#dbeafe' : 'white',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            justifyContent: 'space-between'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === option ? '#dbeafe' : 'white'}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {renderProductIcon(option)}
+                            {option}
+                          </div>
+                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                            {getAccountCountByProduct(option)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Renewal Timeline Filter Chip */}
+                {activeFilterMenu === 'qtr' && (
+                  <div style={{ position: 'relative' }}>
+                    <div style={{
+                      backgroundColor: '#fef3c7',
+                      border: '1px solid #fcd34d',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#92400e'
+                    }}>
+                      <span>Renewal Timeline <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <button
+                        onClick={() => {
+                          setActiveFilterMenu(null);
+                          setFilters(prev => ({ ...prev, qtr: '' }));
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          padding: '0',
+                          color: '#92400e',
+                          lineHeight: '1'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '250px',
+                      maxHeight: '300px',
+                      overflowY: 'auto'
+                    }}>
+                      <div
+                        onClick={() => {
+                          handleFilterChange('qtr', '');
+                          setActiveFilterMenu(null);
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                          backgroundColor: filters.qtr === '' ? '#f3f4f6' : 'white',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr === '' ? '#f3f4f6' : 'white'}
+                      >
+                        All
+                      </div>
+                      {getUniqueQtrs().map((option, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            handleFilterChange('qtr', option);
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: filters.qtr === option ? '#dbeafe' : 'white',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr === option ? '#dbeafe' : 'white'}
+                        >
+                          <span>{option}</span>
+                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                            {getAccountCountByQtr(option)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Display saved filter tags */}
+                {filters.companyName && activeFilterMenu !== 'companyName' && (
+                  <div style={{
+                    backgroundColor: '#fef3c7',
+                    border: '1px solid #fcd34d',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#92400e',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('companyName')}
+                  >
+                    <span>Account Name: {filters.companyName} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, companyName: '' }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#92400e',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
+                {filters.product && activeFilterMenu !== 'product' && (
+                  <div style={{
+                    backgroundColor: '#fef3c7',
+                    border: '1px solid #fcd34d',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#92400e',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('product')}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {renderProductIcon(filters.product)}
+                      Product: {filters.product} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, product: '' }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#92400e',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
+                {filters.qtr && activeFilterMenu !== 'qtr' && (
+                  <div style={{
+                    backgroundColor: '#fef3c7',
+                    border: '1px solid #fcd34d',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#92400e',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('qtr')}
+                  >
+                    <span>Renewal Timeline: {filters.qtr} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, qtr: '' }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#92400e',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
                 </div>
+                
+                {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+                {filters.companyName && filters.product && filters.qtr && (
+                  <button
+                    onClick={() => downloadCSV(filteredData)}
+                    className="download-csv-button"
+                    style={{ flexShrink: 0 }}
+                  >
+                    <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="12" y1="13" x2="12" y2="17"></line>
+                      <line x1="8" y1="13" x2="8" y2="17"></line>
+                      <line x1="16" y1="13" x2="16" y2="17"></line>
+                    </svg>
+                    Download CSV
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Message for mandatory filters */}
+            {(!filters.companyName || !filters.product || !filters.qtr) && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '20px',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{
+                  backgroundColor: '#fef3c7',
+                  border: '1px solid #fcd34d',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  maxWidth: 'fit-content'
+                }}>
+                  <div style={{
+                    fontSize: '18px',
+                    color: '#d97706',
+                    flexShrink: 0
+                  }}>
+                    ⓘ
+                  </div>
+                  <div style={{
+                    fontSize: '13px',
+                    color: '#92400e',
+                    fontWeight: '500'
+                  }}>
+                    {!filters.companyName && !filters.product && !filters.qtr ? (
+                      'Please select Account Name, Product, and Renewal Timeline to view data'
+                    ) : !filters.companyName ? (
+                      'Please select an Account Name to view data'
+                    ) : !filters.product ? (
+                      'Please select a Product to view data'
+                    ) : (
+                      'Please select a Renewal Timeline to view data'
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => downloadCSV(filteredData)}
+                  className="download-csv-button"
+                  style={{ flexShrink: 0 }}
+                >
+                  <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="13" x2="12" y2="17"></line>
+                    <line x1="8" y1="13" x2="8" y2="17"></line>
+                    <line x1="16" y1="13" x2="16" y2="17"></line>
+                  </svg>
+                  Download CSV
+                </button>
+              </div>
+            )}
 
             {/* Main Content Container */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px', minWidth: 0 }}>
@@ -485,18 +1125,9 @@ const RenewalIntelligence = () => {
                         <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             Loading data...
                         </div>
-                    ) : filteredData.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {filters.companyName || filters.product || filters.qtr ? 'No data available' : 'Select filters to view renewal data'}
-                        </div>
                     ) : (
                         <div className="table-container">
                             <table>
-                                <colgroup>
-                                    <col style={{ width: '40%' }} />
-                                    <col style={{ width: '15%' }} />
-                                    <col style={{ width: '20%' }} />
-                                </colgroup>
                                 <thead className="sticky-header">
                                     <tr>
                                         <th style={{ textAlign: 'left' }}>Account Name</th>
@@ -505,46 +1136,54 @@ const RenewalIntelligence = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredData.map((row, index) => (
-                                        <tr key={index}>
-                                            <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.companyName,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                {row.companyName}
-                                            </td>
-                                            <td onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.product,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                <span style={{ display: 'flex', alignItems: 'center' }}>
-                                                    {renderProductIcon(row.product)}
-                                                    {row.product}
-                                                </span>
-                                            </td>
-                                            <td onMouseEnter={(e) => {
-                                                const rect = e.target.getBoundingClientRect();
-                                                setTooltip({
-                                                    show: true,
-                                                    text: row.qtr,
-                                                    x: rect.right - 20,
-                                                    y: rect.bottom + 20
-                                                });
-                                            }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                {row.qtr}
+                                    {filteredData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
+                                                {filters.companyName || filters.product || filters.qtr ? 'No data available' : ''}
                                             </td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        filteredData.map((row, index) => (
+                                            <tr key={index}>
+                                                <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.companyName,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    {row.companyName}
+                                                </td>
+                                                <td onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.product,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                                                        {renderProductIcon(row.product)}
+                                                        {row.product}
+                                                    </span>
+                                                </td>
+                                                <td onMouseEnter={(e) => {
+                                                    const rect = e.target.getBoundingClientRect();
+                                                    setTooltip({
+                                                        show: true,
+                                                        text: row.qtr,
+                                                        x: rect.right - 20,
+                                                        y: rect.bottom + 20
+                                                    });
+                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                    {row.qtr}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -708,26 +1347,27 @@ const RenewalIntelligence = () => {
                 .sticky-header {
                     position: sticky;
                     top: 0;
-                    background-color: #f8f9fa;
+                    background-color: #fff;
                     z-index: 10;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
                 /* keep THs non-sticky individually to avoid width/offset misalignment */
                 .sticky-header th {
-                    position: relative;
+                    position: sticky;
+                    top: 0;
                 }
 
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    table-layout: auto;
+                    table-layout: fixed;
                     min-width: 0;
                     box-sizing: border-box;
                 }
 
                 th, td {
-                    padding: 3px 6px;
+                    padding: 12px 15px;
                     font-size: 13px;
                     text-align: left;
                     border-bottom: 1px solid #ddd;

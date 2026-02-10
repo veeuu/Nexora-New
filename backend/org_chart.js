@@ -21,7 +21,7 @@ const CONFIG = {
   VERTICAL_GAP: 0.15,
   TOP_PADDING: 0.12,
   SIDE_PADDING: 0.05,
-  MAX_CHARS_PER_LINE: 16,
+  MAX_CHARS_PER_LINE: 20,
   MAX_NAME_LINES: 1,
   MAX_ROLE_LINES: 2,
   CHART_GLOBAL_X_OFFSET: 0.8,
@@ -43,8 +43,8 @@ const CONFIG = {
   FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 12,
-  ROLE_TEXT_SIZE: 10,
+  NAME_TEXT_SIZE: 15,
+  ROLE_TEXT_SIZE: 12,
 
   // Canvas dimensions
   CANVAS_WIDTH: 900,
@@ -134,9 +134,16 @@ function buildTreeFromData(data) {
     const role = String(row.Role || 'N/A');
     const reportsTo = row['Reports To'];
     const hierarchy = String(row.hierarchy || 'Other').trim();
+    
+    // Extract person details from the row
+    const uniqueId = row['Unique ID'] || '';
+    const companyName = row['Company Name'] || '';
+    const linkedin = row['Linkedin'] || '';
+    const email = row['email'] || '';
+    const category = row['Category'] || 'N/A';
 
     let managerName = null;
-    if (reportsTo && String(reportsTo).trim()) {
+    if (reportsTo && String(reportsTo).trim() && String(reportsTo).trim() !== '-') {
       managerName = String(reportsTo).trim();
       if (!allNamesInInput.has(managerName)) {
         managerName = null;
@@ -152,7 +159,13 @@ function buildTreeFromData(data) {
       level: -1,
       y: 0.0,
       x: 0.0,
-      cached_width: 0.0
+      cached_width: 0.0,
+      // Person details for side panel
+      uniqueId,
+      companyName,
+      linkedin,
+      email,
+      category
     };
   }
 
@@ -518,7 +531,9 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       fillcolor: nodeFillColor,
       line: { color: nodeFillColor, width: 0 },
       xref: 'x',
-      yref: 'y'
+      yref: 'y',
+      name: originalName,
+      category: empData.category || 'N/A'
     });
 
     // Add text annotation using Plotly annotations
@@ -538,7 +553,9 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       yref: 'y',
       align: 'center',
       xanchor: 'center',
-      yanchor: 'middle'
+      yanchor: 'middle',
+      name: originalName,
+      category: empData.category || 'N/A'
     });
   }
 
@@ -677,6 +694,10 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       height: 100%;
       background-color: white;
     }
+    .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-Cloud rect { stroke: #000000ff !important; stroke-width: 3 !important; }
   </style>
 </head>
 <body>
@@ -695,6 +716,65 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
+
+    // Store shapes data for highlighting
+    window.shapesData = layout.shapes || [];
+
+    // Listen for messages from parent window
+    window.addEventListener('message', function(event) {
+      console.log('Message received in iframe:', event.data);
+      
+      if (event.data && event.data.type === 'highlightCategory') {
+        const category = event.data.category;
+        console.log('Highlighting category:', category);
+        
+        // Get the Plotly plot div
+        const plotDiv = document.querySelector('#chart');
+        console.log('Plot div found:', !!plotDiv);
+        
+        if (!plotDiv || !plotDiv.data) return;
+
+        // Access Plotly's internal data
+        const layout = plotDiv.layout;
+        if (!layout || !layout.shapes) {
+          console.log('No shapes found in layout');
+          return;
+        }
+
+        console.log('Total shapes:', layout.shapes.length);
+
+        // Update shapes based on category
+        layout.shapes.forEach((shape, index) => {
+          console.log('Shape', index, '- category:', shape.category);
+          
+          // Reset line
+          shape.line = shape.line || {};
+          
+          if (category === 'All') {
+            shape.line.width = 0;
+            shape.line.color = shape.fillcolor;
+          } else if (shape.category === category) {
+            // Highlight matching category
+            const categoryColors = {
+              'IT': '#000000ff',
+              'Generalized': '#000000ff',
+              'AI': '#000000',
+              'Cloud': '#000000ff'
+            };
+            shape.line.width = 3;
+            shape.line.color = categoryColors[category] || '#000';
+            console.log('Highlighting shape with category:', category);
+          } else {
+            shape.line.width = 0;
+            shape.line.color = shape.fillcolor;
+          }
+        });
+
+        // Redraw the plot
+        Plotly.relayout(plotDiv, layout);
+        console.log('Plot redrawn');
+      }
+    });
   </script>
 </body>
 </html>`;
@@ -771,7 +851,7 @@ function getCompaniesFromExcel(excelFilePath) {
 // ================================
 
 async function main() {
-  const excelFilePath = 'AI_sample (1).xlsx';
+  const excelFilePath = 'nexora Buying group.xlsx';
   const OUTPUT_FOLDER = 'org_charts_output_js';
 
   try {
@@ -780,14 +860,11 @@ async function main() {
       fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
       console.log(`✓ Created directory: ${OUTPUT_FOLDER}`);
     } else {
-      // Clean up old PNG and HTML files (keep only mapping and zip)
-      const files = fs.readdirSync(OUTPUT_FOLDER);
-      for (const file of files) {
-        if (file.endsWith('.png') || (file.endsWith('.html') && file !== 'personDetails.csv')) {
-          const filePath = path.join(OUTPUT_FOLDER, file);
-          fs.unlinkSync(filePath);
-          console.log(`✓ Removed old file: ${file}`);
-        }
+      // Check for existing HTML files to avoid regenerating
+      const existingFiles = fs.readdirSync(OUTPUT_FOLDER);
+      const existingHtmlFiles = existingFiles.filter(f => f.endsWith('.html'));
+      if (existingHtmlFiles.length > 0) {
+        console.log(`✓ Found ${existingHtmlFiles.length} existing org chart(s). Will only generate new ones.`);
       }
     }
 
@@ -833,10 +910,21 @@ async function main() {
     const chartMappingData = [];
     const allPersonDetails = [];
 
+    // Get existing HTML files to avoid regenerating
+    const existingFiles = fs.readdirSync(OUTPUT_FOLDER).filter(f => f.endsWith('.html'));
+    const existingCompanies = new Set();
+    
+    for (const file of existingFiles) {
+      // Extract company name from filename (remove .html extension)
+      const companyKey = file.replace('.html', '');
+      existingCompanies.add(companyKey);
+    }
+
+    let newChartsGenerated = 0;
+    let chartsSkipped = 0;
+
     // Generate charts for each company
     for (const companyName of uniqueCompanies) {
-      console.log(`\nGenerating chart for company: ${companyName}...`);
-
       const companyData = data.filter(row => row['Company Name'] === companyName);
 
       if (!companyData.length) {
@@ -854,7 +942,7 @@ async function main() {
         companyLocation = String(companyData[0]['Location']).trim();
       }
 
-      // Create filename - now using .html instead of .png
+      // Create filename
       const safeCompanyName = sanitizeFilename(companyName);
       let baseFilename = '';
 
@@ -865,13 +953,23 @@ async function main() {
         baseFilename = `${safeCompanyName}.html`;
       }
 
-      chartMappingData.push({
-        'Account Name': companyName,
-        'Chart Name': baseFilename
-      });
+      // Check if chart already exists
+      const fileKeyWithoutExtension = baseFilename.replace('.html', '');
+      if (existingCompanies.has(fileKeyWithoutExtension)) {
+        console.log(`⊘ Chart already exists for: ${companyName}${companyLocation ? ` (${companyLocation})` : ''}`);
+        chartsSkipped++;
+        
+        // Still add to mapping data
+        chartMappingData.push({
+          'Account Name': companyName,
+          'Chart Name': baseFilename
+        });
+        continue;
+      }
+
+      console.log(`\nGenerating chart for company: ${companyName}...`);
 
       const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
-      const companyId = chartMappingData.length;
 
       // Generate HTML file
       try {
@@ -879,10 +977,34 @@ async function main() {
         fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
         console.log(`✓ Chart for ${companyName} saved to ${outputFilePath}`);
         generatedFiles.push(outputFilePath);
+        newChartsGenerated++;
       } catch (error) {
         console.error(`✗ Error generating HTML for ${companyName}: ${error.message}`);
       }
+
+      // Collect person details from company data
+      for (const person of companyData) {
+        if (person.Name && person.email) {
+          allPersonDetails.push({
+            'Unique ID': person['Unique ID'] || '',
+            'Company Name': person['Company Name'] || '',
+            'Name': person.Name || '',
+            'Role': person.Role || '',
+            'Email': person.email || '',
+            'LinkedIn': person.Linkedin || '',
+            'Reports To': person['Reports To'] || ''
+          });
+        }
+      }
+
+      // Add to mapping data
+      chartMappingData.push({
+        'Account Name': companyName,
+        'Chart Name': baseFilename
+      });
     }
+
+    console.log(`\n📈 Summary: ${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`);
 
     // Create personDetails.csv from the Excel data
     if (allPersonDetails.length > 0) {
@@ -936,25 +1058,6 @@ async function main() {
 }
 
 /**
- * Generate fake email
- */
-function generateFakeEmail(personName) {
-  const domains = ['gmail.com', 'company.com', 'outlook.com', 'yahoo.com'];
-  const nameParts = personName.toLowerCase().split(' ');
-  const domain = domains[Math.floor(Math.random() * domains.length)];
-  return `${nameParts.join('.')}@${domain}`;
-}
-
-/**
- * Generate fake LinkedIn URL
- */
-function generateFakeLinkedIn(personName) {
-  const nameParts = personName.toLowerCase().split(' ');
-  const randomNum = Math.floor(Math.random() * 9000) + 1000;
-  return `https://linkedin.com/in/${nameParts.join('-')}-${randomNum}`;
-}
-
-/**
  * Convert array of objects to CSV string
  */
 function convertToCSV(data) {
@@ -982,3 +1085,8 @@ function convertToCSV(data) {
 // main().catch(console.error);
 
 module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromExcel };
+
+// Uncomment to run directly
+if (require.main === module) {
+  main().catch(console.error);
+}

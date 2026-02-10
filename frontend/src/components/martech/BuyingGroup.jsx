@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import nexoraLogo from '../../assets/nexora-logo.png';
 
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
-    const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [orgChartHtml, setOrgChartHtml] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -12,48 +14,6 @@ const BuyingGroup = () => {
     const [personDetailsData, setPersonDetailsData] = useState({});
     const [infoIconHovered, setInfoIconHovered] = useState(false);
     const iframeRef = useRef(null);
-
-    // Parse CSV data
-    const parseCSV = (csvText) => {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',');
-        const data = {};
-
-        for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            const row = {};
-            headers.forEach((header, index) => {
-                row[header.trim()] = values[index]?.trim();
-            });
-
-            const companyId = parseInt(row.companyId);
-            if (!data[companyId]) {
-                data[companyId] = [];
-            }
-
-            // Helper function to remove quotes from values
-            const cleanValue = (value) => {
-                if (!value) return value;
-                return value.replace(/^["']|["']$/g, '').trim();
-            };
-
-            data[companyId].push({
-                id: row.personName.toLowerCase().replace(/\s+/g, '-'),
-                name: cleanValue(row.personName),
-                designation: cleanValue(row.designation),
-                email: cleanValue(row.email),
-                linkedin: cleanValue(row.linkedin),
-                position: {
-                    x: parseInt(row.positionX),
-                    y: parseInt(row.positionY),
-                    width: parseInt(row.positionWidth),
-                    height: parseInt(row.positionHeight)
-                }
-            });
-        }
-
-        return data;
-    };
 
     // Fetch list of companies on component mount
     useEffect(() => {
@@ -64,7 +24,6 @@ const BuyingGroup = () => {
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
                     setSelectedCompany(data.companies[0]);
-                    setSelectedCompanyId(1); // First company has ID 1
                 }
             } catch (err) {
                 console.error('Error fetching companies:', err);
@@ -74,15 +33,31 @@ const BuyingGroup = () => {
         fetchCompanies();
     }, []);
 
-    // Fetch person details CSV on component mount
+    // Fetch categories on component mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/org-chart/categories');
+                const data = await response.json();
+                setCategories(data.categories || []);
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Fetch person details from Excel file on component mount (no category filter)
     useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/org-chart/person-details');
                 if (response.ok) {
-                    const csvText = await response.text();
-                    const parsedData = parseCSV(csvText);
-                    setPersonDetailsData(parsedData);
+                    const data = await response.json();
+                    console.log('Person details data received:', data);
+                    setPersonDetailsData(data);
+                } else {
+                    console.error('Failed to fetch person details, status:', response.status);
                 }
             } catch (err) {
                 console.error('Error loading person details:', err);
@@ -99,6 +74,20 @@ const BuyingGroup = () => {
             setLoading(true);
             setError('');
             try {
+                // First, request to generate the org chart for this specific company
+                const generateResponse = await fetch('http://localhost:5000/api/org-chart/generate-selected', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ companies: [selectedCompany] })
+                });
+
+                if (!generateResponse.ok) {
+                    console.warn('Could not pre-generate chart, will fetch on-demand');
+                }
+
+                // Then fetch the org chart
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
                 const response = await fetch(`http://localhost:5000/api/org-chart/${encodedCompanyName}`);
                 
@@ -113,19 +102,43 @@ const BuyingGroup = () => {
                 setError('Failed to generate org chart. Please try again.');
                 setOrgChartHtml('');
             } finally {
-                setLoading(false);
+                // Add 2-second delay before hiding loading screen
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
             }
         };
 
         fetchOrgChart();
     }, [selectedCompany]);
 
+    // Apply category highlighting to org chart when category changes
+    useEffect(() => {
+        if (!iframeRef.current || !orgChartHtml) return;
+
+        const iframe = iframeRef.current.querySelector('iframe');
+        if (!iframe) return;
+
+        // Wait for iframe to load and send message
+        const applyHighlighting = () => {
+            try {
+                console.log('Sending highlight message for category:', selectedCategory);
+                iframe.contentWindow.postMessage({
+                    type: 'highlightCategory',
+                    category: selectedCategory
+                }, '*');
+            } catch (err) {
+                console.log('Cannot send message to iframe:', err);
+            }
+        };
+
+        // Apply highlighting after iframe loads
+        setTimeout(applyHighlighting, 500);
+    }, [selectedCategory, orgChartHtml]);
+
     const handleCompanyChange = (e) => {
         const companyName = e.target.value;
         setSelectedCompany(companyName);
-        // Find the index of the selected company to use as ID
-        const companyIndex = companies.indexOf(companyName);
-        setSelectedCompanyId(companyIndex >= 0 ? companyIndex + 1 : null);
         setShowPanel(false);
     };
 
@@ -139,22 +152,104 @@ const BuyingGroup = () => {
 
     // Get persons for selected company
     const getCompanyPersons = () => {
-        if (!selectedCompanyId || !personDetailsData[selectedCompanyId]) {
+        if (!selectedCompany || !personDetailsData[selectedCompany]) {
             return [];
         }
-        return personDetailsData[selectedCompanyId];
+        return personDetailsData[selectedCompany];
     };
 
     const companyPersons = getCompanyPersons();
 
+    if (loading) {
+      return (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '800px',
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '40px 20px'
+        }}>
+          {/* Nexora Logo */}
+          <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
+
+          {/* Loading Text */}
+          <h3 style={{
+            margin: '0 0 10px 0',
+            color: '#1f2937',
+            fontSize: '18px',
+            fontWeight: '600'
+          }}>
+            
+          </h3>
+
+          {/* Subtext */}
+          <p style={{
+            margin: '0 0 30px 0',
+            color: '#6b7280',
+            fontSize: '14px',
+            textAlign: 'center',
+            maxWidth: '300px'
+          }}>
+            Fetching and processing organizational structure...
+          </p>
+
+          {/* Progress Dots */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center'
+          }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite 0.2s'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              animation: 'bounce 1.4s infinite 0.4s'
+            }} />
+          </div>
+
+          {/* Styles for animations */}
+          <style>{`
+            @keyframes bounce {
+              0%, 80%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+              }
+              40% {
+                opacity: 1;
+                transform: translateY(-10px);
+              }
+            }
+          `}</style>
+        </div>
+      );
+    }
+
     return (
         <div className="buying-group-container" style={{ padding: '20px', backgroundColor: 'white', minHeight: '100vh' }}>
-            <h1 style={{ fontSize: 'clamp(1.2rem, 2vw, 1.4rem)', fontWeight: '700', color: '#1f2937', marginBottom: '20px' }}>
+            <h1 style={{ fontSize: 'clamp(2.0rem, 3vw, 2.0rem)', fontWeight: '700', color: '#1f2937', marginBottom: '20px' }}>
                 Buying Group
             </h1>
 
             {/* Filter Section */}
-            <div className="filters" style={{ marginBottom: '20px' }}>
+            <div className="filters" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px' }}>
                 <div className="filter-group">
                     <label>Company Name</label>
                     <select
@@ -169,6 +264,70 @@ const BuyingGroup = () => {
                             </option>
                         ))}
                     </select>
+                </div>
+                <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                    {/* <label style={{ textAlign: 'center' }}>Category</label> */}
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={() => setSelectedCategory('All')}
+                            style={{
+                                padding: '10px 16px',
+                                border: selectedCategory === 'All' ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: selectedCategory === 'All' ? '600' : '500',
+                                backgroundColor: selectedCategory === 'All' ? '#3b82f6' : 'white',
+                                color: selectedCategory === 'All' ? 'white' : '#374151',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedCategory !== 'All') {
+                                    e.target.style.borderColor = '#9ca3af';
+                                    e.target.style.backgroundColor = '#f9fafb';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedCategory !== 'All') {
+                                    e.target.style.borderColor = '#d1d5db';
+                                    e.target.style.backgroundColor = 'white';
+                                }
+                            }}
+                        >
+                            All
+                        </button>
+                        {categories.map((category, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setSelectedCategory(category)}
+                                style={{
+                                    padding: '10px 16px',
+                                    border: selectedCategory === category ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontWeight: selectedCategory === category ? '600' : '500',
+                                    backgroundColor: selectedCategory === category ? '#3b82f6' : 'white',
+                                    color: selectedCategory === category ? 'white' : '#374151',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (selectedCategory !== category) {
+                                        e.target.style.borderColor = '#9ca3af';
+                                        e.target.style.backgroundColor = '#f9fafb';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (selectedCategory !== category) {
+                                        e.target.style.borderColor = '#d1d5db';
+                                        e.target.style.backgroundColor = 'white';
+                                    }
+                                }}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
