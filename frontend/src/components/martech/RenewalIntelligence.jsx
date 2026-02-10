@@ -1107,7 +1107,13 @@ const RenewalIntelligence = () => {
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredData.map((row, index) => (
+                                        (() => {
+                                          const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                          const startIndex = (currentPage - 1) * rowsPerPage;
+                                          const endIndex = startIndex + rowsPerPage;
+                                          const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                                          return paginatedData.map((row, index) => (
                                             <tr key={index}>
                                                 <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
                                                     const rect = e.target.getBoundingClientRect();
@@ -1146,7 +1152,8 @@ const RenewalIntelligence = () => {
                                                     {row.qtr}
                                                 </td>
                                             </tr>
-                                        ))
+                                          ))
+                                        })()
                                     )}
                                 </tbody>
                             </table>
