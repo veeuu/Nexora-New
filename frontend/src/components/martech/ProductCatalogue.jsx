@@ -194,37 +194,18 @@ const ProductCatalogue = () => {
 
   return (
     <div className="product-catalogue-container">
-      <h2>Product Catalogue</h2>
-      <div className="header-actions">
-        <div className="actions-left">
-          {/* <div className="search-bar">
-            <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <input 
-              type="text" 
-              placeholder="Search products..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="10" cy="10" r="7"></circle>
-              <path d="m20 20-4.5-4.5"></path>
-            </svg>
-          </div> */}
-        </div>
-        <div className="actions-right">
-          <div className="year-dropdown">
-            <label className="year-label">Year :</label>
-            <select 
-              value={selectedYear}
-              onChange={(e) => handleYearChange(e.target.value)}
-              className="year-select"
-            >
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <h2 style={{ margin: 0 }}>Product Catalogue</h2>
+        <div className="year-dropdown">
+          <label className="year-label">Year :</label>
+          <select 
+            value={selectedYear}
+            onChange={(e) => handleYearChange(e.target.value)}
+            className="year-select"
+          >
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
         </div>
       </div>
       <div className="section-subtle-divider" />
