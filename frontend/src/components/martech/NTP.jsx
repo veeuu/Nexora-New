@@ -544,7 +544,7 @@ const NTP = () => {
   return (
     <div className="ntp-container">
       <div className="header-actions">
-        <h2>NTP®</h2>
+        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>NTP®</h2>
         <div className="actions-right" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
           {/* <div className="search-bar">
             <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

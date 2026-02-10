@@ -315,7 +315,7 @@ const Intent = () => {
   return (
     <div className="intent-container">
       <div className="header-actions">
-        <h2>Intent Data</h2>
+        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
           {/* <div className="search-bar">
             <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
