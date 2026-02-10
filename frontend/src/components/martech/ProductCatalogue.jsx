@@ -223,7 +223,7 @@ const ProductCatalogue = () => {
   return (
     <div className="product-catalogue-container">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h2 style={{ margin: 0 }}>Product Catalogue</h2>
+        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Product Catalogue</h2>
         <div className="year-dropdown">
           <label className="year-label">Year :</label>
           <select 

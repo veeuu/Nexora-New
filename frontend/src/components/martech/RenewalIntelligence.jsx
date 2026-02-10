@@ -512,7 +512,7 @@ const RenewalIntelligence = () => {
     return (
         <div className="renewal-intelligence-container">
             <div className="header-actions">
-                <h2>Renewal Intelligence</h2>
+                <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
                   {/* <div className="search-bar">
                     <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
