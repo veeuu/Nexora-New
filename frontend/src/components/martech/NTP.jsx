@@ -437,7 +437,7 @@ const NTP = () => {
           src={nexoraLogo} 
           alt="Nexora" 
           style={{
-            width: '200px',
+            width: '250px',
             height: 'auto',
             marginBottom: '30px',
             opacity: 0.9
