@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
@@ -191,15 +191,16 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
 
 const RenewalIntelligence = () => {
     const [filters, setFilters] = useState({
-        companyName: '',
-        product: '',
-        qtr: ''
+        companyName: [],
+        product: [],
+        qtr: []
     });
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
+    const filterRef = useRef(null);
 
     // Icon mapping for products
     const getProductIcon = (productName) => {
@@ -323,14 +324,12 @@ const RenewalIntelligence = () => {
         );
     };
 
-    // Fetch renewal data when company is selected
+    // Fetch renewal data once on component mount
     useEffect(() => {
         setLoading(true);
         const fetchRenewalData = async () => {
             try {
-                // If a company is selected, add it as a query parameter. Otherwise, fetch all data.
-                const url = filters.companyName ? `/api/renewal-intelligence?companyName=${encodeURIComponent(filters.companyName)}` : '/api/renewal-intelligence';
-                const response = await fetch(url);
+                const response = await fetch('/api/renewal-intelligence');
                 const data = await response.json();
                 setTableData(data);
             } catch (error) {
@@ -344,7 +343,22 @@ const RenewalIntelligence = () => {
             }
         };
         fetchRenewalData();
-    }, [filters.companyName]);
+    }, []);
+
+    // Handle click outside to close dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterRef.current && !filterRef.current.contains(event.target)) {
+                setActiveFilterMenu(null);
+                setShowFilters(false);
+            }
+        };
+
+        if (activeFilterMenu || showFilters) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [activeFilterMenu, showFilters]);
 
     const handleFilterChange = (name, value) => {
         setFilters(prev => ({
@@ -424,10 +438,16 @@ const RenewalIntelligence = () => {
         return uniqueAccounts.size;
     };
 
+    // Check if mandatory filters are selected
+    const hasMandatoryFilters = filters.companyName.length > 0 && filters.product.length > 0 && filters.qtr.length > 0;
+
     const filteredData = tableData.filter(row => {
-        const companyMatch = !filters.companyName || row.companyName === filters.companyName;
-        const productMatch = !filters.product || row.product === filters.product;
-        const qtrMatch = !filters.qtr || row.qtr === filters.qtr;
+        // Mandatory filters - must have all three: company name, product, and qtr
+        if (!hasMandatoryFilters) return false;
+
+        const companyMatch = filters.companyName.includes(row.companyName);
+        const productMatch = filters.product.includes(row.product);
+        const qtrMatch = filters.qtr.includes(row.qtr);
         return companyMatch && productMatch && qtrMatch;
     });
 
@@ -586,7 +606,7 @@ const RenewalIntelligence = () => {
 
             <div className="section-subtle-divider" />
 
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '20px' }} ref={filterRef}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 {/* Filter Button */}
@@ -684,11 +704,11 @@ const RenewalIntelligence = () => {
                       gap: '8px',
                       color: '#92400e'
                     }}>
-                      <span>Account Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
-                          setFilters(prev => ({ ...prev, companyName: '' }));
+                          setFilters(prev => ({ ...prev, companyName: [] }));
                         }}
                         style={{
                           background: 'none',
@@ -719,38 +739,71 @@ const RenewalIntelligence = () => {
                     }}>
                       <div
                         onClick={() => {
-                          handleFilterChange('companyName', '');
-                          setActiveFilterMenu(null);
+                          if (filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0) {
+                            // If all are selected, deselect all
+                            handleFilterChange('companyName', []);
+                          } else {
+                            // Otherwise select all
+                            handleFilterChange('companyName', getUniqueCompanies());
+                          }
                         }}
                         style={{
                           padding: '10px 12px',
                           cursor: 'pointer',
-                          backgroundColor: filters.companyName === '' ? '#f3f4f6' : 'white',
+                          backgroundColor: filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white',
                           borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px'
+                          fontSize: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
                         }}
                         onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === '' ? '#f3f4f6' : 'white'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white'}
                       >
+                        <input
+                          type="checkbox"
+                          checked={filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
                         All
                       </div>
                       {getUniqueCompanies().map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
-                            handleFilterChange('companyName', option);
-                            setActiveFilterMenu(null);
+                            const newCompanies = filters.companyName.includes(option)
+                              ? filters.companyName.filter(c => c !== option)
+                              : [...filters.companyName, option];
+                            handleFilterChange('companyName', newCompanies);
                           }}
                           style={{
                             padding: '10px 12px',
                             cursor: 'pointer',
-                            backgroundColor: filters.companyName === option ? '#dbeafe' : 'white',
+                            backgroundColor: filters.companyName.includes(option) ? '#dbeafe' : 'white',
                             borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px'
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
                           }}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName === option ? '#dbeafe' : 'white'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.includes(option) ? '#dbeafe' : 'white'}
                         >
+                          <input
+                            type="checkbox"
+                            checked={filters.companyName.includes(option)}
+                            onChange={() => {}}
+                            style={{
+                              cursor: 'pointer',
+                              width: '16px',
+                              height: '16px'
+                            }}
+                          />
                           {option}
                         </div>
                       ))}
@@ -772,11 +825,11 @@ const RenewalIntelligence = () => {
                       gap: '8px',
                       color: '#92400e'
                     }}>
-                      <span>Product <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
-                          setFilters(prev => ({ ...prev, product: '' }));
+                          setFilters(prev => ({ ...prev, product: [] }));
                         }}
                         style={{
                           background: 'none',
@@ -807,13 +860,18 @@ const RenewalIntelligence = () => {
                     }}>
                       <div
                         onClick={() => {
-                          handleFilterChange('product', '');
-                          setActiveFilterMenu(null);
+                          if (filters.product.length === getUniqueProducts().length && filters.product.length > 0) {
+                            // If all are selected, deselect all
+                            handleFilterChange('product', []);
+                          } else {
+                            // Otherwise select all
+                            handleFilterChange('product', getUniqueProducts());
+                          }
                         }}
                         style={{
                           padding: '10px 12px',
                           cursor: 'pointer',
-                          backgroundColor: filters.product === '' ? '#f3f4f6' : 'white',
+                          backgroundColor: filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white',
                           borderBottom: '1px solid #e5e7eb',
                           fontSize: '14px',
                           display: 'flex',
@@ -821,21 +879,33 @@ const RenewalIntelligence = () => {
                           gap: '8px'
                         }}
                         onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === '' ? '#f3f4f6' : 'white'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white'}
                       >
+                        <input
+                          type="checkbox"
+                          checked={filters.product.length === getUniqueProducts().length && filters.product.length > 0}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
                         All
                       </div>
                       {getUniqueProducts().map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
-                            handleFilterChange('product', option);
-                            setActiveFilterMenu(null);
+                            const newProducts = filters.product.includes(option)
+                              ? filters.product.filter(p => p !== option)
+                              : [...filters.product, option];
+                            handleFilterChange('product', newProducts);
                           }}
                           style={{
                             padding: '10px 12px',
                             cursor: 'pointer',
-                            backgroundColor: filters.product === option ? '#dbeafe' : 'white',
+                            backgroundColor: filters.product.includes(option) ? '#dbeafe' : 'white',
                             borderBottom: '1px solid #e5e7eb',
                             fontSize: '14px',
                             display: 'flex',
@@ -844,9 +914,19 @@ const RenewalIntelligence = () => {
                             justifyContent: 'space-between'
                           }}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === option ? '#dbeafe' : 'white'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.includes(option) ? '#dbeafe' : 'white'}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="checkbox"
+                              checked={filters.product.includes(option)}
+                              onChange={() => {}}
+                              style={{
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px'
+                              }}
+                            />
                             {renderProductIcon(option)}
                             {option}
                           </div>
@@ -873,11 +953,11 @@ const RenewalIntelligence = () => {
                       gap: '8px',
                       color: '#92400e'
                     }}>
-                      <span>Renewal Timeline <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
-                          setFilters(prev => ({ ...prev, qtr: '' }));
+                          setFilters(prev => ({ ...prev, qtr: [] }));
                         }}
                         style={{
                           background: 'none',
@@ -908,42 +988,75 @@ const RenewalIntelligence = () => {
                     }}>
                       <div
                         onClick={() => {
-                          handleFilterChange('qtr', '');
-                          setActiveFilterMenu(null);
+                          if (filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0) {
+                            // If all are selected, deselect all
+                            handleFilterChange('qtr', []);
+                          } else {
+                            // Otherwise select all
+                            handleFilterChange('qtr', getUniqueQtrs());
+                          }
                         }}
                         style={{
                           padding: '10px 12px',
                           cursor: 'pointer',
-                          backgroundColor: filters.qtr === '' ? '#f3f4f6' : 'white',
+                          backgroundColor: filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white',
                           borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px'
+                          fontSize: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
                         }}
                         onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr === '' ? '#f3f4f6' : 'white'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white'}
                       >
+                        <input
+                          type="checkbox"
+                          checked={filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
                         All
                       </div>
                       {getUniqueQtrs().map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
-                            handleFilterChange('qtr', option);
-                            setActiveFilterMenu(null);
+                            const newQtrs = filters.qtr.includes(option)
+                              ? filters.qtr.filter(q => q !== option)
+                              : [...filters.qtr, option];
+                            handleFilterChange('qtr', newQtrs);
                           }}
                           style={{
                             padding: '10px 12px',
                             cursor: 'pointer',
-                            backgroundColor: filters.qtr === option ? '#dbeafe' : 'white',
+                            backgroundColor: filters.qtr.includes(option) ? '#dbeafe' : 'white',
                             borderBottom: '1px solid #e5e7eb',
                             fontSize: '14px',
                             display: 'flex',
                             alignItems: 'center',
+                            gap: '8px',
                             justifyContent: 'space-between'
                           }}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr === option ? '#dbeafe' : 'white'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr.includes(option) ? '#dbeafe' : 'white'}
                         >
-                          <span>{option}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="checkbox"
+                              checked={filters.qtr.includes(option)}
+                              onChange={() => {}}
+                              style={{
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px'
+                              }}
+                            />
+                            <span>{option}</span>
+                          </div>
                           <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
                             {getAccountCountByQtr(option)}
                           </span>
@@ -954,7 +1067,7 @@ const RenewalIntelligence = () => {
                 )}
 
                 {/* Display saved filter tags */}
-                {filters.companyName && activeFilterMenu !== 'companyName' && (
+                {filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
                     border: '1px solid #fcd34d',
@@ -969,11 +1082,13 @@ const RenewalIntelligence = () => {
                   }}
                   onClick={() => setActiveFilterMenu('companyName')}
                   >
-                    <span>Account Name: {filters.companyName} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                    </span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFilters(prev => ({ ...prev, companyName: '' }));
+                        setFilters(prev => ({ ...prev, companyName: [] }));
                       }}
                       style={{
                         background: 'none',
@@ -990,7 +1105,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {filters.product && activeFilterMenu !== 'product' && (
+                {filters.product.length > 0 && activeFilterMenu !== 'product' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
                     border: '1px solid #fcd34d',
@@ -1006,13 +1121,12 @@ const RenewalIntelligence = () => {
                   onClick={() => setActiveFilterMenu('product')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {renderProductIcon(filters.product)}
-                      Product: {filters.product} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                      Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
                     </span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFilters(prev => ({ ...prev, product: '' }));
+                        setFilters(prev => ({ ...prev, product: [] }));
                       }}
                       style={{
                         background: 'none',
@@ -1029,7 +1143,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {filters.qtr && activeFilterMenu !== 'qtr' && (
+                {filters.qtr.length > 0 && activeFilterMenu !== 'qtr' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
                     border: '1px solid #fcd34d',
@@ -1044,11 +1158,11 @@ const RenewalIntelligence = () => {
                   }}
                   onClick={() => setActiveFilterMenu('qtr')}
                   >
-                    <span>Renewal Timeline: {filters.qtr} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFilters(prev => ({ ...prev, qtr: '' }));
+                        setFilters(prev => ({ ...prev, qtr: [] }));
                       }}
                       style={{
                         background: 'none',
@@ -1067,7 +1181,7 @@ const RenewalIntelligence = () => {
                 </div>
                 
                 {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-                {filters.companyName && filters.product && filters.qtr && (
+                {filters.companyName.length > 0 && filters.product.length > 0 && filters.qtr.length > 0 && (
                   <button
                     onClick={() => downloadCSV(filteredData)}
                     className="download-csv-button"
@@ -1086,65 +1200,6 @@ const RenewalIntelligence = () => {
               </div>
             </div>
 
-            {/* Message for mandatory filters */}
-            {(!filters.companyName || !filters.product || !filters.qtr) && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '20px',
-                justifyContent: 'space-between'
-              }}>
-                <div style={{
-                  backgroundColor: '#fef3c7',
-                  border: '1px solid #fcd34d',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  maxWidth: 'fit-content'
-                }}>
-                  <div style={{
-                    fontSize: '18px',
-                    color: '#d97706',
-                    flexShrink: 0
-                  }}>
-                    ⓘ
-                  </div>
-                  <div style={{
-                    fontSize: '13px',
-                    color: '#92400e',
-                    fontWeight: '500'
-                  }}>
-                    {!filters.companyName && !filters.product && !filters.qtr ? (
-                      'Please select Account Name, Product, and Renewal Timeline to view data'
-                    ) : !filters.companyName ? (
-                      'Please select an Account Name to view data'
-                    ) : !filters.product ? (
-                      'Please select a Product to view data'
-                    ) : (
-                      'Please select a Renewal Timeline to view data'
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={() => downloadCSV(filteredData)}
-                  className="download-csv-button"
-                  style={{ flexShrink: 0 }}
-                >
-                  <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="12" y1="13" x2="12" y2="17"></line>
-                    <line x1="8" y1="13" x2="8" y2="17"></line>
-                    <line x1="16" y1="13" x2="16" y2="17"></line>
-                  </svg>
-                  Download CSV
-                </button>
-              </div>
-            )}
-
             {/* Main Content Container */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', minWidth: 0 }}>
                 {/* Table Section - Left */}
@@ -1152,6 +1207,18 @@ const RenewalIntelligence = () => {
                     {loading ? (
                         <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             Loading data...
+                        </div>
+                    ) : !hasMandatoryFilters ? (
+                        <div className="table-container">
+                            <table>
+                                <thead className="sticky-header">
+                                    <tr>
+                                        <th style={{ textAlign: 'left' }}>Account Name</th>
+                                        <th style={{ textAlign: 'left' }}>Product</th>
+                                        <th style={{ textAlign: 'left' }}>Renewal QTR</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     ) : (
                         <div className="table-container">
@@ -1167,7 +1234,7 @@ const RenewalIntelligence = () => {
                                     {filteredData.length === 0 ? (
                                         <tr>
                                             <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
-                                                {filters.companyName || filters.product || filters.qtr ? 'No data available' : ''}
+                                                No data available for the selected filters
                                             </td>
                                         </tr>
                                     ) : (
