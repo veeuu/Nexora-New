@@ -958,11 +958,24 @@ const Technographics = () => {
   };
 
   const getNtpDataForCompany = (companyName) => {
-    let data = ntpData.filter(row => row.companyName === companyName);
+    if (!companyName || !ntpData || ntpData.length === 0) {
+      return [];
+    }
     
-    // Filter by selected category if one is chosen
-    if (filters.category) {
-      data = data.filter(row => row.category === filters.category);
+    // Normalize company name for comparison
+    const normalizedCompanyName = String(companyName).trim().toLowerCase();
+    
+    let data = ntpData.filter(row => {
+      const rowCompanyName = String(row.companyName || '').trim().toLowerCase();
+      return rowCompanyName === normalizedCompanyName;
+    });
+    
+    // Filter by selected category if one is chosen (category is an array)
+    if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
+      data = data.filter(row => {
+        const rowCategory = String(row.category || '').trim().toLowerCase();
+        return filters.category.some(cat => String(cat).trim().toLowerCase() === rowCategory);
+      });
     }
     
     return data;
