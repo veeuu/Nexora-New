@@ -1776,7 +1776,7 @@ const Technographics = () => {
           )}
 
           {/* Display saved filter tag */}
-          {filters.category && activeFilterMenu !== 'category' && (
+          {filters.category.length > 0 && activeFilterMenu !== 'category' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
