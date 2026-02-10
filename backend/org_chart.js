@@ -21,7 +21,7 @@ const CONFIG = {
   VERTICAL_GAP: 0.15,
   TOP_PADDING: 0.12,
   SIDE_PADDING: 0.05,
-  MAX_CHARS_PER_LINE: 16,
+  MAX_CHARS_PER_LINE: 20,
   MAX_NAME_LINES: 1,
   MAX_ROLE_LINES: 2,
   CHART_GLOBAL_X_OFFSET: 0.8,
@@ -43,8 +43,8 @@ const CONFIG = {
   FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 12,
-  ROLE_TEXT_SIZE: 10,
+  NAME_TEXT_SIZE: 15,
+  ROLE_TEXT_SIZE: 12,
 
   // Canvas dimensions
   CANVAS_WIDTH: 900,
@@ -694,10 +694,10 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       height: 100%;
       background-color: white;
     }
-    .highlight-IT rect { stroke: #1976d2 !important; stroke-width: 3 !important; }
-    .highlight-Generalized rect { stroke: #7b1fa2 !important; stroke-width: 3 !important; }
-    .highlight-AI rect { stroke: #f57c00 !important; stroke-width: 3 !important; }
-    .highlight-Cloud rect { stroke: #00796b !important; stroke-width: 3 !important; }
+    .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
+    .highlight-Cloud rect { stroke: #000000ff !important; stroke-width: 3 !important; }
   </style>
 </head>
 <body>
@@ -756,10 +756,10 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
           } else if (shape.category === category) {
             // Highlight matching category
             const categoryColors = {
-              'IT': '#1976d2',
-              'Generalized': '#7b1fa2',
-              'AI': '#f57c00',
-              'Cloud': '#00796b'
+              'IT': '#000000ff',
+              'Generalized': '#000000ff',
+              'AI': '#000000',
+              'Cloud': '#000000ff'
             };
             shape.line.width = 3;
             shape.line.color = categoryColors[category] || '#000';
