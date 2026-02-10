@@ -410,7 +410,11 @@ const MultiSelectDropdown = ({ value, onChange, options }) => {
                 type="checkbox"
                 checked={value.includes(option)}
                 onChange={() => {}}
-                style={{ cursor: 'pointer' }}
+                style={{
+                  cursor: 'pointer',
+                  width: '16px',
+                  height: '16px'
+                }}
               />
               {option}
             </div>
@@ -1283,8 +1287,13 @@ const Technographics = () => {
                   {/* ALL Option */}
                   <div
                     onClick={() => {
-                      const allCompanies = getUniqueOptions('companyName');
-                      handleFilterChange('companyName', allCompanies);
+                      if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('companyName', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('companyName', getUniqueOptions('companyName'));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
@@ -1499,27 +1508,33 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      handleFilterChange('region', []);
+                      if (filters.region.length === getUniqueOptions('region').length && filters.region.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('region', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('region', getUniqueOptions('region'));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: filters.region.length === 0 ? '#1e40af' : '#1f2937',
-                      backgroundColor: filters.region.length === 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.region.length === 0 ? '600' : '400',
+                      color: '#1f2937',
+                      backgroundColor: filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.region.length === 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.region.length === 0}
+                      checked={filters.region.length === getUniqueOptions('region').length && filters.region.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -1622,7 +1637,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('region')}
             >
-              <span>Region: {filters.region.join(', ')}</span>
+              <span>Region ({filters.region.length})</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1698,6 +1713,44 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
+                  <div
+                    onClick={() => {
+                      if (filters.category.length === getUniqueOptions('category').length && filters.category.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('category', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('category', getUniqueOptions('category'));
+                      }
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: '14px',
+                      color: '#1f2937',
+                      backgroundColor: filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '600' : '400',
+                      transition: 'background-color 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '#f0f9ff' : 'white'}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.category.length === getUniqueOptions('category').length && filters.category.length > 0}
+                      onChange={() => {}}
+                      style={{
+                        cursor: 'pointer',
+                        width: '16px',
+                        height: '16px'
+                      }}
+                    />
+                    <span>ALL</span>
+                  </div>
                   {getUniqueOptions('category').map((category) => (
                     <div
                       key={category}
@@ -1795,7 +1848,7 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('category', '');
+                  handleFilterChange('category', []);
                 }}
                 style={{
                   background: 'none',
@@ -1868,27 +1921,33 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      handleFilterChange('industry', []);
+                      if (filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('industry', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('industry', getUniqueOptions('industry'));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: filters.industry.length === 0 ? '#1e40af' : '#1f2937',
-                      backgroundColor: filters.industry.length === 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.industry.length === 0 ? '600' : '400',
+                      color: '#1f2937',
+                      backgroundColor: filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry.length === 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.industry.length === 0}
+                      checked={filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -1988,7 +2047,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('industry')}
             >
-              <span>Industry: {filters.industry.join(', ')}</span>
+              <span>Industry ({filters.industry.length})</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2065,27 +2124,33 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      handleFilterChange('employeeSize', []);
+                      if (filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('employeeSize', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('employeeSize', employeeSizeRanges.map(r => r.label));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: filters.employeeSize.length === 0 ? '#1e40af' : '#1f2937',
-                      backgroundColor: filters.employeeSize.length === 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.employeeSize.length === 0 ? '600' : '400',
+                      color: '#1f2937',
+                      backgroundColor: filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize.length === 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.employeeSize.length === 0}
+                      checked={filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -2185,7 +2250,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('employeeSize')}
             >
-              <span>Employee Size: {filters.employeeSize.join(', ')}</span>
+              <span>Employee Size ({filters.employeeSize.length})</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2262,27 +2327,33 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      handleFilterChange('revenue', []);
+                      if (filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('revenue', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('revenue', getUniqueOptions('revenue'));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: filters.revenue.length === 0 ? '#1e40af' : '#1f2937',
-                      backgroundColor: filters.revenue.length === 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.revenue.length === 0 ? '600' : '400',
+                      color: '#1f2937',
+                      backgroundColor: filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.length === 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.revenue.length === 0}
+                      checked={filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -2382,7 +2453,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('revenue')}
             >
-              <span>Revenue: {filters.revenue.join(', ')}</span>
+              <span>Revenue ({filters.revenue.length})</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2460,27 +2531,33 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      handleFilterChange('technology', []);
+                      if (filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0) {
+                        // If all are selected, deselect all
+                        handleFilterChange('technology', []);
+                      } else {
+                        // Otherwise, select all
+                        handleFilterChange('technology', getUniqueOptions('technology'));
+                      }
                     }}
                     style={{
                       padding: '12px 16px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: filters.technology.length === 0 ? '#1e40af' : '#1f2937',
-                      backgroundColor: filters.technology.length === 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.technology.length === 0 ? '600' : '400',
+                      color: '#1f2937',
+                      backgroundColor: filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology.length === 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.technology.length === 0}
+                      checked={filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -2583,7 +2660,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('technology')}
             >
-              <span>Technology: {filters.technology.join(', ')}</span>
+              <span>Technology ({filters.technology.length})</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
