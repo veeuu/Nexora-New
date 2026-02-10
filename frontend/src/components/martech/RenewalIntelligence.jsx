@@ -372,6 +372,30 @@ const RenewalIntelligence = () => {
         return [...new Set(allQtrs)].sort();
     };
 
+    // Helper function to count accounts by product
+    const getAccountCountByProduct = (product) => {
+        if (!tableData) return 0;
+        const uniqueAccounts = new Set();
+        tableData.forEach(row => {
+            if (row.product === product) {
+                uniqueAccounts.add(row.companyName);
+            }
+        });
+        return uniqueAccounts.size;
+    };
+
+    // Helper function to count accounts by renewal timeline (qtr)
+    const getAccountCountByQtr = (qtr) => {
+        if (!tableData) return 0;
+        const uniqueAccounts = new Set();
+        tableData.forEach(row => {
+            if (row.qtr === qtr) {
+                uniqueAccounts.add(row.companyName);
+            }
+        });
+        return uniqueAccounts.size;
+    };
+
     const filteredData = tableData.filter(row => {
         const companyMatch = !filters.companyName || row.companyName === filters.companyName;
         const productMatch = !filters.product || row.product === filters.product;
@@ -788,13 +812,19 @@ const RenewalIntelligence = () => {
                             fontSize: '14px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '8px',
+                            justifyContent: 'space-between'
                           }}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                           onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === option ? '#dbeafe' : 'white'}
                         >
-                          {renderProductIcon(option)}
-                          {option}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {renderProductIcon(option)}
+                            {option}
+                          </div>
+                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                            {getAccountCountByProduct(option)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -877,12 +907,18 @@ const RenewalIntelligence = () => {
                             cursor: 'pointer',
                             backgroundColor: filters.qtr === option ? '#dbeafe' : 'white',
                             borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px'
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between'
                           }}
                           onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                           onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr === option ? '#dbeafe' : 'white'}
                         >
-                          {option}
+                          <span>{option}</span>
+                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                            {getAccountCountByQtr(option)}
+                          </span>
                         </div>
                       ))}
                     </div>

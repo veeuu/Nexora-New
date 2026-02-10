@@ -405,6 +405,42 @@ const NTP = () => {
     return [...new Set(allValues)].sort();
   };
 
+  // Helper function to count companies by category
+  const getCompanyCountByCategory = (category) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.category === category) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by technology
+  const getCompanyCountByTechnology = (technology) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.technology === technology) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by purchase prediction
+  const getCompanyCountByPurchasePrediction = (prediction) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.purchasePrediction === prediction) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
   const filteredData = (() => {
@@ -867,23 +903,29 @@ const NTP = () => {
                         fontSize: '14px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '8px',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
-                      />
-                      {option}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                            accentColor: '#3b82f6'
+                          }}
+                        />
+                        {option}
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByPurchasePrediction(option)}
+                      </span>
                     </div>
                   );
                 })}
@@ -984,24 +1026,30 @@ const NTP = () => {
                         fontSize: '14px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '8px',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
-                      />
-                      {renderTechLogo(option)}
-                      {option}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                            accentColor: '#3b82f6'
+                          }}
+                        />
+                        {renderTechLogo(option)}
+                        {option}
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByCategory(option)}
+                      </span>
                     </div>
                   );
                 })}
@@ -1102,24 +1150,30 @@ const NTP = () => {
                         fontSize: '14px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '8px',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
-                      />
-                      {renderTechLogo(option)}
-                      {option}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                            accentColor: '#3b82f6'
+                          }}
+                        />
+                        {renderTechLogo(option)}
+                        {option}
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByTechnology(option)}
+                      </span>
                     </div>
                   );
                 })}

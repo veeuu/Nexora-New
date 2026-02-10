@@ -107,6 +107,30 @@ const ProductCatalogue = () => {
     return [...new Set(allValues)].sort();
   };
 
+  // Helper function to count products by category
+  const getProductCountByCategory = (category) => {
+    if (!tableData) return 0;
+    const uniqueProducts = new Set();
+    tableData.forEach(row => {
+      if (row.category === category) {
+        uniqueProducts.add(row.prodName);
+      }
+    });
+    return uniqueProducts.size;
+  };
+
+  // Helper function to count products by subcategory
+  const getProductCountBySubCategory = (subCategory) => {
+    if (!tableData) return 0;
+    const uniqueProducts = new Set();
+    tableData.forEach(row => {
+      if (row.subCategory === subCategory) {
+        uniqueProducts.add(row.prodName);
+      }
+    });
+    return uniqueProducts.size;
+  };
+
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
   const filteredData = tableData
@@ -516,18 +540,24 @@ const ProductCatalogue = () => {
                       fontSize: '14px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px'
+                      gap: '8px',
+                      justifyContent: 'space-between'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(option) ? '#dbeafe' : 'white'}
                   >
-                    <input
-                      type="checkbox"
-                      checked={filters.category.includes(option)}
-                      onChange={() => handleFilterChange('category', option)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    {option}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={filters.category.includes(option)}
+                        onChange={() => handleFilterChange('category', option)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      {option}
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      {getProductCountByCategory(option)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -622,18 +652,24 @@ const ProductCatalogue = () => {
                       fontSize: '14px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px'
+                      gap: '8px',
+                      justifyContent: 'space-between'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = filters.subCategory.includes(option) ? '#dbeafe' : 'white'}
                   >
-                    <input
-                      type="checkbox"
-                      checked={filters.subCategory.includes(option)}
-                      onChange={() => handleFilterChange('subCategory', option)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    {option}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={filters.subCategory.includes(option)}
+                        onChange={() => handleFilterChange('subCategory', option)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      {option}
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      {getProductCountBySubCategory(option)}
+                    </span>
                   </div>
                 ))}
               </div>
