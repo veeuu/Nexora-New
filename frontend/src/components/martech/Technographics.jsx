@@ -690,7 +690,7 @@ const Technographics = () => {
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 25;
+  const rowsPerPage = 7;
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -926,7 +926,7 @@ const Technographics = () => {
   };
 
   // Check if mandatory filters are selected
-  const hasMandatoryFilters = filters.companyName.length > 0 && filters.category;
+  const hasMandatoryFilters = filters.companyName.length > 0 && filters.category.length > 0;
 
   const filteredData = tableData
     .filter(row => {
@@ -1090,7 +1090,7 @@ const Technographics = () => {
     <div className="technographics-container">
       <div className="header-actions">
         <h2>Technographics</h2>
-        <div className="search-bar">
+        {/* <div className="search-bar">
           <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
           </svg>
@@ -1104,7 +1104,7 @@ const Technographics = () => {
             <circle cx="10" cy="10" r="7"></circle>
             <path d="m20 20-4.5-4.5"></path>
           </svg>
-        </div>
+        </div> */}
       </div>
 
       <div className="section-subtle-divider" />
@@ -2660,9 +2660,9 @@ const Technographics = () => {
               fontWeight: '500',
               whiteSpace: 'nowrap'
             }}>
-              {filters.companyName.length === 0 && filters.category ? (
+              {filters.companyName.length === 0 && filters.category.length > 0 ? (
                 'Please select a Company Name to view data'
-              ) : filters.companyName.length > 0 && !filters.category ? (
+              ) : filters.companyName.length > 0 && filters.category.length === 0 ? (
                 'Please select a Category to view data'
               ) : (
                 'Please select both Company Name and Category to view data'
@@ -3234,7 +3234,7 @@ const Technographics = () => {
         }
 
         .table-container {
-          max-height: 700px;
+          max-height: 550px;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
