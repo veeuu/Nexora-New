@@ -885,6 +885,78 @@ const Technographics = () => {
     return [...new Set(allValues)].sort();
   };
 
+  // Helper function to count companies by category
+  const getCompanyCountByCategory = (category) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.category === category) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by region
+  const getCompanyCountByRegion = (region) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.region === region) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by industry
+  const getCompanyCountByIndustry = (industry) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.industry === industry) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by revenue
+  const getCompanyCountByRevenue = (revenue) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.revenue === revenue) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by technology
+  const getCompanyCountByTechnology = (technology) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (row.technology === technology) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
+  // Helper function to count companies by employee size
+  const getCompanyCountByEmployeeSize = (rangeLabel) => {
+    if (!tableData) return 0;
+    const uniqueCompanies = new Set();
+    tableData.forEach(row => {
+      if (isEmployeeSizeInRange(row.employeeSize, rangeLabel)) {
+        uniqueCompanies.add(row.companyName);
+      }
+    });
+    return uniqueCompanies.size;
+  };
+
   const getNtpDataForCompany = (companyName) => {
     let data = ntpData.filter(row => row.companyName === companyName);
     
@@ -1563,23 +1635,29 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.region.includes(region) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.region.includes(region)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      {renderCountryFlag(region)}
-                      <span>{region}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.region.includes(region)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        {renderCountryFlag(region)}
+                        <span>{region}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByRegion(region)}
+                      </span>
                     </div>
                   ))}
 
@@ -1770,23 +1848,29 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(category) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.category.includes(category)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      {renderTechLogo(category)}
-                      <span>{category}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.category.includes(category)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        {renderTechLogo(category)}
+                        <span>{category}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByCategory(category)}
+                      </span>
                     </div>
                   ))}
 
@@ -1976,22 +2060,28 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry.includes(industry) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.industry.includes(industry)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      <span>{industry}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.industry.includes(industry)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        <span>{industry}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByIndustry(industry)}
+                      </span>
                     </div>
                   ))}
 
@@ -2179,22 +2269,28 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize.includes(range.label) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.employeeSize.includes(range.label)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      <span>{range.label}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.employeeSize.includes(range.label)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        <span>{range.label}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByEmployeeSize(range.label)}
+                      </span>
                     </div>
                   ))}
 
@@ -2382,22 +2478,28 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.includes(rev) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.revenue.includes(rev)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      <span>{rev}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.revenue.includes(rev)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        <span>{rev}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByRevenue(rev)}
+                      </span>
                     </div>
                   ))}
 
@@ -2586,23 +2688,29 @@ const Technographics = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        transition: 'background-color 0.2s'
+                        transition: 'background-color 0.2s',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology.includes(tech) ? '#f0f9ff' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={filters.technology.includes(tech)}
-                        onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
-                      />
-                      {renderTechLogo(tech)}
-                      <span>{tech}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                          type="checkbox"
+                          checked={filters.technology.includes(tech)}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        {renderTechLogo(tech)}
+                        <span>{tech}</span>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getCompanyCountByTechnology(tech)}
+                      </span>
                     </div>
                   ))}
 

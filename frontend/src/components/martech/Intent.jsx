@@ -154,6 +154,18 @@ const Intent = () => {
     return [...new Set(allValues)].filter(v => v && v.trim()).sort();
   };
 
+  // Helper function to count accounts by intent status
+  const getAccountCountByIntentStatus = (intentStatus) => {
+    if (!tableData) return 0;
+    const uniqueAccounts = new Set();
+    tableData.forEach(row => {
+      if (String(row.intentStatus).toLowerCase() === String(intentStatus).toLowerCase()) {
+        uniqueAccounts.add(row.companyName);
+      }
+    });
+    return uniqueAccounts.size;
+  };
+
   const hasMandatoryFilters = filters.intentStatus.length > 0;
 
   const filteredData = tableData
@@ -626,23 +638,29 @@ const Intent = () => {
                         fontSize: '14px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '8px',
+                        justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
-                      />
-                      {option}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => {}}
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                            accentColor: '#3b82f6'
+                          }}
+                        />
+                        {option}
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                        {getAccountCountByIntentStatus(option)}
+                      </span>
                     </div>
                   );
                 })}
