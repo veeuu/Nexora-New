@@ -157,7 +157,6 @@ const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
           {value && renderLogo(value)}
           {value || 'All'}
         </span>
-        <span style={{ fontSize: '12px' }}>▼</span>
       </button>
 
       {isOpen && (
@@ -329,7 +328,6 @@ const MultiSelectDropdown = ({ value, onChange, options }) => {
             </span>
           )}
         </span>
-        <span style={{ fontSize: '12px', flexShrink: 0 }}>▼</span>
       </button>
 
       {isOpen && (
@@ -489,7 +487,6 @@ const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompany
           {showFlags && value && renderCountryFlag(value)}
           {value || (isCompanyFilter ? 'Select Company Name' : 'All')}
         </span>
-        <span style={{ fontSize: '12px', flexShrink: 0 }}>▼</span>
       </button>
 
       {isOpen && (
@@ -788,16 +785,30 @@ const Technographics = () => {
   // Handle click outside to close filter dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Check if click is outside the filter container
       if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setOpenFilterDropdown(null);
+        // Also check if the click is not on any dropdown that might be positioned absolutely
+        const dropdowns = document.querySelectorAll('[data-filter-dropdown]');
+        let isClickOnDropdown = false;
+        
+        dropdowns.forEach(dropdown => {
+          if (dropdown.contains(event.target)) {
+            isClickOnDropdown = true;
+          }
+        });
+        
+        if (!isClickOnDropdown) {
+          setOpenFilterDropdown(null);
+          setShowFilters(false);
+        }
       }
     };
 
-    if (openFilterDropdown) {
+    if (openFilterDropdown || showFilters) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [openFilterDropdown]);
+  }, [openFilterDropdown, showFilters]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1305,7 +1316,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'companyName' ? null : 'companyName')}
               >
                 <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1329,6 +1339,7 @@ const Technographics = () => {
               {/* Dropdown with search and checkboxes for company options */}
               {openFilterDropdown === 'companyName' && (
                 <div
+                  data-filter-dropdown="companyName"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -1553,7 +1564,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'region' ? null : 'region')}
               >
                 <span>Region</span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1576,6 +1586,7 @@ const Technographics = () => {
               {/* Dropdown with all region options - only show when clicked */}
               {openFilterDropdown === 'region' && (
                 <div
+                  data-filter-dropdown="region"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -1766,7 +1777,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'category' ? null : 'category')}
               >
                 <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1789,6 +1799,7 @@ const Technographics = () => {
               {/* Dropdown with all category options - only show when clicked */}
               {openFilterDropdown === 'category' && (
                 <div
+                  data-filter-dropdown="category"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -1979,7 +1990,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'industry' ? null : 'industry')}
               >
                 <span>Industry</span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2001,6 +2011,7 @@ const Technographics = () => {
               
               {openFilterDropdown === 'industry' && (
                 <div
+                  data-filter-dropdown="industry"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -2188,7 +2199,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'employeeSize' ? null : 'employeeSize')}
               >
                 <span>Employee Size</span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2210,6 +2220,7 @@ const Technographics = () => {
               
               {openFilterDropdown === 'employeeSize' && (
                 <div
+                  data-filter-dropdown="employeeSize"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -2397,7 +2408,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'revenue' ? null : 'revenue')}
               >
                 <span>Revenue</span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2419,6 +2429,7 @@ const Technographics = () => {
               
               {openFilterDropdown === 'revenue' && (
                 <div
+                  data-filter-dropdown="revenue"
                   style={{
                     position: 'absolute',
                     top: '100%',
@@ -2606,7 +2617,6 @@ const Technographics = () => {
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'technology' ? null : 'technology')}
               >
                 <span>Technology</span>
-                <span style={{ marginLeft: 'auto', fontSize: '12px' }}>▼</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -2629,6 +2639,7 @@ const Technographics = () => {
               {/* Dropdown with all technology options - only show when clicked */}
               {openFilterDropdown === 'technology' && (
                 <div
+                  data-filter-dropdown="technology"
                   style={{
                     position: 'absolute',
                     top: '100%',
