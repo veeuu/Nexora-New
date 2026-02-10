@@ -81,16 +81,17 @@ const Menu = ({ activeSection, onMenuClick, menuItems, onLogout, username }) => 
         ))}
         <li className="menu-profile-item">
           <div className="profile-section" ref={profileRef}>
-            <button 
-              className="profile-avatar-btn"
+            <div 
+              className="profile-avatar-menu"
               onClick={toggleProfileMenu}
               title={username}
+              style={{ cursor: 'pointer' }}
             >
-              <div className="profile-avatar-menu">
+              <div className="profile-avatar-circle">
                 <span className="profile-initial">{getInitial()}</span>
-                <span className="profile-username">{username}</span>
               </div>
-            </button>
+              <span className="profile-username">{username}</span>
+            </div>
             {isProfileOpen && (
               <div className="profile-dropdown-menu">
                 <div className="profile-dropdown-header">

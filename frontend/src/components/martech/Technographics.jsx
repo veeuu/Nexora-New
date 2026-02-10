@@ -1074,7 +1074,7 @@ const Technographics = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '800px',
+        minHeight: '100vh',
         backgroundColor: '#f9fafb',
         borderRadius: '8px',
         padding: '40px 20px'
