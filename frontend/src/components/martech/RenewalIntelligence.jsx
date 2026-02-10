@@ -312,7 +312,7 @@ const RenewalIntelligence = () => {
                 // Add 2-second delay before hiding loading screen
                 setTimeout(() => {
                     setLoading(false);
-                }, 2000);
+                }, 1000);
             }
         };
         fetchRenewalData();

@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
-import paretoChart from '../../final_charts/01_pareto_chart_80_20.png';
-import probabilityChart from '../../final_charts/02_probability_percentile_chart.png';
-import boxplotChart from '../../final_charts/03_probability_by_tech_category_boxplot.png';
-import heatmapChart from '../../final_charts/04_technology_category_heatmap.png';
+import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
+import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
+import probabilityDist from '../../final_charts/probability_dist (1).png';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -1679,20 +1678,16 @@ const NTP = () => {
             </div>
             <div className="summary-charts-grid">
               <div className="chart-item">
-                <h3>Pareto Chart</h3>
-                <img src={paretoChart} alt="Pareto Chart 80/20" />
+                <h3>Keyword Heatmap</h3>
+                <img src={keywordHeatmap} alt="Keyword Heatmap" />
               </div>
               <div className="chart-item">
-                <h3>Probability Percentile Chart</h3>
-                <img src={probabilityChart} alt="Probability Percentile Chart" />
+                <h3>Portfolio Radar</h3>
+                <img src={portfolioRadar} alt="Portfolio Radar" />
               </div>
               <div className="chart-item">
-                <h3>Probability by Tech Category (Boxplot)</h3>
-                <img src={boxplotChart} alt="Probability by Tech Category Boxplot" />
-              </div>
-              <div className="chart-item">
-                <h3>Technology Category Heatmap</h3>
-                <img src={heatmapChart} alt="Technology Category Heatmap" />
+                <h3>Probability Distribution</h3>
+                <img src={probabilityDist} alt="Probability Distribution" />
               </div>
             </div>
           </div>
