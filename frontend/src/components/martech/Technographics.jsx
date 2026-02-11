@@ -3260,8 +3260,12 @@ const Technographics = () => {
                           maxHeight: '96px',
                           overflowY: 'auto',
                           paddingRight: '4px',
-                          width: '100%'
-                        }}>
+                          width: '100%',
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none'
+                        }}
+                        className="tech-scroll-container"
+                        >
                           {(row.technologies || [row.technology]).map((tech, idx) => (
                             <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                               {renderTechLogo(tech)}
@@ -3688,6 +3692,18 @@ const Technographics = () => {
         }
 
         .table-container::-webkit-scrollbar-thumb {
+          display: none;
+        }
+
+        .tech-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+
+        .tech-scroll-container::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        .tech-scroll-container::-webkit-scrollbar-thumb {
           display: none;
         }
         
