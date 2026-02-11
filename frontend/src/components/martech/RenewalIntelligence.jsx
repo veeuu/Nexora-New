@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
-import { getLogoPath } from '../../utils/logoMap';
+import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Generic Custom Dropdown Component (without icons)
@@ -306,7 +306,27 @@ const RenewalIntelligence = () => {
             );
         }
         
-        // Fallback to icon if no logo found
+        // Try to get colored icon (includes robot icon for AI/ML)
+        const iconData = getTechIcon(productName);
+        if (iconData) {
+            const { component: IconComponent, color } = iconData;
+            return (
+                <IconComponent
+                    size={16}
+                    style={{
+                        marginRight: '6px',
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        color: color,
+                        opacity: 0.85,
+                        filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
+                    }}
+                    title={productName}
+                />
+            );
+        }
+        
+        // Fallback to SI icon if no logo or tech icon found
         const iconName = getProductIcon(productName);
         if (!iconName) return null;
         
