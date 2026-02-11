@@ -377,7 +377,7 @@ const RenewalIntelligence = () => {
         }
 
         // Create CSV header
-        const headers = ['Account Name', 'Product', 'Renewal QTR'];
+        const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
         const csvContent = [
             headers.join(','),
             ...dataToDownload.map(row =>
@@ -1216,9 +1216,9 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
-                                        <th style={{ textAlign: 'left' }}>Account Name</th>
+                                        <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal QTR</th>
+                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -1228,9 +1228,9 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
-                                        <th style={{ textAlign: 'left' }}>Account Name</th>
+                                        <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal QTR</th>
+                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1662,10 +1662,10 @@ const RenewalIntelligence = () => {
                     box-sizing: border-box;
                 }
 
-                /* Explicitly enforce column width constraints so Renewal QTR is visible */
-                td:nth-child(1), th:nth-child(1) { width: 35%; }
-                td:nth-child(2), th:nth-child(2) { width: 35%; }
-                td:nth-child(3), th:nth-child(3) { width: 30%; }
+                /* Explicitly enforce column width constraints so Renewal Intelligence is visible */
+                td:nth-child(1), th:nth-child(1) { width: 33.33%; }
+                td:nth-child(2), th:nth-child(2) { width: 33.33%; }
+                td:nth-child(3), th:nth-child(3) { width: 33.34%; }
 
                 td {
                     position: relative;

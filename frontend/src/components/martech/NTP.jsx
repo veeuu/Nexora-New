@@ -741,9 +741,9 @@ const NTP = () => {
                 onClick={() => setActiveFilterMenu('purchasePrediction')}
                 style={{
                   padding: '8px 14px',
-                  backgroundColor: 'white',
-                  color: '#3b82f6',
-                  border: '1px solid #d1d5db',
+                  backgroundColor: 'rgb(254, 243, 199)',
+                  color: '#92400e',
+                  border: '1px solid rgb(252, 211, 77)',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -754,10 +754,10 @@ const NTP = () => {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.borderColor = '#fbbf24';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.borderColor = 'rgb(252, 211, 77)';
                 }}
               >
                 <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
@@ -886,15 +886,15 @@ const NTP = () => {
           {activeFilterMenu === 'purchasePrediction' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
+                backgroundColor: 'rgb(254, 243, 199)',
+                border: '1px solid rgb(252, 211, 77)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#3b82f6'
+                color: '#92400e'
               }}>
                 <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
@@ -908,7 +908,7 @@ const NTP = () => {
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '0',
-                    color: '#3b82f6',
+                    color: '#92400e',
                     lineHeight: '1'
                   }}
                 >

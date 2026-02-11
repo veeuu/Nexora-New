@@ -569,6 +569,20 @@ const employeeSizeRanges = [
   { label: '10k+', min: 10000, max: Infinity }
 ];
 
+const revenueRanges = [
+  { label: '$0–$1M', min: 0, max: 1000000 },
+  { label: '$1M–$5M', min: 1000000, max: 5000000 },
+  { label: '$5M–$10M', min: 5000000, max: 10000000 },
+  { label: '$10M–$25M', min: 10000000, max: 25000000 },
+  { label: '$25M–$50M', min: 25000000, max: 50000000 },
+  { label: '$50M–$100M', min: 50000000, max: 100000000 },
+  { label: '$100M–$250M', min: 100000000, max: 250000000 },
+  { label: '$250M–$500M', min: 250000000, max: 500000000 },
+  { label: '$500M–$1B', min: 500000000, max: 1000000000 },
+  { label: '$1B–$10B', min: 1000000000, max: 10000000000 },
+  { label: '$10B+', min: 10000000000, max: Infinity }
+];
+
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
   
@@ -592,6 +606,17 @@ const getEmployeeSizeRange = (value) => {
   return employeeSizeRanges.find(range => num >= range.min && num <= range.max);
 };
 
+const getRevenueRange = (value) => {
+  if (!value || value === 'N/A') return null;
+  
+  // Remove currency symbols and convert to number
+  const cleanValue = String(value).replace(/[$,]/g, '');
+  const num = parseFloat(cleanValue);
+  if (isNaN(num)) return null;
+  
+  return revenueRanges.find(range => num >= range.min && num <= range.max);
+};
+
 const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
   if (!employeeSize || employeeSize === 'N/A') return false;
   
@@ -599,6 +624,20 @@ const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
   if (isNaN(num)) return false;
   
   const range = employeeSizeRanges.find(r => r.label === rangeLabel);
+  if (!range) return false;
+  
+  return num >= range.min && num <= range.max;
+};
+
+const isRevenueInRange = (revenue, rangeLabel) => {
+  if (!revenue || revenue === 'N/A') return false;
+  
+  // Remove currency symbols and convert to number
+  const cleanValue = String(revenue).replace(/[$,]/g, '');
+  const num = parseFloat(cleanValue);
+  if (isNaN(num)) return false;
+  
+  const range = revenueRanges.find(r => r.label === rangeLabel);
   if (!range) return false;
   
   return num >= range.min && num <= range.max;
@@ -814,6 +853,7 @@ const Technographics = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const response = await fetch('/api/technographics');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -882,6 +922,7 @@ const Technographics = () => {
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Technographics data:", e);
+        setTableData([]); // Set empty data on error
       } finally {
         setLoading(false);
       }
@@ -1051,8 +1092,11 @@ const Technographics = () => {
       // Apply employee size filter if selected
       if (filters.employeeSize.length > 0 && !filters.employeeSize.some(range => isEmployeeSizeInRange(row.employeeSize, range))) return false;
 
-      // Apply revenue filter if selected
-      if (filters.revenue.length > 0 && !filters.revenue.includes(String(row.revenue))) return false;
+      // Apply revenue filter if selected (using ranges)
+      if (filters.revenue.length > 0) {
+        const matchesRevenue = filters.revenue.some(rangeLabel => isRevenueInRange(row.revenue, rangeLabel));
+        if (!matchesRevenue) return false;
+      }
 
       // Apply search term if present
       const searchMatches = !searchTerm || Object.values(row).some(value =>
@@ -1182,12 +1226,52 @@ const Technographics = () => {
     );
   }
 
-  if (error) {
-    return <div>Error fetching data: {error}</div>;
-  }
-
   return (
     <div className="technographics-container">
+      {/* Error Banner */}
+      {error && (
+        <div style={{
+          backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '18px',
+            color: '#dc2626',
+            flexShrink: 0
+          }}>
+            ⚠
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#991b1b',
+            fontWeight: '500'
+          }}>
+            Error fetching data: {error}. Showing UI with no data.
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '18px',
+              color: '#991b1b',
+              padding: '0',
+              lineHeight: '1'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Technographics</h2>
         {/* <div className="search-bar">
@@ -1260,8 +1344,6 @@ const Technographics = () => {
                 }}
               >
                 {[
-                  { label: 'Company Name', key: 'companyName', mandatory: true },
-                  { label: 'Category', key: 'category', mandatory: true },
                   { label: 'Region', key: 'region', mandatory: false },
                   { label: 'Industry', key: 'industry', mandatory: false },
                   { label: 'Employee Size', key: 'employeeSize', mandatory: false },
@@ -1298,19 +1380,81 @@ const Technographics = () => {
             )}
           </div>
 
+          {/* Company Name Filter - Always Visible (Mandatory) */}
+          {activeFilterMenu !== 'companyName' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setActiveFilterMenu('companyName')}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: 'rgb(254, 243, 199)',
+                  color: '#92400e',
+                  border: '1px solid rgb(252, 211, 77)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#fbbf24';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                }}
+              >
+                <span>Company Name {Array.isArray(filters.companyName) && filters.companyName.length > 0 && `(${filters.companyName.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              </button>
+            </div>
+          )}
+
+          {/* Category Filter - Always Visible (Mandatory) */}
+          {activeFilterMenu !== 'category' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setActiveFilterMenu('category')}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: 'rgb(254, 243, 199)',
+                  color: '#92400e',
+                  border: '1px solid rgb(252, 211, 77)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#fbbf24';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                }}
+              >
+                <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              </button>
+            </div>
+          )}
+
           {/* Filter Type Chip - Show selected filter type with dropdown */}
           {activeFilterMenu === 'companyName' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: '#f0f9ff',
-                border: '1px solid #bfdbfe',
+                backgroundColor: 'rgb(254, 243, 199)',
+                border: '1px solid rgb(252, 211, 77)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#1e40af',
+                color: '#92400e',
                 cursor: 'pointer'
               }}
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'companyName' ? null : 'companyName')}
@@ -1763,15 +1907,15 @@ const Technographics = () => {
           {activeFilterMenu === 'category' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: '#f0f9ff',
-                border: '1px solid #bfdbfe',
+                backgroundColor: 'rgb(254, 243, 199)',
+                border: '1px solid rgb(252, 211, 77)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#1e40af',
+                color: '#92400e',
                 cursor: 'pointer'
               }}
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'category' ? null : 'category')}
@@ -1788,7 +1932,7 @@ const Technographics = () => {
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '0',
-                    color: '#1e40af',
+                    color: '#92400e',
                     lineHeight: '1'
                   }}
                 >
@@ -2447,12 +2591,12 @@ const Technographics = () => {
                 >
                   <div
                     onClick={() => {
-                      if (filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0) {
+                      if (filters.revenue.length === revenueRanges.length && filters.revenue.length > 0) {
                         // If all are selected, deselect all
                         handleFilterChange('revenue', []);
                       } else {
                         // Otherwise, select all
-                        handleFilterChange('revenue', getUniqueOptions('revenue'));
+                        handleFilterChange('revenue', revenueRanges.map(r => r.label));
                       }
                     }}
                     style={{
@@ -2461,19 +2605,19 @@ const Technographics = () => {
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
                       color: '#1f2937',
-                      backgroundColor: filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '600' : '400',
+                      backgroundColor: filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '#f0f9ff' : 'white',
+                      fontWeight: filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '600' : '400',
                       transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '#f0f9ff' : 'white'}
                   >
                     <input
                       type="checkbox"
-                      checked={filters.revenue.length === getUniqueOptions('revenue').length && filters.revenue.length > 0}
+                      checked={filters.revenue.length === revenueRanges.length && filters.revenue.length > 0}
                       onChange={() => {}}
                       style={{
                         cursor: 'pointer',
@@ -2483,13 +2627,13 @@ const Technographics = () => {
                     />
                     <span>ALL</span>
                   </div>
-                  {getUniqueOptions('revenue').map((rev) => (
+                  {revenueRanges.map((range) => (
                     <div
-                      key={rev}
+                      key={range.label}
                       onClick={() => {
-                        const newRevenues = filters.revenue.includes(rev)
-                          ? filters.revenue.filter(r => r !== rev)
-                          : [...filters.revenue, rev];
+                        const newRevenues = filters.revenue.includes(range.label)
+                          ? filters.revenue.filter(r => r !== range.label)
+                          : [...filters.revenue, range.label];
                         handleFilterChange('revenue', newRevenues);
                       }}
                       style={{
@@ -2498,7 +2642,7 @@ const Technographics = () => {
                         borderBottom: '1px solid #e5e7eb',
                         fontSize: '14px',
                         color: '#1f2937',
-                        backgroundColor: filters.revenue.includes(rev) ? '#f0f9ff' : 'white',
+                        backgroundColor: filters.revenue.includes(range.label) ? '#f0f9ff' : 'white',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
@@ -2506,12 +2650,12 @@ const Technographics = () => {
                         justifyContent: 'space-between'
                       }}
                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.includes(rev) ? '#f0f9ff' : 'white'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.includes(range.label) ? '#f0f9ff' : 'white'}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <input
                           type="checkbox"
-                          checked={filters.revenue.includes(rev)}
+                          checked={filters.revenue.includes(range.label)}
                           onChange={() => {}}
                           style={{
                             cursor: 'pointer',
@@ -2519,11 +2663,8 @@ const Technographics = () => {
                             height: '16px'
                           }}
                         />
-                        <span>{rev}</span>
+                        <span>{range.label}</span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByRevenue(rev)}
-                      </span>
                     </div>
                   ))}
 
