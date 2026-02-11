@@ -553,7 +553,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, accountName: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -668,7 +674,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, intentStatus: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',

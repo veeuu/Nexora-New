@@ -388,7 +388,12 @@ const ProductCatalogue = () => {
                 <div
                   onClick={() => {
                     const allOptions = getUniqueOptions('category');
-                    setFilters(prev => ({ ...prev, category: allOptions }));
+                    // Toggle: if all selected, deselect all; otherwise select all
+                    if (filters.category.length === allOptions.length) {
+                      setFilters(prev => ({ ...prev, category: [] }));
+                    } else {
+                      setFilters(prev => ({ ...prev, category: allOptions }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -408,7 +413,12 @@ const ProductCatalogue = () => {
                     checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
                     onChange={() => {
                       const allOptions = getUniqueOptions('category');
-                      setFilters(prev => ({ ...prev, category: allOptions }));
+                      // Toggle: if all selected, deselect all; otherwise select all
+                      if (filters.category.length === allOptions.length) {
+                        setFilters(prev => ({ ...prev, category: [] }));
+                      } else {
+                        setFilters(prev => ({ ...prev, category: allOptions }));
+                      }
                     }}
                     style={{ cursor: 'pointer' }}
                   />

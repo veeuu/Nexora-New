@@ -814,7 +814,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
+                    if (Array.isArray(filters.companyName) && filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, companyName: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -931,7 +937,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, purchasePrediction: getUniqueOptions('purchasePrediction') }));
+                    if (Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').length && getUniqueOptions('purchasePrediction').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, purchasePrediction: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, purchasePrediction: getUniqueOptions('purchasePrediction') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -1054,7 +1066,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, category: getUniqueOptions('category') }));
+                    if (Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, category: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, category: getUniqueOptions('category') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -1178,7 +1196,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
+                    if (Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, technology: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
