@@ -200,6 +200,8 @@ const RenewalIntelligence = () => {
     const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 7;
     const filterRef = useRef(null);
 
     // Icon mapping for products
@@ -365,6 +367,7 @@ const RenewalIntelligence = () => {
             ...prev,
             [name]: value
         }));
+        setCurrentPage(1);
     };
 
     const downloadCSV = (dataToDownload) => {
@@ -1238,49 +1241,234 @@ const RenewalIntelligence = () => {
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredData.map((row, index) => (
-                                            <tr key={index}>
-                                                <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
-                                                    const rect = e.target.getBoundingClientRect();
-                                                    setTooltip({
-                                                        show: true,
-                                                        text: row.companyName,
-                                                        x: rect.right - 20,
-                                                        y: rect.bottom + 20
-                                                    });
-                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                    {row.companyName}
-                                                </td>
-                                                <td onMouseEnter={(e) => {
-                                                    const rect = e.target.getBoundingClientRect();
-                                                    setTooltip({
-                                                        show: true,
-                                                        text: row.product,
-                                                        x: rect.right - 20,
-                                                        y: rect.bottom + 20
-                                                    });
-                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                    <span style={{ display: 'flex', alignItems: 'center' }}>
-                                                        {renderProductIcon(row.product)}
-                                                        {row.product}
-                                                    </span>
-                                                </td>
-                                                <td onMouseEnter={(e) => {
-                                                    const rect = e.target.getBoundingClientRect();
-                                                    setTooltip({
-                                                        show: true,
-                                                        text: row.qtr,
-                                                        x: rect.right - 20,
-                                                        y: rect.bottom + 20
-                                                    });
-                                                }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                    {row.qtr}
-                                                </td>
-                                            </tr>
-                                        ))
+                                        (() => {
+                                            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                            const startIndex = (currentPage - 1) * rowsPerPage;
+                                            const endIndex = startIndex + rowsPerPage;
+                                            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                                            return paginatedData.map((row, index) => (
+                                                <tr key={index}>
+                                                    <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
+                                                        const rect = e.target.getBoundingClientRect();
+                                                        setTooltip({
+                                                            show: true,
+                                                            text: row.companyName,
+                                                            x: rect.right - 20,
+                                                            y: rect.bottom + 20
+                                                        });
+                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        {row.companyName}
+                                                    </td>
+                                                    <td onMouseEnter={(e) => {
+                                                        const rect = e.target.getBoundingClientRect();
+                                                        setTooltip({
+                                                            show: true,
+                                                            text: row.product,
+                                                            x: rect.right - 20,
+                                                            y: rect.bottom + 20
+                                                        });
+                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                                                            {renderProductIcon(row.product)}
+                                                            {row.product}
+                                                        </span>
+                                                    </td>
+                                                    <td onMouseEnter={(e) => {
+                                                        const rect = e.target.getBoundingClientRect();
+                                                        setTooltip({
+                                                            show: true,
+                                                            text: row.qtr,
+                                                            x: rect.right - 20,
+                                                            y: rect.bottom + 20
+                                                        });
+                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        {row.qtr}
+                                                    </td>
+                                                </tr>
+                                            ));
+                                        })()
                                     )}
                                 </tbody>
                             </table>
+
+                            {/* Pagination Controls */}
+                            {filteredData.length > rowsPerPage && (
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginTop: '20px',
+                                padding: '16px'
+                            }}>
+                                {(() => {
+                                    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                    const pages = [];
+                                    const maxPagesToShow = 5;
+                                    let startPage = 1;
+                                    let endPage = Math.min(maxPagesToShow, totalPages);
+
+                                    if (currentPage > maxPagesToShow) {
+                                        startPage = currentPage - Math.floor(maxPagesToShow / 2);
+                                        endPage = startPage + maxPagesToShow - 1;
+
+                                        if (endPage > totalPages) {
+                                            endPage = totalPages;
+                                            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                                        }
+                                    }
+
+                                    return (
+                                        <>
+                                            <button
+                                                key="prev"
+                                                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                                disabled={currentPage === 1}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    backgroundColor: currentPage === 1 ? '#f3f4f6' : '#f9fafb',
+                                                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                                    fontSize: '16px',
+                                                    color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                                                    fontWeight: '600',
+                                                    transition: 'all 0.2s',
+                                                    opacity: currentPage === 1 ? 0.5 : 1
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (currentPage > 1) {
+                                                        e.target.style.backgroundColor = '#e5e7eb';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (currentPage > 1) {
+                                                        e.target.style.backgroundColor = '#f9fafb';
+                                                    }
+                                                }}
+                                            >
+                                                ← Prev
+                                            </button>
+
+                                            {startPage > 1 && (
+                                                <>
+                                                    <button
+                                                        key={1}
+                                                        onClick={() => setCurrentPage(1)}
+                                                        style={{
+                                                            padding: '8px 14px',
+                                                            border: 'none',
+                                                            borderRadius: '8px',
+                                                            backgroundColor: '#f3f4f6',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            color: '#6b7280',
+                                                            fontWeight: '500',
+                                                            minWidth: '40px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
+                                                        onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+                                                    >
+                                                        1
+                                                    </button>
+                                                    {startPage > 2 && <span style={{ color: '#9ca3af' }}>...</span>}
+                                                </>
+                                            )}
+
+                                            {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => setCurrentPage(i)}
+                                                    style={{
+                                                        padding: '8px 14px',
+                                                        border: 'none',
+                                                        borderRadius: '8px',
+                                                        backgroundColor: i === currentPage ? '#dbeafe' : '#f3f4f6',
+                                                        cursor: 'pointer',
+                                                        fontSize: '14px',
+                                                        color: i === currentPage ? '#1e40af' : '#6b7280',
+                                                        fontWeight: i === currentPage ? '600' : '500',
+                                                        minWidth: '40px',
+                                                        transition: 'all 0.2s',
+                                                        boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        if (i !== currentPage) {
+                                                            e.target.style.backgroundColor = '#e5e7eb';
+                                                        }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        if (i !== currentPage) {
+                                                            e.target.style.backgroundColor = '#f3f4f6';
+                                                        }
+                                                    }}
+                                                >
+                                                    {i}
+                                                </button>
+                                            ))}
+
+                                            {endPage < totalPages && (
+                                                <>
+                                                    {endPage < totalPages - 1 && <span style={{ color: '#9ca3af' }}>...</span>}
+                                                    <button
+                                                        key={totalPages}
+                                                        onClick={() => setCurrentPage(totalPages)}
+                                                        style={{
+                                                            padding: '8px 14px',
+                                                            border: 'none',
+                                                            borderRadius: '8px',
+                                                            backgroundColor: '#f3f4f6',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            color: '#6b7280',
+                                                            fontWeight: '500',
+                                                            minWidth: '40px',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
+                                                        onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+                                                    >
+                                                        {totalPages}
+                                                    </button>
+                                                </>
+                                            )}
+
+                                            <button
+                                                key="next"
+                                                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                                disabled={currentPage === totalPages}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#f9fafb',
+                                                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                                    fontSize: '16px',
+                                                    color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                                                    fontWeight: '600',
+                                                    transition: 'all 0.2s',
+                                                    opacity: currentPage === totalPages ? 0.5 : 1
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (currentPage < totalPages) {
+                                                        e.target.style.backgroundColor = '#e5e7eb';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (currentPage < totalPages) {
+                                                        e.target.style.backgroundColor = '#f9fafb';
+                                                    }
+                                                }}
+                                            >
+                                                Next →
+                                            </button>
+                                        </>
+                                    );
+                                })()}
+                            </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -1411,6 +1599,7 @@ const RenewalIntelligence = () => {
                     border-radius: 12px;
                     padding: 1.25rem 1.5rem 1.5rem;
                     width: 100%;
+                    height:600px;
                     max-width: 100%;
                     overflow-x: hidden;
                 }
@@ -1430,7 +1619,7 @@ const RenewalIntelligence = () => {
                 }
 
                 .table-container {
-                    height: 400px;
+                    max-height: 400px;
                     overflow-x: auto;
                     overflow-y: auto;
                     position: relative;

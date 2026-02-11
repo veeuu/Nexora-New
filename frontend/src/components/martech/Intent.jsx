@@ -808,8 +808,6 @@ const Intent = () => {
         </div>
       )}
 
-      <div className="section-subtle-divider" />
-
       {/* Dropdown filter commented out */}
       {/* <div className="filters">
         <div className="filter-group">
