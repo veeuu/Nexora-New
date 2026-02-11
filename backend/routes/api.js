@@ -462,7 +462,7 @@ router.get('/renewal-intelligence', async (req, res) => {
 router.get('/product-catalogue', async (req, res) => {
   try {
     const { year } = req.query;
-    const collectionName = year === '2026' ? 'product_catalogue_2026' : 'product_catalogue';
+    const collectionName = year === '2026' ? 'product_catlog_2026' : 'product_catlog_2025';
     
     const productCatalogueCollection = mongoose.connection.db.collection(collectionName);
     const productDocs = await productCatalogueCollection.find({}).toArray();
@@ -470,7 +470,7 @@ router.get('/product-catalogue', async (req, res) => {
     const productData = productDocs.map(item => ({
       prodName: item['Product Name'] || item.prodName || 'N/A',
       category: item.Category || item.category || 'N/A',
-      subCategory: item['Sub Category'] || item.subCategory || 'N/A',
+      subCategory: item['Sub Category'] || item.SubCategory || item.subCategory || 'N/A',
       description: item.Description || item.description || 'N/A'
     }));
 
