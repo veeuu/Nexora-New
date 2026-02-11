@@ -860,78 +860,7 @@ const Technographics = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        
-        // Add fake data if no data exists
-        const dataToUse = data.length > 0 ? data : [
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Salesforce',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'HubSpot',
-            category: 'Marketing Automation'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Slack',
-            category: 'Collaboration'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics CRM',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics 365',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics 365 CRM',
-            category: 'CRM'
-          }
-        ];
-        
-        setTableData(dataToUse);
+        setTableData(data);
 
         // Fetch NTP data
         const ntpResponse = await fetch('/api/ntp');
@@ -994,75 +923,7 @@ const Technographics = () => {
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Technographics data:", e);
-        // Set fake data on error so user can see the UI
-        setTableData([
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Salesforce',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'HubSpot',
-            category: 'Marketing Automation'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Slack',
-            category: 'Collaboration'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics CRM',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics 365',
-            category: 'CRM'
-          },
-          {
-            companyName: 'Acme Corporation',
-            domain: 'acme.com',
-            linkedinUrl: 'https://www.linkedin.com/company/acme-corporation',
-            industry: 'Technology',
-            region: 'United States',
-            employeeSize: '1000-5000',
-            revenue: 50000000,
-            technology: 'Microsoft Dynamics 365 CRM',
-            category: 'CRM'
-          }
-        ]);
+        setTableData([]); // Set empty data on error
       } finally {
         setLoading(false);
       }
