@@ -49,13 +49,13 @@ router.get('/ntp', async (req, res) => {
 // @access  Public
 router.get('/technographics', async (req, res) => {
   try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Technographics: 1, _id: 0 });
+    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Technographics: 1, Financial_Data: 1, _id: 0 });
 
     const technographicsData = companies.flatMap(company => {
       const firmographics = company.Firmographics?.[0] || {};
       const about = firmographics.About || {};
       const location = firmographics.Location || {};
-      const finance = firmographics.Finance || {};
+      const finance = company.Financial_Data?.Finance || {};
 
       return (company.Technographics || []).map(techItem => ({
         companyName: company['Company Name'],
