@@ -105,13 +105,14 @@ const Intent = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 7;
+  const rowsPerPage = 9;
   const filterRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const response = await fetch('/api/intent');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -121,6 +122,7 @@ const Intent = () => {
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Intent data:", e);
+        setTableData([]); // Set empty data on error
       } finally {
         // Add 2-second delay before hiding loading screen
         setTimeout(() => {
@@ -320,12 +322,52 @@ const Intent = () => {
     );
   }
 
-  if (error) {
-    return <div>Error fetching data: {error}</div>;
-  }
-
   return (
     <div className="intent-container">
+      {/* Error Banner */}
+      {error && (
+        <div style={{
+          backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '18px',
+            color: '#dc2626',
+            flexShrink: 0
+          }}>
+            ⚠
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#991b1b',
+            fontWeight: '500'
+          }}>
+            Error fetching data: {error}. Showing UI with no data.
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '18px',
+              color: '#991b1b',
+              padding: '0',
+              lineHeight: '1'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
@@ -399,8 +441,7 @@ const Intent = () => {
                 }}
               >
                 {[
-                  { label: 'Account Name', key: 'accountName', mandatory: false },
-                  { label: 'Intent Status', key: 'intentStatus', mandatory: true }
+                  { label: 'Account Name', key: 'accountName', mandatory: false }
                 ].map((filterOption) => (
                   <div
                     key={filterOption.key}
@@ -431,6 +472,37 @@ const Intent = () => {
               </div>
             )}
           </div>
+
+          {/* Intent Status Filter - Always Visible (Mandatory) */}
+          {activeFilterMenu !== 'intentStatus' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setActiveFilterMenu('intentStatus')}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: 'rgb(254, 243, 199)',
+                  color: '#92400e',
+                  border: '1px solid rgb(252, 211, 77)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = '#fbbf24';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                }}
+              >
+                <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              </button>
+            </div>
+          )}
 
           {/* Account Name Filter Chip */}
           {activeFilterMenu === 'accountName' && (
@@ -481,7 +553,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, accountName: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -551,8 +629,8 @@ const Intent = () => {
           {activeFilterMenu === 'intentStatus' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: '#fef3c7',
-                border: '1px solid #fcd34d',
+                backgroundColor: 'rgb(254, 243, 199)',
+                border: '1px solid rgb(252, 211, 77)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
@@ -596,7 +674,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, intentStatus: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -824,7 +908,7 @@ const Intent = () => {
         <table>
           <thead className="sticky-header">
             <tr>
-              <th>Account Name</th>
+              <th>Company Name</th>
               <th>Intent Status</th>
             </tr>
           </thead>
