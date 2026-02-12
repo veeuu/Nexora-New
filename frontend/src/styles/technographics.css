@@ -57,13 +57,21 @@
 }
 
 .table-container {
-  max-height: 550px;
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  width: calc(100% - 35px) !important;
+  max-height: 550px !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  position: relative !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  margin-left: 30px !important;
+  margin-right: 5px !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+  -webkit-overflow-scrolling: touch !important;
 }
+
 
 .table-container::-webkit-scrollbar {
   display: none;
@@ -100,6 +108,20 @@
   background-color: #fff;
   z-index: 10;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.technographics-sticky-header tr {
+  border-radius: 8px 8px 0 0;
+}
+
+.technographics-sticky-header th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.technographics-sticky-header th:last-child {
+  border-top-right-radius: 8px;
 }
 
 .technographics-sticky-header th {
@@ -109,7 +131,8 @@
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
 }
 
@@ -132,12 +155,12 @@ td:hover {
 }
 
 /* Set specific column widths */
-th:nth-child(1), td:nth-child(1) { width: 40px; } /* Checkbox */
-th:nth-child(2), td:nth-child(2) { width: 150px; } /* Company Name */
+th:nth-child(1), td:nth-child(1) { width: 50px; padding-left: 20px; padding-right: 8px; text-align: center; } /* Checkbox */
+th:nth-child(2), td:nth-child(2) { width: 150px; padding-left: 8px; } /* Company Name */
 th:nth-child(3), td:nth-child(3) { width: 150px; } /* Industry */
-th:nth-child(4), td:nth-child(4) { width: 120px; } /* Region */
+th:nth-child(4), td:nth-child(4) { width: 150px; } /* Region */
 th:nth-child(5), td:nth-child(5) { width: 150px; } /* Employee Size */
-th:nth-child(6), td:nth-child(6) { width: 120px; } /* Revenue */
+th:nth-child(6), td:nth-child(6) { width: 150px; padding-left: 25px; } /* Revenue */
 th:nth-child(7), td:nth-child(7) { width: 150px; } /* Technology */
 
 /* Technology column padding for desktop */
@@ -1022,12 +1045,4 @@ tr:hover {
 }
 
 /* Move table container to the right */
-.table-container {
-  max-height: 550px;
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  margin-left:30px;
-}
+
