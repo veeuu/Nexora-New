@@ -14,7 +14,8 @@ const FirmographicsSchema = new mongoose.Schema({
     'Company Name': String,
     Domain: String,
     Industry: String,
-    'Full Time employees': Number
+    'Full Time employees': Number,
+    linkedinUrl: String
   },
   Location: {
     Address: String,

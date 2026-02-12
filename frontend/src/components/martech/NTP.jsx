@@ -741,9 +741,9 @@ const NTP = () => {
                 onClick={() => setActiveFilterMenu('purchasePrediction')}
                 style={{
                   padding: '8px 14px',
-                  backgroundColor: 'rgb(254, 243, 199)',
-                  color: '#92400e',
-                  border: '1px solid rgb(252, 211, 77)',
+                  backgroundColor: 'white',
+                  color: '#3b82f6',
+                  border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -754,10 +754,12 @@ const NTP = () => {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.borderColor = '#fbbf24';
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
                 }}
               >
                 <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
@@ -884,6 +886,39 @@ const NTP = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -892,15 +927,15 @@ const NTP = () => {
           {activeFilterMenu === 'purchasePrediction' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: 'rgb(254, 243, 199)',
-                border: '1px solid rgb(252, 211, 77)',
+                backgroundColor: '#dbeafe',
+                border: '1px solid #93c5fd',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#92400e'
+                color: '#1e40af'
               }}>
                 <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
@@ -914,7 +949,7 @@ const NTP = () => {
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '0',
-                    color: '#92400e',
+                    color: '#1e40af',
                     lineHeight: '1'
                   }}
                 >
@@ -1013,6 +1048,39 @@ const NTP = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1143,6 +1211,39 @@ const NTP = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1273,6 +1374,39 @@ const NTP = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1314,44 +1448,7 @@ const NTP = () => {
             </div>
           )}
 
-          {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && activeFilterMenu !== 'purchasePrediction' && (
-            <div style={{
-              backgroundColor: '#fef3c7',
-              border: '1px solid #fcd34d',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#92400e',
-              cursor: 'pointer'
-            }}
-            onClick={() => setActiveFilterMenu('purchasePrediction')}
-            >
-              <span>
-                Purchase Prediction: {filters.purchasePrediction.length} selected
-                <span style={{ color: '#ef4444', fontWeight: '600', marginLeft: '4px' }}>*</span>
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFilters(prev => ({ ...prev, purchasePrediction: [] }));
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  padding: '0',
-                  color: '#92400e',
-                  lineHeight: '1'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          )}
+
 
           {Array.isArray(filters.category) && filters.category.length > 0 && activeFilterMenu !== 'category' && (
             <div style={{

@@ -6,7 +6,7 @@ const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
     const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [orgChartHtml, setOrgChartHtml] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -39,9 +39,20 @@ const BuyingGroup = () => {
             try {
                 const response = await fetch('http://localhost:5000/api/org-chart/categories');
                 const data = await response.json();
-                setCategories(data.categories || []);
+                let fetchedCategories = data.categories || [];
+                
+                // Transform "AI" to "AI/ML"
+                fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
+                
+                // Define the desired order of categories - always show all
+                const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud', 'Other'];
+                
+                // Always set all categories in the desired order
+                setCategories(desiredOrder);
             } catch (err) {
                 console.error('Error fetching categories:', err);
+                // Even on error, show all categories
+                setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
             }
         };
         fetchCategories();
@@ -268,38 +279,10 @@ const BuyingGroup = () => {
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
                     {/* <label style={{ textAlign: 'center' }}>Category</label> */}
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        <button
-                            onClick={() => setSelectedCategory('All')}
-                            style={{
-                                padding: '10px 16px',
-                                border: selectedCategory === 'All' ? '2px solid #3b82f6' : '1px solid #d1d5db',
-                                borderRadius: '6px',
-                                fontSize: '14px',
-                                fontWeight: selectedCategory === 'All' ? '600' : '500',
-                                backgroundColor: selectedCategory === 'All' ? '#3b82f6' : 'white',
-                                color: selectedCategory === 'All' ? 'white' : '#374151',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                            }}
-                            onMouseEnter={(e) => {
-                                if (selectedCategory !== 'All') {
-                                    e.target.style.borderColor = '#9ca3af';
-                                    e.target.style.backgroundColor = '#f9fafb';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (selectedCategory !== 'All') {
-                                    e.target.style.borderColor = '#d1d5db';
-                                    e.target.style.backgroundColor = 'white';
-                                }
-                            }}
-                        >
-                            All
-                        </button>
                         {categories.map((category, index) => (
                             <button
                                 key={index}
-                                onClick={() => setSelectedCategory(category)}
+                                onClick={() => setSelectedCategory(selectedCategory === category ? '' : category)}
                                 style={{
                                     padding: '10px 16px',
                                     border: selectedCategory === category ? '2px solid #3b82f6' : '1px solid #d1d5db',
@@ -323,7 +306,7 @@ const BuyingGroup = () => {
                                         e.target.style.backgroundColor = 'white';
                                     }
                                 }}
-                            >
+                                >
                                 {category}
                             </button>
                         ))}
