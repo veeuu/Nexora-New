@@ -66,6 +66,7 @@ router.get('/technographics', async (req, res) => {
         category: techItem.Category,
         technology: techItem.Keyword,
         domain: about.Domain || 'N/A',
+        linkedinUrl: about.linkedinUrl || '',
         previousDetectedDate: techItem['Previous Date'] || 'N/A',
         latestDetectedDate: techItem['Latest Date'] || 'N/A',
         renewalDate: techItem['Renewal Date'] || 'N/A'

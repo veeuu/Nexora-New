@@ -1388,9 +1388,9 @@ const Technographics = () => {
                 onClick={() => setActiveFilterMenu('companyName')}
                 style={{
                   padding: '8px 14px',
-                  backgroundColor: 'rgb(254, 243, 199)',
-                  color: '#92400e',
-                  border: '1px solid rgb(252, 211, 77)',
+                  backgroundColor: 'white',
+                  color: '#3b82f6',
+                  border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -1401,10 +1401,12 @@ const Technographics = () => {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.borderColor = '#fbbf24';
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
                 }}
               >
                 <span>Company Name {Array.isArray(filters.companyName) && filters.companyName.length > 0 && `(${filters.companyName.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
@@ -1419,9 +1421,9 @@ const Technographics = () => {
                 onClick={() => setActiveFilterMenu('category')}
                 style={{
                   padding: '8px 14px',
-                  backgroundColor: 'rgb(254, 243, 199)',
-                  color: '#92400e',
-                  border: '1px solid rgb(252, 211, 77)',
+                  backgroundColor: 'white',
+                  color: '#3b82f6',
+                  border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -1432,10 +1434,12 @@ const Technographics = () => {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.borderColor = '#fbbf24';
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.borderColor = 'rgb(252, 211, 77)';
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
                 }}
               >
                 <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
@@ -1447,19 +1451,16 @@ const Technographics = () => {
           {activeFilterMenu === 'companyName' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: 'rgb(254, 243, 199)',
-                border: '1px solid rgb(252, 211, 77)',
+                backgroundColor: '#dbeafe',
+                border: '1px solid #93c5fd',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#92400e',
-                cursor: 'pointer'
-              }}
-              onClick={() => setOpenFilterDropdown(openFilterDropdown === 'companyName' ? null : 'companyName')}
-              >
+                color: '#1e40af'
+              }}>
                 <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={(e) => {
@@ -1482,52 +1483,75 @@ const Technographics = () => {
               </div>
               
               {/* Dropdown with search and checkboxes for company options */}
-              {openFilterDropdown === 'companyName' && (
-                <div
-                  data-filter-dropdown="companyName"
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    marginTop: '8px',
-                    backgroundColor: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                    zIndex: 1000,
-                    minWidth: '300px',
-                    maxHeight: '400px',
-                    overflowY: 'auto'
-                  }}
-                >
-                  {/* Search Box */}
-                  <div style={{
-                    padding: '12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    position: 'sticky',
-                    top: 0,
-                    backgroundColor: 'white'
-                  }}>
-                    <input
-                      type="text"
-                      placeholder="Search companies..."
-                      value={companySearchTerm}
-                      onChange={(e) => setCompanySearchTerm(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontFamily: 'inherit',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
+              <div
+                data-filter-dropdown="companyName"
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: '8px',
+                  backgroundColor: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  zIndex: 1000,
+                  minWidth: '300px',
+                  maxHeight: '400px',
+                  overflowY: 'auto'
+                }}
+              >
+                {/* Search Box */}
+                <div style={{
+                  padding: '12px',
+                  borderBottom: '1px solid #e5e7eb',
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white'
+                }}>
+                  <input
+                    type="text"
+                    placeholder="Search companies..."
+                    value={companySearchTerm}
+                    onChange={(e) => setCompanySearchTerm(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
 
-                  {/* ALL Option */}
-                  <div
-                    onClick={() => {
+                {/* ALL Option */}
+                <div
+                  onClick={() => {
+                    if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
+                      // If all are selected, deselect all
+                      handleFilterChange('companyName', []);
+                    } else {
+                      // Otherwise, select all
+                      handleFilterChange('companyName', getUniqueOptions('companyName'));
+                    }
+                  }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
+                    onChange={() => {
                       if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
                         // If all are selected, deselect all
                         handleFilterChange('companyName', []);
@@ -1536,122 +1560,93 @@ const Technographics = () => {
                         handleFilterChange('companyName', getUniqueOptions('companyName'));
                       }
                     }}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  All
+                </div>
+
+                {/* Company Options with Checkboxes */}
+                {getUniqueOptions('companyName')
+                  .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
+                  .map((company, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      const newCompanies = filters.companyName.includes(company)
+                        ? filters.companyName.filter(c => c !== company)
+                        : [...filters.companyName, company];
+                      handleFilterChange('companyName', newCompanies);
+                    }}
                     style={{
-                      padding: '12px 16px',
+                      padding: '10px 12px',
                       cursor: 'pointer',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0 ? '#f0f9ff' : 'white',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px',
-                      transition: 'background-color 0.2s',
-                      fontWeight: '600'
+                      gap: '8px',
+                      justifyContent: 'space-between'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                   >
-                    <input
-                      type="checkbox"
-                      checked={filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                    <span>ALL</span>
-                  </div>
-
-                  {/* Company Options with Checkboxes */}
-                  {getUniqueOptions('companyName')
-                    .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
-                    .map((company) => (
-                    <div
-                      key={company}
-                      onClick={() => {
-                        const newCompanies = filters.companyName.includes(company)
-                          ? filters.companyName.filter(c => c !== company)
-                          : [...filters.companyName, company];
-                        handleFilterChange('companyName', newCompanies);
-                      }}
-                      style={{
-                        padding: '12px 16px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        color: '#1f2937',
-                        backgroundColor: filters.companyName.includes(company) ? '#f0f9ff' : 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.includes(company) ? '#f0f9ff' : 'white'}
-                    >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <input
                         type="checkbox"
                         checked={filters.companyName.includes(company)}
                         onChange={() => {}}
-                        style={{
-                          cursor: 'pointer',
-                          width: '16px',
-                          height: '16px'
-                        }}
+                        style={{ cursor: 'pointer' }}
                       />
                       <span>{company}</span>
                     </div>
-                  ))}
-
-                  {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && (
-                    <div style={{
-                      padding: '12px 16px',
-                      textAlign: 'center',
-                      color: '#999',
-                      fontSize: '13px'
-                    }}>
-                      No companies found
-                    </div>
-                  )}
-
-                  {/* Save Button */}
-                  <div style={{
-                    padding: '12px',
-                    borderTop: '1px solid #e5e7eb',
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: '8px',
-                    backgroundColor: '#f9fafb',
-                    position: 'sticky',
-                    bottom: 0
-                  }}>
-                    <button
-                      onClick={() => {
-                        setOpenFilterDropdown(null);
-                        setActiveFilterMenu(null);
-                      }}
-                      style={{
-                        padding: '6px 16px',
-                        backgroundColor: '#3b82f6',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-                    >
-                      Save
-                    </button>
                   </div>
+                ))}
+
+                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && (
+                  <div style={{
+                    padding: '10px 12px',
+                    textAlign: 'center',
+                    color: '#999',
+                    fontSize: '13px'
+                  }}>
+                    No companies found
+                  </div>
+                )}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                      setCompanySearchTerm('');
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           )}
 
@@ -1872,19 +1867,16 @@ const Technographics = () => {
           {activeFilterMenu === 'category' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: 'rgb(254, 243, 199)',
-                border: '1px solid rgb(252, 211, 77)',
+                backgroundColor: '#dbeafe',
+                border: '1px solid #93c5fd',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#92400e',
-                cursor: 'pointer'
-              }}
-              onClick={() => setOpenFilterDropdown(openFilterDropdown === 'category' ? null : 'category')}
-              >
+                color: '#1e40af'
+              }}>
                 <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={(e) => {
@@ -1897,151 +1889,133 @@ const Technographics = () => {
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '0',
-                    color: '#92400e',
+                    color: '#1e40af',
                     lineHeight: '1'
                   }}
                 >
                   ✕
                 </button>
               </div>
-              
-              {/* Dropdown with all category options - only show when clicked */}
-              {openFilterDropdown === 'category' && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: '8px',
+                backgroundColor: 'white',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                minWidth: '250px',
+                maxHeight: '300px',
+                overflowY: 'auto'
+              }}>
                 <div
-                  data-filter-dropdown="category"
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    marginTop: '8px',
-                    backgroundColor: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                    zIndex: 1000,
-                    minWidth: '250px',
-                    maxHeight: '300px',
-                    overflowY: 'auto'
+                  onClick={() => {
+                    const allOptions = getUniqueOptions('category');
+                    // Toggle: if all selected, deselect all; otherwise select all
+                    if (filters.category.length === allOptions.length) {
+                      handleFilterChange('category', []);
+                    } else {
+                      handleFilterChange('category', allOptions);
+                    }
                   }}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    backgroundColor: 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.category.length === getUniqueOptions('category').length && filters.category.length > 0) {
-                        // If all are selected, deselect all
+                  <input
+                    type="checkbox"
+                    checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
+                    onChange={() => {
+                      const allOptions = getUniqueOptions('category');
+                      // Toggle: if all selected, deselect all; otherwise select all
+                      if (filters.category.length === allOptions.length) {
                         handleFilterChange('category', []);
                       } else {
-                        // Otherwise, select all
-                        handleFilterChange('category', getUniqueOptions('category'));
+                        handleFilterChange('category', allOptions);
                       }
                     }}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  All
+                </div>
+                {getUniqueOptions('category').map((option, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => handleFilterChange('category', option)}
                     style={{
-                      padding: '12px 16px',
+                      padding: '10px 12px',
                       cursor: 'pointer',
+                      backgroundColor: filters.category.includes(option) ? '#dbeafe' : 'white',
                       borderBottom: '1px solid #e5e7eb',
                       fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '10px'
+                      gap: '8px',
+                      justifyContent: 'space-between'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.length === getUniqueOptions('category').length && filters.category.length > 0 ? '#f0f9ff' : 'white'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(option) ? '#dbeafe' : 'white'}
                   >
-                    <input
-                      type="checkbox"
-                      checked={filters.category.length === getUniqueOptions('category').length && filters.category.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                    <span>ALL</span>
-                  </div>
-                  {getUniqueOptions('category').map((category) => (
-                    <div
-                      key={category}
-                      onClick={() => {
-                        const newCategories = filters.category.includes(category)
-                          ? filters.category.filter(c => c !== category)
-                          : [...filters.category, category];
-                        handleFilterChange('category', newCategories);
-                      }}
-                      style={{
-                        padding: '12px 16px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        color: '#1f2937',
-                        backgroundColor: filters.category.includes(category) ? '#f0f9ff' : 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        transition: 'background-color 0.2s',
-                        justifyContent: 'space-between'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(category) ? '#f0f9ff' : 'white'}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input
-                          type="checkbox"
-                          checked={filters.category.includes(category)}
-                          onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        />
-                        {renderTechLogo(category)}
-                        <span>{category}</span>
-                      </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByCategory(category)}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={filters.category.includes(option)}
+                        onChange={() => handleFilterChange('category', option)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      {renderTechLogo(option)}
+                      <span>{option}</span>
                     </div>
-                  ))}
-
-                  {/* Save Button */}
-                  <div style={{
-                    padding: '12px',
-                    borderTop: '1px solid #e5e7eb',
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: '8px',
-                    backgroundColor: '#f9fafb',
-                    position: 'sticky',
-                    bottom: 0
-                  }}>
-                    <button
-                      onClick={() => {
-                        setOpenFilterDropdown(null);
-                        setActiveFilterMenu(null);
-                      }}
-                      style={{
-                        padding: '6px 16px',
-                        backgroundColor: '#3b82f6',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-                    >
-                      Save
-                    </button>
+                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      {getCompanyCountByCategory(option)}
+                    </span>
                   </div>
+                ))}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           )}
 

@@ -16,7 +16,7 @@ const ProductCatalogue = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 7;
+  const rowsPerPage = 9;
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => {
@@ -456,6 +456,39 @@ const ProductCatalogue = () => {
                     </span>
                   </div>
                 ))}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
