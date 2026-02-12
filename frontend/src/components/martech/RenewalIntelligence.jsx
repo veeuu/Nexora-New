@@ -2,30 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
+import '../../styles/RenewalIntelligence.css';
+import '../../styles.css';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className="custom-dropdown">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          fontSize: '14px',
-          fontFamily: 'inherit',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          transition: 'border-color 0.2s',
-          textAlign: 'left',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
+        className="dropdown-button"
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
@@ -33,36 +21,13 @@ const CustomDropdown = ({ value, onChange, options }) => {
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            marginTop: '4px',
-            maxHeight: '300px',
-            overflowY: 'auto',
-            zIndex: 1000,
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
-        >
+        <div className="dropdown-menu">
           <div
             onClick={() => {
               onChange('');
               setIsOpen(false);
             }}
-            style={{
-              padding: '10px 12px',
-              cursor: 'pointer',
-              backgroundColor: value === '' ? '#f3f4f6' : 'white',
-              borderBottom: '1px solid #e5e7eb',
-              fontSize: '14px'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = value === '' ? '#f3f4f6' : 'white'}
+            className={`dropdown-menu-item ${value === '' ? 'selected' : ''}`}
           >
             All
           </div>
@@ -73,15 +38,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              style={{
-                padding: '10px 12px',
-                cursor: 'pointer',
-                backgroundColor: value === option ? '#dbeafe' : 'white',
-                borderBottom: '1px solid #e5e7eb',
-                fontSize: '14px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
+              className={`dropdown-menu-item ${value === option ? 'selected' : ''}`}
             >
               {option}
             </div>
@@ -97,28 +54,13 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className="custom-dropdown">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          fontSize: '14px',
-          fontFamily: 'inherit',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          transition: 'border-color 0.2s',
-          textAlign: 'left',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          justifyContent: 'space-between'
-        }}
+        className="dropdown-button"
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span className="dropdown-button-content">
           {value && renderIcon(value)}
           {value || 'All'}
         </span>
@@ -126,36 +68,13 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            marginTop: '4px',
-            maxHeight: '300px',
-            overflowY: 'auto',
-            zIndex: 1000,
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
-        >
+        <div className="dropdown-menu">
           <div
             onClick={() => {
               onChange('');
               setIsOpen(false);
             }}
-            style={{
-              padding: '10px 12px',
-              cursor: 'pointer',
-              backgroundColor: value === '' ? '#f3f4f6' : 'white',
-              borderBottom: '1px solid #e5e7eb',
-              fontSize: '14px'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = value === '' ? '#f3f4f6' : 'white'}
+            className={`dropdown-menu-item ${value === '' ? 'selected' : ''}`}
           >
             All
           </div>
@@ -166,18 +85,7 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              style={{
-                padding: '10px 12px',
-                cursor: 'pointer',
-                backgroundColor: value === option ? '#dbeafe' : 'white',
-                borderBottom: '1px solid #e5e7eb',
-                fontSize: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
+              className={`dropdown-menu-item ${value === option ? 'selected' : ''}`}
             >
               {renderIcon(option)}
               {option}
@@ -291,14 +199,7 @@ const RenewalIntelligence = () => {
                     src={logoPath}
                     alt={productName}
                     title={productName}
-                    style={{
-                        width: '16px',
-                        height: '16px',
-                        marginRight: '6px',
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        objectFit: 'contain'
-                    }}
+                    className="product-icon"
                     onError={(e) => {
                         e.target.style.display = 'none';
                     }}
@@ -313,14 +214,8 @@ const RenewalIntelligence = () => {
             return (
                 <IconComponent
                     size={16}
-                    style={{
-                        marginRight: '6px',
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        color: color,
-                        opacity: 0.85,
-                        filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
-                    }}
+                    className="product-icon-component"
+                    style={{ color: color }}
                     title={productName}
                 />
             );
@@ -336,11 +231,7 @@ const RenewalIntelligence = () => {
         return (
             <IconComponent
                 size={16}
-                style={{
-                    marginRight: '6px',
-                    display: 'inline-block',
-                    verticalAlign: 'middle'
-                }}
+                className="product-icon-component"
                 title={productName}
             />
         );
@@ -524,82 +415,21 @@ const RenewalIntelligence = () => {
 
     if (loading) {
       return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '800px',
-          backgroundColor: '#f9fafb',
-          borderRadius: '8px',
-          padding: '40px 20px'
-        }}>
+        <div className="loading-container">
           {/* Nexora Logo */}
-          <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
-
-          {/* Loading Text */}
-          <h3 style={{
-            margin: '0 0 10px 0',
-            color: '#1f2937',
-            fontSize: '18px',
-            fontWeight: '600'
-          }}>
-            
-          </h3>
+          <img src={nexoraLogo} alt="Nexora Logo" className="loading-logo" />
 
           {/* Subtext */}
-          <p style={{
-            margin: '0 0 30px 0',
-            color: '#6b7280',
-            fontSize: '14px',
-            textAlign: 'center',
-            maxWidth: '300px'
-          }}>
+          <p className="loading-subtext">
             Fetching and processing renewal data...
           </p>
 
           {/* Progress Dots */}
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'center'
-          }}>
-            <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
-              animation: 'bounce 1.4s infinite'
-            }} />
-            <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
-              animation: 'bounce 1.4s infinite 0.2s'
-            }} />
-            <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
-              animation: 'bounce 1.4s infinite 0.4s'
-            }} />
+          <div className="loading-dots">
+            <div className="loading-dot" style={{ animation: 'bounce 1.4s infinite' }} />
+            <div className="loading-dot" style={{ animation: 'bounce 1.4s infinite 0.2s' }} />
+            <div className="loading-dot" style={{ animation: 'bounce 1.4s infinite 0.4s' }} />
           </div>
-
-          {/* Styles for animations */}
-          <style>{`
-            @keyframes bounce {
-              0%, 80%, 100% {
-                opacity: 0.3;
-                transform: translateY(0);
-              }
-              40% {
-                opacity: 1;
-                transform: translateY(-10px);
-              }
-            }
-          `}</style>
         </div>
       );
     }
@@ -609,75 +439,26 @@ const RenewalIntelligence = () => {
             <div className="header-actions">
                 <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
-                  {/* <div className="search-bar">
-                    <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <input 
-                      type="text" 
-                      placeholder="Search accounts..." 
-                      value={filters.companyName}
-                      onChange={(e) => handleFilterChange('companyName', e.target.value)}
-                    />
-                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="10" cy="10" r="7"></circle>
-                      <path d="m20 20-4.5-4.5"></path>
-                    </svg>
-                  </div> */}
                 </div>
             </div>
 
             <div className="section-subtle-divider" />
 
-            <div style={{ marginBottom: '20px' }} ref={filterRef}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="filter-container" ref={filterRef}>
+              <div className="filter-row">
+                <div className="filter-chips">
                 {/* Filter Button - Always visible */}
                 <div style={{ position: 'relative' }}>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    style={{
-                      padding: '8px 14px',
-                      backgroundColor: 'white',
-                      color: '#3b82f6',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#f3f4f6';
-                      e.target.style.borderColor = '#3b82f6';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }}
+                    className="filter-button"
                   >
                     <span>+ Filter</span>
                   </button>
 
                 {/* Filter Menu Dropdown */}
                 {showFilters && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: '8px',
-                      backgroundColor: 'white',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      zIndex: 1000,
-                      minWidth: '200px'
-                    }}
-                  >
+                  <div className="filter-menu">
                     {[
                       { label: 'Account Name', key: 'companyName', mandatory: true },
                       { label: 'Product', key: 'product', mandatory: true },
@@ -689,23 +470,11 @@ const RenewalIntelligence = () => {
                           setActiveFilterMenu(filterOption.key);
                           setShowFilters(false);
                         }}
-                        style={{
-                          padding: '12px 16px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          color: '#1f2937',
-                          transition: 'background-color 0.2s',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                        className="filter-menu-item"
                       >
                         {filterOption.label}
                         {filterOption.mandatory && (
-                          <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                          <span className="mandatory-indicator">*</span>
                         )}
                       </div>
                     ))}
@@ -716,50 +485,19 @@ const RenewalIntelligence = () => {
                 {/* Account Name Filter Chip */}
                 {activeFilterMenu === 'companyName' && (
                   <div style={{ position: 'relative' }}>
-                    <div style={{
-                      backgroundColor: '#dbeafe',
-                      border: '1px solid #93c5fd',
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      color: '#1e40af'
-                    }}>
-                      <span>Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <div className="filter-chip">
+                      <span>Account Name ({filters.companyName.length}) <span className="mandatory-indicator">*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
                           setFilters(prev => ({ ...prev, companyName: [] }));
                         }}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '16px',
-                          padding: '0',
-                          color: '#1e40af',
-                          lineHeight: '1'
-                        }}
+                        className="filter-chip-close"
                       >
                         ✕
                       </button>
                     </div>
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: '8px',
-                      backgroundColor: 'white',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      zIndex: 1000,
-                      minWidth: '250px',
-                      maxHeight: '300px',
-                      overflowY: 'auto'
-                    }}>
+                    <div className="filter-dropdown">
                       <div
                         onClick={() => {
                           if (filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0) {
@@ -770,28 +508,13 @@ const RenewalIntelligence = () => {
                             handleFilterChange('companyName', getUniqueCompanies());
                           }
                         }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white'}
+                        className={`filter-option ${filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? 'filter-option-selected' : ''}`}
                       >
                         <input
                           type="checkbox"
                           checked={filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0}
                           onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
+                          className="filter-checkbox"
                         />
                         All
                       </div>
@@ -804,61 +527,25 @@ const RenewalIntelligence = () => {
                               : [...filters.companyName, option];
                             handleFilterChange('companyName', newCompanies);
                           }}
-                          style={{
-                            padding: '10px 12px',
-                            cursor: 'pointer',
-                            backgroundColor: filters.companyName.includes(option) ? '#dbeafe' : 'white',
-                            borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.includes(option) ? '#dbeafe' : 'white'}
+                          className={`filter-option ${filters.companyName.includes(option) ? 'filter-option-selected' : ''}`}
                         >
                           <input
                             type="checkbox"
                             checked={filters.companyName.includes(option)}
                             onChange={() => {}}
-                            style={{
-                              cursor: 'pointer',
-                              width: '16px',
-                              height: '16px'
-                            }}
+                            className="filter-checkbox"
                           />
                           {option}
                         </div>
                       ))}
 
                       {/* Save Button */}
-                      <div style={{
-                        padding: '12px',
-                        borderTop: '1px solid #e5e7eb',
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: '8px',
-                        backgroundColor: '#f9fafb',
-                        position: 'sticky',
-                        bottom: 0
-                      }}>
+                      <div className="filter-footer">
                         <button
                           onClick={() => {
                             setActiveFilterMenu(null);
                           }}
-                          style={{
-                            padding: '6px 16px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            transition: 'background-color 0.2s'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                          className="filter-save-button"
                         >
                           Save
                         </button>
@@ -870,50 +557,19 @@ const RenewalIntelligence = () => {
                 {/* Product Filter Chip */}
                 {activeFilterMenu === 'product' && (
                   <div style={{ position: 'relative' }}>
-                    <div style={{
-                      backgroundColor: '#dbeafe',
-                      border: '1px solid #93c5fd',
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      color: '#1e40af'
-                    }}>
-                      <span>Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <div className="filter-chip">
+                      <span>Product ({filters.product.length}) <span className="mandatory-indicator">*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
                           setFilters(prev => ({ ...prev, product: [] }));
                         }}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '16px',
-                          padding: '0',
-                          color: '#1e40af',
-                          lineHeight: '1'
-                        }}
+                        className="filter-chip-close"
                       >
                         ✕
                       </button>
                     </div>
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: '8px',
-                      backgroundColor: 'white',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      zIndex: 1000,
-                      minWidth: '250px',
-                      maxHeight: '300px',
-                      overflowY: 'auto'
-                    }}>
+                    <div className="filter-dropdown">
                       <div
                         onClick={() => {
                           if (filters.product.length === getUniqueProducts().length && filters.product.length > 0) {
@@ -924,28 +580,13 @@ const RenewalIntelligence = () => {
                             handleFilterChange('product', getUniqueProducts());
                           }
                         }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white'}
+                        className={`filter-option ${filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? 'filter-option-selected' : ''}`}
                       >
                         <input
                           type="checkbox"
                           checked={filters.product.length === getUniqueProducts().length && filters.product.length > 0}
                           onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
+                          className="filter-checkbox"
                         />
                         All
                       </div>
@@ -958,68 +599,31 @@ const RenewalIntelligence = () => {
                               : [...filters.product, option];
                             handleFilterChange('product', newProducts);
                           }}
-                          style={{
-                            padding: '10px 12px',
-                            cursor: 'pointer',
-                            backgroundColor: filters.product.includes(option) ? '#dbeafe' : 'white',
-                            borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            justifyContent: 'space-between'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.includes(option) ? '#dbeafe' : 'white'}
+                          className={`filter-option ${filters.product.includes(option) ? 'filter-option-selected' : ''}`}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="filter-option-text">
                             <input
                               type="checkbox"
                               checked={filters.product.includes(option)}
                               onChange={() => {}}
-                              style={{
-                                cursor: 'pointer',
-                                width: '16px',
-                                height: '16px'
-                              }}
+                              className="filter-checkbox"
                             />
                             {renderProductIcon(option)}
                             {option}
                           </div>
-                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                          <span className="filter-option-count">
                             {getAccountCountByProduct(option)}
                           </span>
                         </div>
                       ))}
 
                       {/* Save Button */}
-                      <div style={{
-                        padding: '12px',
-                        borderTop: '1px solid #e5e7eb',
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: '8px',
-                        backgroundColor: '#f9fafb',
-                        position: 'sticky',
-                        bottom: 0
-                      }}>
+                      <div className="filter-footer">
                         <button
                           onClick={() => {
                             setActiveFilterMenu(null);
                           }}
-                          style={{
-                            padding: '6px 16px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            transition: 'background-color 0.2s'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                          className="filter-save-button"
                         >
                           Save
                         </button>
@@ -1031,50 +635,19 @@ const RenewalIntelligence = () => {
                 {/* Renewal Timeline Filter Chip */}
                 {activeFilterMenu === 'qtr' && (
                   <div style={{ position: 'relative' }}>
-                    <div style={{
-                      backgroundColor: '#dbeafe',
-                      border: '1px solid #93c5fd',
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      color: '#1e40af'
-                    }}>
-                      <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <div className="filter-chip">
+                      <span>Renewal Timeline ({filters.qtr.length}) <span className="mandatory-indicator">*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
                           setFilters(prev => ({ ...prev, qtr: [] }));
                         }}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '16px',
-                          padding: '0',
-                          color: '#1e40af',
-                          lineHeight: '1'
-                        }}
+                        className="filter-chip-close"
                       >
                         ✕
                       </button>
                     </div>
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      marginTop: '8px',
-                      backgroundColor: 'white',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      zIndex: 1000,
-                      minWidth: '250px',
-                      maxHeight: '300px',
-                      overflowY: 'auto'
-                    }}>
+                    <div className="filter-dropdown">
                       <div
                         onClick={() => {
                           if (filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0) {
@@ -1085,28 +658,13 @@ const RenewalIntelligence = () => {
                             handleFilterChange('qtr', getUniqueQtrs());
                           }
                         }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white'}
+                        className={`filter-option ${filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? 'filter-option-selected' : ''}`}
                       >
                         <input
                           type="checkbox"
                           checked={filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0}
                           onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
+                          className="filter-checkbox"
                         />
                         All
                       </div>
@@ -1119,67 +677,30 @@ const RenewalIntelligence = () => {
                               : [...filters.qtr, option];
                             handleFilterChange('qtr', newQtrs);
                           }}
-                          style={{
-                            padding: '10px 12px',
-                            cursor: 'pointer',
-                            backgroundColor: filters.qtr.includes(option) ? '#dbeafe' : 'white',
-                            borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            justifyContent: 'space-between'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr.includes(option) ? '#dbeafe' : 'white'}
+                          className={`filter-option ${filters.qtr.includes(option) ? 'filter-option-selected' : ''}`}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="filter-option-text">
                             <input
                               type="checkbox"
                               checked={filters.qtr.includes(option)}
                               onChange={() => {}}
-                              style={{
-                                cursor: 'pointer',
-                                width: '16px',
-                                height: '16px'
-                              }}
+                              className="filter-checkbox"
                             />
                             <span>{option}</span>
                           </div>
-                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                          <span className="filter-option-count">
                             {getAccountCountByQtr(option)}
                           </span>
                         </div>
                       ))}
 
                       {/* Save Button */}
-                      <div style={{
-                        padding: '12px',
-                        borderTop: '1px solid #e5e7eb',
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: '8px',
-                        backgroundColor: '#f9fafb',
-                        position: 'sticky',
-                        bottom: 0
-                      }}>
+                      <div className="filter-footer">
                         <button
                           onClick={() => {
                             setActiveFilterMenu(null);
                           }}
-                          style={{
-                            padding: '6px 16px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            transition: 'background-color 0.2s'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                          className="filter-save-button"
                         >
                           Save
                         </button>
@@ -1190,37 +711,16 @@ const RenewalIntelligence = () => {
 
                 {/* Display saved filter tags */}
                 {filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
-                  <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#92400e',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setActiveFilterMenu('companyName')}
-                  >
+                  <div className="warning-chip">
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                      Account Name ({filters.companyName.length}) <span className="mandatory-indicator">*</span>
                     </span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setFilters(prev => ({ ...prev, companyName: [] }));
                       }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        padding: '0',
-                        color: '#92400e',
-                        lineHeight: '1'
-                      }}
+                      className="warning-chip-close"
                     >
                       ✕
                     </button>
@@ -1228,37 +728,16 @@ const RenewalIntelligence = () => {
                 )}
 
                 {filters.product.length > 0 && activeFilterMenu !== 'product' && (
-                  <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#92400e',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setActiveFilterMenu('product')}
-                  >
+                  <div className="warning-chip">
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                      Product ({filters.product.length}) <span className="mandatory-indicator">*</span>
                     </span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setFilters(prev => ({ ...prev, product: [] }));
                       }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        padding: '0',
-                        color: '#92400e',
-                        lineHeight: '1'
-                      }}
+                      className="warning-chip-close"
                     >
                       ✕
                     </button>
@@ -1266,35 +745,14 @@ const RenewalIntelligence = () => {
                 )}
 
                 {filters.qtr.length > 0 && activeFilterMenu !== 'qtr' && (
-                  <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#92400e',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setActiveFilterMenu('qtr')}
-                  >
-                    <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                  <div className="warning-chip">
+                    <span>Renewal Timeline ({filters.qtr.length}) <span className="mandatory-indicator">*</span></span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setFilters(prev => ({ ...prev, qtr: [] }));
                       }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        padding: '0',
-                        color: '#92400e',
-                        lineHeight: '1'
-                      }}
+                      className="warning-chip-close"
                     >
                       ✕
                     </button>
@@ -1307,7 +765,6 @@ const RenewalIntelligence = () => {
                   <button
                     onClick={() => downloadCSV(filteredData)}
                     className="download-csv-button"
-                    style={{ flexShrink: 0 }}
                   >
                     <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -1413,14 +870,7 @@ const RenewalIntelligence = () => {
 
                             {/* Pagination Controls */}
                             {filteredData.length > rowsPerPage && (
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginTop: '20px',
-                                padding: '16px'
-                            }}>
+                            <div className="pagination-container">
                                 {(() => {
                                     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
                                     const pages = [];
@@ -1444,28 +894,7 @@ const RenewalIntelligence = () => {
                                                 key="prev"
                                                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                                 disabled={currentPage === 1}
-                                                style={{
-                                                    padding: '8px 12px',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    backgroundColor: currentPage === 1 ? '#f3f4f6' : '#f9fafb',
-                                                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                                    fontSize: '16px',
-                                                    color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                                                    fontWeight: '600',
-                                                    transition: 'all 0.2s',
-                                                    opacity: currentPage === 1 ? 0.5 : 1
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    if (currentPage > 1) {
-                                                        e.target.style.backgroundColor = '#e5e7eb';
-                                                    }
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    if (currentPage > 1) {
-                                                        e.target.style.backgroundColor = '#f9fafb';
-                                                    }
-                                                }}
+                                                className="pagination-button"
                                             >
                                                 ← Prev
                                             </button>
@@ -1475,24 +904,11 @@ const RenewalIntelligence = () => {
                                                     <button
                                                         key={1}
                                                         onClick={() => setCurrentPage(1)}
-                                                        style={{
-                                                            padding: '8px 14px',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            backgroundColor: '#f3f4f6',
-                                                            cursor: 'pointer',
-                                                            fontSize: '14px',
-                                                            color: '#6b7280',
-                                                            fontWeight: '500',
-                                                            minWidth: '40px',
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-                                                        onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+                                                        className="pagination-page"
                                                     >
                                                         1
                                                     </button>
-                                                    {startPage > 2 && <span style={{ color: '#9ca3af' }}>...</span>}
+                                                    {startPage > 2 && <span className="pagination-dots">...</span>}
                                                 </>
                                             )}
 
@@ -1500,29 +916,7 @@ const RenewalIntelligence = () => {
                                                 <button
                                                     key={i}
                                                     onClick={() => setCurrentPage(i)}
-                                                    style={{
-                                                        padding: '8px 14px',
-                                                        border: 'none',
-                                                        borderRadius: '8px',
-                                                        backgroundColor: i === currentPage ? '#dbeafe' : '#f3f4f6',
-                                                        cursor: 'pointer',
-                                                        fontSize: '14px',
-                                                        color: i === currentPage ? '#1e40af' : '#6b7280',
-                                                        fontWeight: i === currentPage ? '600' : '500',
-                                                        minWidth: '40px',
-                                                        transition: 'all 0.2s',
-                                                        boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        if (i !== currentPage) {
-                                                            e.target.style.backgroundColor = '#e5e7eb';
-                                                        }
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        if (i !== currentPage) {
-                                                            e.target.style.backgroundColor = '#f3f4f6';
-                                                        }
-                                                    }}
+                                                    className={`pagination-page ${i === currentPage ? 'active' : ''}`}
                                                 >
                                                     {i}
                                                 </button>
@@ -1530,24 +924,11 @@ const RenewalIntelligence = () => {
 
                                             {endPage < totalPages && (
                                                 <>
-                                                    {endPage < totalPages - 1 && <span style={{ color: '#9ca3af' }}>...</span>}
+                                                    {endPage < totalPages - 1 && <span className="pagination-dots">...</span>}
                                                     <button
                                                         key={totalPages}
                                                         onClick={() => setCurrentPage(totalPages)}
-                                                        style={{
-                                                            padding: '8px 14px',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            backgroundColor: '#f3f4f6',
-                                                            cursor: 'pointer',
-                                                            fontSize: '14px',
-                                                            color: '#6b7280',
-                                                            fontWeight: '500',
-                                                            minWidth: '40px',
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-                                                        onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+                                                        className="pagination-page"
                                                     >
                                                         {totalPages}
                                                     </button>
@@ -1558,28 +939,7 @@ const RenewalIntelligence = () => {
                                                 key="next"
                                                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                                 disabled={currentPage === totalPages}
-                                                style={{
-                                                    padding: '8px 12px',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#f9fafb',
-                                                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                                    fontSize: '16px',
-                                                    color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                                                    fontWeight: '600',
-                                                    transition: 'all 0.2s',
-                                                    opacity: currentPage === totalPages ? 0.5 : 1
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    if (currentPage < totalPages) {
-                                                        e.target.style.backgroundColor = '#e5e7eb';
-                                                    }
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    if (currentPage < totalPages) {
-                                                        e.target.style.backgroundColor = '#f9fafb';
-                                                    }
-                                                }}
+                                                className="pagination-button"
                                             >
                                                 Next →
                                             </button>
@@ -1591,218 +951,20 @@ const RenewalIntelligence = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Bar Chart Section - Right */}
-                {/* <div style={{
-                    backgroundColor: 'white',
-                    borderRadius: '8px',
-                    padding: '15px',
-                    border: '1px solid #d1d5db',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: 0,
-                    flexShrink: 0,
-                    height: '400px'
-                }}>
-                    <h2 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#374151', marginBottom: '15px', margin: 0 }}>
-                        Renewal Distribution
-                    </h2>
-                    {filteredData.length === 0 ? (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flex: 1,
-                            color: '#9ca3af',
-                            fontSize: '12px'
-                        }}>
-                            Select filters
-                        </div>
-                    ) : chartData.length === 0 ? (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flex: 1,
-                            color: '#9ca3af',
-                            fontSize: '12px'
-                        }}>
-                            No data
-                        </div>
-                    ) : (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'flex-end',
-                            justifyContent: 'space-between',
-                            flex: 1,
-                            gap: '4px',
-                            minWidth: 0
-                        }}>
-                            {chartData.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 0 }}>
-                                    <div style={{
-                                        fontSize: '10px',
-                                        fontWeight: '600',
-                                        color: '#1f2937',
-                                        marginBottom: '4px',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        {item.value}
-                                    </div>
-                                    <div style={{
-                                        width: '100%',
-                                        maxWidth: '30px',
-                                        height: maxChartValue > 0 ? `${(item.value / maxChartValue) * 250}px` : '0px',
-                                        backgroundColor: item.color,
-                                        borderRadius: '2px 2px 0 0',
-                                        transition: 'all 0.3s ease',
-                                        cursor: 'pointer'
-                                    }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.opacity = '0.8';
-                                            e.target.style.transform = 'scaleY(1.05)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.opacity = '1';
-                                            e.target.style.transform = 'scaleY(1)';
-                                        }}
-                                    ></div>
-                                    <div style={{
-                                        fontSize: '8px',
-                                        color: '#6b7280',
-                                        marginTop: '4px',
-                                        textAlign: 'center',
-                                        maxWidth: '50px',
-                                        wordWrap: 'break-word',
-                                        lineHeight: '1.1'
-                                    }}>
-                                        {item.label}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div> */}
             </div>
 
             {/* Custom Tooltip */}
             {tooltip.show && (
                 <div
+                    className="tooltip"
                     style={{
-                        position: 'fixed',
                         left: `${tooltip.x}px`,
                         top: `${tooltip.y}px`,
-                        transform: 'translate(-50%, -100%)',
-                        backgroundColor: '#ffffffff',
-                        color: 'black',
-                        padding: '8px 12px',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                        zIndex: 1000,
-                        pointerEvents: 'none',
-                        maxWidth: '300px',
-                        wordWrap: 'break-word',
-                        whiteSpace: 'normal',
-                        lineHeight: '1.4'
                     }}
                 >
                     {tooltip.text}
                 </div>
             )}
-
-            <style jsx>{`
-                .renewal-intelligence-container {
-                    background: linear-gradient(180deg, #ffffff, #fafbff);
-                    border-radius: 12px;
-                    padding: 1.25rem 1.5rem 1.5rem;
-                    width: 100%;
-                    height:800px;
-                    max-width: 100%;
-                    overflow-x: hidden;
-                }
-
-                .header-actions {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 1rem;
-                }
-
-                .header-actions h2 {
-                    margin: 0;
-                    font-size: 1.4rem;
-                    font-weight: 700;
-                    color: #0f172a;
-                }
-
-                .table-container {
-                    max-height: 700px;
-                    overflow-x: auto;
-                    overflow-y: auto;
-                    position: relative;
-                    border: 1px solid #e5e7eb;
-                    border-radius: 10px;
-                    background-color: #fff;
-                }
-
-                .sticky-header {
-                    position: sticky;
-                    top: 0;
-                    background-color: #fff;
-                    z-index: 10;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-
-                /* keep THs non-sticky individually to avoid width/offset misalignment */
-                .sticky-header th {
-                    position: sticky;
-                    top: 0;
-                }
-
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    table-layout: fixed;
-                    min-width: 0;
-                    box-sizing: border-box;
-                }
-
-                th, td {
-                    padding: 12px 15px;
-                    font-size: 13px;
-                    text-align: left;
-                    border-bottom: 1px solid #ddd;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    cursor: default;
-                    box-sizing: border-box;
-                }
-
-                /* Explicitly enforce column width constraints so Renewal Intelligence is visible */
-                td:nth-child(1), th:nth-child(1) { width: 33.33%; }
-                td:nth-child(2), th:nth-child(2) { width: 33.33%; }
-                td:nth-child(3), th:nth-child(3) { width: 33.34%; }
-
-                td {
-                    position: relative;
-                }
-
-                td:hover {
-                    background-color: #f9fafb;
-                }
-
-                th {
-                    background-color: #f8f9fa;
-                    font-weight: 600;
-                }
-
-                tr:hover {
-                    background-color: #f5f5f5;
-                }
-            `}</style>
         </div>
     );
 };
