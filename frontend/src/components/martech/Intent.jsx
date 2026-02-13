@@ -248,7 +248,7 @@ const Intent = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '800px',
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#ffffffff',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>

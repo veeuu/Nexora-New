@@ -115,14 +115,12 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   return (
     <IndustryProvider>
       <div className="dashboard">
-        {/* <Header onDropdownChange={handleDropdownChange} onRegionChange={handleRegionChange} username={username} onLogout={onLogout} /> */}
+        <Header username={username} onLogout={onLogout} />
         <div className="dashboard-content">
           <Menu
             activeSection={activeSection}
             onMenuClick={handleMenuClick}
             menuItems={getMenuItems()}
-            onLogout={onLogout}
-            username={username}
           />
           <main className="main-content">
             {renderActiveSection()}

@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import solutionsImage from '../assets/unnamed (1).png';
 
-const Menu = ({ activeSection, onMenuClick, menuItems, onLogout, username }) => {
+const Menu = ({ activeSection, onMenuClick, menuItems }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -20,19 +18,6 @@ const Menu = ({ activeSection, onMenuClick, menuItems, onLogout, username }) => 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
-    };
-
-    if (isProfileOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isProfileOpen]);
-
   const toggleMenu = () => {
     if (isMobile) {
       setIsOpen(!isOpen);
@@ -44,19 +29,6 @@ const Menu = ({ activeSection, onMenuClick, menuItems, onLogout, username }) => 
     if (isMobile) {
       setIsOpen(false);
     }
-  };
-
-  const toggleProfileMenu = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
-
-  const handleLogoutClick = () => {
-    setIsProfileOpen(false);
-    onLogout();
-  };
-
-  const getInitial = () => {
-    return username ? username.charAt(0).toUpperCase() : 'U';
   };
 
   return (
@@ -79,39 +51,6 @@ const Menu = ({ activeSection, onMenuClick, menuItems, onLogout, username }) => 
             {item}
           </li>
         ))}
-        <li className="menu-profile-item">
-          <div className="profile-section" ref={profileRef}>
-            <div 
-              className="profile-avatar-menu"
-              onClick={toggleProfileMenu}
-              title={username}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="profile-avatar-circle">
-                <span className="profile-initial">{getInitial()}</span>
-              </div>
-              <span className="profile-username">{username}</span>
-            </div>
-            {isProfileOpen && (
-              <div className="profile-dropdown-menu">
-                <div className="profile-dropdown-header">
-                  <p className="profile-dropdown-name">{username}</p>
-                </div>
-                <button 
-                  className="profile-logout-btn"
-                  onClick={handleLogoutClick}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        </li>
       </ul>
     </nav>
   );

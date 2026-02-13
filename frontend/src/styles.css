@@ -9,7 +9,7 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background-color: #f5f7fb;
+  background-color: #ffffff;
   color: #1f2937;
   overflow-x: hidden;
 }
@@ -22,84 +22,7 @@ body {
 }
 
 /* ========== HEADER ========== */
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.75rem 2rem 0.75rem 0.5rem;
-  background: radial-gradient(circle, rgba(24, 143, 255, 0.29) 0%, transparent 70%), #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: calc(100% - 180px);
-  left: 180px;
-  min-height: 80px;
-  flex-wrap: wrap;
-  gap: 1rem;
-  position: fixed;
-  top: 0;
-  z-index: 99;
-}
-
-.header-brand-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-}
-
-.header-right {
-  position: absolute;
-  right: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-dropdown {
-  position: relative;
-}
-
-.profile-avatar-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  width: 100%;
-}
-
-.profile-avatar-btn:focus {
-  outline: none;
-}
-
-.profile-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: transform 0.2s;
-  outline: none;
-  border: none;
-}
-
-.profile-avatar:focus {
-  outline: none;
-}
-
-.profile-avatar:hover {
-  transform: scale(1.05);
-}
+/* Header styles are now in styles/header.css */
 
 .profile-menu {
   position: absolute;
