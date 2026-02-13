@@ -860,17 +860,21 @@ const Technographics = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/technographics');
+        
+        // Fetch first page with limit of 50 companies (which will give us more than enough records)
+        const response = await fetch('/api/technographics?page=1&limit=50');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
+        const result = await response.json();
+        const data = result.data || result; // Handle both paginated and non-paginated responses
         setTableData(data);
 
-        // Fetch NTP data
-        const ntpResponse = await fetch('/api/ntp');
+        // Fetch NTP data with pagination
+        const ntpResponse = await fetch('/api/ntp?page=1&limit=50');
         if (ntpResponse.ok) {
-          const ntpDataFetched = await ntpResponse.json();
+          const ntpResult = await ntpResponse.json();
+          const ntpDataFetched = ntpResult.data || ntpResult;
           setNtpData(ntpDataFetched);
         }
 
