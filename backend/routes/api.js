@@ -362,13 +362,15 @@ router.get('/org-chart/:companyName', async (req, res) => {
         
         // Check if file exists
         if (fs.existsSync(htmlFilePath)) {
-          const html = fs.readFileSync(htmlFilePath, 'utf-8');
+          let html = fs.readFileSync(htmlFilePath, 'utf-8');
+          html = injectScrollableCSS(html);
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.send(html);
         } else {
           // If file doesn't exist, generate it on-demand
           console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
-          const html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+          let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+          html = injectScrollableCSS(html);
           
           // Save to disk
           fs.writeFileSync(htmlFilePath, html, 'utf-8');
@@ -387,6 +389,105 @@ router.get('/org-chart/:companyName', async (req, res) => {
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
   }
 });
+
+// Helper function to inject scrollable CSS into org chart HTML
+function injectScrollableCSS(html) {
+  const scrollableCSS = `
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+    
+    .chart-wrapper {
+      flex: 1;
+      overflow: auto;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px;
+    }
+    
+    #chart {
+      transform-origin: top center;
+      transition: transform 0.2s ease;
+    }
+  `;
+  
+  // Replace the existing .container CSS
+  const containerRegex = /\.container\s*\{[^}]*\}/;
+  if (containerRegex.test(html)) {
+    html = html.replace(containerRegex, '.container { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: auto; }');
+  }
+  
+  // Replace the existing .chart-wrapper CSS
+  const chartWrapperRegex = /\.chart-wrapper\s*\{[^}]*\}/;
+  if (chartWrapperRegex.test(html)) {
+    html = html.replace(chartWrapperRegex, '.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }');
+  } else {
+    // If .chart-wrapper doesn't exist, inject it into the style tag
+    html = html.replace(/<\/style>/, `.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }</style>`);
+  }
+  
+  // Add zoom capability to #chart element
+  html = html.replace(/<\/style>/, `#chart { transform-origin: top center; transition: transform 0.2s ease; }</style>`);
+  
+  // Add script to handle zoom from parent window and auto-detect optimal zoom
+  const zoomScript = `
+    <script>
+      window.currentZoom = 100;
+      window.optimalZoom = 100;
+      
+      // Calculate optimal zoom on page load
+      window.addEventListener('load', function() {
+        const chartElement = document.getElementById('chart');
+        if (chartElement && chartElement.getBoundingClientRect) {
+          const chartRect = chartElement.getBoundingClientRect();
+          const containerWidth = window.innerWidth - 40; // Account for padding
+          const containerHeight = 520; // Container height from React component
+          
+          // Calculate zoom to fit width
+          const widthZoom = (containerWidth / chartRect.width) * 100;
+          // Calculate zoom to fit height
+          const heightZoom = (containerHeight / chartRect.height) * 100;
+          
+          // Use the smaller zoom to fit both dimensions
+          window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+          window.optimalZoom = Math.max(window.optimalZoom, 30); // Min 30%
+          window.optimalZoom = Math.round(window.optimalZoom / 10) * 10; // Round to nearest 10
+          
+          // Apply optimal zoom
+          chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+          window.currentZoom = window.optimalZoom;
+          
+          // Send optimal zoom back to parent
+          window.parent.postMessage({
+            type: 'optimalZoomCalculated',
+            zoomLevel: window.optimalZoom
+          }, '*');
+        }
+      });
+      
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'setZoom') {
+          const zoomLevel = event.data.zoomLevel || window.optimalZoom;
+          const chartElement = document.getElementById('chart');
+          if (chartElement) {
+            chartElement.style.transform = 'scale(' + (zoomLevel / 100) + ')';
+            window.currentZoom = zoomLevel;
+          }
+        }
+      });
+    </script>
+  `;
+  
+  html = html.replace(/<\/body>/, zoomScript + '</body>');
+  
+  return html;
+}
 
 // Generate org charts only for selected companies (called on-demand)
 async function generateSelectedOrgCharts(selectedCompanies = []) {

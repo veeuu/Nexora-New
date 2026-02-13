@@ -8,6 +8,7 @@ const path = require('path');
 const csv = require('csv-parser');
 const archiver = require('archiver');
 const puppeteer = require('puppeteer');
+const XLSX = require('xlsx');
 
 // ================================
 // CONFIGURATION CONSTANTS
@@ -46,9 +47,15 @@ const CONFIG = {
   NAME_TEXT_SIZE: 14,
   ROLE_TEXT_SIZE: 11,
 
-  // Canvas dimensions
+  // Canvas dimensions (will be adjusted based on org size)
   CANVAS_WIDTH: 900,
-  CANVAS_HEIGHT: 500
+  CANVAS_HEIGHT: 500,
+  
+  // Dynamic scaling
+  MIN_CANVAS_WIDTH: 900,
+  MIN_CANVAS_HEIGHT: 500,
+  EMPLOYEES_PER_WIDTH_UNIT: 3,
+  EMPLOYEES_PER_HEIGHT_UNIT: 2
 };
 
 // ================================
@@ -86,8 +93,69 @@ function readCSVFile(csvFilePath) {
 // ================================
 
 /**
- * Wrap text to fit within character limit and line limit
+ * Calculate optimal canvas dimensions based on organization size
  */
+function calculateCanvasDimensions(employees, roots) {
+  const employeeCount = Object.keys(employees).length;
+  
+  // Calculate tree depth
+  let maxDepth = 0;
+  const queue = roots.map(r => [r, 0]);
+  let head = 0;
+  
+  while (head < queue.length) {
+    const [nodeName, depth] = queue[head];
+    head++;
+    maxDepth = Math.max(maxDepth, depth);
+    
+    if (nodeName in employees) {
+      for (const child of employees[nodeName].children) {
+        queue.push([child, depth + 1]);
+      }
+    }
+  }
+  
+  // Calculate width based on max children at any level
+  let maxChildrenAtLevel = 0;
+  const levelCounts = {};
+  
+  const levelQueue = roots.map(r => [r, 0]);
+  let levelHead = 0;
+  
+  while (levelHead < levelQueue.length) {
+    const [nodeName, level] = levelQueue[levelHead];
+    levelHead++;
+    
+    levelCounts[level] = (levelCounts[level] || 0) + 1;
+    
+    if (nodeName in employees) {
+      for (const child of employees[nodeName].children) {
+        levelQueue.push([child, level + 1]);
+      }
+    }
+  }
+  
+  maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
+  
+  // Calculate dimensions - keep boxes same size, scale canvas
+  let width = CONFIG.MIN_CANVAS_WIDTH;
+  let height = CONFIG.MIN_CANVAS_HEIGHT;
+  let scaleFactor = 1;
+  
+  // Scale width based on max children at any level
+  if (maxChildrenAtLevel > 5) {
+    scaleFactor = Math.max(scaleFactor, maxChildrenAtLevel / 5);
+    width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 200);
+  }
+  
+  // Scale height based on depth
+  if (maxDepth > 3) {
+    scaleFactor = Math.max(scaleFactor, (maxDepth + 1) / 4);
+    height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 1) * 150);
+  }
+  
+  return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor };
+}
 function wrapText(text, maxChars, maxLines = null) {
   if (typeof text !== 'string') {
     text = String(text);
@@ -363,19 +431,28 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
 function generateOrgChartPlotly(data, companyName = 'Organization', location = '') {
   const { employees, roots, edges } = buildTreeFromData(data);
 
-  // Use fixed box dimensions for consistent appearance
+  // Calculate optimal canvas dimensions
+  const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
+  
+  // Keep box dimensions fixed, scale fonts proportionally
   const boxWidth = CONFIG.BOX_WIDTH;
   const boxHeight = CONFIG.BOX_HEIGHT;
+  const verticalGap = CONFIG.VERTICAL_GAP;
+  const horizontalGap = CONFIG.HORIZONTAL_GAP;
+  
+  // Scale font sizes based on scale factor
+  const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
+  const roleTextSize = Math.round(CONFIG.ROLE_TEXT_SIZE * scaleFactor);
 
   const titleText = location && String(location).trim() ?
     `${companyName} (${location})` : String(companyName);
 
   if (!Object.keys(employees).length) {
-    return createErrorPlotly(`No Employee Data for ${titleText}`);
+    return createErrorPlotly(`No Employee Data for ${titleText}`, canvasWidth, canvasHeight);
   }
 
   if (!roots.length) {
-    return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`);
+    return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`, canvasWidth, canvasHeight);
   }
 
   // Calculate positions
@@ -390,7 +467,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
   }
 
   if (!Object.keys(nodePositions).length) {
-    return createErrorPlotly(`${titleText} - No Visualizable Chart Data`);
+    return createErrorPlotly(`${titleText} - No Visualizable Chart Data`, canvasWidth, canvasHeight);
   }
 
   // Calculate chart bounds
@@ -477,7 +554,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     }
 
     const rootY = Object.values(rootPositions)[0][1];
-    const topLineY = rootY + boxHeight / 2 + (CONFIG.VERTICAL_GAP / 3);
+    const topLineY = rootY + boxHeight / 2 + (verticalGap / 3);
     const rootXCoords = Object.values(rootPositions).map(pos => pos[0]);
     const xMin = Math.min(...rootXCoords);
     const xMax = Math.max(...rootXCoords);
@@ -498,7 +575,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       const [x1, y1] = nodePositions[childName];
       const x0Shifted = x0 + xShiftAmount;
       const x1Shifted = x1 + xShiftAmount;
-      const yJunction = y0 - boxHeight / 2 - CONFIG.VERTICAL_GAP / 3;
+      const yJunction = y0 - boxHeight / 2 - verticalGap / 3;
 
       lineXs.push(x0Shifted, x0Shifted, x1Shifted, x1Shifted, null);
       lineYs.push(y0 - boxHeight / 2, yJunction, yJunction, y1 + boxHeight / 2, null);
@@ -579,7 +656,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       text: label,
       showarrow: false,
       font: {
-        size: CONFIG.NAME_TEXT_SIZE,
+        size: nameTextSize,
         color: nodeFontColor,
         family: 'Calibri, Arial'
       },
@@ -606,8 +683,8 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     showlegend: true,
     hovermode: 'closest',
     margin: { l: 20, r: 20, t: 100, b: 20 },
-    width: CONFIG.CANVAS_WIDTH,
-    height: CONFIG.CANVAS_HEIGHT,
+    width: canvasWidth,
+    height: canvasHeight,
     plot_bgcolor: CONFIG.COLOR_BACKGROUND,
     paper_bgcolor: CONFIG.COLOR_BACKGROUND,
     xaxis: {
@@ -638,13 +715,13 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     annotations: annotations
   };
 
-  return { data: traces, layout };
+  return { data: traces, layout, canvasWidth, canvasHeight };
 }
 
 /**
  * Create error Plotly chart
  */
-function createErrorPlotly(message) {
+function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CONFIG.MIN_CANVAS_HEIGHT) {
   return {
     data: [{
       x: [0],
@@ -656,11 +733,13 @@ function createErrorPlotly(message) {
     }],
     layout: {
       title: message,
-      width: 1200,
-      height: 200,
+      width: width,
+      height: height,
       plot_bgcolor: CONFIG.COLOR_BACKGROUND,
       paper_bgcolor: CONFIG.COLOR_BACKGROUND
-    }
+    },
+    canvasWidth: width,
+    canvasHeight: height
   };
 }
 
@@ -669,25 +748,41 @@ function createErrorPlotly(message) {
  */
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
   const htmlContent = generateOrgChartHTML(data, companyName, location);
+  const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
+  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
   
   let browser;
   try {
-    browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    browser = await puppeteer.launch({ 
+      headless: 'new', 
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+    });
     const page = await browser.newPage();
     
-    // Set viewport size
-    await page.setViewport({ width: CONFIG.CANVAS_WIDTH, height: CONFIG.CANVAS_HEIGHT });
+    // Set viewport size to match calculated canvas
+    await page.setViewport({ width: canvasWidth, height: canvasHeight });
     
     // Load HTML content
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
     
-    // Wait for Plotly to render using delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Wait for Plotly to render
+    await page.waitForFunction(() => {
+      const plotDiv = document.querySelector('#chart');
+      return plotDiv && plotDiv.data && plotDiv.data.length > 0;
+    }, { timeout: 5000 }).catch(() => {
+      console.warn('⚠ Plotly rendering timeout, proceeding anyway');
+    });
+    
+    // Additional wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Take screenshot
     await page.screenshot({ path: outputPath, fullPage: false });
     
     await browser.close();
+    console.log(`✓ PNG generated: ${outputPath}`);
     return true;
   } catch (error) {
     console.error(`✗ Error generating PNG for ${companyName}: ${error.message}`);
@@ -699,11 +794,10 @@ async function generateOrgChartPNG(data, companyName = 'Organization', location 
 /**
  * Generate HTML with Plotly (static, no interactive features)
  */
-/**
- * Generate HTML with Plotly (static, no interactive features)
- */
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
   const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
+  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
   
   const html = `<!DOCTYPE html>
 <html>
@@ -737,13 +831,13 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       flex: 1;
       overflow: hidden;
       background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     #chart {
       background-color: white;
-      display: inline-block;
-      min-width: 100%;
-      min-height: 100%;
     }
     
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -769,11 +863,6 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     };
     
     if (layout && layout.annotations) {
-      // Set fixed dimensions on layout
-      layout.width = 900;
-      layout.height = 500;
-      layout.autosize = false;
-      
       Plotly.newPlot('chart', data, layout, config);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
@@ -1026,7 +1115,7 @@ async function main() {
         continue;
       }
 
-      console.log(`\nGenerating chart for company: ${companyName}...`);
+      console.log(`\nGenerating HTML chart for company: ${companyName}...`);
 
       const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
 

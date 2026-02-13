@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import { FaLinkedin, FaTimes } from 'react-icons/fa';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 const BuyingGroup = () => {
@@ -12,7 +12,8 @@ const BuyingGroup = () => {
     const [error, setError] = useState('');
     const [showPanel, setShowPanel] = useState(false);
     const [personDetailsData, setPersonDetailsData] = useState({});
-    const [infoIconHovered, setInfoIconHovered] = useState(false);
+    const [orgChartUrl, setOrgChartUrl] = useState('');
+    const [zoomLevel, setZoomLevel] = useState(50);
     const iframeRef = useRef(null);
 
     // Fetch list of companies on component mount
@@ -98,20 +99,15 @@ const BuyingGroup = () => {
                     console.warn('Could not pre-generate chart, will fetch on-demand');
                 }
 
-                // Then fetch the org chart
+                // Set the iframe URL directly to the backend endpoint
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const response = await fetch(`http://localhost:5000/api/org-chart/${encodedCompanyName}`);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to generate org chart');
-                }
-                
-                const html = await response.text();
-                setOrgChartHtml(html);
+                const chartUrl = `http://localhost:5000/api/org-chart/${encodedCompanyName}`;
+                setOrgChartUrl(chartUrl);
+                setOrgChartHtml(''); // Clear HTML since we're using URL now
             } catch (err) {
                 console.error('Error fetching org chart:', err);
                 setError('Failed to generate org chart. Please try again.');
-                setOrgChartHtml('');
+                setOrgChartUrl('');
             } finally {
                 // Add 2-second delay before hiding loading screen
                 setTimeout(() => {
@@ -123,29 +119,47 @@ const BuyingGroup = () => {
         fetchOrgChart();
     }, [selectedCompany]);
 
-    // Apply category highlighting to org chart when category changes
+    // Apply zoom to chart content inside iframe
     useEffect(() => {
-        if (!iframeRef.current || !orgChartHtml) return;
+        if (!iframeRef.current || !orgChartUrl) return;
 
-        const iframe = iframeRef.current.querySelector('iframe');
-        if (!iframe) return;
+        const iframe = iframeRef.current;
+        
+        // Listen for optimal zoom from iframe
+        const handleMessage = (event) => {
+            if (event.data && event.data.type === 'optimalZoomCalculated') {
+                setZoomLevel(event.data.zoomLevel);
+            }
+        };
+        
+        window.addEventListener('message', handleMessage);
+        
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, [orgChartUrl]);
 
-        // Wait for iframe to load and send message
-        const applyHighlighting = () => {
+    // Apply zoom to chart content inside iframe when zoom level changes
+    useEffect(() => {
+        if (!iframeRef.current || !orgChartUrl) return;
+
+        const iframe = iframeRef.current;
+        
+        // Wait for iframe to load
+        const applyZoom = () => {
             try {
-                console.log('Sending highlight message for category:', selectedCategory);
                 iframe.contentWindow.postMessage({
-                    type: 'highlightCategory',
-                    category: selectedCategory
+                    type: 'setZoom',
+                    zoomLevel: zoomLevel
                 }, '*');
             } catch (err) {
-                console.log('Cannot send message to iframe:', err);
+                console.log('Cannot send zoom message to iframe:', err);
             }
         };
 
-        // Apply highlighting after iframe loads
-        setTimeout(applyHighlighting, 500);
-    }, [selectedCategory, orgChartHtml]);
+        // Apply zoom after iframe loads
+        setTimeout(applyZoom, 500);
+    }, [zoomLevel, orgChartUrl]);
 
     const handleCompanyChange = (e) => {
         const companyName = e.target.value;
@@ -159,6 +173,19 @@ const BuyingGroup = () => {
 
     const handleClosePanel = () => {
         setShowPanel(false);
+    };
+
+    const handleZoomIn = () => {
+        setZoomLevel(prev => Math.min(prev + 10, 200));
+    };
+
+    const handleZoomOut = () => {
+        setZoomLevel(prev => Math.max(prev - 10, 30));
+    };
+
+    const handleResetZoom = () => {
+        // Reset to optimal zoom (will be calculated by iframe)
+        setZoomLevel(100);
     };
 
     // Get persons for selected company
@@ -314,90 +341,145 @@ const BuyingGroup = () => {
                 </div>
             </div>
 
+            {/* Zoom Controls */}
+            <div style={{
+                display: 'flex',
+                gap: '10px',
+                marginBottom: '15px',
+                alignItems: 'center'
+            }}>
+                <button
+                    onClick={handleZoomOut}
+                    style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: '#374151',
+                        transition: 'all 0.2s',
+                        minWidth: '40px'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#f3f4f6';
+                        e.target.style.borderColor = '#9ca3af';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                    }}
+                    title="Zoom Out"
+                >
+                    −
+                </button>
+
+                <span style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    minWidth: '50px',
+                    textAlign: 'center'
+                }}>
+                    {zoomLevel}%
+                </span>
+
+                <button
+                    onClick={handleZoomIn}
+                    style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        color: '#374151',
+                        transition: 'all 0.2s',
+                        minWidth: '40px'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#f3f4f6';
+                        e.target.style.borderColor = '#9ca3af';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                    }}
+                    title="Zoom In"
+                >
+                    +
+                </button>
+
+                <button
+                    onClick={handleResetZoom}
+                    style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: 'white',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: '#374151',
+                        transition: 'all 0.2s',
+                        marginLeft: '10px'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#f3f4f6';
+                        e.target.style.borderColor = '#9ca3af';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                    }}
+                    title="Reset Zoom"
+                >
+                    Reset
+                </button>
+            </div>
+
             {/* Org Chart Container */}
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '8px',
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 border: '1px solid #e5e7eb',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
                 height: '520px',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Info Icon */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '16px',
-                        right: '16px',
-                        zIndex: 10,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '40px',
-                        height: '40px',
-                        backgroundColor: infoIconHovered ? '#0a66c2' : '#f0f0f0',
-                        borderRadius: '50%',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: infoIconHovered ? '0 4px 12px rgba(10, 102, 194, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
-                    }}
-                    onMouseEnter={() => setInfoIconHovered(true)}
-                    onMouseLeave={() => setInfoIconHovered(false)}
-                    title="Click on the org chart to view team details"
-                >
-                    <FaInfoCircle
-                        size={20}
-                        style={{
-                            color: infoIconHovered ? '#ffffff' : '#666',
-                            transition: 'color 0.2s ease'
-                        }}
-                    />
-                </div>
-
                 {loading && (
-                    <div style={{ textAlign: 'center', color: '#6b7280' }}>
+                    <div style={{ textAlign: 'center', color: '#6b7280', padding: '40px 20px' }}>
                         <p>Generating org chart...</p>
                     </div>
                 )}
                 
                 {error && (
-                    <div style={{ textAlign: 'center', color: '#dc2626' }}>
+                    <div style={{ textAlign: 'center', color: '#dc2626', padding: '40px 20px' }}>
                         <p>{error}</p>
                     </div>
                 )}
                 
-                {!loading && !error && orgChartHtml && (
-                    <div
+                {!loading && !error && orgChartUrl && (
+                    <iframe
                         ref={iframeRef}
-                        onClick={handleImageClick}
+                        src={orgChartUrl}
                         style={{
-                            position: 'relative',
-                            width: '920px',
-                            height: '520px',
-                            cursor: 'pointer'
+                            width: '100%',
+                            height: '100%',
+                            border: 'none',
+                            borderRadius: '6px'
                         }}
-                    >
-                        <iframe
-                            srcDoc={orgChartHtml}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 'none',
-                                borderRadius: '6px',
-                                display: 'block',
-                                pointerEvents: 'none'
-                            }}
-                            title={`Org Chart for ${selectedCompany}`}
-                        />
-                    </div>
+                        title={`Org Chart for ${selectedCompany}`}
+                    />
                 )}
                 
-                {!loading && !error && !orgChartHtml && (
-                    <p style={{ color: '#9ca3af', fontSize: '16px' }}>Select a company to view org chart</p>
+                {!loading && !error && !orgChartUrl && (
+                    <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '16px', padding: '40px 20px' }}>
+                        <p>Select a company to view org chart</p>
+                    </div>
                 )}
             </div>
 
