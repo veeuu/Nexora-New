@@ -3480,6 +3480,10 @@ const Technographics = () => {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
+              overflow: auto;              /* keep scrolling enabled */
+          scrollbar-width: none;       /* Firefox */
+          -ms-overflow-style: none;    /* IE and Edge */
+
         }
         
         th, td {
