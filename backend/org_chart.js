@@ -5,31 +5,32 @@
 
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
+const csv = require('csv-parser');
 const archiver = require('archiver');
 const puppeteer = require('puppeteer');
+const XLSX = require('xlsx');
 
 // ================================
 // CONFIGURATION CONSTANTS
 // ================================
 
 const CONFIG = {
-  BOX_WIDTH: 0.85,
-  BOX_HEIGHT: 0.42,
+  BOX_WIDTH: 1.0,
+  BOX_HEIGHT: 0.50,
   BOX_CORNER_RADIUS: 0.015,
-  HORIZONTAL_GAP: 0.08,
-  VERTICAL_GAP: 0.15,
-  TOP_PADDING: 0.12,
-  SIDE_PADDING: 0.05,
-  MAX_CHARS_PER_LINE: 20,
+  HORIZONTAL_GAP: 0.05,
+  VERTICAL_GAP: 0.20,
+  TOP_PADDING: 0.10,
+  SIDE_PADDING: 0.02,
+  MAX_CHARS_PER_LINE: 16,
   MAX_NAME_LINES: 1,
-  MAX_ROLE_LINES: 2,
-  CHART_GLOBAL_X_OFFSET: 0.8,
-  SMALL_CHART_THRESHOLD: 5,
-  SMALL_CHART_BOX_WIDTH: 0.58,
-  SMALL_CHART_BOX_HEIGHT: 0.34,
+  MAX_ROLE_LINES: 1,
+  CHART_GLOBAL_X_OFFSET: 0.0,
+  SMALL_CHART_THRESHOLD: 10,
+  SMALL_CHART_BOX_WIDTH: 0.70,
+  SMALL_CHART_BOX_HEIGHT: 0.50,
   MIN_VIEWPORT_SPAN: 0.9,
-  AXIS_PADDING: 0.10,
+  AXIS_PADDING: 0.05,
 
   // Colors
   COLOR_DECISION_MAKER_FILL: '#0070C0',
@@ -43,21 +44,118 @@ const CONFIG = {
   FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 15,
-  ROLE_TEXT_SIZE: 12,
+  NAME_TEXT_SIZE: 14,
+  ROLE_TEXT_SIZE: 11,
 
-  // Canvas dimensions
+  // Canvas dimensions (will be adjusted based on org size)
   CANVAS_WIDTH: 900,
-  CANVAS_HEIGHT: 500
+  CANVAS_HEIGHT: 500,
+  
+  // Dynamic scaling
+  MIN_CANVAS_WIDTH: 900,
+  MIN_CANVAS_HEIGHT: 500,
+  EMPLOYEES_PER_WIDTH_UNIT: 3,
+  EMPLOYEES_PER_HEIGHT_UNIT: 2
 };
+
+// ================================
+// CSV READING FUNCTION
+// ================================
+
+/**
+ * Read CSV file and return data as array of objects
+ */
+function readCSVFile(csvFilePath) {
+  return new Promise((resolve, reject) => {
+    const data = [];
+    
+    if (!fs.existsSync(csvFilePath)) {
+      reject(new Error(`CSV file not found: ${csvFilePath}`));
+      return;
+    }
+
+    fs.createReadStream(csvFilePath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        resolve(data);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
+}
 
 // ================================
 // UTILITY FUNCTIONS
 // ================================
 
 /**
- * Wrap text to fit within character limit and line limit
+ * Calculate optimal canvas dimensions based on organization size
  */
+function calculateCanvasDimensions(employees, roots) {
+  const employeeCount = Object.keys(employees).length;
+  
+  // Calculate tree depth
+  let maxDepth = 0;
+  const queue = roots.map(r => [r, 0]);
+  let head = 0;
+  
+  while (head < queue.length) {
+    const [nodeName, depth] = queue[head];
+    head++;
+    maxDepth = Math.max(maxDepth, depth);
+    
+    if (nodeName in employees) {
+      for (const child of employees[nodeName].children) {
+        queue.push([child, depth + 1]);
+      }
+    }
+  }
+  
+  // Calculate width based on max children at any level
+  let maxChildrenAtLevel = 0;
+  const levelCounts = {};
+  
+  const levelQueue = roots.map(r => [r, 0]);
+  let levelHead = 0;
+  
+  while (levelHead < levelQueue.length) {
+    const [nodeName, level] = levelQueue[levelHead];
+    levelHead++;
+    
+    levelCounts[level] = (levelCounts[level] || 0) + 1;
+    
+    if (nodeName in employees) {
+      for (const child of employees[nodeName].children) {
+        levelQueue.push([child, level + 1]);
+      }
+    }
+  }
+  
+  maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
+  
+  // Calculate dimensions - keep boxes same size, scale canvas
+  let width = CONFIG.MIN_CANVAS_WIDTH;
+  let height = CONFIG.MIN_CANVAS_HEIGHT;
+  let scaleFactor = 1;
+  
+  // Scale width based on max children at any level
+  if (maxChildrenAtLevel > 5) {
+    scaleFactor = Math.max(scaleFactor, maxChildrenAtLevel / 5);
+    width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 200);
+  }
+  
+  // Scale height based on depth
+  if (maxDepth > 3) {
+    scaleFactor = Math.max(scaleFactor, (maxDepth + 1) / 4);
+    height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 1) * 150);
+  }
+  
+  return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor };
+}
 function wrapText(text, maxChars, maxLines = null) {
   if (typeof text !== 'string') {
     text = String(text);
@@ -333,21 +431,28 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
 function generateOrgChartPlotly(data, companyName = 'Organization', location = '') {
   const { employees, roots, edges } = buildTreeFromData(data);
 
-  const numEmployees = Object.keys(employees).length;
-  const boxWidth = numEmployees > 0 && numEmployees <= CONFIG.SMALL_CHART_THRESHOLD ?
-    CONFIG.SMALL_CHART_BOX_WIDTH : CONFIG.BOX_WIDTH;
-  const boxHeight = numEmployees > 0 && numEmployees <= CONFIG.SMALL_CHART_THRESHOLD ?
-    CONFIG.SMALL_CHART_BOX_HEIGHT : CONFIG.BOX_HEIGHT;
+  // Calculate optimal canvas dimensions
+  const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
+  
+  // Keep box dimensions fixed, scale fonts proportionally
+  const boxWidth = CONFIG.BOX_WIDTH;
+  const boxHeight = CONFIG.BOX_HEIGHT;
+  const verticalGap = CONFIG.VERTICAL_GAP;
+  const horizontalGap = CONFIG.HORIZONTAL_GAP;
+  
+  // Scale font sizes based on scale factor
+  const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
+  const roleTextSize = Math.round(CONFIG.ROLE_TEXT_SIZE * scaleFactor);
 
   const titleText = location && String(location).trim() ?
     `${companyName} (${location})` : String(companyName);
 
   if (!Object.keys(employees).length) {
-    return createErrorPlotly(`No Employee Data for ${titleText}`);
+    return createErrorPlotly(`No Employee Data for ${titleText}`, canvasWidth, canvasHeight);
   }
 
   if (!roots.length) {
-    return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`);
+    return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`, canvasWidth, canvasHeight);
   }
 
   // Calculate positions
@@ -362,7 +467,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
   }
 
   if (!Object.keys(nodePositions).length) {
-    return createErrorPlotly(`${titleText} - No Visualizable Chart Data`);
+    return createErrorPlotly(`${titleText} - No Visualizable Chart Data`, canvasWidth, canvasHeight);
   }
 
   // Calculate chart bounds
@@ -449,7 +554,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     }
 
     const rootY = Object.values(rootPositions)[0][1];
-    const topLineY = rootY + boxHeight / 2 + (CONFIG.VERTICAL_GAP / 3);
+    const topLineY = rootY + boxHeight / 2 + (verticalGap / 3);
     const rootXCoords = Object.values(rootPositions).map(pos => pos[0]);
     const xMin = Math.min(...rootXCoords);
     const xMax = Math.max(...rootXCoords);
@@ -470,7 +575,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       const [x1, y1] = nodePositions[childName];
       const x0Shifted = x0 + xShiftAmount;
       const x1Shifted = x1 + xShiftAmount;
-      const yJunction = y0 - boxHeight / 2 - CONFIG.VERTICAL_GAP / 3;
+      const yJunction = y0 - boxHeight / 2 - verticalGap / 3;
 
       lineXs.push(x0Shifted, x0Shifted, x1Shifted, x1Shifted, null);
       lineYs.push(y0 - boxHeight / 2, yJunction, yJunction, y1 + boxHeight / 2, null);
@@ -551,7 +656,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       text: label,
       showarrow: false,
       font: {
-        size: CONFIG.NAME_TEXT_SIZE,
+        size: nameTextSize,
         color: nodeFontColor,
         family: 'Calibri, Arial'
       },
@@ -578,8 +683,8 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     showlegend: true,
     hovermode: 'closest',
     margin: { l: 20, r: 20, t: 100, b: 20 },
-    width: CONFIG.CANVAS_WIDTH,
-    height: CONFIG.CANVAS_HEIGHT,
+    width: canvasWidth,
+    height: canvasHeight,
     plot_bgcolor: CONFIG.COLOR_BACKGROUND,
     paper_bgcolor: CONFIG.COLOR_BACKGROUND,
     xaxis: {
@@ -610,13 +715,13 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     annotations: annotations
   };
 
-  return { data: traces, layout };
+  return { data: traces, layout, canvasWidth, canvasHeight };
 }
 
 /**
  * Create error Plotly chart
  */
-function createErrorPlotly(message) {
+function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CONFIG.MIN_CANVAS_HEIGHT) {
   return {
     data: [{
       x: [0],
@@ -628,11 +733,13 @@ function createErrorPlotly(message) {
     }],
     layout: {
       title: message,
-      width: 1200,
-      height: 200,
+      width: width,
+      height: height,
       plot_bgcolor: CONFIG.COLOR_BACKGROUND,
       paper_bgcolor: CONFIG.COLOR_BACKGROUND
-    }
+    },
+    canvasWidth: width,
+    canvasHeight: height
   };
 }
 
@@ -641,25 +748,41 @@ function createErrorPlotly(message) {
  */
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
   const htmlContent = generateOrgChartHTML(data, companyName, location);
+  const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
+  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
   
   let browser;
   try {
-    browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    browser = await puppeteer.launch({ 
+      headless: 'new', 
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+    });
     const page = await browser.newPage();
     
-    // Set viewport size
-    await page.setViewport({ width: CONFIG.CANVAS_WIDTH, height: CONFIG.CANVAS_HEIGHT });
+    // Set viewport size to match calculated canvas
+    await page.setViewport({ width: canvasWidth, height: canvasHeight });
     
     // Load HTML content
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
     
-    // Wait for Plotly to render using delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Wait for Plotly to render
+    await page.waitForFunction(() => {
+      const plotDiv = document.querySelector('#chart');
+      return plotDiv && plotDiv.data && plotDiv.data.length > 0;
+    }, { timeout: 5000 }).catch(() => {
+      console.warn('⚠ Plotly rendering timeout, proceeding anyway');
+    });
+    
+    // Additional wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Take screenshot
     await page.screenshot({ path: outputPath, fullPage: false });
     
     await browser.close();
+    console.log(`✓ PNG generated: ${outputPath}`);
     return true;
   } catch (error) {
     console.error(`✗ Error generating PNG for ${companyName}: ${error.message}`);
@@ -671,11 +794,10 @@ async function generateOrgChartPNG(data, companyName = 'Organization', location 
 /**
  * Generate HTML with Plotly (static, no interactive features)
  */
-/**
- * Generate HTML with Plotly (static, no interactive features)
- */
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
   const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
+  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
   
   const html = `<!DOCTYPE html>
 <html>
@@ -684,22 +806,40 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   <title>${companyName}${location ? ' (' + location + ')' : ''}</title>
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
-    body {
-      font-family: Calibri, Arial, sans-serif;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      background-color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chart-wrapper {
+      flex: 1;
+      overflow: hidden;
       background-color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
     }
+    
     #chart {
-      width: 100%;
-      height: 100%;
       background-color: white;
     }
+    
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -707,14 +847,19 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   </style>
 </head>
 <body>
-  <div id="chart"></div>
+  <div class="container">
+    <div class="chart-wrapper">
+      <div id="chart"></div>
+    </div>
+  </div>
   <script>
     const data = ${JSON.stringify(plotlyData.data)};
     const layout = ${JSON.stringify(plotlyData.layout)};
     const config = { 
       responsive: false, 
       displayModeBar: false,
-      staticPlot: true
+      staticPlot: true,
+      scrollZoom: false
     };
     
     if (layout && layout.annotations) {
@@ -797,17 +942,15 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 // ================================
 
 /**
- * Generate org chart HTML for a specific company from Excel data
+ * Generate org chart HTML for a specific company from CSV data
  */
-async function generateOrgChartForCompany(excelFilePath, companyName) {
+async function generateOrgChartForCompany(csvFilePath, companyName) {
   try {
-    if (!fs.existsSync(excelFilePath)) {
-      throw new Error(`Excel file not found: ${excelFilePath}`);
+    if (!fs.existsSync(csvFilePath)) {
+      throw new Error(`CSV file not found: ${csvFilePath}`);
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const allData = XLSX.utils.sheet_to_json(worksheet);
+    const allData = await readCSVFile(csvFilePath);
 
     // Ensure hierarchy column exists
     allData.forEach(row => {
@@ -836,22 +979,19 @@ async function generateOrgChartForCompany(excelFilePath, companyName) {
 }
 
 /**
- * Get list of all companies from Excel file
+ * Get list of all companies from CSV file
  */
-function getCompaniesFromExcel(excelFilePath) {
+async function getCompaniesFromCSV(csvFilePath) {
   try {
-    if (!fs.existsSync(excelFilePath)) {
-      throw new Error(`Excel file not found: ${excelFilePath}`);
+    if (!fs.existsSync(csvFilePath)) {
+      throw new Error(`CSV file not found: ${csvFilePath}`);
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-
+    const data = await readCSVFile(csvFilePath);
     const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
     return uniqueCompanies;
   } catch (error) {
-    console.error('Error getting companies from Excel:', error.message);
+    console.error('Error getting companies from CSV:', error.message);
     throw error;
   }
 }
@@ -861,7 +1001,7 @@ function getCompaniesFromExcel(excelFilePath) {
 // ================================
 
 async function main() {
-  const excelFilePath = 'nexora Buying group.xlsx';
+  const csvFilePath = 'Nexora Buying groups 13_02_2026.csv';
   const OUTPUT_FOLDER = 'org_charts_output_js';
 
   try {
@@ -878,17 +1018,15 @@ async function main() {
       }
     }
 
-    // Read Excel file
-    if (!fs.existsSync(excelFilePath)) {
-      console.error(`✗ File not found: ${excelFilePath}`);
+    // Read CSV file
+    if (!fs.existsSync(csvFilePath)) {
+      console.error(`✗ File not found: ${csvFilePath}`);
       return;
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = await readCSVFile(csvFilePath);
 
-    console.log(`✓ Loaded data from: ${excelFilePath}`);
+    console.log(`✓ Loaded data from: ${csvFilePath}`);
 
     // Handle missing columns
     if (!data[0] || !('Company Name' in data[0])) {
@@ -977,7 +1115,7 @@ async function main() {
         continue;
       }
 
-      console.log(`\nGenerating chart for company: ${companyName}...`);
+      console.log(`\nGenerating HTML chart for company: ${companyName}...`);
 
       const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
 
@@ -1094,7 +1232,7 @@ function convertToCSV(data) {
 // DISABLED: main() is now called on-demand via API routes
 // main().catch(console.error);
 
-module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromExcel };
+module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
 
 // Uncomment to run directly
 if (require.main === module) {
