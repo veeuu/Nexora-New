@@ -248,6 +248,17 @@
   margin-top: 0.5rem;
 }
 
+.form-success {
+  padding: 0.75rem 1rem;
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 6px;
+  color: #389e0d;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
 .form-divider {
   display: flex;
   align-items: center;
