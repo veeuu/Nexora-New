@@ -3,7 +3,7 @@ import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
-import { FaLinkedin } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -736,6 +736,7 @@ const Technographics = () => {
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
+  const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
   const rowsPerPage = 7;
   const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
@@ -2980,6 +2981,7 @@ const Technographics = () => {
                   }}
                 />
               </th>
+              <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company Name</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Industry</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Region</th>
@@ -3091,33 +3093,119 @@ const Technographics = () => {
                           }}
                         />
                       </td>
+                      <td style={{ width: '80px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => {
+                            const rowKey = `${actualIndex}-${row.companyName}`;
+                            setRevealedRows(prev => {
+                              const newSet = new Set(prev);
+                              newSet.add(rowKey);
+                              return newSet;
+                            });
+                          }}
+                          disabled={revealedRows.has(`${actualIndex}-${row.companyName}`)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '6px 12px',
+                            backgroundColor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#e5e7eb' : '#d1fae5',
+                            border: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                            borderRadius: '6px',
+                            cursor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'not-allowed' : 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#9ca3af' : '#047857',
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            opacity: revealedRows.has(`${actualIndex}-${row.companyName}`) ? 0.6 : 1
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!revealedRows.has(`${actualIndex}-${row.companyName}`)) {
+                              e.currentTarget.style.backgroundColor = '#a7f3d0';
+                              e.currentTarget.style.borderColor = '#6ee7b7';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!revealedRows.has(`${actualIndex}-${row.companyName}`)) {
+                              e.currentTarget.style.backgroundColor = '#d1fae5';
+                              e.currentTarget.style.borderColor = '#a7f3d0';
+                            }
+                          }}
+                          title={revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
+                        >
+                          {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
+                            <FaEye size={16} />
+                          ) : (
+                            <FaEyeSlash size={16} />
+                          )}
+                        </button>
+                      </td>
                       <td onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                            {highlightText(row.companyName, searchTerm)}
-                          </div>
-                          <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>{highlightText(row.domain, searchTerm)}</span>
-                            {row.linkedinUrl && (
-                              <a
-                                href={row.linkedinUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  color: '#0077b5',
-                                  textDecoration: 'none',
-                                  transition: 'opacity 0.2s'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                                title="View LinkedIn Profile"
-                              >
-                                <FaLinkedin size={20} />
-                              </a>
-                            )}
-                          </div>
+                          {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
+                            <>
+                              <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                                {highlightText(row.companyName, searchTerm)}
+                              </div>
+                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {row.domain && (
+                                  <a
+                                    href={`https://${row.domain}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      color: '#6b7280',
+                                      textDecoration: 'none',
+                                      transition: 'color 0.2s, transform 0.2s',
+                                      cursor: 'pointer'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.color = '#3b82f6';
+                                      e.currentTarget.style.transform = 'scale(1.2)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.color = '#6b7280';
+                                      e.currentTarget.style.transform = 'scale(1)';
+                                    }}
+                                    title={`Visit ${row.domain}`}
+                                  >
+                                    <FaGlobe size={16} />
+                                  </a>
+                                )}
+                                {row.linkedinUrl && (
+                                  <a
+                                    href={row.linkedinUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      color: '#0077b5',
+                                      textDecoration: 'none',
+                                      transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                    title="View LinkedIn Profile"
+                                  >
+                                    <FaLinkedin size={20} />
+                                  </a>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                ••••••••••••••••••
+                              </div>
+                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                ••••••••••
+                              </div>
+                            </>
+                          )}
                         </div>
                       </td>
                       <td onMouseEnter={(e) => handleMouseEnter(e, row.industry)} onMouseLeave={handleMouseLeave}>
@@ -3686,15 +3774,16 @@ const Technographics = () => {
         
         /* Set specific column widths */
         th:nth-child(1), td:nth-child(1) { width: 40px; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 150px; } /* Company Name */
-        th:nth-child(3), td:nth-child(3) { width: 150px; } /* Industry */
-        th:nth-child(4), td:nth-child(4) { width: 120px; } /* Region */
-        th:nth-child(5), td:nth-child(5) { width: 150px; } /* Employee Size */
-        th:nth-child(6), td:nth-child(6) { width: 120px; } /* Revenue */
-        th:nth-child(7), td:nth-child(7) { width: 150px; } /* Technology */
-        {/* th:nth-child(8), td:nth-child(8) { width: 150px; } Category - COMMENTED OUT */}
-        {/* th:nth-child(9), td:nth-child(9) { width: 140px; } Previous Detected Date - COMMENTED OUT */}
-        {/* th:nth-child(10), td:nth-child(10) { width: 140px; } Latest Detected Date - COMMENTED OUT */}
+        th:nth-child(2), td:nth-child(2) { width: 80px; } /* Reveal */
+        th:nth-child(3), td:nth-child(3) { width: 150px; } /* Company Name */
+        th:nth-child(4), td:nth-child(4) { width: 150px; } /* Industry */
+        th:nth-child(5), td:nth-child(5) { width: 120px; } /* Region */
+        th:nth-child(6), td:nth-child(6) { width: 150px; } /* Employee Size */
+        th:nth-child(7), td:nth-child(7) { width: 120px; } /* Revenue */
+        th:nth-child(8), td:nth-child(8) { width: 150px; } /* Technology */
+        {/* th:nth-child(9), td:nth-child(9) { width: 150px; } Category - COMMENTED OUT */}
+        {/* th:nth-child(10), td:nth-child(10) { width: 140px; } Previous Detected Date - COMMENTED OUT */}
+        {/* th:nth-child(11), td:nth-child(11) { width: 140px; } Latest Detected Date - COMMENTED OUT */}
         
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
