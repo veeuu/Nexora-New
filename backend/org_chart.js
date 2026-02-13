@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
+const csv = require('csv-parser');
 const archiver = require('archiver');
 const puppeteer = require('puppeteer');
 
@@ -15,19 +15,19 @@ const puppeteer = require('puppeteer');
 
 const CONFIG = {
   BOX_WIDTH: 0.85,
-  BOX_HEIGHT: 0.42,
+  BOX_HEIGHT: 0.50,
   BOX_CORNER_RADIUS: 0.015,
   HORIZONTAL_GAP: 0.08,
-  VERTICAL_GAP: 0.15,
-  TOP_PADDING: 0.12,
+  VERTICAL_GAP: 0.12,
+  TOP_PADDING: 0.10,
   SIDE_PADDING: 0.05,
-  MAX_CHARS_PER_LINE: 20,
+  MAX_CHARS_PER_LINE: 16,
   MAX_NAME_LINES: 1,
-  MAX_ROLE_LINES: 2,
+  MAX_ROLE_LINES: 1,
   CHART_GLOBAL_X_OFFSET: 0.8,
-  SMALL_CHART_THRESHOLD: 5,
-  SMALL_CHART_BOX_WIDTH: 0.58,
-  SMALL_CHART_BOX_HEIGHT: 0.34,
+  SMALL_CHART_THRESHOLD: 10,
+  SMALL_CHART_BOX_WIDTH: 0.70,
+  SMALL_CHART_BOX_HEIGHT: 0.50,
   MIN_VIEWPORT_SPAN: 0.9,
   AXIS_PADDING: 0.10,
 
@@ -43,13 +43,43 @@ const CONFIG = {
   FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 15,
-  ROLE_TEXT_SIZE: 12,
+  NAME_TEXT_SIZE: 14,
+  ROLE_TEXT_SIZE: 11,
 
   // Canvas dimensions
   CANVAS_WIDTH: 900,
   CANVAS_HEIGHT: 500
 };
+
+// ================================
+// CSV READING FUNCTION
+// ================================
+
+/**
+ * Read CSV file and return data as array of objects
+ */
+function readCSVFile(csvFilePath) {
+  return new Promise((resolve, reject) => {
+    const data = [];
+    
+    if (!fs.existsSync(csvFilePath)) {
+      reject(new Error(`CSV file not found: ${csvFilePath}`));
+      return;
+    }
+
+    fs.createReadStream(csvFilePath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        resolve(data);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
+}
 
 // ================================
 // UTILITY FUNCTIONS
@@ -333,11 +363,9 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
 function generateOrgChartPlotly(data, companyName = 'Organization', location = '') {
   const { employees, roots, edges } = buildTreeFromData(data);
 
-  const numEmployees = Object.keys(employees).length;
-  const boxWidth = numEmployees > 0 && numEmployees <= CONFIG.SMALL_CHART_THRESHOLD ?
-    CONFIG.SMALL_CHART_BOX_WIDTH : CONFIG.BOX_WIDTH;
-  const boxHeight = numEmployees > 0 && numEmployees <= CONFIG.SMALL_CHART_THRESHOLD ?
-    CONFIG.SMALL_CHART_BOX_HEIGHT : CONFIG.BOX_HEIGHT;
+  // Use fixed box dimensions for consistent appearance
+  const boxWidth = CONFIG.BOX_WIDTH;
+  const boxHeight = CONFIG.BOX_HEIGHT;
 
   const titleText = location && String(location).trim() ?
     `${companyName} (${location})` : String(companyName);
@@ -797,17 +825,15 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 // ================================
 
 /**
- * Generate org chart HTML for a specific company from Excel data
+ * Generate org chart HTML for a specific company from CSV data
  */
-async function generateOrgChartForCompany(excelFilePath, companyName) {
+async function generateOrgChartForCompany(csvFilePath, companyName) {
   try {
-    if (!fs.existsSync(excelFilePath)) {
-      throw new Error(`Excel file not found: ${excelFilePath}`);
+    if (!fs.existsSync(csvFilePath)) {
+      throw new Error(`CSV file not found: ${csvFilePath}`);
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const allData = XLSX.utils.sheet_to_json(worksheet);
+    const allData = await readCSVFile(csvFilePath);
 
     // Ensure hierarchy column exists
     allData.forEach(row => {
@@ -836,22 +862,19 @@ async function generateOrgChartForCompany(excelFilePath, companyName) {
 }
 
 /**
- * Get list of all companies from Excel file
+ * Get list of all companies from CSV file
  */
-function getCompaniesFromExcel(excelFilePath) {
+async function getCompaniesFromCSV(csvFilePath) {
   try {
-    if (!fs.existsSync(excelFilePath)) {
-      throw new Error(`Excel file not found: ${excelFilePath}`);
+    if (!fs.existsSync(csvFilePath)) {
+      throw new Error(`CSV file not found: ${csvFilePath}`);
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-
+    const data = await readCSVFile(csvFilePath);
     const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
     return uniqueCompanies;
   } catch (error) {
-    console.error('Error getting companies from Excel:', error.message);
+    console.error('Error getting companies from CSV:', error.message);
     throw error;
   }
 }
@@ -861,7 +884,7 @@ function getCompaniesFromExcel(excelFilePath) {
 // ================================
 
 async function main() {
-  const excelFilePath = 'nexora Buying group.xlsx';
+  const csvFilePath = 'Nexora Buying groups 13_02_2026.csv';
   const OUTPUT_FOLDER = 'org_charts_output_js';
 
   try {
@@ -878,17 +901,15 @@ async function main() {
       }
     }
 
-    // Read Excel file
-    if (!fs.existsSync(excelFilePath)) {
-      console.error(`✗ File not found: ${excelFilePath}`);
+    // Read CSV file
+    if (!fs.existsSync(csvFilePath)) {
+      console.error(`✗ File not found: ${csvFilePath}`);
       return;
     }
 
-    const workbook = XLSX.readFile(excelFilePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = await readCSVFile(csvFilePath);
 
-    console.log(`✓ Loaded data from: ${excelFilePath}`);
+    console.log(`✓ Loaded data from: ${csvFilePath}`);
 
     // Handle missing columns
     if (!data[0] || !('Company Name' in data[0])) {
@@ -1094,7 +1115,7 @@ function convertToCSV(data) {
 // DISABLED: main() is now called on-demand via API routes
 // main().catch(console.error);
 
-module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromExcel };
+module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
 
 // Uncomment to run directly
 if (require.main === module) {

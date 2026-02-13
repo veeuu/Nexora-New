@@ -261,6 +261,13 @@ export const getTechIcon = (techName) => {
     return { component: IconComponent, color };
   }
   
+  // Check for partial matches in FA icons
+  for (const [key, iconData] of Object.entries(faIcons)) {
+    if (normalized.includes(key) && key.length > 2) {
+      return { component: iconData.component, color: iconData.color };
+    }
+  }
+  
   // Check SI icons
   const siIconData = siIcons[normalized];
   if (siIconData) {
