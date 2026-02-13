@@ -96,6 +96,30 @@ You should see:
 2. Try to create another account with same email
 3. Should show error: "User already exists. Please login."
 
+#### Scenario 6: Forgot Password
+1. On login page, click "Forgot Password?"
+2. Enter email: `test@example.com`
+3. Click "Send Reset OTP"
+4. Check backend console for OTP
+5. Enter OTP and new password
+6. Confirm new password
+7. Click "Reset Password"
+8. Should show success message
+9. Login with new password
+
+#### Scenario 7: Invalid Reset OTP
+1. Click "Forgot Password?"
+2. Enter email and get OTP
+3. Enter wrong OTP
+4. Should show error: "Invalid OTP"
+
+#### Scenario 8: Password Mismatch
+1. Click "Forgot Password?"
+2. Enter email and get OTP
+3. Enter OTP
+4. Enter different passwords in "New Password" and "Confirm Password"
+5. Should show error: "Passwords do not match"
+
 ### API Testing with cURL
 
 #### Create Account
@@ -135,6 +159,26 @@ curl -X POST http://localhost:5000/api/auth/resend-otp \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com"
+  }'
+```
+
+#### Forgot Password
+```bash
+curl -X POST http://localhost:5000/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com"
+  }'
+```
+
+#### Reset Password
+```bash
+curl -X POST http://localhost:5000/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "otp": "123456",
+    "newPassword": "newpassword123"
   }'
 ```
 

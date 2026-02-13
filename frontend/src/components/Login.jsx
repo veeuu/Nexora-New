@@ -7,11 +7,17 @@ import '../styles/login.css';
 const Login = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -118,7 +124,8 @@ const Login = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/resend-otp', {
+      const endpoint = showResetPassword ? '/api/auth/forgot-password' : '/api/auth/resend-otp';
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -140,8 +147,87 @@ const Login = ({ onLogin }) => {
     }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Password reset OTP sent to your email!');
+        setShowForgotPassword(false);
+        setShowResetPassword(true);
+      } else {
+        setError(data.message || 'Failed to send reset OTP');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, newPassword })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Password reset successfully! You can now login.');
+        setShowResetPassword(false);
+        setOtp('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(data.message || 'Password reset failed');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = (e) => {
-    if (showOTPVerification) {
+    if (showForgotPassword) {
+      handleForgotPassword(e);
+    } else if (showResetPassword) {
+      handleResetPassword(e);
+    } else if (showOTPVerification) {
       handleVerifyOTP(e);
     } else if (isSignup) {
       handleSignup(e);
@@ -235,6 +321,223 @@ const Login = ({ onLogin }) => {
                   onClick={() => {
                     setShowOTPVerification(false);
                     setOtp('');
+                    setError('');
+                    setSuccessMessage('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    padding: 0
+                  }}
+                >
+                  ← Back to Login
+                </button>
+              </div>
+            </form>
+          ) : showForgotPassword ? (
+            <form onSubmit={handleSubmit} className="login-form">
+              <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#333' }}>Forgot Password</h2>
+              <p style={{ textAlign: 'center', color: '#666', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                Enter your email address and we'll send you an OTP to reset your password
+              </p>
+
+              <div className="form-group">
+                <label htmlFor="forgot-email">Email</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                  <input
+                    id="forgot-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="form-input"
+                    required
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              {successMessage && <div className="form-success">{successMessage}</div>}
+              {error && <div className="form-error">{error}</div>}
+
+              <button type="submit" className="btn-signin" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Reset OTP'}
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    setEmail('');
+                    setError('');
+                    setSuccessMessage('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    padding: 0
+                  }}
+                >
+                  ← Back to Login
+                </button>
+              </div>
+            </form>
+          ) : showResetPassword ? (
+            <form onSubmit={handleSubmit} className="login-form">
+              <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#333' }}>Reset Password</h2>
+              <p style={{ textAlign: 'center', color: '#666', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                Enter the OTP sent to <strong>{email}</strong> and your new password
+              </p>
+
+              <div className="form-group">
+                <label htmlFor="reset-otp">Enter OTP</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    id="reset-otp"
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="form-input"
+                    maxLength="6"
+                    required
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="new-password">New Password</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    id="new-password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      {showNewPassword ? (
+                        <>
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </>
+                      ) : (
+                        <>
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                          <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </>
+                      )}
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="confirm-password">Confirm Password</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    id="confirm-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-password"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      {showConfirmPassword ? (
+                        <>
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </>
+                      ) : (
+                        <>
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                          <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </>
+                      )}
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {successMessage && <div className="form-success">{successMessage}</div>}
+              {error && <div className="form-error">{error}</div>}
+
+              <button type="submit" className="btn-signin" disabled={loading || otp.length !== 6}>
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <p style={{ fontSize: '0.875rem', color: '#666' }}>
+                  Didn't receive the OTP?{' '}
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      outline: 'none',
+                      color: '#007bff',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      padding: 0
+                    }}
+                  >
+                    Resend OTP
+                  </button>
+                </p>
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetPassword(false);
+                    setOtp('');
+                    setNewPassword('');
+                    setConfirmPassword('');
                     setError('');
                     setSuccessMessage('');
                   }}
@@ -359,7 +662,27 @@ const Login = ({ onLogin }) => {
               <div className="form-remember">
                 <input type="checkbox" id="remember" />
                 <label htmlFor="remember">Remember me</label>
-                <span className="remember-text">Save my login details for next time.</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(true);
+                    setError('');
+                    setSuccessMessage('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#007bff',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    padding: 0,
+                    marginLeft: 'auto'
+                  }}
+                >
+                  Forgot Password?
+                </button>
               </div>
             )}
 

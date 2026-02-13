@@ -95,6 +95,44 @@ Login with verified email and password.
 }
 ```
 
+### 5. POST `/api/auth/forgot-password`
+Request password reset OTP.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response (Success):**
+```json
+{
+  "message": "Password reset OTP sent to your email",
+  "email": "user@example.com"
+}
+```
+
+### 6. POST `/api/auth/reset-password`
+Reset password with OTP verification.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "otp": "123456",
+  "newPassword": "newpassword123"
+}
+```
+
+**Response (Success):**
+```json
+{
+  "message": "Password reset successfully. Please login with your new password.",
+  "email": "user@example.com"
+}
+```
+
 ## Demo Mode
 
 When `EMAIL_USER=demo@example.com` in `.env`, the system runs in demo mode:
@@ -157,3 +195,10 @@ JWT_SECRET=your-secure-random-string
 2. User enters OTP → Email verified
 3. User logs in → JWT token issued
 4. Token used for authenticated requests
+
+## Password Reset Flow
+1. User clicks "Forgot Password?" on login page
+2. User enters email → OTP sent to email
+3. User enters OTP and new password → Password reset
+4. All existing sessions invalidated for security
+5. User logs in with new password
