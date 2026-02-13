@@ -1151,7 +1151,7 @@ const Technographics = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#ffffffff',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
@@ -2973,8 +2973,8 @@ const Technographics = () => {
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Employee Size</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Revenue</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Technology</th>
-              {/* <th>Previous Detected Date</th> */}
-              {/* <th>Latest Detected Date</th> */}
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Previous Detected</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Latest Detected</th>
             </tr>
           </thead>
           <tbody>
@@ -3116,19 +3116,19 @@ const Technographics = () => {
                           ))}
                         </div>
                       </td>
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
+                      <td onMouseEnter={(e) => handleMouseEnter(e, row.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.previousDetectedDate, searchTerm)}
-                      </td> */}
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
+                      </td>
+                      <td onMouseEnter={(e) => handleMouseEnter(e, row.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.latestDetectedDate, searchTerm)}
-                      </td> */}
+                      </td>
                     </tr>
                   );
                   });
                 })()
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
                     No data found for the selected company
                   </td>
                 </tr>
