@@ -737,6 +737,7 @@ const Technographics = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
+  const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -1123,18 +1124,30 @@ const Technographics = () => {
       return 0;
     });
 
-  // Group rows by company and combine technologies
+  // Group rows by company and combine technologies with their dates
   const groupedData = filteredData.reduce((acc, row) => {
     const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
     
     if (!acc[key]) {
       acc[key] = {
         ...row,
-        technologies: [row.technology]
+        technologies: [row.technology],
+        technologyDates: [
+          {
+            technology: row.technology,
+            previousDetectedDate: row.previousDetectedDate,
+            latestDetectedDate: row.latestDetectedDate
+          }
+        ]
       };
     } else {
       if (!acc[key].technologies.includes(row.technology)) {
         acc[key].technologies.push(row.technology);
+        acc[key].technologyDates.push({
+          technology: row.technology,
+          previousDetectedDate: row.previousDetectedDate,
+          latestDetectedDate: row.latestDetectedDate
+        });
       }
     }
     
@@ -2973,8 +2986,8 @@ const Technographics = () => {
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Employee Size</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Revenue</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Technology</th>
-              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Previous Detected</th>
-              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Latest Detected</th>
+              <th style={{ textAlign: 'center', padding: '12px 8px' }}>Previous Detected</th>
+              <th style={{ textAlign: 'center', padding: '12px 8px' }}>Latest Detected</th>
             </tr>
           </thead>
           <tbody>
@@ -2989,6 +3002,17 @@ const Technographics = () => {
                   return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
                     const isHighlighted = rowMatchesSearch(row);
+                    const rowKey = `${actualIndex}-${row.companyName}`;
+                    
+                    // Get or create refs for this row
+                    if (!scrollRefsMap.current.has(rowKey)) {
+                      scrollRefsMap.current.set(rowKey, {
+                        tech: null,
+                        prevDate: null,
+                        latestDate: null
+                      });
+                    }
+                    const refs = scrollRefsMap.current.get(rowKey);
 
                   const handleMouseEnter = (e, text) => {
                     const rect = e.target.getBoundingClientRect();
@@ -3014,6 +3038,29 @@ const Technographics = () => {
                       y: rect.bottom + 20,
                       isCompanyName: true
                     });
+                  };
+
+                  // Handle scroll sync
+                  const handleTechScroll = (e) => {
+                    if (refs.prevDate) {
+                      refs.prevDate.scrollTop = e.target.scrollTop;
+                    }
+                    if (refs.latestDate) {
+                      refs.latestDate.scrollTop = e.target.scrollTop;
+                    }
+                  };
+
+                  const handleDateScroll = (e) => {
+                    if (refs.tech) {
+                      refs.tech.scrollTop = e.target.scrollTop;
+                    }
+                    if (refs.prevDate && refs.latestDate) {
+                      if (e.target === refs.prevDate) {
+                        refs.latestDate.scrollTop = e.target.scrollTop;
+                      } else {
+                        refs.prevDate.scrollTop = e.target.scrollTop;
+                      }
+                    }
                   };
 
                   return (
@@ -3095,18 +3142,21 @@ const Technographics = () => {
                         </span>
                       </td> */}
                       <td style={{ paddingLeft: '8px' }}>
-                        <div style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          gap: '8px',
-                          maxHeight: '96px',
-                          overflowY: 'auto',
-                          paddingRight: '4px',
-                          width: '100%',
-                          scrollbarWidth: 'none',
-                          msOverflowStyle: 'none'
-                        }}
-                        className="tech-scroll-container"
+                        <div 
+                          ref={(el) => { if (el) refs.tech = el; }}
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none'
+                          }}
+                          className="tech-scroll-container"
+                          onScroll={handleTechScroll}
                         >
                           {(row.technologies || [row.technology]).map((tech, idx) => (
                             <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
@@ -3116,11 +3166,55 @@ const Technographics = () => {
                           ))}
                         </div>
                       </td>
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.previousDetectedDate, searchTerm)}
+                      <td style={{ paddingLeft: '8px', textAlign: 'center' }}>
+                        <div 
+                          ref={(el) => { if (el) refs.prevDate = el; }}
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            alignItems: 'center'
+                          }}
+                          className="tech-scroll-container"
+                          onScroll={handleDateScroll}
+                        >
+                          {(row.technologyDates || []).map((dateInfo, idx) => (
+                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
+                              {highlightText(dateInfo.previousDetectedDate, searchTerm)}
+                            </span>
+                          ))}
+                        </div>
                       </td>
-                      <td onMouseEnter={(e) => handleMouseEnter(e, row.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.latestDetectedDate, searchTerm)}
+                      <td style={{ paddingLeft: '8px', textAlign: 'center' }}>
+                        <div 
+                          ref={(el) => { if (el) refs.latestDate = el; }}
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            alignItems: 'center'
+                          }}
+                          className="tech-scroll-container"
+                          onScroll={handleDateScroll}
+                        >
+                          {(row.technologyDates || []).map((dateInfo, idx) => (
+                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
+                              {highlightText(dateInfo.latestDetectedDate, searchTerm)}
+                            </span>
+                          ))}
+                        </div>
                       </td>
                     </tr>
                   );
