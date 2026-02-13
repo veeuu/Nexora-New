@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
-import { getLogoPath } from '../../utils/logoMap';
+import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 // Generic Custom Dropdown Component (without icons)
@@ -201,7 +201,7 @@ const RenewalIntelligence = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 7;
+    const rowsPerPage = 9;
     const filterRef = useRef(null);
 
     // Icon mapping for products
@@ -306,7 +306,27 @@ const RenewalIntelligence = () => {
             );
         }
         
-        // Fallback to icon if no logo found
+        // Try to get colored icon (includes robot icon for AI/ML)
+        const iconData = getTechIcon(productName);
+        if (iconData) {
+            const { component: IconComponent, color } = iconData;
+            return (
+                <IconComponent
+                    size={16}
+                    style={{
+                        marginRight: '6px',
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        color: color,
+                        opacity: 0.85,
+                        filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
+                    }}
+                    title={productName}
+                />
+            );
+        }
+        
+        // Fallback to SI icon if no logo or tech icon found
         const iconName = getProductIcon(productName);
         if (!iconName) return null;
         
@@ -377,7 +397,7 @@ const RenewalIntelligence = () => {
         }
 
         // Create CSV header
-        const headers = ['Account Name', 'Product', 'Renewal QTR'];
+        const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
         const csvContent = [
             headers.join(','),
             ...dataToDownload.map(row =>
@@ -612,7 +632,7 @@ const RenewalIntelligence = () => {
             <div style={{ marginBottom: '20px' }} ref={filterRef}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                {/* Filter Button */}
+                {/* Filter Button - Always visible */}
                 <div style={{ position: 'relative' }}>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
@@ -642,70 +662,70 @@ const RenewalIntelligence = () => {
                     <span>+ Filter</span>
                   </button>
 
-                  {/* Filter Menu Dropdown */}
-                  {showFilters && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        marginTop: '8px',
-                        backgroundColor: 'white',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                        zIndex: 1000,
-                        minWidth: '200px'
-                      }}
-                    >
-                      {[
-                        { label: 'Account Name', key: 'companyName', mandatory: true },
-                        { label: 'Product', key: 'product', mandatory: true },
-                        { label: 'Renewal Timeline', key: 'qtr', mandatory: true }
-                      ].map((filterOption) => (
-                        <div
-                          key={filterOption.key}
-                          onClick={() => {
-                            setActiveFilterMenu(filterOption.key);
-                            setShowFilters(false);
-                          }}
-                          style={{
-                            padding: '12px 16px',
-                            cursor: 'pointer',
-                            borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px',
-                            color: '#1f2937',
-                            transition: 'background-color 0.2s',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                        >
-                          {filterOption.label}
-                          {filterOption.mandatory && (
-                            <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                {/* Filter Menu Dropdown */}
+                {showFilters && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '200px'
+                    }}
+                  >
+                    {[
+                      { label: 'Account Name', key: 'companyName', mandatory: true },
+                      { label: 'Product', key: 'product', mandatory: true },
+                      { label: 'Renewal Timeline', key: 'qtr', mandatory: true }
+                    ].map((filterOption) => (
+                      <div
+                        key={filterOption.key}
+                        onClick={() => {
+                          setActiveFilterMenu(filterOption.key);
+                          setShowFilters(false);
+                        }}
+                        style={{
+                          padding: '12px 16px',
+                          cursor: 'pointer',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px',
+                          color: '#1f2937',
+                          transition: 'background-color 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                      >
+                        {filterOption.label}
+                        {filterOption.mandatory && (
+                          <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
                 {/* Account Name Filter Chip */}
                 {activeFilterMenu === 'companyName' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
-                      backgroundColor: '#fef3c7',
-                      border: '1px solid #fcd34d',
+                      backgroundColor: '#dbeafe',
+                      border: '1px solid #93c5fd',
                       padding: '6px 12px',
                       borderRadius: '6px',
                       fontSize: '13px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      color: '#92400e'
+                      color: '#1e40af'
                     }}>
                       <span>Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
@@ -719,7 +739,7 @@ const RenewalIntelligence = () => {
                           cursor: 'pointer',
                           fontSize: '16px',
                           padding: '0',
-                          color: '#92400e',
+                          color: '#1e40af',
                           lineHeight: '1'
                         }}
                       >
@@ -810,6 +830,39 @@ const RenewalIntelligence = () => {
                           {option}
                         </div>
                       ))}
+
+                      {/* Save Button */}
+                      <div style={{
+                        padding: '12px',
+                        borderTop: '1px solid #e5e7eb',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'sticky',
+                        bottom: 0
+                      }}>
+                        <button
+                          onClick={() => {
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '6px 16px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -818,15 +871,15 @@ const RenewalIntelligence = () => {
                 {activeFilterMenu === 'product' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
-                      backgroundColor: '#fef3c7',
-                      border: '1px solid #fcd34d',
+                      backgroundColor: '#dbeafe',
+                      border: '1px solid #93c5fd',
                       padding: '6px 12px',
                       borderRadius: '6px',
                       fontSize: '13px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      color: '#92400e'
+                      color: '#1e40af'
                     }}>
                       <span>Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
@@ -840,7 +893,7 @@ const RenewalIntelligence = () => {
                           cursor: 'pointer',
                           fontSize: '16px',
                           padding: '0',
-                          color: '#92400e',
+                          color: '#1e40af',
                           lineHeight: '1'
                         }}
                       >
@@ -938,6 +991,39 @@ const RenewalIntelligence = () => {
                           </span>
                         </div>
                       ))}
+
+                      {/* Save Button */}
+                      <div style={{
+                        padding: '12px',
+                        borderTop: '1px solid #e5e7eb',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'sticky',
+                        bottom: 0
+                      }}>
+                        <button
+                          onClick={() => {
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '6px 16px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -946,15 +1032,15 @@ const RenewalIntelligence = () => {
                 {activeFilterMenu === 'qtr' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
-                      backgroundColor: '#fef3c7',
-                      border: '1px solid #fcd34d',
+                      backgroundColor: '#dbeafe',
+                      border: '1px solid #93c5fd',
                       padding: '6px 12px',
                       borderRadius: '6px',
                       fontSize: '13px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      color: '#92400e'
+                      color: '#1e40af'
                     }}>
                       <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
@@ -968,7 +1054,7 @@ const RenewalIntelligence = () => {
                           cursor: 'pointer',
                           fontSize: '16px',
                           padding: '0',
-                          color: '#92400e',
+                          color: '#1e40af',
                           lineHeight: '1'
                         }}
                       >
@@ -1065,6 +1151,39 @@ const RenewalIntelligence = () => {
                           </span>
                         </div>
                       ))}
+
+                      {/* Save Button */}
+                      <div style={{
+                        padding: '12px',
+                        borderTop: '1px solid #e5e7eb',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'sticky',
+                        bottom: 0
+                      }}>
+                        <button
+                          onClick={() => {
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '6px 16px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1216,9 +1335,9 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
-                                        <th style={{ textAlign: 'left' }}>Account Name</th>
+                                        <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal QTR</th>
+                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -1228,9 +1347,9 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
-                                        <th style={{ textAlign: 'left' }}>Account Name</th>
+                                        <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal QTR</th>
+                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1599,7 +1718,7 @@ const RenewalIntelligence = () => {
                     border-radius: 12px;
                     padding: 1.25rem 1.5rem 1.5rem;
                     width: 100%;
-                    height:600px;
+                    height:800px;
                     max-width: 100%;
                     overflow-x: hidden;
                 }
@@ -1619,7 +1738,7 @@ const RenewalIntelligence = () => {
                 }
 
                 .table-container {
-                    max-height: 400px;
+                    max-height: 700px;
                     overflow-x: auto;
                     overflow-y: auto;
                     position: relative;
@@ -1662,10 +1781,10 @@ const RenewalIntelligence = () => {
                     box-sizing: border-box;
                 }
 
-                /* Explicitly enforce column width constraints so Renewal QTR is visible */
-                td:nth-child(1), th:nth-child(1) { width: 35%; }
-                td:nth-child(2), th:nth-child(2) { width: 35%; }
-                td:nth-child(3), th:nth-child(3) { width: 30%; }
+                /* Explicitly enforce column width constraints so Renewal Intelligence is visible */
+                td:nth-child(1), th:nth-child(1) { width: 33.33%; }
+                td:nth-child(2), th:nth-child(2) { width: 33.33%; }
+                td:nth-child(3), th:nth-child(3) { width: 33.34%; }
 
                 td {
                     position: relative;

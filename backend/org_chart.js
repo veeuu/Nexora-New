@@ -522,6 +522,12 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     const x1 = xShifted + boxWidth / 2;
     const y1 = y + boxHeight / 2;
 
+    // Parse multiple categories (comma-separated)
+    const categories = (empData.category || 'N/A')
+      .split(',')
+      .map(cat => cat.trim())
+      .filter(cat => cat.length > 0);
+
     shapes.push({
       type: 'rect',
       x0: x0,
@@ -533,7 +539,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       xref: 'x',
       yref: 'y',
       name: originalName,
-      category: empData.category || 'N/A'
+      categories: categories
     });
 
     // Add text annotation using Plotly annotations
@@ -555,7 +561,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       xanchor: 'center',
       yanchor: 'middle',
       name: originalName,
-      category: empData.category || 'N/A'
+      categories: categories
     });
   }
 
@@ -745,21 +751,25 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
         // Update shapes based on category
         layout.shapes.forEach((shape, index) => {
-          console.log('Shape', index, '- category:', shape.category);
+          console.log('Shape', index, '- categories:', shape.categories);
           
           // Reset line
           shape.line = shape.line || {};
           
-          if (category === 'All') {
+          if (category === 'All' || category === '') {
             shape.line.width = 0;
             shape.line.color = shape.fillcolor;
-          } else if (shape.category === category) {
-            // Highlight matching category
+          } else if (shape.categories && shape.categories.includes(category)) {
+            // Highlight if category is in the person's categories array
             const categoryColors = {
               'IT': '#000000ff',
               'Generalized': '#000000ff',
               'AI': '#000000',
-              'Cloud': '#000000ff'
+              'AI/ML': '#000000',
+              'Cloud': '#000000ff',
+              'CRM': '#000000ff',
+              'Database': '#000000ff',
+              'Other': '#000000ff'
             };
             shape.line.width = 3;
             shape.line.color = categoryColors[category] || '#000';
