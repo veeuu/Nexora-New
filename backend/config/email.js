@@ -42,7 +42,7 @@ const sendOTPEmail = async (email, otp, fullName) => {
     // For demo purposes, log the OTP instead of sending email
     if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'demo@example.com') {
       console.log('='.repeat(50));
-      console.log('📧 DEMO MODE - Email not sent');
+      console.log('DEMO OTP - Email not sent');
       console.log(`To: ${email}`);
       console.log(`OTP: ${otp}`);
       console.log('='.repeat(50));
