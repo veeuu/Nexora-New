@@ -5,16 +5,78 @@ import heroImage from '../assets/ChatGPT_Image_Jan_22__2026__11_00_18_AM-removeb
 import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
+  const [isSignup, setIsSignup] = useState(false);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        onLogin(username);
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setError('');
+        alert('Account created successfully! Please log in.');
+        setIsSignup(false);
+        setUsername('');
+        setEmail('');
+        setPassword('');
+      } else {
+        setError(data.message || 'Signup failed');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (username === 'Nexora' && password === 'Proplus@2025') {
-      onLogin(username);
+    if (isSignup) {
+      handleSignup(e);
     } else {
-      alert('Incorrect username or password');
+      handleLogin(e);
     }
   };
 
@@ -38,23 +100,68 @@ const Login = ({ onLogin }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <div className="input-wrapper">
-                <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </svg>
-                <input
-                  id="email"
-                  type="text"
-                  placeholder="Nexora"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="form-input"
-                />
+            {isSignup && (
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <input
+                    id="username"
+                    type="text"
+                    placeholder="Enter username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
+
+            {isSignup && (
+              <div className="form-group">
+                <label htmlFor="signup-email">Email</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                  <input
+                    id="signup-email"
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {!isSignup && (
+              <div className="form-group">
+                <label htmlFor="login-username">Username</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <input
+                    id="login-username"
+                    type="text"
+                    placeholder="Enter username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -70,6 +177,7 @@ const Login = ({ onLogin }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="form-input"
+                  required
                 />
                 <button
                   type="button"
@@ -93,15 +201,48 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            <div className="form-remember">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember">Remember me</label>
-              <span className="remember-text">Save my login details for next time.</span>
-            </div>
+            {!isSignup && (
+              <div className="form-remember">
+                <input type="checkbox" id="remember" />
+                <label htmlFor="remember">Remember me</label>
+                <span className="remember-text">Save my login details for next time.</span>
+              </div>
+            )}
 
-            <button type="submit" className="btn-signin">
-              Sign In
+            {error && <div className="form-error">{error}</div>}
+
+            <button type="submit" className="btn-signin" disabled={loading}>
+              {loading ? 'Processing...' : (isSignup ? 'Create Account' : 'Login')}
             </button>
+
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              <p style={{ fontSize: '0.875rem', color: '#666' }}>
+                {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignup(!isSignup);
+                    setError('');
+                    setUsername('');
+                    setEmail('');
+                    setPassword('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#007bff',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    padding: 0
+                  }}
+                >
+                  {isSignup ? 'Login' : 'Create Account'}
+                </button>
+              </p>
+            </div>
 
             <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
               <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.75rem', fontWeight: '500' }}>
