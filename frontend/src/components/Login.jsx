@@ -6,8 +6,8 @@ import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -22,13 +22,13 @@ const Login = ({ onLogin }) => {
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        onLogin(username);
+        onLogin(email);
       } else {
         setError(data.message || 'Login failed');
       }
@@ -49,7 +49,7 @@ const Login = ({ onLogin }) => {
       const response = await fetch('http://localhost:5000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ email, fullName, password })
       });
 
       const data = await response.json();
@@ -58,8 +58,8 @@ const Login = ({ onLogin }) => {
         setError('');
         alert('Account created successfully! Please log in.');
         setIsSignup(false);
-        setUsername('');
         setEmail('');
+        setFullName('');
         setPassword('');
       } else {
         setError(data.message || 'Signup failed');
@@ -102,27 +102,6 @@ const Login = ({ onLogin }) => {
           <form onSubmit={handleSubmit} className="login-form">
             {isSignup && (
               <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <div className="input-wrapper">
-                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  <input
-                    id="username"
-                    type="text"
-                    placeholder="Enter username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {isSignup && (
-              <div className="form-group">
                 <label htmlFor="signup-email">Email</label>
                 <div className="input-wrapper">
                   <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -142,20 +121,41 @@ const Login = ({ onLogin }) => {
               </div>
             )}
 
-            {!isSignup && (
+            {isSignup && (
               <div className="form-group">
-                <label htmlFor="login-username">Username</label>
+                <label htmlFor="fullname">Full Name</label>
                 <div className="input-wrapper">
                   <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                   <input
-                    id="login-username"
+                    id="fullname"
                     type="text"
-                    placeholder="Enter username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter full name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {!isSignup && (
+              <div className="form-group">
+                <label htmlFor="login-email">Email</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                  <input
+                    id="login-email"
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="form-input"
                     required
                   />
@@ -223,8 +223,8 @@ const Login = ({ onLogin }) => {
                   onClick={() => {
                     setIsSignup(!isSignup);
                     setError('');
-                    setUsername('');
                     setEmail('');
+                    setFullName('');
                     setPassword('');
                   }}
                   style={{
