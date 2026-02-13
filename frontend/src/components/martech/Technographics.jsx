@@ -572,6 +572,11 @@ const employeeSizeRanges = [
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
   
+  // If the value already contains formatting characters (like +, –, -, commas), return as-is
+  if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
+    return value;
+  }
+  
   const num = parseInt(value);
   if (isNaN(num)) return value;
   
