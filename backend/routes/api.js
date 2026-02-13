@@ -6,7 +6,7 @@ const path = require('path');
 // Assuming this file is in your 'routes' folder
 const yahooFinance = require('yahoo-finance2').default;
 const Company = require('../models/Company');
-const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_chart');
+const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 
 // Enable CORS for all routes in this router
 // This will add the necessary headers to your API responses
@@ -489,15 +489,15 @@ router.get('/org-chart/companies', async (req, res) => {
   try {
     const fs = require('fs');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    const companies = getCompaniesFromExcel(excelPath);
+    const companies = await getCompaniesFromCSV(csvPath);
     res.json({ companies });
   } catch (err) {
     console.error('Error fetching companies:', err.message);
@@ -506,34 +506,41 @@ router.get('/org-chart/companies', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/categories
-// @desc    Get unique categories from Excel file
+// @desc    Get unique categories from CSV file
 // @access  Public
 router.get('/org-chart/categories', async (req, res) => {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    if (!fs.existsSync(excelPath)) {
-      return res.status(404).json({ error: 'Excel file not found' });
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'CSV file not found' });
     }
     
-    // Read Excel file
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Extract unique categories
-    const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
-    
-    res.json({ categories });
+    // Read CSV file
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        // Extract unique categories
+        const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
+        res.json({ categories });
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
+      });
   } catch (err) {
     console.error('Error fetching categories:', err.message);
     res.status(500).json({ error: 'Failed to fetch categories' });
@@ -541,53 +548,61 @@ router.get('/org-chart/categories', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/person-details
-// @desc    Get person details from Excel file for buying group side panel
+// @desc    Get person details from CSV file for buying group side panel
 // @access  Public
 router.get('/org-chart/person-details', async (req, res) => {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    if (!fs.existsSync(excelPath)) {
-      return res.status(404).json({ error: 'Excel file not found' });
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'CSV file not found' });
     }
     
-    // Read Excel file
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Group data by company
-    const companiesMap = {};
-    
-    data.forEach((row) => {
-      const companyName = row['Company Name'] || 'Unknown';
-      
-      if (!companiesMap[companyName]) {
-        companiesMap[companyName] = [];
-      }
-      
-      companiesMap[companyName].push({
-        id: row['Unique ID'] || '',
-        name: row.Name || 'N/A',
-        designation: row.Role || 'N/A',
-        email: row.email || 'N/A',
-        linkedin: row.Linkedin || '',
-        reportsTo: row['Reports To'] || 'N/A',
-        category: row.Category || 'N/A'
+    // Read CSV file
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        // Group data by company
+        const companiesMap = {};
+        
+        data.forEach((row) => {
+          const companyName = row['Company Name'] || 'Unknown';
+          
+          if (!companiesMap[companyName]) {
+            companiesMap[companyName] = [];
+          }
+          
+          companiesMap[companyName].push({
+            id: row['Unique ID'] || '',
+            name: row.Name || 'N/A',
+            designation: row.Role || 'N/A',
+            email: row.email || 'N/A',
+            linkedin: row.Linkedin || '',
+            reportsTo: row['Reports To'] || 'N/A',
+            category: row.Category || 'N/A'
+          });
+        });
+        
+        // Send as JSON directly
+        res.json(companiesMap);
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
       });
-    });
-    
-    // Send as JSON directly
-    res.json(companiesMap);
   } catch (err) {
     console.error('Error fetching person details:', err.message);
     res.status(500).json({ error: 'Failed to fetch person details' });
@@ -595,66 +610,74 @@ router.get('/org-chart/person-details', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/:companyName
-// @desc    Get org chart HTML for a specific company (already generated by POST endpoint)
+// @desc    Get org chart HTML for a specific company
 // @access  Public
 router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
     
-    // Read Excel to get location for proper filename
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
-    const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-    
-    // Sanitize filename
-    const sanitizeFilename = (name) => {
-      name = String(name);
-      name = name.replace(/[^\w\s-]/g, '').trim();
-      name = name.replace(/[-\s]+/g, '_');
-      return name || 'untitled_chart';
-    };
-    
-    let safeFileName = sanitizeFilename(decodedCompanyName);
-    if (location) {
-      safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
-    }
-    
-    const htmlFileName = `${safeFileName}.html`;
-    const htmlFilePath = path.join(outputFolder, htmlFileName);
-    
-    // Check if file exists
-    if (fs.existsSync(htmlFilePath)) {
-      const html = fs.readFileSync(htmlFilePath, 'utf-8');
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    } else {
-      // If file doesn't exist, generate it on-demand
-      console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
-      const html = await generateOrgChartForCompany(excelPath, decodedCompanyName);
-      
-      // Save to disk
-      fs.writeFileSync(htmlFilePath, html, 'utf-8');
-      console.log(`✓ Org chart saved: ${htmlFileName}`);
-      
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    }
+    // Read CSV to get location for proper filename
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', async () => {
+        const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
+        const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
+        
+        // Sanitize filename
+        const sanitizeFilename = (name) => {
+          name = String(name);
+          name = name.replace(/[^\w\s-]/g, '').trim();
+          name = name.replace(/[-\s]+/g, '_');
+          return name || 'untitled_chart';
+        };
+        
+        let safeFileName = sanitizeFilename(decodedCompanyName);
+        if (location) {
+          safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
+        }
+        
+        const htmlFileName = `${safeFileName}.html`;
+        const htmlFilePath = path.join(outputFolder, htmlFileName);
+        
+        // Check if file exists
+        if (fs.existsSync(htmlFilePath)) {
+          const html = fs.readFileSync(htmlFilePath, 'utf-8');
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.send(html);
+        } else {
+          // If file doesn't exist, generate it on-demand
+          console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
+          const html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+          
+          // Save to disk
+          fs.writeFileSync(htmlFilePath, html, 'utf-8');
+          console.log(`✓ Org chart saved: ${htmlFileName}`);
+          
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.send(html);
+        }
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
+      });
   } catch (err) {
     console.error('Error fetching org chart:', err.message);
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
