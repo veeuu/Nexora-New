@@ -6,20 +6,24 @@ import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -30,7 +34,12 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         onLogin(email);
       } else {
-        setError(data.message || 'Login failed');
+        if (data.requiresVerification) {
+          setShowOTPVerification(true);
+          setError('Please verify your email first. Check your inbox for the OTP.');
+        } else {
+          setError(data.message || 'Login failed');
+        }
       }
     } catch (err) {
       setError('Error connecting to server');
@@ -43,10 +52,11 @@ const Login = ({ onLogin }) => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, fullName, password })
@@ -56,11 +66,8 @@ const Login = ({ onLogin }) => {
 
       if (response.ok) {
         setError('');
-        alert('Account created successfully! Please log in.');
-        setIsSignup(false);
-        setEmail('');
-        setFullName('');
-        setPassword('');
+        setSuccessMessage('Account created! Please check your email for the OTP.');
+        setShowOTPVerification(true);
       } else {
         setError(data.message || 'Signup failed');
       }
@@ -72,8 +79,71 @@ const Login = ({ onLogin }) => {
     }
   };
 
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Email verified successfully! You can now login.');
+        setShowOTPVerification(false);
+        setIsSignup(false);
+        setOtp('');
+        setPassword('');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(data.message || 'OTP verification failed');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    setError('');
+    setSuccessMessage('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('OTP resent to your email!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(data.message || 'Failed to resend OTP');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = (e) => {
-    if (isSignup) {
+    if (showOTPVerification) {
+      handleVerifyOTP(e);
+    } else if (isSignup) {
       handleSignup(e);
     } else {
       handleLogin(e);
@@ -99,7 +169,91 @@ const Login = ({ onLogin }) => {
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
           </div>
 
-          <form onSubmit={handleSubmit} className="login-form">
+          {/* OTP Verification Screen */}
+          {showOTPVerification ? (
+            <form onSubmit={handleSubmit} className="login-form">
+              <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#333' }}>Verify Your Email</h2>
+              <p style={{ textAlign: 'center', color: '#666', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                We've sent a 6-digit OTP to <strong>{email}</strong>
+              </p>
+
+              <div className="form-group">
+                <label htmlFor="otp">Enter OTP</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    id="otp"
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="form-input"
+                    maxLength="6"
+                    required
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              {successMessage && <div className="form-success">{successMessage}</div>}
+              {error && <div className="form-error">{error}</div>}
+
+              <button type="submit" className="btn-signin" disabled={loading || otp.length !== 6}>
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <p style={{ fontSize: '0.875rem', color: '#666' }}>
+                  Didn't receive the OTP?{' '}
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={loading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      outline: 'none',
+                      color: '#007bff',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      padding: 0
+                    }}
+                  >
+                    Resend OTP
+                  </button>
+                </p>
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOTPVerification(false);
+                    setOtp('');
+                    setError('');
+                    setSuccessMessage('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#666',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    padding: 0
+                  }}
+                >
+                  ← Back to Login
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="login-form">
             {isSignup && (
               <div className="form-group">
                 <label htmlFor="fullname">Full Name</label>
@@ -209,6 +363,7 @@ const Login = ({ onLogin }) => {
               </div>
             )}
 
+            {successMessage && <div className="form-success">{successMessage}</div>}
             {error && <div className="form-error">{error}</div>}
 
             <button type="submit" className="btn-signin" disabled={loading}>
@@ -348,6 +503,7 @@ const Login = ({ onLogin }) => {
               Don't have an account? <a href="#signup">Sign up</a>
             </p> */}
           </form>
+          )}
 
           <p className="copyright"></p>
         </div>

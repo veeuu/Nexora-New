@@ -20,7 +20,9 @@ app.get('/', (req, res) => {
 
 // Define Routes
 const apiRouter = require('./routes/api');
+const authRouter = require('./routes/auth');
 app.use('/api', apiRouter);
+app.use('/api/auth', authRouter);
 
 // Listen on all network interfaces (0.0.0.0) to allow access from other devices on the local network.
 app.listen(PORT, '0.0.0.0', () => {
