@@ -102,27 +102,6 @@ const Login = ({ onLogin }) => {
           <form onSubmit={handleSubmit} className="login-form">
             {isSignup && (
               <div className="form-group">
-                <label htmlFor="signup-email">Email</label>
-                <div className="input-wrapper">
-                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                  </svg>
-                  <input
-                    id="signup-email"
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="form-input"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            {isSignup && (
-              <div className="form-group">
                 <label htmlFor="fullname">Full Name</label>
                 <div className="input-wrapper">
                   <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -135,6 +114,27 @@ const Login = ({ onLogin }) => {
                     placeholder="Enter full name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {isSignup && (
+              <div className="form-group">
+                <label htmlFor="signup-email">Email</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                  <input
+                    id="signup-email"
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="form-input"
                     required
                   />
