@@ -4,6 +4,8 @@ import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin } from 'react-icons/fa';
+import { performanceMonitor } from '../../utils/performanceMonitor';
+// import PerformanceMetrics from '../PerformanceMetrics';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -732,6 +734,7 @@ const Technographics = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 7;
+  const [performanceMeasurements, setPerformanceMeasurements] = useState({});
 
   // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
@@ -853,23 +856,47 @@ const Technographics = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Reset performance monitor for fresh measurements
+        performanceMonitor.reset();
+        performanceMonitor.start('total-load');
+        
         setLoading(true);
         setError(null);
+        
+        // Track API call for technographics
+        performanceMonitor.start('fetch-technographics-api');
         const response = await fetch('/api/technographics');
+        performanceMonitor.end('fetch-technographics-api');
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        performanceMonitor.start('parse-technographics-data');
         const data = await response.json();
+        performanceMonitor.end('parse-technographics-data');
+        
+        performanceMonitor.start('set-table-data');
         setTableData(data);
+        performanceMonitor.end('set-table-data');
 
         // Fetch NTP data
+        performanceMonitor.start('fetch-ntp-api');
         const ntpResponse = await fetch('/api/ntp');
+        performanceMonitor.end('fetch-ntp-api');
+        
         if (ntpResponse.ok) {
+          performanceMonitor.start('parse-ntp-data');
           const ntpDataFetched = await ntpResponse.json();
+          performanceMonitor.end('parse-ntp-data');
+          
+          performanceMonitor.start('set-ntp-data');
           setNtpData(ntpDataFetched);
+          performanceMonitor.end('set-ntp-data');
         }
 
         // Calculate industry counts from the table data
+        performanceMonitor.start('process-industry-data');
         const industryCounts = {};
         data.forEach(row => {
           const industry = row.industry || 'Other';
@@ -920,6 +947,21 @@ const Technographics = () => {
 
         setTechnologyData(techDataWithPercentages);
         setAvailableRegions(Array.from(regions).sort());
+        performanceMonitor.end('process-industry-data');
+        
+        // Mark rendering complete
+        performanceMonitor.start('render-component');
+        performanceMonitor.end('render-component');
+        
+        // End total load timer and capture measurements
+        performanceMonitor.end('total-load');
+        
+        // Store measurements in state for display
+        const measurements = performanceMonitor.getAllMeasurements();
+        setPerformanceMeasurements(measurements);
+        
+        // Log summary to console
+        performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Technographics data:", e);
@@ -1116,18 +1158,24 @@ const Technographics = () => {
       return 0;
     });
 
-  // Group rows by company and combine technologies
+  // Group rows by company and combine technologies with their dates
   const groupedData = filteredData.reduce((acc, row) => {
     const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
     
     if (!acc[key]) {
       acc[key] = {
         ...row,
-        technologies: [row.technology]
+        technologies: [row.technology],
+        previousDetectedDates: [row.previousDetectedDate],
+        latestDetectedDates: [row.latestDetectedDate]
       };
     } else {
-      if (!acc[key].technologies.includes(row.technology)) {
+      // Only add if technology doesn't already exist
+      const techIndex = acc[key].technologies.indexOf(row.technology);
+      if (techIndex === -1) {
         acc[key].technologies.push(row.technology);
+        acc[key].previousDetectedDates.push(row.previousDetectedDate);
+        acc[key].latestDetectedDates.push(row.latestDetectedDate);
       }
     }
     
@@ -1229,6 +1277,9 @@ const Technographics = () => {
 
   return (
     <div className="technographics-container">
+      {/* Performance Metrics Display */}
+      {/* <PerformanceMetrics measurements={performanceMeasurements} isVisible={true} /> */}
+      
       {/* Error Banner */}
       {error && (
         <div style={{
@@ -2966,8 +3017,8 @@ const Technographics = () => {
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Employee Size</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Revenue</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Technology</th>
-              {/* <th>Previous Detected Date</th> */}
-              {/* <th>Latest Detected Date</th> */}
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Previous Detected</th>
+              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Latest Detected</th>
             </tr>
           </thead>
           <tbody>
@@ -3081,47 +3132,107 @@ const Technographics = () => {
                       <td style={{ paddingLeft: '20px' }} onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.revenue, searchTerm)}
                       </td>
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
-                        <span style={{ display: 'flex', alignItems: 'center' }}>
-                          {renderTechLogo(row.category)}
-                          {highlightText(row.category, searchTerm)}
-                        </span>
-                      </td> */}
-                      <td style={{ paddingLeft: '8px' }}>
-                        <div style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          gap: '8px',
-                          maxHeight: '96px',
-                          overflowY: 'auto',
-                          paddingRight: '4px',
-                          width: '100%',
-                          scrollbarWidth: 'none',
-                          msOverflowStyle: 'none'
-                        }}
-                        className="tech-scroll-container"
+                      {/* Technology, Previous Detected, and Latest Detected columns with synchronized scrolling */}
+                      <td style={{ paddingLeft: '8px', position: 'relative' }}>
+                        <div 
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none'
+                          }}
+                          className="tech-scroll-container"
+                          onScroll={(e) => {
+                            // Sync scroll to both date columns
+                            const scrollTop = e.target.scrollTop;
+                            const prevDateContainer = e.target.parentElement.nextElementSibling?.querySelector('.prev-date-scroll');
+                            const latestDateContainer = e.target.parentElement.nextElementSibling?.nextElementSibling?.querySelector('.latest-date-scroll');
+                            if (prevDateContainer) prevDateContainer.scrollTop = scrollTop;
+                            if (latestDateContainer) latestDateContainer.scrollTop = scrollTop;
+                          }}
                         >
                           {(row.technologies || [row.technology]).map((tech, idx) => (
-                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', minHeight: '24px' }}>
                               {renderTechLogo(tech)}
                               {highlightText(tech, searchTerm)}
-                            </span>
+                            </div>
                           ))}
                         </div>
                       </td>
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.previousDetectedDate, searchTerm)}
-                      </td> */}
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
-                        {highlightText(row.latestDetectedDate, searchTerm)}
-                      </td> */}
+                      <td style={{ paddingLeft: '8px', position: 'relative' }}>
+                        <div 
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            textAlign: 'center'
+                          }}
+                          className="prev-date-scroll"
+                          onScroll={(e) => {
+                            // Sync scroll to technology and latest date columns
+                            const scrollTop = e.target.scrollTop;
+                            const techContainer = e.target.parentElement.previousElementSibling?.querySelector('.tech-scroll-container');
+                            const latestDateContainer = e.target.parentElement.nextElementSibling?.querySelector('.latest-date-scroll');
+                            if (techContainer) techContainer.scrollTop = scrollTop;
+                            if (latestDateContainer) latestDateContainer.scrollTop = scrollTop;
+                          }}
+                        >
+                          {(row.previousDetectedDates || [row.previousDetectedDate]).map((date, idx) => (
+                            <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap', fontSize: '13px', color: '#1f2937', minHeight: '24px' }}>
+                              {highlightText(date, searchTerm)}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ paddingLeft: '8px', position: 'relative' }}>
+                        <div 
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            gap: '8px',
+                            maxHeight: '96px',
+                            overflowY: 'auto',
+                            paddingRight: '4px',
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                            textAlign: 'center'
+                          }}
+                          className="latest-date-scroll"
+                          onScroll={(e) => {
+                            // Sync scroll to technology and previous date columns
+                            const scrollTop = e.target.scrollTop;
+                            const techContainer = e.target.parentElement.previousElementSibling?.previousElementSibling?.querySelector('.tech-scroll-container');
+                            const prevDateContainer = e.target.parentElement.previousElementSibling?.querySelector('.prev-date-scroll');
+                            if (techContainer) techContainer.scrollTop = scrollTop;
+                            if (prevDateContainer) prevDateContainer.scrollTop = scrollTop;
+                          }}
+                        >
+                          {(row.latestDetectedDates || [row.latestDetectedDate]).map((date, idx) => (
+                            <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap', fontSize: '13px', color: '#1f2937', minHeight: '24px' }}>
+                              {highlightText(date, searchTerm)}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
                     </tr>
                   );
                   });
                 })()
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
                     No data found for the selected company
                   </td>
                 </tr>
@@ -3539,6 +3650,30 @@ const Technographics = () => {
         }
 
         .tech-scroll-container::-webkit-scrollbar-thumb {
+          display: none;
+        }
+
+        .prev-date-scroll::-webkit-scrollbar {
+          display: none;
+        }
+
+        .prev-date-scroll::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        .prev-date-scroll::-webkit-scrollbar-thumb {
+          display: none;
+        }
+
+        .latest-date-scroll::-webkit-scrollbar {
+          display: none;
+        }
+
+        .latest-date-scroll::-webkit-scrollbar-track {
+          display: none;
+        }
+
+        .latest-date-scroll::-webkit-scrollbar-thumb {
           display: none;
         }
         
