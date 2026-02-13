@@ -26,7 +26,7 @@ router.get('/ntp', async (req, res) => {
       
       return company.NTP?.map(ntpItem => ({
         companyName: company['Company Name'],
-        domain: company.Firmographics?.[0]?.About?.Domain || 'N/A',
+        domain: company.Firmographics?.About?.Domain || 'N/A',
         category: ntpItem.Category,
         technology: ntpItem.Technology,
         purchaseProbability: ntpItem['Purchase Probability (%)'],
@@ -49,10 +49,12 @@ router.get('/ntp', async (req, res) => {
 // @access  Public
 router.get('/technographics', async (req, res) => {
   try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Technographics: 1, Financial_Data: 1, _id: 0 });
+    // Fetch without projection to get all fields
+    const allCompanies = await Company.find({});
 
-    const technographicsData = companies.flatMap(company => {
-      const firmographics = company.Firmographics?.[0] || {};
+    const technographicsData = allCompanies.flatMap(company => {
+      // Firmographics is stored as an object in the database
+      const firmographics = company.Firmographics || {};
       const about = firmographics.About || {};
       const location = firmographics.Location || {};
       const finance = company.Financial_Data?.Finance || {};
@@ -61,7 +63,7 @@ router.get('/technographics', async (req, res) => {
         companyName: company['Company Name'],
         region: location.Country || 'N/A',
         industry: about.Industry || 'N/A',
-        employeeSize: about['Full Time employees'] || 'N/A',
+        employeeSize: about['Full Time employees'] || about['Full time employees'] || about.Employees || 'N/A',
         revenue: finance['Total Revenue'] || 'N/A',
         category: techItem.Category,
         technology: techItem.Keyword,
@@ -79,159 +81,8 @@ router.get('/technographics', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-
-// @route   GET /api/financial/wide
-// @desc    Get Financial data (one record per company)
-// @access  Public
-router.get('/financial/wide', async (req, res) => {
-  try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Financial_Data: 1, Stock_Performance: 1, _id: 0 });
-
-    const financialData = companies.map(company => {
-      const firmographics = company.Firmographics?.[0] || {};
-      const about = firmographics.About || {};
-      const location = firmographics.Location || {};
-      const finance = company.Financial_Data?.Finance || {};
-      const dividend = company.Financial_Data?.Dividend || {};
-      const stock = company.Stock_Performance || {};
-      const daily = stock.Daily_Performance?.[0] || {};
-      const weekly = stock.Weekly_Performance?.[0] || {};
-      const monthly = stock.Monthly_Performance?.[0] || {};
-      const quarterly = stock.Quarterly_Performance?.[0] || {};
-
-      return ({
-        id: finance.ID || 'N/A',
-        companyName: company['Company Name'],
-        domain: about.Domain || 'N/A',
-        industry: about.Industry || 'N/A',
-        fullTimeEmployees: about['Full Time employees'] || 'N/A',
-        investorWebsite: finance['Investor Website'] || 'N/A',
-        exchange: finance.Exchange || 'N/A',
-        address: location.Address || 'N/A',
-        city: location.City || 'N/A',
-        state: location.State || 'N/A',
-        country: location.Country || 'N/A',
-        contact: location.Contact || 'N/A',
-        dateTime: finance['Date & Time'] || 'N/A',
-        currentPrice: finance['Current Price'] || 'N/A',
-        marketCap: finance['Market Cap'] || 'N/A',
-        totalRevenue: finance['Total Revenue'] || 'N/A',
-        revenueGrowth: finance['Revenue Growth'] || 'N/A',
-        profitGrowth: finance['Profit Growth'] || 'N/A',
-        dividendRate: dividend['Dividend Rate'] || 'N/A',
-        dividendYield: dividend['Dividend Yield'] || 'N/A',
-        lastDividendDate: dividend['Date of Last Dividend'] || 'N/A',
-        fiveYearAvgDividendYield: dividend['Five Years Average Dividend Yield'] || 'N/A',
-        currency: dividend.Currency || 'N/A',
-        dailyPerformance: { date: daily.Date || 'N/A', open: daily.Open || 'N/A', high: daily.High || 'N/A', low: daily.Low || 'N/A', close: daily.Close || 'N/A', volume: daily.Volume || 'N/A', adjClose: daily.Adjclose || 'N/A', dividends: daily.Dividends || 'N/A' },
-        weeklyPerformance: { date: weekly.Date || 'N/A', open: weekly.Open || 'N/A', high: weekly.High || 'N/A', low: weekly.Low || 'N/A', close: weekly.Close || 'N/A', volume: weekly.Volume || 'N/A', adjClose: weekly.Adjclose || 'N/A', dividends: weekly.Dividends || 'N/A' },
-        monthlyPerformance: { date: monthly.Date || 'N/A', open: monthly.Open || 'N/A', high: monthly.High || 'N/A', low: monthly.Low || 'N/A', close: monthly.Close || 'N/A', volume: monthly.Volume || 'N/A', adjClose: monthly.Adjclose || 'N/A', dividends: monthly.Dividends || 'N/A' },
-        quarterlyPerformance: { date: quarterly.Date || 'N/A', open: quarterly.Open || 'N/A', high: quarterly.High || 'N/A', low: quarterly.Low || 'N/A', close: quarterly.Close || 'N/A', volume: quarterly.Volume || 'N/A', adjClose: quarterly.Adjclose || 'N/A', dividends: quarterly.Dividends || 'N/A' }
-      });
-    });
-
-    res.json(financialData);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route   GET /api/financial/long
-// @desc    Get Financial data (multiple records per company, by performance type)
-// @access  Public
-router.get('/financial/long', async (req, res) => {
-  try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Financial_Data: 1, Stock_Performance: 1, _id: 0 });
-
-    const financialData = companies.flatMap(company => {
-      const firmographics = company.Firmographics?.[0] || {};
-      const about = firmographics.About || {};
-      const location = firmographics.Location || {};
-      const finance = company.Financial_Data?.Finance || {};
-      const dividend = company.Financial_Data?.Dividend || {};
-
-      const baseData = {
-        id: finance.ID || 'N/A',
-        companyName: company['Company Name'],
-        domain: about.Domain || 'N/A',
-        industry: about.Industry || 'N/A',
-        fullTimeEmployees: about['Full Time employees'] || 'N/A',
-        investorWebsite: finance['Investor Website'] || 'N/A',
-        exchange: finance.Exchange || 'N/A',
-        address: location.Address || 'N/A',
-        city: location.City || 'N/A',
-        state: location.State || 'N/A',
-        country: location.Country || 'N/A',
-        contact: location.Contact || 'N/A',
-        dateTime: finance['Date & Time'] || 'N/A',
-        currentPrice: finance['Current Price'] || 'N/A',
-        marketCap: finance['Market Cap'] || 'N/A',
-        totalRevenue: finance['Total Revenue'] || 'N/A',
-        revenueGrowth: finance['Revenue Growth'] || 'N/A', // Corrected path
-        profitGrowth: finance['Profit Growth'] || 'N/A',   // Corrected path
-        dividendRate: dividend['Dividend Rate'] || 'N/A',
-        dividendYield: dividend['Dividend Yield'] || 'N/A',
-        lastDividendDate: dividend['Date of Last Dividend'] || 'N/A',
-        fiveYearAvgDividendYield: dividend['Five Years Average Dividend Yield'] || 'N/A',
-        currency: dividend.Currency || 'N/A',
-      };
-
-      const stockPerformance = company.Stock_Performance || {};
-      const performanceTypes = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
-      const allPerformanceRows = [];
-
-      performanceTypes.forEach(type => {
-        const performanceArray = stockPerformance[`${type}_Performance`] || [];
-        performanceArray.forEach(performanceRecord => {
-          allPerformanceRows.push({ ...baseData, performanceType: type, performance: performanceRecord });
-        });
-      });
-      
-      // If no performance data was found, return a single record with base data
-      if (allPerformanceRows.length === 0) {
-        return [{ ...baseData, performanceType: 'N/A', performance: {} }];
-      }
-
-      return allPerformanceRows;
-    });
-
-    res.json(financialData);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route   GET /api/growth
-// @desc    Get Growth data for all companies
-// @access  Public
-router.get('/growth', async (req, res) => {
-  try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Growth: 1, Financial_Data: 1, _id: 0 });
-
-    const growthData = companies.flatMap(company => {
-      const about = company.Firmographics?.[0]?.About || {};
-      const location = company.Firmographics?.[0]?.Location || {};
-
-      return company.Growth?.map(item => ({
-        id: company.Financial_Data?.Finance?.ID || 'N/A',
-        companyName: company['Company Name'],
-        domain: about.Domain || 'N/A',
-        industry: about.Industry || 'N/A',
-        country: location.Country || 'N/A',
-        period: item.Period,
-        endDate: item['End Date'],
-        growth: item.Growth !== null ? `${(item.Growth * 100).toFixed(2)}%` : 'N/A'
-      })) || [];
-    });
-
-    res.json(growthData);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
+  
+  
 
 // @route   GET /api/buyergroups
 // @desc    Get Buyer Group data for all companies
@@ -241,8 +92,8 @@ router.get('/buyergroups', async (req, res) => {
     const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 });
 
     const buyerGroupData = companies.flatMap(company => {
-      const about = company.Firmographics?.[0]?.About || {};
-      const location = company.Firmographics?.[0]?.Location || {};
+      const about = company.Firmographics?.About || {};
+      const location = company.Firmographics?.Location || {};
 
       return company.Buyers_Group?.map(item => ({
         id: company.Financial_Data?.Finance?.ID || 'N/A',
@@ -268,153 +119,6 @@ router.get('/buyergroups', async (req, res) => {
 
 // @route   GET /api/mutualfunds
 // @desc    Get Mutual Fund Holders data for all companies
-// @access  Public
-router.get('/mutualfunds', async (req, res) => {
-  try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Mutual_Fund_Holders: 1, Financial_Data: 1, _id: 0 });
-    const mutualFundData = companies.flatMap(company => {
-      const about = company.Firmographics?.[0]?.About || {};
-      const location = company.Firmographics?.[0]?.Location || {};
-      return company.Mutual_Fund_Holders?.map(item => ({ id: company.Financial_Data?.Finance?.ID || 'N/A', uniqueId: `MF-${Math.floor(Math.random() * 100000)}`, companyName: company['Company Name'], domain: about.Domain || 'N/A', industry: about.Industry || 'N/A', country: location.Country || 'N/A', date: item.Date, fundName: item.Name, holding: item.Holding !== null ? `${(item.Holding * 100).toFixed(4)}%` : 'N/A', shares: item.Shares })) || [];
-    });
-    res.json(mutualFundData);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route   GET /api/stock/quote/:ticker
-// @desc    Get the latest real-time quote for a stock
-// @access  Public
-router.get('/stock/quote/:ticker', async (req, res) => {
-  const { ticker } = req.params;
-  try {
-    // Fetch only the fields needed for the chart update
-    const quote = await yahooFinance.quote(ticker, {
-      fields: ['regularMarketPrice', 'regularMarketTime', 'regularMarketOpen', 'regularMarketDayHigh', 'regularMarketDayLow', 'regularMarketVolume']
-    });
-
-    if (!quote) {
-      return res.status(404).json({ msg: 'Ticker not found' });
-    }
-
-    // Format the data to match the chart's expected structure
-    const formattedQuote = {
-      Time: quote.regularMarketTime,
-      Open: quote.regularMarketOpen,
-      High: quote.regularMarketDayHigh,
-      Low: quote.regularMarketDayLow,
-      Close: quote.regularMarketPrice, // Use regularMarketPrice for the "Close" value in real-time
-      Volume: quote.regularMarketVolume,
-    };
-
-    res.json(formattedQuote);
-  } catch (err) {
-    console.error(`API Error for /stock/quote/${ticker}:`, err.message);
-    res.status(500).send('Server Error: Could not fetch latest quote.');
-  }
-});
-
-// @route   GET /api/stock/:ticker/:range
-// @desc    Get real-time stock data from Yahoo Finance
-// @access  Public
-router.get('/stock/:ticker/:range', async (req, res) => {
-  const { ticker, range } = req.params;
-  try {
-    // --- FIX: Calculate start date for yahoo-finance2 ---
-    const getStartDate = (range) => {
-      const now = new Date();
-      switch (range) {
-        case '1D':
-          // Set the start date to the beginning of the current day (00:00:00).
-          // Yahoo Finance will then provide data from market open on that day.
-          now.setHours(0, 0, 0, 0);
-          return now;
-        case '5D': return new Date(now.setDate(now.getDate() - 5));
-        case '1M': return new Date(now.setMonth(now.getMonth() - 1));
-        case '3M': return new Date(now.setMonth(now.getMonth() - 3));
-        case '6M': return new Date(now.setMonth(now.getMonth() - 6));
-        case 'YTD': return new Date(now.getFullYear(), 0, 1);
-        case '1Y': return new Date(now.setFullYear(now.getFullYear() - 1));
-        case '5Y': return new Date(now.setFullYear(now.getFullYear() - 5));
-        default: return new Date(now.setMonth(now.getMonth() - 1)); // Default to 1M
-      }
-    };
-
-    // Map frontend ranges to yahoo-finance2 query intervals
-    const rangeMap = {
-      '1D': '5m',
-      '5D': '30m',
-      '1M': '1d',
-      '3M': '1d',
-      '6M': '1d',
-      'YTD': '1d',
-      '1Y': '1wk',
-      '5Y': '1mo',
-    };
-
-    const interval = rangeMap[range];
-    if (!interval) {
-      return res.status(400).json({ msg: 'Invalid range specified' });
-    }
-
-    const queryOptions = {
-      period1: getStartDate(range),
-      interval: interval,
-    };
-
-    // Use chart() instead of the deprecated historical()
-    const result = await yahooFinance.chart(ticker, queryOptions);
-
-    // Find the corresponding company in the database to update it
-    const company = await Company.findOne({ 'Financial_Data.Finance.ID': ticker });
-
-    if (company && result.length > 0) {
-      // Map yahoo data to match our database schema
-      const performanceData = result.map(item => ({
-        Date: new Date(item.date).toLocaleDateString('en-GB').replace(/\//g, '-'), // Format as DD-MM-YYYY
-        Open: `$${item.open.toFixed(2)}`,
-        High: `$${item.high.toFixed(2)}`,
-        Low: `$${item.low.toFixed(2)}`,
-        Close: `$${item.close.toFixed(2)}`,
-        Volume: item.volume,
-        Adjclose: `$${item.close.toFixed(2)}`
-      }));
-
-      // Determine which performance field to update based on the range
-      const fieldToUpdate = {
-        '1D': 'Daily_Performance',
-        '5D': 'Daily_Performance', // 5D also uses daily data points
-        '1M': 'Daily_Performance', // 1M also uses daily data points
-        '1Y': 'Weekly_Performance',
-        '5Y': 'Monthly_Performance'
-      }[range] || 'Daily_Performance';
-
-      company.Stock_Performance[fieldToUpdate] = performanceData;
-      await company.save();
-    }
-
-    // Format the data for the frontend chart from the chart response
-    const formattedData = result.quotes.map(item => ({
-      // The 'Time' key is used by the chart's XAxis
-      Time: item.date,
-      Open: item.open,
-      High: item.high,
-      Low: item.low,
-      Close: item.close,
-      Volume: item.volume,
-    }));
-
-    res.json(formattedData);
-  } catch (err) {
-    console.error(`API Error for /stock/${ticker}/${range}:`, err.message);
-    res.status(500).send('Server Error: Could not fetch stock data.');
-  }
-});
-
-// @route   GET /api/intent
-// @desc    Get Intent data for all companies
 // @access  Public
 router.get('/intent', async (req, res) => {
   try {

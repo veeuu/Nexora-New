@@ -589,6 +589,11 @@ const revenueRanges = [
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
   
+  // If the value already contains formatting characters (like +, –, -, commas), return as-is
+  if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
+    return value;
+  }
+  
   const num = parseInt(value);
   if (isNaN(num)) return value;
   
@@ -3694,6 +3699,10 @@ const Technographics = () => {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
+              overflow: auto;              /* keep scrolling enabled */
+          scrollbar-width: none;       /* Firefox */
+          -ms-overflow-style: none;    /* IE and Edge */
+
         }
         
         th, td {

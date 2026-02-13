@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
+// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api', apiRouter);
 
 // Listen on all network interfaces (0.0.0.0) to allow access from other devices on the local network.
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server listening on http://0.0.0.0:${PORT}`);
+  console.log(`✓ Backend server listening on http://0.0.0.0:${PORT}`);
+  console.log(`✓ API available at http://localhost:${PORT}/api`);
   // Org charts are now generated on-demand when companies are selected
 });
