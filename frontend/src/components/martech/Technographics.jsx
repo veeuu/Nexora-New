@@ -5,7 +5,7 @@ import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
-// import PerformanceMetrics from '../PerformanceMetrics';
+import PerformanceMetrics from '../PerformanceMetrics';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -1283,7 +1283,7 @@ const Technographics = () => {
   return (
     <div className="technographics-container">
       {/* Performance Metrics Display */}
-      {/* <PerformanceMetrics measurements={performanceMeasurements} isVisible={true} /> */}
+      <PerformanceMetrics measurements={performanceMeasurements} isVisible={true} />
       
       {/* Error Banner */}
       {error && (
