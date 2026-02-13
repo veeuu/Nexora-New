@@ -14,22 +14,22 @@ const puppeteer = require('puppeteer');
 // ================================
 
 const CONFIG = {
-  BOX_WIDTH: 0.85,
+  BOX_WIDTH: 1.0,
   BOX_HEIGHT: 0.50,
   BOX_CORNER_RADIUS: 0.015,
-  HORIZONTAL_GAP: 0.08,
-  VERTICAL_GAP: 0.12,
+  HORIZONTAL_GAP: 0.05,
+  VERTICAL_GAP: 0.20,
   TOP_PADDING: 0.10,
-  SIDE_PADDING: 0.05,
+  SIDE_PADDING: 0.02,
   MAX_CHARS_PER_LINE: 16,
   MAX_NAME_LINES: 1,
   MAX_ROLE_LINES: 1,
-  CHART_GLOBAL_X_OFFSET: 0.8,
+  CHART_GLOBAL_X_OFFSET: 0.0,
   SMALL_CHART_THRESHOLD: 10,
   SMALL_CHART_BOX_WIDTH: 0.70,
   SMALL_CHART_BOX_HEIGHT: 0.50,
   MIN_VIEWPORT_SPAN: 0.9,
-  AXIS_PADDING: 0.10,
+  AXIS_PADDING: 0.05,
 
   // Colors
   COLOR_DECISION_MAKER_FILL: '#0070C0',
@@ -712,22 +712,40 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   <title>${companyName}${location ? ' (' + location + ')' : ''}</title>
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
-    body {
-      font-family: Calibri, Arial, sans-serif;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Calibri, Arial, sans-serif;
       background-color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      height: 100vh;
       overflow: hidden;
     }
-    #chart {
+    
+    .container {
       width: 100%;
       height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chart-wrapper {
+      flex: 1;
+      overflow: hidden;
       background-color: white;
     }
+    
+    #chart {
+      background-color: white;
+      display: inline-block;
+      min-width: 100%;
+      min-height: 100%;
+    }
+    
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -735,17 +753,27 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   </style>
 </head>
 <body>
-  <div id="chart"></div>
+  <div class="container">
+    <div class="chart-wrapper">
+      <div id="chart"></div>
+    </div>
+  </div>
   <script>
     const data = ${JSON.stringify(plotlyData.data)};
     const layout = ${JSON.stringify(plotlyData.layout)};
     const config = { 
       responsive: false, 
       displayModeBar: false,
-      staticPlot: true
+      staticPlot: true,
+      scrollZoom: false
     };
     
     if (layout && layout.annotations) {
+      // Set fixed dimensions on layout
+      layout.width = 900;
+      layout.height = 500;
+      layout.autosize = false;
+      
       Plotly.newPlot('chart', data, layout, config);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
