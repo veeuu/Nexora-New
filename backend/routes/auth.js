@@ -179,6 +179,105 @@ router.post('/resend-otp', async (req, res) => {
   }
 });
 
+// @route   POST /api/auth/forgot-password
+// @desc    Send OTP for password reset
+// @access  Public
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate input
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No account found with this email' });
+    }
+
+    // Check if email is verified
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your email first before resetting password' });
+    }
+
+    // Generate OTP for password reset
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+
+    // Send OTP email
+    await sendOTPEmail(email, otp, user.fullName);
+
+    res.status(200).json({
+      message: 'Password reset OTP sent to your email',
+      email: user.email
+    });
+  } catch (err) {
+    console.error('Forgot password error:', err.message);
+    res.status(500).json({ message: 'Server error during password reset request' });
+  }
+});
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password with OTP verification
+// @access  Public
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    // Validate input
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if OTP matches
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if OTP expired
+    if (new Date() > user.otpExpiry) {
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password and clear OTP
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    // Invalidate all existing sessions for security
+    await Session.deleteMany({ userId: user._id });
+
+    res.status(200).json({
+      message: 'Password reset successfully. Please login with your new password.',
+      email: user.email
+    });
+  } catch (err) {
+    console.error('Reset password error:', err.message);
+    res.status(500).json({ message: 'Server error during password reset' });
+  }
+});
+
 // @route   POST /api/auth/login
 // @desc    Authenticate user and return token
 // @access  Public
