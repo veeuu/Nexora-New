@@ -14,13 +14,16 @@ const FirmographicsSchema = new mongoose.Schema({
     'Company Name': String,
     Domain: String,
     Industry: String,
-    'Full Time employees': Number
+    'Full Time employees': String, // Changed from Number to String to match actual data
+    NAICS: String,
+    linkedinUrl: String
   },
   Location: {
     Address: String,
     City: String,
+    State: String, // Added missing State field
     Country: String,
-    Contact: String // Added missing Contact field
+    Contact: String
   }
 }, { _id: false });
 
@@ -73,7 +76,7 @@ const StockPerformanceSchema = new mongoose.Schema({
 
 const CompanySchema = new mongoose.Schema({
   'Company Name': String,
-  Firmographics: [FirmographicsSchema],
+  Firmographics: FirmographicsSchema, // Changed from array to object
   Technographics: [TechnographicsSchema],
   NTP: [NTPSchema],
   Financial_Data: FinancialDataSchema,
