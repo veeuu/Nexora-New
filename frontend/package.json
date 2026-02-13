@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:nexora\" \"npm run dev:backend\"",
     "dev:nexora": "vite --host",
-    "dev:backend": "cd ../backend && node server.js",
+    "dev:backend": "cd ../backend && nodemon server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

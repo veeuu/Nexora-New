@@ -1,0 +1,162 @@
+[{
+  "_id": {
+    "$oid": "698d6457d971abcf1922a6a0"
+  },
+  "Document_ID": "AT&T-2026-02-12-001",
+  "Company Name": "AT&T",
+  "Firmographics": {
+    "About": {
+      "Company Name": "AT&T",
+      "Domain": "att.com",
+      "Industry": "Telecommunications",
+      "Full Time employees": "10,001+",
+      "NAICS": "",
+      "linkedinUrl": "http://www.linkedin.com/company/att"
+    },
+    "Location": {
+      "Address": "",
+      "City": "",
+      "State": "",
+      "Country": "United States",
+      "Contact": ""
+    }
+  },
+  "Technographics": [
+    {
+      "Category": "Cloud",
+      "Keyword": "Azure",
+      "Previous Date": "Q2 2023",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": ""
+    },
+    {
+      "Category": "CRM",
+      "Keyword": "Salesforce CRM",
+      "Previous Date": "Q3 2022",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": "Q3 2028"
+    },
+    {
+      "Category": "AI/ML",
+      "Keyword": "Artificial Intelligence",
+      "Previous Date": "Q3 2024",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": ""
+    },
+    {
+      "Category": "Database",
+      "Keyword": "MongoDB",
+      "Previous Date": "Q2 2025",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": "Q2 2028"
+    },
+    {
+      "Category": "Cloud",
+      "Keyword": "AWS",
+      "Previous Date": "Q3 2023",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": ""
+    },
+    {
+      "Category": "AI/ML",
+      "Keyword": "NLP",
+      "Previous Date": "Q1 2023",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": ""
+    },
+    {
+      "Category": "Database",
+      "Keyword": "Microsoft SQL Server",
+      "Previous Date": "Q3 2022",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": "Q3 2028"
+    },
+    {
+      "Category": "Database",
+      "Keyword": "Oracle Database",
+      "Previous Date": "Q3 2023",
+      "Latest Date": "Q1 2026",
+      "Tech Status": "Yes",
+      "Explanation": "",
+      "Renewal Date": "Q3 2028"
+    }
+  ],
+  "NTP": [
+    {
+      "Category": "Cloud",
+      "Technology": "Azure",
+      "Purchase Probability (%)": "73.9%",
+      "Purchase Prediction": "Medium",
+      "NTP Analysis": "AT&T relies on Azure for large-scale workload execution across its core systems. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Investment decisions are reviewed periodically based on ROI and operational impact Usage is expected to continue, but expansion remains governed by ROI validation and workload-specific prioritization."
+    },
+    {
+      "Category": "CRM",
+      "Technology": "Salesforce CRM",
+      "Purchase Probability (%)": "73.05%",
+      "Purchase Prediction": "Medium",
+      "NTP Analysis": "AT&T uses Salesforce CRM to coordinate sales execution and customer engagement across channels. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Expansion is evaluated selectively rather than assumed as a default path Usage is expected to continue, but expansion remains governed by ROI validation and workload-specific prioritization."
+    },
+    {
+      "Category": "AI/ML",
+      "Technology": "Artificial Intelligence",
+      "Purchase Probability (%)": "63.54%",
+      "Purchase Prediction": "Medium",
+      "NTP Analysis": "Artificial Intelligence plays a specialized role within AT&T. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Expansion is evaluated selectively rather than assumed as a default path Usage is expected to continue, but expansion remains governed by ROI validation and workload-specific prioritization."
+    },
+    {
+      "Category": "Database",
+      "Technology": "MongoDB",
+      "Purchase Probability (%)": "47.51%",
+      "Purchase Prediction": "Low",
+      "NTP Analysis": "MongoDB plays a specialized role within AT&T. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Near-term expansion is unlikely without a clear shift in operational priorities The technology remains optional or narrowly scoped, limiting the case for near-term expansion."
+    },
+    {
+      "Category": "Cloud",
+      "Technology": "AWS",
+      "Purchase Probability (%)": "79.59%",
+      "Purchase Prediction": "High",
+      "NTP Analysis": "AT&T relies on AWS for large-scale workload execution across its core systems. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Peer adoption and operational dependence make continued expansion highly likely This technology is structurally embedded in core operations, making continued investment and expansion strategically necessary."
+    },
+    {
+      "Category": "AI/ML",
+      "Technology": "NLP",
+      "Purchase Probability (%)": "62.05%",
+      "Purchase Prediction": "Medium",
+      "NTP Analysis": "NLP plays a specialized role within AT&T. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Investment decisions are reviewed periodically based on ROI and operational impact Usage is expected to continue, but expansion remains governed by ROI validation and workload-specific prioritization."
+    },
+    {
+      "Category": "Database",
+      "Technology": "Microsoft SQL Server",
+      "Purchase Probability (%)": "49.1%",
+      "Purchase Prediction": "Low",
+      "NTP Analysis": "Microsoft SQL Server plays a specialized role within AT&T. Operating dynamics within the telecommunications sector influence how this technology is prioritized. The platform remains peripheral with no clear signal of enterprise-wide standardization The technology remains optional or narrowly scoped, limiting the case for near-term expansion."
+    },
+    {
+      "Category": "Database",
+      "Technology": "Oracle Database",
+      "Purchase Probability (%)": "54.93%",
+      "Purchase Prediction": "Low",
+      "NTP Analysis": "Oracle Database plays a specialized role within AT&T. Operating dynamics within the telecommunications sector influence how this technology is prioritized. Near-term expansion is unlikely without a clear shift in operational priorities The technology remains optional or narrowly scoped, limiting the case for near-term expansion."
+    }
+  ],
+  "Financial_Data": {
+    "Finance": {
+      "Total Revenue": "$156B"
+    }
+  },
+  "Mutual_Fund_Holders": []
+}]
