@@ -105,13 +105,14 @@ const Intent = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 7;
+  const rowsPerPage = 9;
   const filterRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const response = await fetch('/api/intent');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -121,6 +122,7 @@ const Intent = () => {
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Intent data:", e);
+        setTableData([]); // Set empty data on error
       } finally {
         // Add 2-second delay before hiding loading screen
         setTimeout(() => {
@@ -320,12 +322,52 @@ const Intent = () => {
     );
   }
 
-  if (error) {
-    return <div>Error fetching data: {error}</div>;
-  }
-
   return (
     <div className="intent-container">
+      {/* Error Banner */}
+      {error && (
+        <div style={{
+          backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            fontSize: '18px',
+            color: '#dc2626',
+            flexShrink: 0
+          }}>
+            ⚠
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#991b1b',
+            fontWeight: '500'
+          }}>
+            Error fetching data: {error}. Showing UI with no data.
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '18px',
+              color: '#991b1b',
+              padding: '0',
+              lineHeight: '1'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
@@ -399,8 +441,7 @@ const Intent = () => {
                 }}
               >
                 {[
-                  { label: 'Account Name', key: 'accountName', mandatory: false },
-                  { label: 'Intent Status', key: 'intentStatus', mandatory: true }
+                  { label: 'Company Name', key: 'accountName', mandatory: false }
                 ].map((filterOption) => (
                   <div
                     key={filterOption.key}
@@ -432,6 +473,39 @@ const Intent = () => {
             )}
           </div>
 
+          {/* Intent Status Filter - Always Visible (Mandatory) */}
+          {activeFilterMenu !== 'intentStatus' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setActiveFilterMenu('intentStatus')}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: 'white',
+                  color: '#3b82f6',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+              >
+                <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              </button>
+            </div>
+          )}
+
           {/* Account Name Filter Chip */}
           {activeFilterMenu === 'accountName' && (
             <div style={{ position: 'relative' }}>
@@ -446,7 +520,7 @@ const Intent = () => {
                 gap: '8px',
                 color: '#1e40af'
               }}>
-                <span>Account Name {Array.isArray(filters.accountName) && filters.accountName.length > 0 && `(${filters.accountName.length})`}</span>
+                <span>Company Name {Array.isArray(filters.accountName) && filters.accountName.length > 0 && `(${filters.accountName.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
@@ -481,7 +555,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, accountName: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -543,6 +623,39 @@ const Intent = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -551,15 +664,15 @@ const Intent = () => {
           {activeFilterMenu === 'intentStatus' && (
             <div style={{ position: 'relative' }}>
               <div style={{
-                backgroundColor: '#fef3c7',
-                border: '1px solid #fcd34d',
+                backgroundColor: '#dbeafe',
+                border: '1px solid #93c5fd',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '13px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: '#92400e'
+                color: '#1e40af'
               }}>
                 <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
@@ -573,7 +686,7 @@ const Intent = () => {
                     cursor: 'pointer',
                     fontSize: '16px',
                     padding: '0',
-                    color: '#92400e',
+                    color: '#1e40af',
                     lineHeight: '1'
                   }}
                 >
@@ -596,7 +709,13 @@ const Intent = () => {
               }}>
                 <div
                   onClick={() => {
-                    setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
+                      // If all are selected, deselect all
+                      setFilters(prev => ({ ...prev, intentStatus: [] }));
+                    } else {
+                      // Otherwise select all
+                      setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -664,6 +783,39 @@ const Intent = () => {
                     </div>
                   );
                 })}
+
+                {/* Save Button */}
+                <div style={{
+                  padding: '12px',
+                  borderTop: '1px solid #e5e7eb',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  backgroundColor: '#f9fafb',
+                  position: 'sticky',
+                  bottom: 0
+                }}>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    style={{
+                      padding: '6px 16px',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -684,7 +836,7 @@ const Intent = () => {
             }}
             onClick={() => setActiveFilterMenu('accountName')}
             >
-              <span>Account Name: {filters.accountName.length} selected</span>
+              <span>Company Name: {filters.accountName.length} selected</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -705,46 +857,6 @@ const Intent = () => {
             </div>
           )}
 
-          {filters.intentStatus.length > 0 && activeFilterMenu !== 'intentStatus' && (
-            <div style={{
-              backgroundColor: '#fef3c7',
-              border: '1px solid #fcd34d',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#92400e',
-              cursor: 'pointer'
-            }}
-            onClick={() => setActiveFilterMenu('intentStatus')}
-            >
-              <span>
-                Intent Status: {filters.intentStatus.length} selected
-                <span style={{ color: '#ef4444', fontWeight: '600', marginLeft: '4px' }}>*</span>
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFilters(prev => ({ ...prev, intentStatus: [] }));
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  padding: '0',
-                  color: '#92400e',
-                  lineHeight: '1'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          )}
-          </div>
-          
           {/* Download CSV Button - Show in filter row only when warning message is hidden */}
           {filters.intentStatus.length > 0 && (
             <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
@@ -768,6 +880,7 @@ const Intent = () => {
           alignItems: 'center',
           gap: '12px',
           marginBottom: '20px',
+          marginTop: '24px',
           justifyContent: 'space-between'
         }}>
           <div style={{
@@ -820,11 +933,11 @@ const Intent = () => {
         </div>
       </div> */}
 
-      <div className="table-container" style={{ backgroundColor: '#e8eef7' }}>
+      <div className="table-container" style={{ backgroundColor: '#e8eef7', marginTop: '24px' }}>
         <table>
           <thead className="sticky-header">
             <tr>
-              <th>Account Name</th>
+              <th>Company Name</th>
               <th>Intent Status</th>
             </tr>
           </thead>
@@ -1030,6 +1143,7 @@ const Intent = () => {
           })()}
         </div>
       )}
+      </div>
 
       <Tooltip tooltip={tooltip} />
 
