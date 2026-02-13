@@ -13,12 +13,15 @@
   "dependencies": {
     "archiver": "^7.0.1",
     "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "mongoose": "^8.4.1",
-    "nodemon": "^3.1.10",
     "puppeteer": "^24.36.1",
     "xlsx": "^0.18.5",
     "yahoo-finance2": "^2.13.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }

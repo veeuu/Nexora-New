@@ -6,12 +6,79 @@ const path = require('path');
 // Assuming this file is in your 'routes' folder
 const yahooFinance = require('yahoo-finance2').default;
 const Company = require('../models/Company');
-const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_chart');
+const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 
 // Enable CORS for all routes in this router
 // This will add the necessary headers to your API responses
 // to allow requests from your frontend.
 router.use(cors());
+
+// @route   POST /api/auth/signup
+// @desc    Create a new user account
+// @access  Public
+router.post('/auth/signup', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Validate input
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Username, email, and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Here you would typically:
+    // 1. Check if user already exists
+    // 2. Hash the password
+    // 3. Save to database
+    // For now, we're just validating and returning success
+    // The database will handle the actual storage
+
+    res.status(201).json({
+      message: 'User account created successfully',
+      user: {
+        username,
+        email
+      }
+    });
+  } catch (err) {
+    console.error('Signup error:', err.message);
+    res.status(500).json({ message: 'Server error during signup' });
+  }
+});
+
+// @route   POST /api/auth/login
+// @desc    Authenticate user and return token
+// @access  Public
+router.post('/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    // Here you would typically:
+    // 1. Query database to find user by username
+    // 2. Compare password with hashed password
+    // 3. Generate and return JWT token
+    // For now, we're just validating and returning success
+    // The database will handle the actual authentication
+
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        username
+      }
+    });
+  } catch (err) {
+    console.error('Login error:', err.message);
+    res.status(500).json({ message: 'Server error during login' });
+  }
+});
 
 // @route   GET /api/ntp
 // @desc    Get NTP data for all companies from MongoDB database with pagination
@@ -249,15 +316,15 @@ router.get('/org-chart/companies', async (req, res) => {
   try {
     const fs = require('fs');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    const companies = getCompaniesFromExcel(excelPath);
+    const companies = await getCompaniesFromCSV(csvPath);
     res.json({ companies });
   } catch (err) {
     console.error('Error fetching companies:', err.message);
@@ -266,34 +333,41 @@ router.get('/org-chart/companies', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/categories
-// @desc    Get unique categories from Excel file
+// @desc    Get unique categories from CSV file
 // @access  Public
 router.get('/org-chart/categories', async (req, res) => {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    if (!fs.existsSync(excelPath)) {
-      return res.status(404).json({ error: 'Excel file not found' });
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'CSV file not found' });
     }
     
-    // Read Excel file
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Extract unique categories
-    const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
-    
-    res.json({ categories });
+    // Read CSV file
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        // Extract unique categories
+        const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
+        res.json({ categories });
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
+      });
   } catch (err) {
     console.error('Error fetching categories:', err.message);
     res.status(500).json({ error: 'Failed to fetch categories' });
@@ -301,53 +375,61 @@ router.get('/org-chart/categories', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/person-details
-// @desc    Get person details from Excel file for buying group side panel
+// @desc    Get person details from CSV file for buying group side panel
 // @access  Public
 router.get('/org-chart/person-details', async (req, res) => {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
-    if (!fs.existsSync(excelPath)) {
-      return res.status(404).json({ error: 'Excel file not found' });
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'CSV file not found' });
     }
     
-    // Read Excel file
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Group data by company
-    const companiesMap = {};
-    
-    data.forEach((row) => {
-      const companyName = row['Company Name'] || 'Unknown';
-      
-      if (!companiesMap[companyName]) {
-        companiesMap[companyName] = [];
-      }
-      
-      companiesMap[companyName].push({
-        id: row['Unique ID'] || '',
-        name: row.Name || 'N/A',
-        designation: row.Role || 'N/A',
-        email: row.email || 'N/A',
-        linkedin: row.Linkedin || '',
-        reportsTo: row['Reports To'] || 'N/A',
-        category: row.Category || 'N/A'
+    // Read CSV file
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+        // Group data by company
+        const companiesMap = {};
+        
+        data.forEach((row) => {
+          const companyName = row['Company Name'] || 'Unknown';
+          
+          if (!companiesMap[companyName]) {
+            companiesMap[companyName] = [];
+          }
+          
+          companiesMap[companyName].push({
+            id: row['Unique ID'] || '',
+            name: row.Name || 'N/A',
+            designation: row.Role || 'N/A',
+            email: row.email || 'N/A',
+            linkedin: row.Linkedin || '',
+            reportsTo: row['Reports To'] || 'N/A',
+            category: row.Category || 'N/A'
+          });
+        });
+        
+        // Send as JSON directly
+        res.json(companiesMap);
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
       });
-    });
-    
-    // Send as JSON directly
-    res.json(companiesMap);
   } catch (err) {
     console.error('Error fetching person details:', err.message);
     res.status(500).json({ error: 'Failed to fetch person details' });
@@ -355,71 +437,180 @@ router.get('/org-chart/person-details', async (req, res) => {
 });
 
 // @route   GET /api/org-chart/:companyName
-// @desc    Get org chart HTML for a specific company (already generated by POST endpoint)
+// @desc    Get org chart HTML for a specific company
 // @access  Public
 router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
     
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Use the CSV file
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
     
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    // Fallback to old Excel file if CSV doesn't exist
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
     
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
     
-    // Read Excel to get location for proper filename
-    const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
-    const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-    
-    // Sanitize filename
-    const sanitizeFilename = (name) => {
-      name = String(name);
-      name = name.replace(/[^\w\s-]/g, '').trim();
-      name = name.replace(/[-\s]+/g, '_');
-      return name || 'untitled_chart';
-    };
-    
-    let safeFileName = sanitizeFilename(decodedCompanyName);
-    if (location) {
-      safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
-    }
-    
-    const htmlFileName = `${safeFileName}.html`;
-    const htmlFilePath = path.join(outputFolder, htmlFileName);
-    
-    // Check if file exists
-    if (fs.existsSync(htmlFilePath)) {
-      const html = fs.readFileSync(htmlFilePath, 'utf-8');
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    } else {
-      // If file doesn't exist, generate it on-demand
-      console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
-      const html = await generateOrgChartForCompany(excelPath, decodedCompanyName);
-      
-      // Save to disk
-      fs.writeFileSync(htmlFilePath, html, 'utf-8');
-      console.log(`✓ Org chart saved: ${htmlFileName}`);
-      
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    }
+    // Read CSV to get location for proper filename
+    const data = [];
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', async () => {
+        const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
+        const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
+        
+        // Sanitize filename
+        const sanitizeFilename = (name) => {
+          name = String(name);
+          name = name.replace(/[^\w\s-]/g, '').trim();
+          name = name.replace(/[-\s]+/g, '_');
+          return name || 'untitled_chart';
+        };
+        
+        let safeFileName = sanitizeFilename(decodedCompanyName);
+        if (location) {
+          safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
+        }
+        
+        const htmlFileName = `${safeFileName}.html`;
+        const htmlFilePath = path.join(outputFolder, htmlFileName);
+        
+        // Check if file exists
+        if (fs.existsSync(htmlFilePath)) {
+          let html = fs.readFileSync(htmlFilePath, 'utf-8');
+          html = injectScrollableCSS(html);
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.send(html);
+        } else {
+          // If file doesn't exist, generate it on-demand
+          console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
+          let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+          html = injectScrollableCSS(html);
+          
+          // Save to disk
+          fs.writeFileSync(htmlFilePath, html, 'utf-8');
+          console.log(`✓ Org chart saved: ${htmlFileName}`);
+          
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.send(html);
+        }
+      })
+      .on('error', (error) => {
+        console.error('Error reading CSV:', error.message);
+        res.status(500).json({ error: 'Failed to read CSV file' });
+      });
   } catch (err) {
     console.error('Error fetching org chart:', err.message);
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
   }
 });
+
+// Helper function to inject scrollable CSS into org chart HTML
+function injectScrollableCSS(html) {
+  const scrollableCSS = `
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+    
+    .chart-wrapper {
+      flex: 1;
+      overflow: auto;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10px;
+    }
+    
+    #chart {
+      transform-origin: top center;
+      transition: transform 0.2s ease;
+    }
+  `;
+  
+  // Replace the existing .container CSS
+  const containerRegex = /\.container\s*\{[^}]*\}/;
+  if (containerRegex.test(html)) {
+    html = html.replace(containerRegex, '.container { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: auto; }');
+  }
+  
+  // Replace the existing .chart-wrapper CSS
+  const chartWrapperRegex = /\.chart-wrapper\s*\{[^}]*\}/;
+  if (chartWrapperRegex.test(html)) {
+    html = html.replace(chartWrapperRegex, '.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }');
+  } else {
+    // If .chart-wrapper doesn't exist, inject it into the style tag
+    html = html.replace(/<\/style>/, `.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }</style>`);
+  }
+  
+  // Add zoom capability to #chart element
+  html = html.replace(/<\/style>/, `#chart { transform-origin: top center; transition: transform 0.2s ease; }</style>`);
+  
+  // Add script to handle zoom from parent window and auto-detect optimal zoom
+  const zoomScript = `
+    <script>
+      window.currentZoom = 100;
+      window.optimalZoom = 100;
+      
+      // Calculate optimal zoom on page load
+      window.addEventListener('load', function() {
+        const chartElement = document.getElementById('chart');
+        if (chartElement && chartElement.getBoundingClientRect) {
+          const chartRect = chartElement.getBoundingClientRect();
+          const containerWidth = window.innerWidth - 40; // Account for padding
+          const containerHeight = 520; // Container height from React component
+          
+          // Calculate zoom to fit width
+          const widthZoom = (containerWidth / chartRect.width) * 100;
+          // Calculate zoom to fit height
+          const heightZoom = (containerHeight / chartRect.height) * 100;
+          
+          // Use the smaller zoom to fit both dimensions
+          window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+          window.optimalZoom = Math.max(window.optimalZoom, 30); // Min 30%
+          window.optimalZoom = Math.round(window.optimalZoom / 10) * 10; // Round to nearest 10
+          
+          // Apply optimal zoom
+          chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+          window.currentZoom = window.optimalZoom;
+          
+          // Send optimal zoom back to parent
+          window.parent.postMessage({
+            type: 'optimalZoomCalculated',
+            zoomLevel: window.optimalZoom
+          }, '*');
+        }
+      });
+      
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'setZoom') {
+          const zoomLevel = event.data.zoomLevel || window.optimalZoom;
+          const chartElement = document.getElementById('chart');
+          if (chartElement) {
+            chartElement.style.transform = 'scale(' + (zoomLevel / 100) + ')';
+            window.currentZoom = zoomLevel;
+          }
+        }
+      });
+    </script>
+  `;
+  
+  html = html.replace(/<\/body>/, zoomScript + '</body>');
+  
+  return html;
+}
 
 // Generate org charts only for selected companies (called on-demand)
 async function generateSelectedOrgCharts(selectedCompanies = []) {

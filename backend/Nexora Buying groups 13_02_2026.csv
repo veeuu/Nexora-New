@@ -1,0 +1,595 @@
+Unique ID,Company Name,Name,Role,Reports To,hierarchy,Category,Linkedin,email
+PPD38552,FIS,Firdaus Bhathena,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/firdausbhathena/,firdaus.bhathena@fisglobal.com
+PPD38552,FIS,Chris DAgostino,Chief Data & AI Officer,,DECISION MAKER,"AI/ML,Database",http://www.linkedin.com/in/chrisdagostino1,chris.dagostino@fisglobal.com
+PPD38552,FIS,Elya Kurktchi,VP IT,Firdaus Bhathena,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/elyak,elya.kurktchi@fisglobal.com
+PPD38552,FIS,Ryan Klein,VP IT,Firdaus Bhathena,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/ryanmklein,ryan.klein@fisglobal.com
+PPD38552,FIS,Shawn Conaway,VP Cloud,Elya Kurktchi,INFLUENCER,Cloud,http://www.linkedin.com/in/shawnconaway,shawn.conaway@fisglobal.com
+PPD38552,FIS,Lou Contrino,Head of Cloud Services,Shawn Conaway,INFLUENCER,Cloud,http://www.linkedin.com/in/lou-contrino-0117711,lou.contrino@fisglobal.com
+PPD38552,FIS,Gregory Pentz,Cloud Services Director,Lou Contrino,INFLUENCER,Cloud,https://www.linkedin.com/in/gregory-pentz-6b22b82/,gregory.pentz@fisglobal.com
+PPD38552,FIS,Ravi Dangeti,Sr. Director Data & AI/ML,Chris DAgostino,INFLUENCER,AI/ML,http://www.linkedin.com/in/ravi-shankar-dangeti-6892322,ravi.dangeti@fisglobal.com
+PPD38552,FIS,Randy Geszvain,Sr. AI/ML Manager,Ravi Dangeti,INFLUENCER,AI/ML,http://www.linkedin.com/in/ygeszvain,randy.geszvain@fisglobal.com
+PPD38552,FIS,Jim Klinkenberg,Database Manager Sr.,Ryan Klein,INFLUENCER,Database,http://www.linkedin.com/in/jim-klinkenberg-b4122314,jim.klinkenberg@fisglobal.com
+PPD38552,FIS,Manish Upadhyay,Sr. Database Manager,Ryan Klein,INFLUENCER,Database,http://www.linkedin.com/in/manish-upadhyay-58006612,manish.upadhyay@fisglobal.com
+PPD38552,FIS,Chris Spangler,Database Manager,Jim Klinkenberg,INFLUENCER,Database,http://www.linkedin.com/in/chris-spangler-a9291b4,chris.spangler@fisglobal.com
+PPD38552,FIS,Chad Barrett,Database Manager,Manish Upadhyay,INFLUENCER,Database,http://www.linkedin.com/in/chad-barrett-7a5b3a6,chad.barrett@fisglobal.com
+PPD47236,Hollister Incorporated,Abinash Nayak,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/abinash-nayak-20330b1/,abinash.nayak@hollister.com
+PPD47236,Hollister Incorporated,Sandeep Tripathi,CTO,Abinash Nayak,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/tripathi-s/,Sandeep.Tripathi@hollister.com
+PPD47236,Hollister Incorporated,Sayeed Shariff,Sr. Director Data & AI,Sandeep Tripathi,INFLUENCER,AI/ML,http://www.linkedin.com/in/sayeedshariff,Sayeed.Shariff@hollister.com
+PPD47236,Hollister Incorporated,Busse Ed,Global IT Director,Sandeep Tripathi,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/busse-ed-648347a,busse.ed@hollister.com
+PPD47236,Hollister Incorporated,Jeanne Lasheff,Sr. Director IT,Busse Ed,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jeanne-lasheff/,jeanne.lasheff@hollister.com
+PPD47236,Hollister Incorporated,Dan Gajewsky,Director IT,Jeanne Lasheff,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/dangajewsky,Dan.Gajewsky@hollister.com
+PPD47236,Hollister Incorporated,John Magnan,Sr. Manager Global IT,Dan Gajewsky,INFLUENCER,Other,http://www.linkedin.com/in/john-magnan-182b083,john.magnan@hollister.com
+PPD47236,Hollister Incorporated,Bill Fairbanks,Sr. IT Project Manager,John Magnan,INFLUENCER,Other,http://www.linkedin.com/in/bill-f-7350544,bill.fairbanks@hollister.com
+PPD47236,Hollister Incorporated,Barbara Stubing,Sr. IT Project Manager,John Magnan,INFLUENCER,Other,http://www.linkedin.com/in/barbara-stubing-b709786,barbara.stubing@hollister.com
+PPD47236,Hollister Incorporated,Julian Rovani,Manager IT,Bill Fairbanks,INFLUENCER,Other,http://www.linkedin.com/in/julian-rovani-9b17b651,julian.rovani@hollister.com
+PPD47236,Hollister Incorporated,Arti Chowdhary,IT Project Manager,Barbara Stubing,INFLUENCER,Other,http://www.linkedin.com/in/arti-c-7150b534b,arti.chowdhary@hollister.com
+PPD41417,Ge Aerospace,David Burns,CIO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/david-andrew-burns/,david.burns@ge.com
+PPD41417,Ge Aerospace,Meg Kniskern,Sr. Director AI Services,David Burns,INFLUENCER,AI/ML,http://www.linkedin.com/in/meg-kniskern-483296a,meg.kniskern@ge.com
+PPD41417,Ge Aerospace,Todd Alhart,Director AI,Meg Kniskern,INFLUENCER,AI/ML,http://www.linkedin.com/in/todd-alhart-7575119,todd.alhart@ge.com
+PPD41417,Ge Aerospace,Justin Diemmanuele,Sr. Manager AI,Todd Alhart,INFLUENCER,AI/ML,http://www.linkedin.com/in/justin-diemmanuele-32339610a,justin.diemmanuele@ge.com
+PPD41417,Ge Aerospace,Douglas Copi,Director of Cloud,David Burns,INFLUENCER,Cloud,http://www.linkedin.com/in/dougcopi,douglas.copi@ge.com
+PPD41417,Ge Aerospace,Matthew Landry,Director Cloud,David Burns,INFLUENCER,Cloud,http://www.linkedin.com/in/mhlandry,matthew.landry@ge.com
+PPD41417,Ge Aerospace,Jack Crawley,Sr. Manager Cloud,Douglas Copi,INFLUENCER,Cloud,http://www.linkedin.com/in/jack-crawley-61030010a,jack.crawley@ge.com
+PPD41417,Ge Aerospace,Tom Ploetz,Sr. Manager Cloud,Matthew Landry,INFLUENCER,Cloud,http://www.linkedin.com/in/tomploetz,tom.ploetz@ge.com
+PPD41417,Ge Aerospace,Brandie Wagoner,Cloud Manager,Jack Crawley,INFLUENCER,Cloud,http://www.linkedin.com/in/brandie-wagoner-9a08b047,brandie.wagoner@ge.com
+PPD51768,"Irhythm Technologies, Inc.",Quentin Blackford,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/quentinblackford/,quentin.blackford@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Brian Lawrence,EVP & CTO,Quentin Blackford,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/bllawrence/,brian.lawrence@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Corey Song,Director of Embedded AI,Brian Lawrence,INFLUENCER,AI/ML,https://www.linkedin.com/in/corey-song-aab2b7167/,corey.song@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Steven Szabados,Director ML,Brian Lawrence,INFLUENCER,AI/ML,http://www.linkedin.com/in/steven-szabados-490bab31,steven.szabados@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Shanna emrich,Director CRM,Brian Lawrence,INFLUENCER,CRM,https://www.linkedin.com/in/shannaemrich,shanna.emrich@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Oisin McGuigan,Director IT Operations,Brian Lawrence,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mcguigan/,oisin.mcguigan@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Javier Rodriguez,Sr. Manager IT,Oisin McGuigan,INFLUENCER,Other,http://www.linkedin.com/in/javier-rodriguez-7442495,javier.rodriguez@irhythmtech.com
+PPD51768,"Irhythm Technologies, Inc.",Kerri penn,IT Manager,Javier Rodriguez,INFLUENCER,Other,https://www.linkedin.com/in/kerri-penn-35028412/,kerri.penn@irhythmtech.com
+PPD64138,"Merit Medical Systems, Inc.",Paul Douthwaite,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/pauldouthwaite,paul.douthwaite@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Martha Aronson,CEO,Paul Douthwaite,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/marthagoldbergaronson/,Martha.Aronson@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Jason Treft,CIO,Martha Aronson,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jasontreft,jason.treft@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Mikeal Hill,VP IT,Jason Treft,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/mikeal-hill-089bb848,mikeal.hill@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Tyler Baranowsky,VP of IT,Jason Treft,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/tyler-baranowsky-5170a11a2,tyler.baranowsky@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Andrew Hinds,DBA Manager,Mikeal Hill,INFLUENCER,Database,http://www.linkedin.com/in/andrew-hinds-422b973,andrew.hinds@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Chandler Sears,CRM Manager,Mikeal Hill,INFLUENCER,CRM,http://www.linkedin.com/in/chandler-sears-8a9298b2,chandler.sears@merit.com
+PPD64138,"Merit Medical Systems, Inc.",Jeff Barnard,Manager of IT,Tyler Baranowsky,INFLUENCER,Other,http://www.linkedin.com/in/jeff-barnard-80054933,jeff.barnard@merit.com
+PPD7793,Alphatec Spine,Ken Edwards,Director of Software Engineering,Michael Sass,INFLUENCER,Other,https://www.linkedin.com/in/edwardsken/,kedwards@atecspine.com
+PPD7793,Alphatec Spine,Saurabh P,Global Network Architect,Ken Edwards,INFLUENCER,Other,https://www.linkedin.com/in/spatange/,spatange@atecspine.com
+PPD7793,Alphatec Spine,Kongbin Kang,"Director, AI Research",Craig Bender,INFLUENCER,AI/ML,https://www.linkedin.com/in/kongbin-kang-177b0ab/,kkang@atecspine.com
+PPD7793,Alphatec Spine,Pat Miles,Chairman & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/pat-miles-25a44313/,pmiles@atecspine.com
+PPD7793,Alphatec Spine,Craig Bender,VP R&D (AI),Pat Miles,DECISION MAKER,AI/ML,https://www.linkedin.com/in/craig-bender-2ab9207/,cbender@atecspine.com
+PPD7793,Alphatec Spine,Michael Sass,VP of IT,Pat Miles,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/michaelsass/,msass@atecspine.com
+PPD10919,Arthrex,Austin kent,Manager Cloud Platforms,Bret Demyan,INFLUENCER,Cloud,https://www.linkedin.com/in/austkent/,austin.kent@arthrex.com
+PPD10919,Arthrex,Bret Demyan,Director Global IT Infrastructure,Reinhold Schmieding,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/bretdemyan/,bret.demyan@arthrex.com
+PPD10919,Arthrex,Daniel Acker,Infrastructure Manager,Bret Demyan,INFLUENCER,Other,https://www.linkedin.com/in/danielrossacker/,daniel.acker@arthrex.com
+PPD10919,Arthrex,Henning Schaeberle,Senior Director IT EMEA,Reinhold Schmieding,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/henning-schaeberle-27aa8754/,Henning.Schaeberle@arthrex.com
+PPD10919,Arthrex,John A,"Senior Manager, Data and Analytics",Joanna M,INFLUENCER,Other,https://www.linkedin.com/in/john-a-25ab955/,John.A@arthrex.com
+PPD10919,Arthrex,Joanna M,"Director, AI",Reinhold Schmieding,DECISION MAKER,AI/ML,https://www.linkedin.com/in/joanna-m-6929b1108/,Joanna.M@arthrex.com
+PPD10919,Arthrex,Reinhold Schmieding,President and Founder,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.arthrex.com/resources/VID1-001369-en-US/president-and-founder-reinhold-schmieding-presents-the-principles-behind-making-products-in-america,Reinhold.Schmieding@arthrex.com
+PPD17824,Boston Scientific,Sharna Sattiraju,Director AI,Janna Berkholtz,INFLUENCER,AI/ML,http://www.linkedin.com/in/sharna-sattiraju,sharna.sattiraju@bsci.com
+PPD17824,Boston Scientific,Dylan Mahan,Manager AI,Florence Carrier,INFLUENCER,AI/ML,http://www.linkedin.com/in/dylanmahan,dylan.mahan@bsci.com
+PPD17824,Boston Scientific,Florence Carrier,Sr. Manager AI,Sharna Sattiraju,INFLUENCER,AI/ML,http://www.linkedin.com/in/florence-carrier-9ba5532,florence.carrier@bsci.com
+PPD17824,Boston Scientific,Shanley Curran,"Assoc Director, Ep-crm",Benjamin Amel,DECISION MAKER,CRM,http://www.linkedin.com/in/shanleycurran,shanley.curran@bsci.com
+PPD17824,Boston Scientific,Molly Barker,CRM Manager,Geoffrey Daniel,INFLUENCER,CRM,http://www.linkedin.com/in/molly-barker-mba-ccds-7473111b0,molly.barker@bsci.com
+PPD17824,Boston Scientific,Tom Guy,Regional Manager CRM,Shanley Curran,INFLUENCER,CRM,http://www.linkedin.com/in/tom-guy-8060094,tom.guy@bsci.com
+PPD17824,Boston Scientific,Geoffrey Daniel,Senior Manager CRM,Tom Guy,INFLUENCER,CRM,http://www.linkedin.com/in/geoffrey-daniel,geoffrey.daniel@bsci.com
+PPD17824,Boston Scientific,Janna Berkholtz,VP of IT,Christopher L. Salzo,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/janna-berkholtz,janna.berkholtz@bsci.com
+PPD17824,Boston Scientific,Christopher L. Salzo,Chief Data and AI Officer,,DECISION MAKER,AI/ML,https://www.linkedin.com/in/christopher-l-salzo-2047741b/,Christopher.Salzo@bsci.com
+PPD17824,Boston Scientific,Jodi Eddy,"Sr. VP, Enterprise Services and Digital Officer",,DECISION MAKER,Other,https://www.bostonscientific.com/en-US/about-us/leadership/jodi-eddy.html,Jodi.Eddy@bsci.com
+PPD17824,Boston Scientific,Benjamin Amel,"VP, IT, Commercial Digital Enablement",Jodi Eddy,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/benjaminamel/,ben.amel@bsci.com
+PPD33121,DXC Technology,Supriya Sadare,Manager of AI/ML,Shubhang Tripathi,INFLUENCER,AI/ML,http://www.linkedin.com/in/supriya-sadare,supriya.sadare@dxc.com
+PPD33121,DXC Technology,Kishor Pulagam,Associate Manager of Data & AI,Supriya Sadare,INFLUENCER,AI/ML,http://www.linkedin.com/in/kishor-pulagam,npulagam2@dxc.com
+PPD33121,DXC Technology,Harshdeep Lamba,Head - Cloud & Digital Infrastructure,Bello J,DECISION MAKER,Cloud,http://www.linkedin.com/in/harshdeep-singh-lamba-256a665,harshdeep.lamba@dxc.com
+PPD33121,DXC Technology,Brett Palmer,"Manager, Cloud Engineering",Anthony Borucki,INFLUENCER,Cloud,http://www.linkedin.com/in/brett-palmer-75450a86,brett.palmer@dxc.com
+PPD33121,DXC Technology,Swapna Sadasivan,Manager Cloud Infrastructure,Anthony Borucki,INFLUENCER,Cloud,http://www.linkedin.com/in/swapna-s-7321a92,swapna.sadasivan@dxc.com
+PPD33121,DXC Technology,Anthony Borucki,Senior Manager Cloud Engineering,Dave Gershon,INFLUENCER,Cloud,http://www.linkedin.com/in/anthony-borucki-84326963,anthony.borucki@dxc.com
+PPD33121,DXC Technology,Dave Gershon,Regional Manager for Cloud,Steven Labrada,INFLUENCER,Cloud,http://www.linkedin.com/in/dave-gershon-pmp-csm-a4522a2,dave.gershon@dxc.com
+PPD33121,DXC Technology,Bello J,CTO,Raul Fernandez,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/bello-j-b3121788/,Bello.J@dxc.com
+PPD33121,DXC Technology,Shubhang Tripathi,"Director, Hi-Tech & AI",Nishith Pathak,INFLUENCER,AI/ML,https://www.linkedin.com/in/shubhang-tripathi/,ts@bsci.com
+PPD33121,DXC Technology,Steven Labrada,Program Director - Cloud Modernization,Harshdeep Lamba,INFLUENCER,Cloud,https://www.linkedin.com/in/steven-labrada-3bb0051/,ls@bsci.com
+PPD33121,DXC Technology,Raul Fernandez,President and CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/raul-fernandez-2877404/,fr@bsci.com
+PPD33121,DXC Technology,Russell Jukes,Chief Digital Information Officer,Raul Fernandez,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://investors.dxc.com/investor-news/news-details/2025/DXC-Appoints-Russell-Jukes-as-Chief-Digital-Information-Officer-to-Strengthen-Unified-Digital-Strategy/default.aspx?utm_source=chatgpt.com,russell.jukes@dxc.com
+PPD33121,DXC Technology,T.R. Newcomb,Chief Revenue Officer,Raul Fernandez,DECISION MAKER,Other,https://dxc.com/newsroom/03272025-dxc-appoints-t-r-newcomb-as-chief-revenue-officer,T.R.Newcomb@dxc.com
+PPD33121,DXC Technology,Nishith Pathak,Global Head of  AI,Russell Jukes,DECISION MAKER,AI/ML,https://www.linkedin.com/in/nishithpathak/,Nishith.Pathak@bsci.com
+PPD37960,Fidelity Investments,Alec Bethune,VP - AI,Adam S,DECISION MAKER,AI/ML,http://www.linkedin.com/in/alec-bethune-0347b01b5,alec.bethune@fidelity.com
+PPD37960,Fidelity Investments,Raghu Vemuri,"VP, AI/ML Engineering",Adam S,DECISION MAKER,AI/ML,http://www.linkedin.com/in/rvemuri12,raghuram.vemuri@fmr.com
+PPD37960,Fidelity Investments,Sorin Roman,Head of AI,Alec Bethune,INFLUENCER,AI/ML,http://www.linkedin.com/in/sorin-roman-97113310,sorin.roman@fidelity.com
+PPD37960,Fidelity Investments,Pu Li,"Director, AI",Sorin Roman,INFLUENCER,AI/ML,http://www.linkedin.com/in/pu-paulina-li-1382269b,pu.li@fidelity.com
+PPD37960,Fidelity Investments,Henry Stought,"Manager, AI",Pu Li,INFLUENCER,AI/ML,http://www.linkedin.com/in/henry-stought,henry.stought@fidelity.com
+PPD37960,Fidelity Investments,Kyle Workman,"Senior Manager,Cloud Engineering",Ron Mattson,INFLUENCER,Cloud,https://www.linkedin.com/in/kylegworkman/,kyle.workman@fidelity.com
+PPD37960,Fidelity Investments,Adam S,COO ,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/adamsalvatori/,as@bsci.com
+PPD37960,Fidelity Investments,Brian Masters,VP Cloud Engineering,Mark McEachern,DECISION MAKER,Cloud,https://www.linkedin.com/in/brian-masters/,Brian.Masters@fidelity.com
+PPD37960,Fidelity Investments,Pete Kazmier,Head of Cloud Networking,Brian Masters,INFLUENCER,Cloud,https://www.linkedin.com/in/pete-kazmier-0915133/,peter.kazmier@fidelity.com
+PPD37960,Fidelity Investments,Ron Mattson,Director of Cloud and Web Engineering,Pete Kazmier,INFLUENCER,Cloud,https://www.linkedin.com/in/ron-mattson/,ronald.mattson@fidelity.com
+PPD37960,Fidelity Investments,Mark McEachern,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/mmceachern,Mark.McEachern@fidelity.com
+PPD37960,Fidelity Investments,Dan McLindon,VP CRM,Mark McEachern,DECISION MAKER,CRM,https://www.linkedin.com/in/danmclindon/,daniel.mclindon@fidelity.com
+PPD37960,Fidelity Investments,Alyssa A R,Director - CRM Strategy,Dan McLindon,INFLUENCER,CRM,https://www.linkedin.com/in/alyssaarego/,aar@fidelity.com
+PPD47263,"Hologic, Inc.",Liz Asai,Global Head of AI,Paul Malenchini,DECISION MAKER,AI/ML,https://www.linkedin.com/in/lizasai/,liz.asai@hologic.com
+PPD47263,"Hologic, Inc.",Warren Clarida,Sr. Director of AI,Liz Asai,INFLUENCER,AI/ML,https://www.linkedin.com/in/wclarida/,warren.clarida@hologic.com
+PPD47263,"Hologic, Inc.",Gabrielle deBriey,"Director, AI",Warren Clarida,INFLUENCER,AI/ML,https://www.linkedin.com/in/gabrielle-de-briey-9057a19/,gabrielle.debriey@hologic.com
+PPD47263,"Hologic, Inc.",Valerie zawicki,"Manager, AI",Gabrielle deBriey,INFLUENCER,AI/ML,https://www.linkedin.com/in/valeriezawicki/,valerie.zawicki@hologic.com
+PPD47263,"Hologic, Inc.",Stephen MacMillan,Chairman President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/stephenmacmillan-2984575a/,steve.macmillan@hologic.com
+PPD47263,"Hologic, Inc.",Paul Malenchini,CIO,Stephen MacMillan,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/paul-malenchini/,paul.malenchini@hologic.com
+PPD47263,"Hologic, Inc.",Mark Richards,Sr. Manager of IT,Paul Malenchini,INFLUENCER,Other,https://www.linkedin.com/in/markrsd/,mark.richards@hologic.com
+PPD62392,Masimo,Erick Borrayo,Cloud Systems Manager,Gaurav B,INFLUENCER,Cloud,https://www.linkedin.com/in/erickborrayo/,erick.borrayo@masimo.com
+PPD62392,Masimo,Gaurav B,Sr. Manager Cloud,Giri Chodavarapu,INFLUENCER,Cloud,https://www.linkedin.com/in/gaurav-b-340a297/,gaurav@masimo.com
+PPD62392,Masimo,Giri Chodavarapu,CIO,Katie Szyman,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/giridharch/,giri.chodavarapu@masimo.com
+PPD62392,Masimo,Prashanth Chandran,"VP, AI",Giri Chodavarapu,DECISION MAKER,AI/ML,https://www.linkedin.com/in/prashanthchandran/,prashanth.chandran@masimo.com
+PPD62392,Masimo,Solihin marta,Director Customer Relationship Management,Giri Chodavarapu,DECISION MAKER,Other,https://www.linkedin.com/in/solihin-marta-2041b1228/,solihin.marta@masimo.com
+PPD62392,Masimo,Tuan Ta,"Director, Development and Database",Giri Chodavarapu,DECISION MAKER,Database,https://www.linkedin.com/in/tuan-ta-86386468/,tuan.ta@masimo.com
+PPD62392,Masimo,Katie Szyman,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.masimo.com/company/about/#Leadership,katie.szyman@masimo.com
+PPD85753,Sanmina,Manesh Patel,SVP & CIO,Jure Sola,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/manesh-patel-954a9220/,manesh.patel@sanmina.com
+PPD85753,Sanmina,Jure Sola,Chairman and CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.sanmina.com/company-profile/management-team/,jure.sola@sanmina.com
+PPD85753,Sanmina,Marco Gonzalez Hagelsieb,EVP & COO,Jure Sola,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/marco-gonzalez-hagelsieb-ba00b228/,marco.gonzalez@sanmina.com
+PPD85753,Sanmina,Julio Cesar Ortiz Cornejo,Manager of AI,Mario Z,INFLUENCER,AI/ML,https://www.linkedin.com/in/julio-cesar-ortiz-cornejo/,julio.cornejo@sanmina.com
+PPD85753,Sanmina,Melissa Nichols Cosby,Manager - Cloud Services & Infrastructure,Ravindra Kumar,INFLUENCER,Cloud,https://www.linkedin.com/in/melissa-nichols-cosby-8a77b5131/,melissa.cosby@sanmina.com
+PPD85753,Sanmina,Hemanth Kumar,Senior Manager - DBA,Mario Z,INFLUENCER,Database,https://www.linkedin.com/in/hemanthakumarb/,Hemanth.Kumar@sanmina.com
+PPD85753,Sanmina,Imthiaz Ahmed,Manager Cloud Technologies,Ravindra Kumar,INFLUENCER,Cloud,https://www.linkedin.com/in/imthiaz-ahmed-36b462a9/,Imthiaz.Ahmed@sanmina.com
+PPD85753,Sanmina,Ravindra Kumar,Sr. IT Manager - CRM & Cloud,Mario Z,INFLUENCER,Cloud,https://www.linkedin.com/in/mr-ravindra-kumar/,Ravindra.Kumar@sanmina.com
+PPD85753,Sanmina,Mario Z,Enterprise IT Director,Manesh Patel,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mariozuniga/,Mario.Z@sanmina.com
+PPD27119,Cordis,Lori B,IT Business Relationship Manager – AI,Beatriz Castro-Nelson,INFLUENCER,AI/ML,https://www.linkedin.com/in/lori-b-2959652/,lori.bramblett@cordis.com
+PPD27119,Cordis,Beatriz Castro-Nelson,Sr. Program Manager & AI Lead,Joseph Lin,INFLUENCER,AI/ML,https://www.linkedin.com/in/beatriz-castro-nelson-b99a585/,beatriz.castronelson@cordis.com
+PPD27119,Cordis,Scott Drake,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/scott-drake-9935318b/,scott.drake@cordis.com
+PPD27119,Cordis,Joseph Lin,Director of Technology Services,Joseph Diprima,DECISION MAKER,Other,https://www.linkedin.com/in/josephqlin/,joseph.lin@cordis.com
+PPD27119,Cordis,Joseph Diprima,VP Of IT,Champ Davis,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/joseph-diprima/,joe.diprima@cordis.com
+PPD27119,Cordis,Champ Davis,COO,Scott Drake,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://cordis.com/apac/about,champ.davis@cordis.com
+PPD40475,Fujirebio,Monte Wiltse,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/monte-wiltse-7b40948/,monte.wiltse@fujirebio-us.com
+PPD40475,Fujirebio,Timothy Gable,Director of IT,Monte Wiltse,DECISION MAKER,Other,https://www.linkedin.com/in/timothy-gable-0b95a932/,Timothy.Gable@fujirebio-us.com
+PPD40475,Fujirebio,Michael O'Neill,IT Project Manager,Timothy Gable,INFLUENCER,Other,https://www.linkedin.com/in/michael-o-neill-pmp-808505/,Michael.ONeill@fujirebio-us.com
+PPD48380,Hydrafacial,Justin Tomczyk,Sr. Director of Global Infrastructure,Tejas Patel,INFLUENCER,Other,http://www.linkedin.com/in/justintomczyk,jtomczyk@hydrafacial.com
+PPD48380,Hydrafacial,Tejas Patel,CIO,Pedro Malha,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/tejpatel1,tpatel@hydrafacial.com
+PPD48380,Hydrafacial,Shengmin (Robin) Sun,Cloud & Software Engineering Manager,Justin Tomczyk,INFLUENCER,Cloud,https://www.linkedin.com/in/shengmin-robin-sun-8864a35/,rsun@hydrafacial.com
+PPD48380,Hydrafacial,Robert Hoffman,"Manager, IT Infrastructure",Justin Tomczyk,INFLUENCER,Other,https://www.linkedin.com/in/robert-s-hoffman/,roberthoffman@hydrafacial.com
+PPD48380,Hydrafacial,Pedro Malha,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/pedromalha/,pmalha@hydrafacial.com
+PPD87070,SEKISUI Diagnostics,Peter Reeve,Associate Director of IT,Kevin Foley,INFLUENCER,Other,http://www.linkedin.com/in/peter-c-reeve,peter.reeve@sekisuidiagnostics.com
+PPD87070,SEKISUI Diagnostics,Kevin Foley,Senior Director of IT,Bob Schruender,INFLUENCER,Other,http://www.linkedin.com/in/kevinfoleymba,kevin.foley@sekisuidiagnostics.com
+PPD87070,SEKISUI Diagnostics,Jeff White,"Associate Director, Project Management-Technical Operations",Kevin Foley,DECISION MAKER,Other,https://www.linkedin.com/in/jeff-white-pmp-521b124/,Jeff.White@sekisuidiagnostics.com
+PPD87070,SEKISUI Diagnostics,Bob Schruender,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://sekisuidiagnostics.com/about-us/leadership/,Bob.Schruender@sekisuidiagnostics.com
+PPD7152,Align Technology,Jayachandran Pillai,Sr. Director Data & Analytics,Sreelakshmi Kolli,Influencer,Other,https://www.linkedin.com/in/jayachandran-pillai-63b2991/,JPillai@aligntech.com
+PPD7152,Align Technology,Roman B,Director of Software Engineering,Jayachandran (Jay) Pillai,Influencer,Other,https://www.linkedin.com/in/rbyelyy/,RB@aligntech.com
+PPD7152,Align Technology,Sreelakshmi Kolli,EVP /Chief Product & Digital Officer,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sreelakshmikolli/,SKolli@aligntech.com
+PPD7152,Align Technology,Stacey K.,Manager AI/ML ,Andrey Cherkas,Influencer,AI/ML,https://www.linkedin.com/in/staceykuo/,SK@aligntech.com
+PPD7152,Align Technology,Andrey Cherkas,Sr. Manager AI Solutions,Roman B,Influencer,AI/ML,https://www.linkedin.com/in/andrey-cherkas/,ACherkas@aligntech.com
+PPD7152,Align Technology,Chris Zadrima,COO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/chriszadrima/,czadrima@align.com
+PPD7152,Align Technology,Stacey Kuo,Manager of AIML,Andrey Cherkas,Influencer,AI/ML,http://www.linkedin.com/in/staceykuo,skuo@aligntech.com
+PPD7152,Align Technology,Christopher Cramer,Sr Director AI/ML,Sreelakshmi Kolli,Influencer,AI/ML,http://www.linkedin.com/in/chcramer,ccramer@aligntech.com
+PPD7152,Align Technology,Artem Semenov,Sr. Director Cloud,Chris Zadrima,Influencer,Cloud,http://www.linkedin.com/in/artem-semenov-8b0a0160,asemenov@aligntech.com
+PPD7152,Align Technology,Sean Nolen,Sr. Manager Cloud,Artem Semenov,Influencer,Cloud,https://www.linkedin.com/in/sean-nolen-5815513/,snolen@aligntech.com
+PPD14283,Baxter International Inc.,Andrew Hider,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/andrew-hider-aa51701/,andrew_hider@baxter.com
+PPD14283,Baxter International Inc.,Rusty Patel,SVP & CIO,Andrew Hider,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/rustypatel/,rusty_patel@baxter.com
+PPD14283,Baxter International Inc.,Leslie Nogue,Sr. Director AI,Rusty Patel,INFLUENCER,AI/ML,https://www.linkedin.com/in/leslienogue/,leslie_nogue@baxter.com
+PPD14283,Baxter International Inc.,Brad T.,Sr Director CRM,Rusty Patel,INFLUENCER,CRM,https://www.linkedin.com/in/brad-t-4b881711/,Brad.T@baxter.com
+PPD14283,Baxter International Inc.,Naveed Rahimullah,Sr. Director Cloud,Suman Pradhan,INFLUENCER,Cloud,https://www.linkedin.com/in/naveed-rahimullah-24a3a66/,Naveed.Rahimullah@baxter.com
+PPD14283,Baxter International Inc.,Suman Pradhan,Head of Cloud,Rusty Patel,INFLUENCER,Cloud,https://www.linkedin.com/in/sumanpradhan/,Suman.Pradhan@baxter.com
+PPD14283,Baxter International Inc.,Nick Karaskiewicz,Associate Director of AI,Leslie Nogue,INFLUENCER,AI/ML,https://www.linkedin.com/in/nickkaraskiewicz/,Nick.Karaskiewicz@baxter.com
+PPD14283,Baxter International Inc.,David McSheffrey,Sr. Manager CRM,Brad T.,INFLUENCER,CRM,https://www.linkedin.com/in/david-mcsheffrey-b334a422/,david_mcsheffrey@baxter.com
+PPD14721,Beckman Coulter Diagnostics,Tom Neufelder,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/tom-neufelder-1a12a04/,tneufelder@beckman.com
+PPD14721,Beckman Coulter Diagnostics,Nicole Shin McGee,VP of IT,Tom Neufelder,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/nicoleshinmcgee/,nmcgee@beckman.com
+PPD14721,Beckman Coulter Diagnostics,Susan Rego,Director IT,Nicole Shin McGee,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/susan-rego-191bb436/,srego@beckman.com
+PPD14721,Beckman Coulter Diagnostics,Kevin Brown,Sr. IT Manager,Susan Rego,INFLUENCER,Other,https://www.linkedin.com/in/kevin-brown-9b86894/,kbrown@beckman.com
+PPD14721,Beckman Coulter Diagnostics,Jason Douthit,IT Manager,Kevin Brown,INFLUENCER,Other,https://www.linkedin.com/in/jason-douthit-63915611/,jdouthit@beckman.com
+PPD16693,Block Imaging,Jason Crawford,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jasonjcrawford/,Jason.Crawford@blockimaging.com
+PPD16693,Block Imaging,Mitchell Foldi,COO,Jason Crawford,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mitchell-foldi-47a27789/,Mitchell.Foldi@blockimaging.com
+PPD16693,Block Imaging,Mark Baker,VP of IT,Mitchell Foldi,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mark-baker-mba-1943474b/,mark.baker@blockimaging.com
+PPD16693,Block Imaging,Eric Clack,IT Manager,Mark Baker,INFLUENCER,Other,https://www.linkedin.com/in/eric-clack-88255a4/,eric.clack@blockimaging.com
+PPD25508,Collins Aerospace,Jonathan Slattery,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jonathan-slattery-a235b13/,jonathan.slattery@collins.com
+PPD25508,Collins Aerospace,Kishore Reddy,Head of Applied AI,Jonathan Slattery,INFLUENCER,AI/ML,https://www.linkedin.com/in/kishorereddy123/,kishore.reddy@rtx.com
+PPD25508,Collins Aerospace,Aaron Meis,Associate Director AI,Kishore K. Reddy,INFLUENCER,AI/ML,http://www.linkedin.com/in/aaronmeis,aaron.meis@collins.com
+PPD25508,Collins Aerospace,Michael Weber,Associate Director AI,Kishore K. Reddy,INFLUENCER,AI/ML,http://www.linkedin.com/in/msweber00,michael.weber@collins.com
+PPD25508,Collins Aerospace,Shivang Tyagi,Manager AI,Aaron Meis,INFLUENCER,AI/ML,https://www.linkedin.com/in/shivangtyagi/,shivang.tyagi@rtx.com
+PPD25508,Collins Aerospace,Kimberly Fields,Director Cloud,Jonathan Slattery,INFLUENCER,Cloud,https://www.linkedin.com/in/kimberlymfields/,kimberly.fields@rtx.com
+PPD25508,Collins Aerospace,Josh Schmitt,Sr Manager Cloud,Kimberly Fields,INFLUENCER,Cloud,https://www.linkedin.com/in/josh-schmitt-b667185b/,josh.schmitt@rtx.com
+PPD25508,Collins Aerospace,Sandra Bryant,Sr. Director of IT,Jonathan Slattery,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/sandra-bryant-4227a011,sandra.bryant@collins.com
+PPD25508,Collins Aerospace,Mark Helms,Director of IT,Sandra Bryant,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/markehelms,mark.helms@collins.com
+PPD25508,Collins Aerospace,Joshua Noffke,Sr. Manager IT,Mark Helms,INFLUENCER,Other,http://www.linkedin.com/in/joshuanoffke,joshua.noffke@collins.com
+PPD25508,Collins Aerospace,Mark Facer,Manager IT,Joshua Noffke,INFLUENCER,Other,http://www.linkedin.com/in/mark-facer-53159838,mark.facer@collins.com
+PPD36710,Exactech,Stacey Fedorka,CIO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/staceyfedorka/,stacey.fedorka@exac.com
+PPD36710,Exactech,Gnanavel Subramaniam,Sr. Director of Software Engineering,Stacey Fedorka,INFLUENCER,Other,https://www.linkedin.com/in/gnans/,gnanavel.subramaniam@exac.com
+PPD42531,Globant,Juan Quinones,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/juan-david-quinones,juan.quinones@globant.com
+PPD42531,Globant,Matias Sanguinetti,CTO,Juan Quinones,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/matias-sanguinetti-9192b013,matias.sanguinetti@globant.com
+PPD42531,Globant,Adrian Sexton,VP Cloud,Matias Sanguinetti,DECISION MAKER,Cloud,http://www.linkedin.com/in/adriansexton,adrian.sexton@globant.com
+PPD42531,Globant,Guido Pusiol,VP of AI,Matias Sanguinetti,DECISION MAKER,AI/ML,http://www.linkedin.com/in/guido-pusiol-ph-d-6463586,guido.pusiol@globant.com
+PPD42531,Globant,Diego Rubiano,Cloud Tech Director,Adrian Sexton,INFLUENCER,Cloud,http://www.linkedin.com/in/diegorubiano,diego.rubiano@globant.com
+PPD42531,Globant,Maria Michelini,Sr. AI Manager,Guido Pusiol,INFLUENCER,AI/ML,http://www.linkedin.com/in/maria-michelini-23b96742,mmichelini@globant.com
+PPD42531,Globant,Irna Sayeed,Manager of AI,Maria Michelini,INFLUENCER,AI/ML,http://www.linkedin.com/in/irnasayeed,irna.sayeed@globant.com
+PPD42531,Globant,Patricia Jansen,Sr. Director of IT,Matias Sanguinetti,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/patricia-jansen-42874842/,patricia.jansen@globant.com
+PPD81778,Red Hat,Sean Muto,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/sean-muto-3533b326,smuto@redhat.com
+PPD81778,Red Hat,John Dvorak,CTO,Sean Muto,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/dvorak,jdvorak@redhat.com
+PPD81778,Red Hat,Steven Huels,VP of AI Engineering,John Dvorak,INFLUENCER,AI/ML,http://www.linkedin.com/in/stevenhuels,shuels@redhat.com
+PPD81778,Red Hat,Seth Shevach,VP IT,John Dvorak,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/seth-shevach-2625445,sshevach@redhat.com
+PPD81778,Red Hat,Josue Munilla,Global Director Cloud & AI,John Dvorak,INFLUENCER,Cloud,http://www.linkedin.com/in/joshmunilla,jmunilla@redhat.com
+PPD81778,Red Hat,Tushar Katarki,Sr. Director AI,Steven Huels,INFLUENCER,AI/ML,http://www.linkedin.com/in/katarki,tkatarki@redhat.com
+PPD81778,Red Hat,Kirsten Newcomer,Director Cloud,Josue Munilla,INFLUENCER,Cloud,http://www.linkedin.com/in/kirsten-newcomer-36ab91,knewcomer@redhat.com
+PPD81778,Red Hat,Neil Crotty,Sr. Manager Cloud,Kirsten Newcomer,INFLUENCER,Cloud,http://www.linkedin.com/in/neil-crotty-jr-0811177,ncrotty@redhat.com
+PPD81778,Red Hat,Steve McQuaid,Sr. AI Manager,Tushar Katarki,INFLUENCER,AI/ML,http://www.linkedin.com/in/stevemcquaid,smcquaid@redhat.com
+PPD81778,Red Hat,Cara Delia,AI Manager,Steve McQuaid,INFLUENCER,AI/ML,http://www.linkedin.com/in/caradelia,dcara@redhat.com
+PPD81778,Red Hat,Firas Yasin,Manager Cloud,Neil Crotty,INFLUENCER,Cloud,http://www.linkedin.com/in/firasyasin,fyasin@redhat.com
+PPD81778,Red Hat,Thomas Nohs,IT Manager,Seth Shevach,INFLUENCER,Other,http://www.linkedin.com/in/thomas-nohs-jr-45420388,tnohs@redhat.com
+PPD101240,TransUnion,Venkat Achanta,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/vachanta,venkat.achanta@transunion.com
+PPD101240,TransUnion,Yogesh Joshi,SVP of AI,Venkat Achanta,DECISION MAKER,AI/ML,https://www.linkedin.com/in/yogeshaj/,yogesh.joshi@transunion.com
+PPD101240,TransUnion,Jeff Cummings,Sr. Director Cloud,Venkat Achanta,DECISION MAKER,Cloud,https://www.linkedin.com/in/n7qob/,jeff.cummings@transunion.com
+PPD101240,TransUnion,Hong Lee,Director of Database,Venkat Achanta,DECISION MAKER,Database,https://www.linkedin.com/in/hong-lee-9455aa6/,hong.lee@transunion.com
+PPD101240,TransUnion,Binu Keloth,Director of AI,Yogesh Joshi,INFLUENCER,AI/ML,https://www.linkedin.com/in/binukeloth/,binu.keloth@transunion.com
+PPD101240,TransUnion,Madhavan Thiyagarajan,Director of Cloud,Jeff Cummings,INFLUENCER,Cloud,https://www.linkedin.com/in/madhavan-thiyagarajan/,madhavan.thiyagarajan@transunion.com
+PPD101240,TransUnion,Santhosh Gunaseelan,Sr. Manager Cloud,Madhavan Thiyagarajan,INFLUENCER,Cloud,https://www.linkedin.com/in/santhosh-gunaseelan-43411462/,santhosh.gunaseelan@transunion.com
+PPD101240,TransUnion,Kiran Katkam,Cloud Manager,Santhosh Gunaseelan,INFLUENCER,Cloud,http://www.linkedin.com/in/kiran-kumar45,kiran.katkam@transunion.com
+PPD101240,TransUnion,Franz Winiker,Manager AI,Binu Keloth,INFLUENCER,AI/ML,https://www.linkedin.com/in/franzwiniker/,franz.winiker@transunion.com
+PPD5391,Advanced Bionics,Vinod Nadig,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/dr-vinod-nadig/,vinod.nadig@advancedbionics.com
+PPD5391,Advanced Bionics,Todd Suenaka,IT Operations Manager,Vinod Nadig,INFLUENCER,Other,https://www.linkedin.com/in/todd-suenaka/,todd.suenaka@advancedbionics.com
+PPD10477,"Argon Medical Devices, Inc.",George Leondis,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/george-leondis-09b2023/,george.leondis@argonmedical.com
+PPD10477,"Argon Medical Devices, Inc.",Muli S Paz,IT Director,George Leondis,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mulipaz/,muli.paz@argonmedical.com
+PPD10477,"Argon Medical Devices, Inc.",Jackey Xie,IT Manager,Muli S Paz,INFLUENCER,Other,https://www.linkedin.com/in/jackey-xie-a7184698/,jackey.xie@argonmedical.com
+PPD10477,"Argon Medical Devices, Inc.",Ilya Tsorin,Manager CRM,Muli S Paz,INFLUENCER,CRM,http://www.linkedin.com/in/ilya-t-37209451,ilya.tsorin@argonmedical.com
+PPD15019,Benco Dental,Richard Cohen,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/richard-cohen-2b65187/,rcohen@benco.com
+PPD15019,Benco Dental,Terry Barrett,CIO,Richard Cohen,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,tbarrett@benco.com
+PPD15019,Benco Dental,Geoff Fontenova,VP of IT,Terry Barrett,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/gfontenova/,gfontenova@benco.com
+PPD15019,Benco Dental,Anthony Dirocco,Manager of IT,Geoff Fontenova,INFLUENCER,Other,https://www.linkedin.com/in/anthony-dirocco-56a90041/,adirocco@benco.com
+PPD21084,Carestream,Robyn McCall,CIO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/robyn-hooker-mccall-858aa412b/,robyn.mccall@carestream.com
+PPD21084,Carestream,Eric Zimmerman,Director Of IT,Robyn McCall,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/eric-zimmerman-a2778125/,eric.zimmerman@carestream.com
+PPD21084,Carestream,Kammy Westphal,Director Of IT,Robyn McCall,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/kammy-westphal-46354524/,kammy.westphal@carestream.com
+PPD21084,Carestream,Fuat Yucel,Sr. Manager of IT,Kammy Westphal,INFLUENCER,Other,https://www.linkedin.com/in/fuat-y%c3%bccel-45047943/,fuat.yucel@carestream.com
+PPD21084,Carestream,Sreehari Purna,IT Manager,Fuat Yucel,INFLUENCER,Other,https://www.linkedin.com/in/sreehari-purna-b079053/,sreehari.purna@carestream.com
+PPD21084,Carestream,John Buescher,Program Manager CRM,Eric Zimmerman,INFLUENCER,CRM,https://www.linkedin.com/in/john-buescher-523a756/,john.buescher@carestream.com
+PPD21084,Carestream,Sagun Shrestha,Manager of IT,Fuat Yucel,INFLUENCER,Other,https://www.linkedin.com/in/sagun-shrestha-821a6445/,sagun.shrestha@carestream.com
+PPD25263,Cognizant Technology Solutions,Raghuraman Rajaraman,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/raghuraman-rajaraman-2216192b/,raghuraman.rajaraman@cognizant.com
+PPD25263,Cognizant Technology Solutions,Babak Hodjat,Chief AI Officer,,DECISION MAKER,AI/ML,,babak.hodjat@cognizant.com
+PPD25263,Cognizant Technology Solutions,Anand Srinivasan,SVP AI,Babak Hodjat,INFLUENCER,AI/ML,http://www.linkedin.com/in/anand-srinivasan-80b9b89,anand.srinivasan@cognizant.com
+PPD25263,Cognizant Technology Solutions,Satya Reddy,Director AI,Anand Srinivasan,INFLUENCER,AI/ML,http://www.linkedin.com/in/satyasainath,satya.r@cognizant.com
+PPD25263,Cognizant Technology Solutions,Prashant Gandhi,Head CRM,Raghuraman Rajaraman,INFLUENCER,CRM,http://www.linkedin.com/in/prashant-gandhi-0307b971,prashant.gandhi@cognizant.com
+PPD25263,Cognizant Technology Solutions,Jessalynn Kasun,CRM Director,Prashant Gandhi,INFLUENCER,CRM,http://www.linkedin.com/in/jessalynnkasun,jessalynn.kasun@cognizant.com
+PPD25263,Cognizant Technology Solutions,Sriramkumar Kumaresan,Global Head Cloud,Raghuraman Rajaraman,INFLUENCER,Cloud,http://www.linkedin.com/in/sriramkkumaresan,sriramkumar.kumaresan@cognizant.com
+PPD25263,Cognizant Technology Solutions,Elton Morrison,Director Cloud,Sriramkumar Kumaresan,INFLUENCER,Cloud,http://www.linkedin.com/in/elton-morrison-33b93587,elton.morrison@cognizant.com
+PPD25263,Cognizant Technology Solutions,sudhagar Gnanthikam,Associate Director Database,Raghuraman Rajaraman,INFLUENCER,Database,https://www.linkedin.com/in/sudhagar-gnanthikam-b6318947/,sudhagar.gnanthikam@cognizant.com
+PPD25263,Cognizant Technology Solutions,Hari Prasad,Manager Database Operations,sudhagar Gnanthikam,INFLUENCER,Database,https://www.linkedin.com/in/hari-prasad-a80756289/,hari.prasad@cognizant.com
+PPD90650,Somalogic,Michael Egholm,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/michael-egholm-5283152/,megholm@somalogic.com
+PPD90650,Somalogic,Michael Murray,VP IT,Michael Egholm,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",,MMurray@somalogic.com
+PPD66484,"Moria, Inc",Bruno CHERMETTE MD,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/brunochermette/,bchermette@moria-int.com
+PPD66484,"Moria, Inc",JL Aufaure,Technical Manager,Bruno CHERMETTE MD,INFLUENCER,Other,https://www.linkedin.com/in/jl-aufaure-88174a120/,jaufaure@moria-int.com
+PPD70652,Northrop Grumman,Quinn Canole,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/quinncanole/,quinn.canole@ngc.com
+PPD70652,Northrop Grumman,Travis Garriss,CIDO,Quinn Canole,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/travisgarriss/,travis.garriss@ngc.com
+PPD70652,Northrop Grumman,Han Park,VP of AI Integration,Travis Garriss,DECISION MAKER,AI/ML,http://www.linkedin.com/in/han-park,han.park@ngc.com
+PPD70652,Northrop Grumman,Fahad Khan,Director of AI Integration,Han Park,INFLUENCER,AI/ML,http://www.linkedin.com/in/fahad,fahad.khan@ngc.com
+PPD70652,Northrop Grumman,Madeline Salazar,Manager of AI,Fahad Khan,INFLUENCER,AI/ML,http://www.linkedin.com/in/madelinesalazar,madeline.salazar@ngc.com
+PPD70652,Northrop Grumman,Andrew Barnes,VP of IT,Travis Garriss,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/andrew-barnes-4593741,andrew.barnes@ngc.com
+PPD70652,Northrop Grumman,Layla Crisman,Sr. Director IT,Andrew Barnes,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/layla-crisman-4b3582228,layla.crisman@ngc.com
+PPD70652,Northrop Grumman,Stacey Bricker,Director Of IT,Layla Crisman,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/stacey-bricker-73a3b6a,stacey.bricker@ngc.com
+PPD70652,Northrop Grumman,Sanjay Mathur,IT Manager,Stacey Bricker,INFLUENCER,Other,http://www.linkedin.com/in/sanjay-mathur-66a0895,sanjay.mathur@ngc.com
+PPD100556,Topcon Healthcare,Ali Tafreshi,CEO & President,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ali-tafreshi-338a8494/,atafreshi@topcon.com
+PPD100556,Topcon Healthcare,Christian Odaker,CTO,Ali Tafreshi,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/chodaker/,codaker@topcon.com
+PPD100556,Topcon Healthcare,John Cerda,VP of IT,Christian Odaker,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/john-cerda-70088811,jcerda@topcon.com
+PPD100556,Topcon Healthcare,Niranchana Manivannan,Sr. Director AI,Christian Odaker,INFLUENCER,AI/ML,http://www.linkedin.com/in/niranchana-manivannan-9a04a1a,nmanivannan@topcon.com
+PPD100556,Topcon Healthcare,Casey Robinson,Manager of IT,John Cerda,INFLUENCER,Other,http://www.linkedin.com/in/caseyrobinson1126,crobinson@topcon.com
+PPD4451,Accuray,Steve La Neve,CEO ,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,slaneve@accuray.com
+PPD4451,Accuray,John Dunn,SVP IT/CIO,Steve La Neve,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/john-dunn-8835311/,jdunn@accuray.com
+PPD4451,Accuray,Satya Denduluri,Senior Director - Data Analytics,John Dunn,Influencer,Other,https://www.linkedin.com/in/satya-denduluri-58b67015/,sdenduluri@accuray.com
+PPD4451,Accuray,Angelo Calvache,Director of Global Data Protection,Satya Denduluri,Influencer,Other,https://www.linkedin.com/in/angelo-calvache-5997367/,acalvache@accuray.com
+PPD4451,Accuray,Carl Grosspietsch ,"Sr. Director, Global Information Services",Angelo Calvache,Influencer,Other,https://www.linkedin.com/in/carl-grosspietsch-ii-a08319a/,cgrosspietsch@accuray.com
+PPD4451,Accuray,Ketan Modi,"Director, Enterprise Applications",Carl Grosspietsch ,Influencer,Other,https://www.linkedin.com/in/ketan-modi/,kmodi@accuray.com
+PPD10637,Arkray,Tadashi Inoue,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/tadashi-inoue-b536a52a/,tadashii@arkrayusa.com
+PPD10637,Arkray,Takeshi Matsuda,Director & Technical Adviser,Tadashi Inoue,INFLUENCER,Other,,takeshim@arkrayusa.com
+PPD12694,Avanos Medical,Siobhan Smyth,CIO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/siobhan-smyth-915488/,siobhan.smyth@avanos.com
+PPD12694,Avanos Medical,Sandeep Bangal,Director of IT Operations,Siobhan Smyth,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/sandeep-bangal-5b837829,sandeep.bangal@avanos.com
+PPD12694,Avanos Medical,Chathura Manawadu,Associate Director - Global Data & AI,Sandeep Bangal,INFLUENCER,AI/ML,http://www.linkedin.com/in/manawadu,chathura.manawadu@avanos.com
+PPD12694,Avanos Medical,Mohammed Kareemullah Tasleem P.,Associate Director Global IT Services,Sandeep Bangal,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mohammed-kareemullah-tasleem-p-382b3965/,kareemullah.tasleem@avanos.com
+PPD12694,Avanos Medical,Deepak Manjunath,Associate Director of IT,Sandeep Bangal,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/deepak-manjunath-a01336155/,deepak.manjunath@avanos.com
+PPD14734,"Becton, Dickinson And Company",Elizabeth Sebern McCombs,EVP & CTO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,elizabeth.mccombs@bd.com
+PPD14734,"Becton, Dickinson And Company",Ben Verwer,"VP, R&D, AI Acceleration",Elizabeth Sebern McCombs,INFLUENCER,AI/ML,https://www.linkedin.com/in/ben-verwer-phd/,ben.verwer@bd.com
+PPD14734,"Becton, Dickinson And Company",Amir Tahmasebi,"Head of AI Algorithms and Infrastructure, CTO Office",Ben Verwer,INFLUENCER,AI/ML,https://www.linkedin.com/in/amirtahmasebi/,amir.tahmasebi@bd.com
+PPD14734,"Becton, Dickinson And Company",Steven Mancini,Associate Director AI,Amir Tahmasebi,INFLUENCER,AI/ML,http://www.linkedin.com/in/steven-mancini-3507327b,steven.mancini@bd.com
+PPD14734,"Becton, Dickinson And Company",Denise Fleming,CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/deniserussellfleming,denise.fleming@bd.com
+PPD14734,"Becton, Dickinson And Company",Vishnu Chittem,"VP, IT",Denise Fleming,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/vishnu-chittem-01284a10/,vishnu.chittem@bd.com
+PPD14734,"Becton, Dickinson And Company",Balaji Raman,"Senior Director,Cloud and Data Platform",Vishnu Chittem,INFLUENCER,Cloud,http://www.linkedin.com/in/balaji-raman-79b400,balaji.raman@bd.com
+PPD14734,"Becton, Dickinson And Company",Jayson Karen,Director CRM Excellence,,DECISION MAKER,CRM,http://www.linkedin.com/in/jaysonsk,jayson.karen@bd.com
+PPD17278,Bny Mellon,Sarthak Pattanaik,Chief Data & AI Officer,-,DECISION MAKER,AI/ML,https://www.linkedin.com/in/sarthak-pattanaik-1a191b/,sarthak.pattanaik@bnymellon.com
+PPD17278,Bny Mellon,Lucas Zarzeczny,SVP of AI,Sarthak Pattanaik,INFLUENCER,AI/ML,http://www.linkedin.com/in/lucas-zarzeczny,lucas.zarzeczny@bny.com
+PPD17278,Bny Mellon,Devon Risko,VP of AI,Lucas Zarzeczny,INFLUENCER,AI/ML,http://www.linkedin.com/in/devon-risko-m-s-l-70372310a,devon.risko@bny.com
+PPD17278,Bny Mellon,Michael Demissie,Head of AI,Devon Risko,INFLUENCER,AI/ML,http://www.linkedin.com/in/michaeldemissie,michael.demissie@bnymellon.com
+PPD17278,Bny Mellon,Jun Liu,Head of ML,Devon Risko,INFLUENCER,AI/ML,http://www.linkedin.com/in/jun-liu-3186931a,jun.liu@bnymellon.com
+PPD17278,Bny Mellon,Zachariah Tyree,Director of AI & ML,Jun Liu,INFLUENCER,AI/ML,http://www.linkedin.com/in/ztyree,zachariah.tyree@bny.com
+PPD17278,Bny Mellon,Michael Bershadski,Director of AI,Michael Demissie,INFLUENCER,AI/ML,http://www.linkedin.com/in/mbershadski,michael.bershadski@bny.com
+PPD17278,Bny Mellon,Sabet Elias,"CTO, MD",-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sabetelias/,sabet.elias@bnymellon.com
+PPD17278,Bny Mellon,Brian Peister,SVP of Cloud,Sabet Elias,INFLUENCER,Cloud,http://www.linkedin.com/in/brianpeister,brian.peister@bnymellon.com
+PPD17278,Bny Mellon,Sandhya Mehrotra,VP of DBA,Sabet Elias,INFLUENCER,Database,http://www.linkedin.com/in/sandhya-mehrotra-5343258,sandhya.mehrotra@bnymellon.com
+PPD17278,Bny Mellon,Jennifer Difonte,Director of DBA,Sandhya Mehrotra,INFLUENCER,Database,http://www.linkedin.com/in/jennifer-difonte-3a3384184,jennifer.difonte@bnymellon.com
+PPD17278,Bny Mellon,Andreas Seuffert,Manager of Database,Jennifer Difonte,INFLUENCER,Database,http://www.linkedin.com/in/andyseuffert,andreas.seuffert@bnymellon.com
+PPD26936,Cook Medical,Tiago Moura,CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/tiago-de-moura,tiago.demoura@cookmedical.com
+PPD26936,Cook Medical,Rob Dorocke,VP IT,Tiago Moura,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/robdorocke,rob.dorocke@cookmedical.com
+PPD26936,Cook Medical,Clayton Nunes,Global IT Director,Rob Dorocke,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/clayton-nunes-8592b351,clayton.nunes@cookmedical.com
+PPD26936,Cook Medical,Craig Waite,"Senior Director, Global IT",Clayton Nunes,INFLUENCER,Other,http://www.linkedin.com/in/craig-waite-6a385878,craig.waite@cookmedical.com
+PPD26936,Cook Medical,Mark Lowe,"Senior Director, IT",Clayton Nunes,INFLUENCER,Other,http://www.linkedin.com/in/mrlowe,mark.lowe@cookmedical.com
+PPD26936,Cook Medical,Courtney Hill,"Director, IT",Mark Lowe,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/courtneybhill,courtney.hill@cookmedical.com
+PPD26936,Cook Medical,Keith Thadikaran,"Director, AI/ML",Rob Dorocke,INFLUENCER,AI/ML,https://www.linkedin.com/in/keith-thad/,keith.thadikaran@cookmedical.com
+PPD26936,Cook Medical,Virginia Choi-Durham,"Manager, AI",Keith Thadikaran,INFLUENCER,AI/ML,https://www.linkedin.com/in/virginia-choi-durham/,virginia.choi-durham@cookmedical.com
+PPD26936,Cook Medical,Melissa Sherman,"Product Manager, AI",Keith Thadikaran,INFLUENCER,AI/ML,https://www.linkedin.com/in/melissa-sherman-915775223/,melissa.sherman@cookmedical.com
+PPD31171,Dexcom,Girish Naganathan,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/girish-naganathan-a822976/,girish.naganathan@dexcom.com
+PPD31171,Dexcom,Julian Jonik,VP of IT,Girish Naganathan,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/julian-jonik-9a85506,julian.jonik@dexcom.com
+PPD31171,Dexcom,Sean Blong,Sr. Manager Cloud Engineering,Scot Steinwinder,INFLUENCER,Cloud,https://www.linkedin.com/in/sean-blong-650b0b45/,sean.blong@dexcom.com
+PPD31171,Dexcom,Scot Steinwinder,"Sr Director, IT",Julian Jonik,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jansteinwinder,scot.steinwinder@dexcom.com
+PPD31171,Dexcom,Stacey Stewart,"Senior VP, CIO",-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/stacey-stewart-90495b4/,stacey.stewart@dexcom.com
+PPD31171,Dexcom,Mark Mydland,VP SW Development Engineering Integrating AI,Stacey Stewart,INFLUENCER,AI/ML,https://www.linkedin.com/in/mmydland/,mark.mydland@dexcom.com
+PPD31171,Dexcom,Christa Murphy,IT Director,Mark Mydland,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/christa-murphy-mba-pmp/,christa.murphy@dexcom.com
+PPD31171,Dexcom,Christa Murphy,"IT Director - Process, Data, and AI / Analytics",Mark Mydland,INFLUENCER,AI/ML,https://www.linkedin.com/in/christa-murphy-mba-pmp/,christa.murphy@dexcom.com
+PPD31171,Dexcom,David Smith,"Senior Manager, AI/ML Engineering",Christa Murphy,INFLUENCER,AI/ML,https://www.linkedin.com/in/davidadamsmith9/,david.smith@dexcom.com
+PPD36765,Excelitas Technologies Corp.,Ron Keating,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ron-keating-5a9201117/,ron.keating@excelitas.com
+PPD36765,Excelitas Technologies Corp.,Robin Swain,CTO,Ron Keating,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/robinswain,robin.swain@excelitas.com
+PPD36765,Excelitas Technologies Corp.,Justin Mallgrave,VP of IT,Robin Swain,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/dr-justin-mallgrave--/,justin.mallgrave@excelitas.com
+PPD36765,Excelitas Technologies Corp.,Terry Bizogias,Director of IT Infrastructure,Justin Mallgrave,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/terry-bizogias-1ba492120/,terry.bizogias@excelitas.com
+PPD36765,Excelitas Technologies Corp.,Nick Sallinger,IT Infrastructure Manager,Terry Bizogias,INFLUENCER,Other,https://www.linkedin.com/in/nicksallinger/,nick.sallinger@excelitas.com
+PPD44673,Haemonetics,Chris Simon,President and CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/chrissimon1/,chris.simon@haemonetics.com
+PPD44673,Haemonetics,Greg Olen,CIO,Chris Simon,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/greg-olen-b9b15b5,golen@haemonetics.com
+PPD44673,Haemonetics,Scot Krause,Director Of IT,Greg Olen,INFLUENCER,Other,http://www.linkedin.com/in/scotkrause,skrause@haemonetics.com
+PPD44673,Haemonetics,Darrell Thomas,Director Of IT,Greg Olen,INFLUENCER,Other,http://www.linkedin.com/in/darrell-thomas-cscp,darrellthomas@haemonetics.com
+PPD44673,Haemonetics,Robert Chase,Director Of IT,Greg Olen,INFLUENCER,Other,http://www.linkedin.com/in/chaserobert,rchase@haemonetics.com
+PPD44673,Haemonetics,Joshua F.,Senior Manager AI/ML Solutions,Scot Krause,INFLUENCER,AI/ML,https://www.linkedin.com/in/joshuaflynn17/,joshua.flynn@haemonetics.com
+PPD55493,Kimball Electronics,Ric Phillips,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ric-phillips/,ric.phillips@kimballelectronics.com
+PPD55493,Kimball Electronics,Jacob Luker,Director of IT,Ric Phillips,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jacob-luker-85a63b89,jacob.luker@kimballelectronics.com
+PPD55493,Kimball Electronics,Joey Clark,Director IT,Ric Phillips,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/joey-clark-796b231b,joey.clark@kimballelectronics.com
+PPD55493,Kimball Electronics,Chris Luebbehusen,Manager IT,Jacob Luker,INFLUENCER,Other,http://www.linkedin.com/in/chris-luebbehusen-b09791a0,chris.luebbehusen@kimballelectronics.com
+PPD55493,Kimball Electronics,Logan Witte,Manager IT,Jacob Luker,INFLUENCER,Other,http://www.linkedin.com/in/wittelogan,logan.witte@kimballelectronics.com
+PPD55493,Kimball Electronics,Bryan Bolin,Manager IT,Joey Clark,INFLUENCER,Other,http://www.linkedin.com/in/bryan-bolin-1100496,bryan.bolin@kimballelectronics.com
+PPD55493,Kimball Electronics,Peter Ramdeen,Manager IT,Joey Clark,INFLUENCER,Other,http://www.linkedin.com/in/peter-ramdeen-7119937,peter.ramdeen@kimballelectronics.com
+PPD82057,Regeneron,Bob McCowan,Senior VP & CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/bob-mccowan-mba-2048861/,bob.mccowan@regeneron.com
+PPD82057,Regeneron,Gil Msis,Head IT,Bob McCowan,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/gilvelez,gil.msis@regeneron.com
+PPD82057,Regeneron,Mike Queenan,"Senior Director, IT",Gil Msis,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/mikequeenan,mike.queenan@regeneron.com
+PPD82057,Regeneron,Yanping Qi,Director Of IT,Mike Queenan,INFLUENCER,Other,http://www.linkedin.com/in/yanpingqi,yanping.qi@regeneron.com
+PPD82057,Regeneron,Brien Ross,"Associate Director, IT",Yanping Qi,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/brien-ross-4a6460a7,brien.ross@regeneron.com
+PPD82057,Regeneron,Nagendher Burra,Senior Manager of Database,Brien Ross,INFLUENCER,Database,http://www.linkedin.com/in/nagendher-burra-821a8b60,nagendher.burra@regeneron.com
+PPD82057,Regeneron,Akarsh Valati,Manager of Database,Nagendher Burra,INFLUENCER,Database,http://www.linkedin.com/in/akarsh-valati-banu-69a686202,akarsh.valati@regeneron.com
+PPD82057,Regeneron,Huanyu Zhou,Head of Global Development AI,Bob McCowan,INFLUENCER,AI/ML,http://www.linkedin.com/in/huanyuzhou,huanyu.zhou@regeneron.com
+PPD82057,Regeneron,Marco Hernandez,Director of AI / ML Engineering,Huanyu Zhou,INFLUENCER,AI/ML,http://www.linkedin.com/in/hernandezmarco,marco.hernandez@regeneron.com
+PPD82057,Regeneron,Naveen Karumuri,"Associate Director, AI Engineering.",Marco Hernandez,INFLUENCER,AI/ML,http://www.linkedin.com/in/naveen-karumuri-5569a2b,naveen.karumuri@regeneron.com
+PPD82057,Regeneron,Shoaib Younas,Sr. Director Commercial IT,Gil Msis,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/shoaib-younas-45a47b2/,shoaib.younas@regeneron.com
+PPD82057,Regeneron,Beverly Chamberlain,Global Head of IT enterprise services,Bob McCowan,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/beverly-chamberlain/,beverly.chamberlain@regeneron.com
+PPD82057,Regeneron,Sanjay Sreeram,Director - Cloud Engineering,Beverly Chamberlain,INFLUENCER,Cloud,http://www.linkedin.com/in/sanjay-sreeram-a6b74771,sanjay.sreeram@regeneron.com
+PPD82057,Regeneron,Leif Hegdal,"Associate Director, Hybrid-Cloud Compute Engineering",Sanjay Sreeram,INFLUENCER,Cloud,http://www.linkedin.com/in/lhegdal,leif.hegdal@regeneron.com
+PPD16111,BioWorks,Bill Foster,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/bill-foster-3729a4b5,bill.foster@bioworksinc.com
+PPD16111,BioWorks,Paul Hsu  ,IT Director,Bill Foster,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/paul-hsu-%e8%ae%b8%e8%88%b8-a15b4410a/,paul.hsu@bioworksinc.com
+PPD21085,Carestream Dental,Jon Frizzell Sr,CTO,Lisa Ashby,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jon-frizzell-sr-76b30696/,jon.frizzell@csdental.com
+PPD21085,Carestream Dental,Gary White,Director - Cloud Services,Jon Frizzell Sr,INFLUENCER,Cloud,http://www.linkedin.com/in/gary-white-666ab9a9,gary.white@csdental.com
+PPD34844,embecta,Devdatt Kurdikar,President and CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/dev-kurdikar,devdatt.kurdikar@embecta.com
+PPD34844,embecta,Ryan Yardis,"CISO, VP, IT Infrastructure, Security, Data",Devdatt Kurdikar,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/ryan-yardis-6467655,ryan.yardis@embecta.com
+PPD34844,embecta,Saurabh Bansal,"Director, IT Analytics & IT Architecture",Ryan Yardis,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/saurabhbansal22,saurabh.bansal@embecta.com
+PPD34844,embecta,Madeline Coluccio,"Associate Director, IT Process",Saurabh Bansal,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/madelinecoluccio,madeline.coluccio@embecta.com
+PPD34844,embecta,Kevin Andrews,"Associate Director, IT Solutions",Saurabh Bansal,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/kevinwandrews,kevin.andrews@embecta.com
+PPD42258,Glaukos Corporation,Joseph Gilliam,President & COO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/joseph-gilliam-37325630/,jgilliam@glaukos.com
+PPD42258,Glaukos Corporation,John Allen,"Director, Software Development",Joseph Gilliam,INFLUENCER,Other,http://www.linkedin.com/in/john-allen-27b2209,jallen@glaukos.com
+PPD42258,Glaukos Corporation,David Usher,Senior Director Software,Joseph Gilliam,INFLUENCER,Other,http://www.linkedin.com/in/david-usher-3a18416,dusher@glaukos.com
+PPD39218,Fogarty Innovation,Andrew Cleeland,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/andrew-cleeland-7024a44/,andrew@fogartyinnovation.org
+PPD39218,Fogarty Innovation,Denise Demarais,COO,Andrew Cleeland,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/denise-zarins-9525344,denise@fogartyinnovation.org
+PPD45925,"Heartflow, Inc",John Farquhar,President and CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/john-farquhar-8819147/,jfarquhar@heartflow.com
+PPD45925,"Heartflow, Inc",Justin Cambra,CTO,John Farquhar,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/justin-cambra-44615bb,jcambra@heartflow.com
+PPD45925,"Heartflow, Inc",Sonya Natanzon,VP of Engineering,Justin Cambra,INFLUENCER,Other,https://www.linkedin.com/in/sonya-natanzon/,snatanzon@heartflow.com
+PPD45925,"Heartflow, Inc",Bin Zhu,Director of IT,Sonya Natanzon,INFLUENCER,Other,http://www.linkedin.com/in/bin-zhu-461385,bzhu@heartflow.com
+PPD45925,"Heartflow, Inc",Justin Vasquez,Software Engineering Manager ML,Bin Zhu,INFLUENCER,Other,http://www.linkedin.com/in/justin-vasquez-064465110,juvasquez@heartflow.com
+PPD48546,I-Flow Corporation,Joe McDonnell,Founder & CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,joe@iflo.com
+PPD48546,I-Flow Corporation,Sean Olives,MD,Joe McDonnell,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sean-olives-b1001b153/,sean@iflo.com
+PPD48546,I-Flow Corporation,James Kenigsberg,CTO,Sean Olives,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,jim.k@iflo.com
+PPD48546,I-Flow Corporation,Iam Williams,IT Product Development,James Kenigsberg,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",,iam@iflo.com
+PPD51691,Ipg Photonics,Mark Gitin,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mark-gitin-a41a243/,mgitin@ipgphotonics.com
+PPD51691,Ipg Photonics,Robert Neil,CISO,Mark Gitin,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/robert-neil-80b6397,rneil@ipgphotonics.com
+PPD51691,Ipg Photonics,Sanjeev Sharma,Head Of IT,Robert Neil,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sanjeev-sharma-3370a03/,sasharma@ipgphotonics.com
+PPD51691,Ipg Photonics,Mark DeLorenzo ,"Senior Director, Global IT",Sanjeev Sharma,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/markdelorenzo/,mdelorenzo@ipgphotonics.com
+PPD51691,Ipg Photonics,Kevin Coyle,Software Engineering Manager,Mark DeLorenzo ,INFLUENCER,Other,http://www.linkedin.com/in/kevin-coyle-46125758,kcoyle@ipgphotonics.com
+PPD51691,Ipg Photonics,Amit Engineer,Software Engineering Manager,Mark DeLorenzo ,INFLUENCER,Other,http://www.linkedin.com/in/amitengineer,aengineer@ipgphotonics.com
+PPD54552,"Karl Storz Endoscopy-America, Inc.",Sonal Matai,President,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sonalmatai/,sonal.matai@karlstorz.com
+PPD54552,"Karl Storz Endoscopy-America, Inc.",Matt Butcher,VP IT,Sonal Matai,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/matt-butcher-81297419/,matt.butcher@karlstorz.com
+PPD54552,"Karl Storz Endoscopy-America, Inc.",Nischal Bomdika,Director Of Engineering,Matt Butcher,INFLUENCER,Other,https://www.linkedin.com/in/nischal-bomdika-2127041a/,nischal.bomdika@karlstorz.com
+PPD54552,"Karl Storz Endoscopy-America, Inc.",Niranjan Holay,"Director, SCM Applications",Matt Butcher,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/niranjanholay/,niranjan.holay@karlstorz.com
+PPD54552,"Karl Storz Endoscopy-America, Inc.",Monika Campbell,"Director, IT Project and Portfolio Management",Matt Butcher,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/monika-campbell-pmp-ipma-b-rac-25002838/,monika.campbell@karlstorz.com
+PPD58962,Lifescan,Alisandra Rizzolo,COO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/alisandrarizzolo/,arizzolo@lifescan.com
+PPD58962,Lifescan,Alok Garg,CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/alokgarg-cio/,agarg@lifescan.com
+PPD58962,Lifescan,Heather Sutherland,Global IT Application Director,Alok Garg,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/heather-sutherland-1b5ba0141/,hsutherland@lifescan.com
+PPD58962,Lifescan,Manohar Nayak,Director of Technical Operations,Manohar Nayak,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/manohar-nayak-05b9345/,mnayak@lifescan.com
+PPD58962,Lifescan,Hunter Krombholz,Senior Manager of IT,Heather Sutherland,INFLUENCER,Other,https://www.linkedin.com/in/hunter-krombholz-ab6421161/,hkrombh1@lifescan.com
+PPD62179,Marsh McLennan,Paul Beswick,Chief Information and Operations Officer,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/paul-beswick/,paul.beswick@mmc.com
+PPD62179,Marsh McLennan,Sandeep Asokan,Senior VP – IT Systems Engineering Leader,Paul Beswick,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sandeep-asokan-2b01782/,sandeep.asokan@mmc.com
+PPD62179,Marsh McLennan,Veera Muruganantham,VP - Enterprise Database Architect,Paul Beswick,INFLUENCER,Database,https://www.linkedin.com/in/veera-muruganantham-ba026b16/,veera.muruganantham@mmc.com
+PPD62179,Marsh McLennan,Vijay Morampudi,SVP - AI CoE Leader,Paul Beswick,INFLUENCER,AI/ML,https://www.linkedin.com/in/vijaymorampudi/,vijay.morampudi@mmc.com
+PPD62179,Marsh McLennan,Edmund Olson-Morgan,Head of AI,Vijay Morampudi,INFLUENCER,AI/ML,http://www.linkedin.com/in/edmundolsonmorgan,ed.olson-morgan@mmc.com
+PPD62179,Marsh McLennan,Venkat Padullaparthi,Senior Program Manager AI ML,Edmund Olson-Morgan,INFLUENCER,AI/ML,http://www.linkedin.com/in/padullaparthi,venkat.padullaparthi@mmc.com
+PPD62179,Marsh McLennan,Alexander Reznik,Head of Cloud Platform Operations,Sandeep Asokan,INFLUENCER,Cloud,https://www.linkedin.com/in/alexander-reznik-6045703/,alexander.reznik@mmc.com
+PPD62179,Marsh McLennan,Brian D'Altilio,"Senior Manager, Cloud Platform Solutions",Alexander Reznik,INFLUENCER,Cloud,http://www.linkedin.com/in/brian-daltilio,brian.daltilio@mmc.com
+PPD62179,Marsh McLennan,Elias Mathew,Global Head of IT Strategy and Controls,Sandeep Asokan,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/eliasjmathew/,elias.mathew@mmc.com
+PPD62179,Marsh McLennan,Maurice Dimeo,"Senior Director, IT",Elias Mathew,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/maurice-dimeo-79267221,maurice.dimeo@mmc.com
+PPD62179,Marsh McLennan,Joe Morales,"Director, CRM Architecture",Sandeep Asokan,INFLUENCER,CRM,http://www.linkedin.com/in/joe-morales-24aa692,joe.morales@mmc.com
+PPD69003,"Neuronetics, Inc.",Keith Sullivan,President and CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/keith-sullivan-0297759/,keith.sullivan@neurostar.com
+PPD69003,"Neuronetics, Inc.",Cory Anderson,CTO,Keith Sullivan,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/cory-s-anderson/,cory.anderson@neurostar.com
+PPD69003,"Neuronetics, Inc.",Jay Zubey,Director of IT,Cory Anderson,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jay-zubey-9177a84/,jay.zubey@neurostar.com
+PPD69003,"Neuronetics, Inc.",Deepti Guntaka,"Senior Manager, Software Testing",Jay Zubey,INFLUENCER,Other,https://www.linkedin.com/in/deepti-guntaka-23b3312a/,deepti.guntaka@neurostar.com
+PPD70780,Nova Biomedical,Byron Selman,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/byronselman/,bselman@novabio.com
+PPD70780,Nova Biomedical,Tom MacDougall,CIO,Byron Selman,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/thomasmacdougall/,tmacdougall@novabio.com
+PPD70780,Nova Biomedical,Rich Auren,Associate VP Software,Tom MacDougall,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/rich-auren-4917a26,rauren@novabiomedical.com
+PPD70780,Nova Biomedical,Greg Fischer,"Director, Software Engineering",Rich Auren,INFLUENCER,Other,https://www.linkedin.com/in/greg-fischer/,gfischer@novabio.com
+PPD73774,PacBio,Mark Oene,COO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/mark-van-oene-742b903,mark.oene@pacb.com
+PPD73774,PacBio,Art Polk,"Head, Corporate Development and AI",Mark Oene,INFLUENCER,AI/ML,http://www.linkedin.com/in/arthurpolk,apolk@pacb.com
+PPD73774,PacBio,Babajide Ayinde,Director of AI and ML,Art Polk,INFLUENCER,AI/ML,http://www.linkedin.com/in/babajide-ayinde-ph-d-501a9178,babajide.ayinde@echonous.com
+PPD73774,PacBio,Zedrick Putalan,AI Applications Manager,Babajide Ayinde,INFLUENCER,AI/ML,http://www.linkedin.com/in/zedrick-putalan-4a4a7b219,zputalan@pacb.com
+PPD73774,PacBio,Tobias Mann,VP of Software Engineering,Mark Oene,INFLUENCER,Other,https://www.linkedin.com/in/tobias-mann-professional,tmann@pacb.com
+PPD73774,PacBio,Alexandre Gillet,"Sr Director, Software Engineering",Tobias Mann,INFLUENCER,Other,http://www.linkedin.com/in/alexandre-gillet-0bb0818,agillet@pacb.com
+PPD73774,PacBio,Alison Zhang,"Associate Director, Software Engineering",Alexandre Gillet,INFLUENCER,Other,http://www.linkedin.com/in/alisonzhang,azhang@pacb.com
+PPD73774,PacBio,Adam Knight,Director IT,Tobias Mann,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/adam-knight-8228238,aknight@pacb.com
+PPD73774,PacBio,Remy Santiago,"Senior Manager, IT",Adam Knight,INFLUENCER,Other,http://www.linkedin.com/in/remy-santiago-17687b2a,rsantiago@pacb.com
+PPD80896,Rakuten Medical,Abhijit Bhatia,COO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/abhijit-bhatia-5786932/,abhijit.bhatia@rakuten-med.com
+PPD80896,Rakuten Medical,Carlos A. Garcia,CTO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/carlos-a-garcia-5633511/,carlos.garcia@rakuten-med.com
+PPD80896,Rakuten Medical,James Poe,"Director, Head of IT Operations",Carlos A. Garcia,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/patienceandkindness,james.poe@rakuten-med.com
+PPD80896,Rakuten Medical,Philip Varughese,Senior Business Systems Manager,James Poe,INFLUENCER,Other,https://www.linkedin.com/in/philip-varughese-5b000ba8/,philip.varughese@rakuten-med.com
+PPD88269,"Shockwave Medical, Inc.",Isaac Zacharias,President,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,izacharias@shockwavemedical.com
+PPD88269,"Shockwave Medical, Inc.",Luis Morales,"VP, Global Operations & IT",Isaac Zacharias,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/luis-moralescardona/,lmorales@shockwavemedical.com
+PPD88269,"Shockwave Medical, Inc.",Bharath Natarajan,"Senior Director, Data Platform, BI and AI",Luis Morales,INFLUENCER,AI/ML,https://www.linkedin.com/in/bharathnatarajan1/,bnatarajan@shockwavemedical.com
+PPD88269,"Shockwave Medical, Inc.",Jess D,"Senior Manager, IT",Bharath Natarajan,INFLUENCER,Other,http://www.linkedin.com/in/jess-dca,JD@shockwavemedical.com
+PPD88269,"Shockwave Medical, Inc.",Navinta Pushparaj,Manager of IT,Jess D,INFLUENCER,Other,https://www.linkedin.com/in/navintapushparaj/,npushparaj@shockwavemedical.com
+PPD92383,State Street Global Advisors Trust,Yie-Hsin Hung,President & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/yiehsinhung/,yhung@statestreet.com
+PPD92383,State Street Global Advisors Trust,James Ferrarelli,COO,Yie-Hsin Hung,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/james-ferrarelli-6a359825,jferrarelli@statestreet.com
+PPD92383,State Street Global Advisors Trust,Susan Lasota,CTO,Yie-Hsin Hung,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/susan-lasota/,slasota@statestreet.com
+PPD92383,State Street Global Advisors Trust,Barbara Augusta,"VP, IT",Susan Lasota,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/barbara-augusta-pmp-six-sigma-black-belt-a308951,baugusta@statestreet.com
+PPD92383,State Street Global Advisors Trust,Nathan Garry,Head IT,Barbara Augusta,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/nathan-garry-024b7755,ngarry@statestreet.com
+PPD92383,State Street Global Advisors Trust,Chuck Loconte,Sr. IT Manager,Nathan Garry,INFLUENCER,Other,http://www.linkedin.com/in/chuckloconte,cloconte@statestreet.com
+PPD92383,State Street Global Advisors Trust,David Wang,"Senior VP, AI Services",Susan Lasota,INFLUENCER,AI/ML,http://www.linkedin.com/in/david-wang-phd-cfa-307a6b1,dwang@statestreet.com
+PPD104597,"Vector Laboratories, Inc.",Lisa Sellers,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/lisavsellers/,lisa.sellers@vectorlabs.com
+PPD104597,"Vector Laboratories, Inc.",Dino Cajic,CTO,Lisa Sellers,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/dinocajic/,dino.cajic@vectorlabs.com
+PPD104597,"Vector Laboratories, Inc.",Will M.,Lead Software Engineer,Dino Cajic,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/will-morrison1/,will.morrison@vectorlabs.com
+PPD106810,Waters Corporation,Brook Colangelo,CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/brookcolangelo/,brook_colangelo@waters.com
+PPD106810,Waters Corporation,Seth Gordon,Head of Global IT Infrastructure and Operations,Brook Colangelo,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/sgordon730/,seth_gordon@waters.com
+PPD106810,Waters Corporation,Ilise Samolyk,"Senior Director, IT Customer Platform",Seth Gordon,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/ilises,ilise_samolyk@waters.com
+PPD106810,Waters Corporation,Bharat Kalagara,"IT Director, Customer Platforms",Ilise Samolyk,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/bharat-kalagara-68062810,bharat_kalagara@waters.com
+PPD106810,Waters Corporation,Bill Flynn,Cloud Program Manager,Ankur Gupta,INFLUENCER,Cloud,http://www.linkedin.com/in/bill-flynn,bill_flynn@waters.com
+PPD106810,Waters Corporation,Ankur Gupta,Director IT ,Seth Gordon,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ankurgupta007/,ankur_gupta@waters.com
+PPD82602,Resmed,Todd Friedman,CISO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/toddmann,todd.friedman@resmed.com
+PPD82602,Resmed,Pranab Pati,Director Information Security,Todd Friedman,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/pranabpati,pranab.pati@resmed.com
+PPD82602,Resmed,Alastair Robertson,CIO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/alrobertson,alastair.robertson@resmed.com.au
+PPD82602,Resmed,William Moses,"VP, Corporate Infrastructure & Services",Alastair Robertson,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/william-moses-b1883050,william.moses@resmed.com
+PPD82602,Resmed,Lee Pedlow,"Senior Director, Global IT Infrastructure",William Moses,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/lee-pedlow/,lee.pedlow@resmed.com
+PPD82602,Resmed,Jim Mihalik,"Director, Enterprise Infrastructure Engineering",Lee Pedlow,INFLUENCER,Other,http://www.linkedin.com/in/jim-mihalik-a8823376,jim.mihalik@resmed.com
+PPD82602,Resmed,Badri Raghavan,"VP, Data Science AI and ML ",Alastair Robertson,INFLUENCER,AI/ML,https://www.linkedin.com/in/badriraghavan/,badri.raghavan@resmed.com
+PPD82602,Resmed,Pratik Agrawal,"Sr. Director, Data Science & AI Innovation",Badri Raghavan,INFLUENCER,AI/ML,http://www.linkedin.com/in/pratikagrawal,pratik.agrawal@resmed.com
+PPD82602,Resmed,Philomena Lamoureux,Director Data Science AI/ML,Pratik Agrawal,INFLUENCER,AI/ML,https://www.linkedin.com/in/plamoureux/,philomena.lamoureux@resmed.com
+PPD82602,Resmed,Prakhar Shukla,"Director, Data Products, Analytics & AI Innovation",Pratik Agrawal,INFLUENCER,AI/ML,http://www.linkedin.com/in/shuklaprakhar,prakhar.shukla@resmed.com
+PPD82602,Resmed,Vivek Dabholkar,Director - Software Engineering,Alastair Robertson,INFLUENCER,Other,http://www.linkedin.com/in/vdabholkar,vivek.dabholkar@resmed.com
+PPD82602,Resmed,Amar Nath,Senior Software Engineering Manager,Vivek Dabholkar,INFLUENCER,Other,https://www.linkedin.com/in/amar-nath-48237922/,amar.nath@resmed.com
+PPD89989,"Smith & Nephew, Inc.",Deepak Nath,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/deepak-nath-65b906,deepak.nath@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Richard Seltz,SVP and CIO,Deepak Nath,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/richardseltz/,richard.seltz@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Guy Hughes,Regional CIO,Richard Seltz,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/guy-hughes-a98a0a39,guy.hughes@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Roman W.,VP IT Infrastructure & Data,Guy Hughes,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/romanwojtasik/,sarath.krishnaswamy@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Patryk B.,"IT Senior Director, Hybrid Cloud",Roman W.,INFLUENCER,Cloud,https://www.linkedin.com/in/patrykbromirski/,david.bradley@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Ian Bennett,Director of IT,Patryk B.,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ian-bennett-75a0356/,ian.bennett@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Marty Pavlik,"VP, Innovation, Strategy & Enterprise Architecture",Guy Hughes,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/martypavlikexcutiveleader/,marty.pavlik@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Nathan Netravali,Head of AI Center,Marty Pavlik,INFLUENCER,AI/ML,http://www.linkedin.com/in/nathannetravali,nathan.netravali@smith-nephew.com
+PPD89989,"Smith & Nephew, Inc.",Pat Clancy,Director Of AI,Nathan Netravali,INFLUENCER,AI/ML,http://www.linkedin.com/in/pat-clancy-cpa-00652a19,patrick.clancy@smith-nephew.com
+PPD28965,"Cutera, Inc.",Brent Hauser,President International,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/brentjhauser/,bhauser@cutera.com
+PPD28965,"Cutera, Inc.",Jerzy Orkiszewski,VP of Software & Electrical Engineering,Brent Hauser,INFLUENCER,Other,https://www.linkedin.com/in/jerzy-orkiszewski-b062b68/,orkiszewski@cutera.com
+PPD28965,"Cutera, Inc.",Brett Serene,Senior Software Engineering Manager,Jerzy Orkiszewski,INFLUENCER,Other,https://www.linkedin.com/in/brett-serene/,bserene@cutera.com
+PPD49575,"IMRIS, Deerfield Imaging",Shalabh Chandra,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/shalabhchandra,schandra@imris.com
+PPD49575,"IMRIS, Deerfield Imaging",Chris Myers,VP - IT,Shalabh Chandra,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/chris-myers-12a1536/,chris.myers@imris.com
+PPD49575,"IMRIS, Deerfield Imaging",Bob Bushey,Electrical & Software Engineering Manager,Chris Myers,INFLUENCER,Other,https://www.linkedin.com/in/bob-bushey-7042941b/,bbushey@imris.com
+PPD49575,"IMRIS, Deerfield Imaging",April Rockwell,Manager IT,Chris Myers,INFLUENCER,Other,http://www.linkedin.com/in/april-b721547a,arockwell@imris.com
+PPD58440,LeMaitre,George W. LeMaitre,Chairman & CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,glemaitre@lemaitre.com
+PPD58440,LeMaitre,David Roberts,"President, Board Director",George W. LeMaitre,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/david-roberts-dbr/,droberts@lemaitre.com
+PPD58440,LeMaitre,Jonathan Ngau,"SVP, IT",David Roberts,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jonathan-ngau-67584a5,jngau@lemaitre.com
+PPD58440,LeMaitre,Bhavana Mungara,IT Director,Jonathan Ngau,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/bhavanamungara,bmungara@lemaitre.com
+PPD63674,Medtronic,Rodolphe Katra,Global Chief AI Officer,,DECISION MAKER,AI/ML,http://www.linkedin.com/in/rodolphe-katra-phd-mba-4687a24,rodolphe.katra@medtronic.com
+PPD63674,Medtronic,Vignesh Shetty,VP AI & Product Development,Rodolphe Katra,INFLUENCER,AI/ML,https://www.linkedin.com/in/vigneshshetty/,vignesh.shetty@medtronic.com
+PPD63674,Medtronic,Erica Carnrite,VP AI Platforms,Vignesh Shetty,INFLUENCER,AI/ML,http://www.linkedin.com/in/erica-carnrite-b95b3212,erica.carnrite@medtronic.com
+PPD63674,Medtronic,Brenda Desino,Senior Director AI Enablement,Erica Carnrite,INFLUENCER,AI/ML,http://www.linkedin.com/in/brendadesino,brenda.desino@medtronic.com
+PPD63674,Medtronic,Troy Weber,Director AI & Data Science,Brenda Desino,INFLUENCER,AI/ML,http://www.linkedin.com/in/troy-weber-8990b179,troy.weber@medtronic.com
+PPD63674,Medtronic,Rashmi Kumar,SVP and Global CIO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/rashmikumarhpe/,rashmi.kumar@medtronic.com
+PPD63674,Medtronic,Rita Guzzetta,VP of CRM,Rashmi Kumar,INFLUENCER,CRM,http://www.linkedin.com/in/rita-guzzetta-4aa4a111,rita.guzzetta@medtronic.com
+PPD63674,Medtronic,Charles Killelea,Sr. Director CRM,Rita Guzzetta,INFLUENCER,CRM,http://www.linkedin.com/in/charles-killelea-b857915,charles.killelea@medtronic.com
+PPD63674,Medtronic,Chris Kiser,Director CRM,Charles Killelea,INFLUENCER,CRM,http://www.linkedin.com/in/chris-kiser-36b60218,chris.kiser@medtronic.com
+PPD63674,Medtronic,Lee Robertson,VP Global IT Infrastructure,Rashmi Kumar,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/leewrobertson,lee.robertson@medtronic.com
+PPD63674,Medtronic,David Mahlum,Sr. Director Software and Cloud Transformation,Lee Robertson,INFLUENCER,Cloud,http://www.linkedin.com/in/davidmahlum,david.mahlum@medtronic.com
+PPD63674,Medtronic,Kamalesh Saha,Director of Software Engineering and Cloud Infrastructure,Lee Robertson,INFLUENCER,Cloud,http://www.linkedin.com/in/kamaleshsaha,kamalesh.saha@medtronic.com
+PPD63674,Medtronic,Sudhir V,Head of Global IT,Lee Robertson,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/sudhir-v-0a8ba7,sudhir.v@medtronic.com
+PPD104457,Varian,Eric Stewart,Global MD,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/eric-stewart-542aa34,eric.stewart@varian.com
+PPD104457,Varian,Ulf Baumann,VP - Cloud Development and Operations,Eric Stewart,DECISION MAKER,Cloud,http://www.linkedin.com/in/ubaumann,ulf.baumann@varian.com
+PPD104457,Varian,John Saba,"Sr. Director, Global Cloud",Ulf Baumann,INFLUENCER,Cloud,http://www.linkedin.com/in/johnsaba,john.saba@varian.com
+PPD104457,Varian,Stephen Carn,"Director, Cloud Operations",John Saba,INFLUENCER,Cloud,http://www.linkedin.com/in/stephencarn,stephen.carn@varian.com
+PPD104457,Varian,David Battista,Senior Manager Global Cloud,Stephen Carn,INFLUENCER,Cloud,http://www.linkedin.com/in/david-battista,david.battista@varian.com
+PPD104457,Varian,Jenson Lai,"Sr. Director, AI",Ravi Urs,INFLUENCER,AI/ML,http://www.linkedin.com/in/jenson-lai-294bb733,Jenson.Lai@varian.com
+PPD104457,Varian,Balaji Raj,Senior Manager AI,Jenson Lai,INFLUENCER,AI/ML,http://www.linkedin.com/in/balaji-raj-a1714014,balaji.raj@varian.com
+PPD5496,Advanced Sterilization Products,Denny Christensen,CEO,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/denny-christensen-481294/,denny.christensen@asp.com
+PPD5496,Advanced Sterilization Products,Rajeev Bhardwaj,Chief Information and Digital Officer,Denny Christensen,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/rajeevbhardwaj1/,rajeev.bhardwaj@asp.com
+PPD5496,Advanced Sterilization Products,John Patton,Sr. IT Director,Rajeev Bhardwaj,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/john-patton-3a98745/,john.patton@asp.com
+PPD11225,Asensus Surgical,Anthony Fernando,President,-,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/anthony-fernando/,afernando@transenterix.com
+PPD11225,Asensus Surgical,Tomer Dayan,"Director Software, Cloud & Data Ops",Anthony Fernando,INFLUENCER,Cloud,https://www.linkedin.com/in/tomer-dayan-9972392/,tdayan@transenterix.com
+PPD64983,Milestone Scientific Inc.,Eric Hines,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/eric-hines-249889,ehines@milestonescientific.com
+PPD64983,Milestone Scientific Inc.,Arjan Haverhals,President,Eric Hines,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/arjan-haverhals/,ahaverhals@milestonescientific.com
+PPD29165,"Cynosure, Llc.",Nadav Tomer,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/nadav-tomer/,nadav.tomer@cynosure.com
+PPD29165,"Cynosure, Llc.",Aaron Revell,IT Director,Nadav Tomer,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/aaronrevell,aaron.revell@cynosure.com
+PPD29165,"Cynosure, Llc.",Charles Moosman,VP Digital Transformation,Aaron Revell,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/charles-m-moosman-26306b6/,charles.moosman@cynosure.com
+PPD29165,"Cynosure, Llc.",Praveen Patnaik,Sr. Director Enterprise Data,Charles Moosman,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/praveen-patnaik-0655152/,praveen.patnaik@cynosure.com
+PPD29165,"Cynosure, Llc.",Rick Niejadlik,Director Software Engineering,Praveen Patnaik,INFLUENCER,Other,https://www.linkedin.com/in/rick-niejadlik-b7a36b7b/,rniejadlik@cynosure.com
+PPD29165,"Cynosure, Llc.",Doug Mowry,Sr. Application Manager,Rick Niejadlik,INFLUENCER,Other,https://www.linkedin.com/in/doug-mowry/,doug.mowry@cynosure.com
+PPD025,1Cloud Star Co. Ltd.,Mike Li,MD,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://sg.linkedin.com/in/mike-li-7b4aa32a,mike.li@1cloudstar.com
+PPD025,1Cloud Star Co. Ltd.,Tracy Li,General Operations Manager,Mike Li,INFLUENCER,Other,https://www.linkedin.com/in/tracy-li-t-240b2a2a/,Tracy.Li@1cloudstar.com
+PPD33738,EchoNous Inc.,Jeff Boly,VP IT,Todd Willsie,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jeffreyboly,jeff.boly@echonous.com
+PPD33738,EchoNous Inc.,Tony Titus,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/tony-titus-116849,tony.titus@echonous.com
+PPD33738,EchoNous Inc.,Todd Willsie,CTO,Tony Titus,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/todd-willsie-023b551,todd.willsie@echonous.com
+PPD33738,EchoNous Inc.,Babajide Ayinde,Director of AI and ML,Jeff Boly,INFLUENCER,AI/ML,http://www.linkedin.com/in/babajide-ayinde-ph-d-501a9178,babajide.ayinde@echonous.com
+PPD33738,EchoNous Inc.,Codias Mortensen,Director Of Information Systems,Jeff Boly,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/codias-mortensen-b64296124,codias.mortensen@echonous.com
+PPD33738,EchoNous Inc.,Rama Pailoor,Chief Software Officer,Tony Titus,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/pailoor/,rama.pailoor@echonous.com
+PPD33671,Ebm-Papst Inc.,Mark Shiring,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/mark-shiring-00a8746/,mark.shiring@us.ebmpapst.com
+PPD33671,Ebm-Papst Inc.,Stephen Berestecky,Director of IT,Mark Shiring,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/stephen-berestecky-66a97a6,stephen.berestecky@us.ebmpapst.com
+PPD33671,Ebm-Papst Inc.,Owen Butler,Application Engineering Manager,Stephen Berestecky,INFLUENCER,Other,http://www.linkedin.com/in/owen-butler-322a0a3,owen.butler@us.ebmpapst.com
+PPD33671,Ebm-Papst Inc.,Jose Sierra,Application Engineering Manager,Stephen Berestecky,INFLUENCER,Other,http://www.linkedin.com/in/jose-sierra-383b0568,jose.sierra@us.ebmpapst.com
+PPD33671,Ebm-Papst Inc.,Kenneth Perkins,Manager of IT,Stephen Berestecky,INFLUENCER,Other,http://www.linkedin.com/in/kenneth-perkins-6247b812,kenneth@ebmpapst.com
+PPD49850,Indica Labs,Steven Hashagen,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/stevenhashagen/,shashagen@indicalab.com
+PPD49850,Indica Labs,Dean Crothers,VP of Software Engineering,Steven Hashagen,DECISION MAKER,Other,https://www.linkedin.com/in/dean-crothers-416680/,dcrothers@indicalab.com
+PPD49850,Indica Labs,Donald Allen,Manager AI,Dean Crothers,INFLUENCER,AI/ML,http://www.linkedin.com/in/donald-allen-46934555,dallen@indicalab.com
+PPD49850,Indica Labs,Kat Latimer,Product Manager,Dean Crothers,INFLUENCER,Other,https://www.linkedin.com/in/kat-latimer-a2a062197/,klatimer@indicalab.com
+PPD48112,HuFriedyGroup,Robert Woolley,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/robert-w-7902b8/,rwoolley@hu-friedy.com
+PPD48112,HuFriedyGroup,Peter Scanlon,CIO,Robert Woolley,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/peter-scanlon-46a37210,pscanlon@hu-friedy.com
+PPD48112,HuFriedyGroup,James Webb,VP IT,Peter Scanlon,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/james-webb-0298868/,jwebb@hu-friedy.com
+PPD48112,HuFriedyGroup,Richard Behmer,Manager of IT,James Webb,INFLUENCER,Other,http://www.linkedin.com/in/rbehmer,rbehmer@hu-friedy.com
+PPD48112,HuFriedyGroup,Janet Donnelly,Manager of IT,James Webb,INFLUENCER,Other,http://www.linkedin.com/in/janet-donnelly-76130a38,jdonnelly@hu-friedy.com
+PPD48112,HuFriedyGroup,Robert Vodick,Manager of IT,James Webb,INFLUENCER,Other,http://www.linkedin.com/in/rgvinc,rvodick@hu-friedy.com
+PPD48112,HuFriedyGroup,Debby Flora,IT Applications Manager,James Webb,INFLUENCER,Other,http://www.linkedin.com/in/debby-flora-53183a7,dflora@hu-friedy.com
+PPD18978,Bruker,Frank Laukien,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/frank-laukien-20804426/,frank.laukien@bruker.com
+PPD18978,Bruker,James Godschall,Head Of IT,Frank Laukien,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jamesgodschall/,james.godschall@bruker.com
+PPD18978,Bruker,Ed Murray,Manager of IT,James Godschall,INFLUENCER,Other,https://www.linkedin.com/in/ed-murray-653374126/,em@bruker.com
+PPD18978,Bruker,Hugo Barzola,Manager of IT,James Godschall,INFLUENCER,Other,https://www.linkedin.com/in/hugo-barzola-877732a7/,hugo.barzola@bruker.com
+PPD18978,Bruker,Helen Carpio,Manager IT,James Godschall,INFLUENCER,Other,http://www.linkedin.com/in/helen-carpio-cpa-cia-mba-9b7b87a,helen.carpio@bruker.com
+PPD43532,Graston Technique,Dominic Merlina,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/dominic-merlina-72331912/,dmerlina@grastontechnique.com
+PPD43532,Graston Technique,Paul Hill,IT Manager,Dominic Merlina,INFLUENCER,Other,http://www.linkedin.com/in/paul-hill-3a099532,phill@grastontechnique.com
+PPD73271,Ortho Development Corporation,Greg Larson,President,Hiroyuki Minamiya,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/greg-larson-63797212/,glarson@odev.com
+PPD73271,Ortho Development Corporation,lester laro,IT manager,Greg Larson,INFLUENCER,Other,https://www.linkedin.com/in/lester-laro-48a24610/,lester.laro@odev.com
+PPD73271,Ortho Development Corporation,Kaden Gubler,Sr. Solutions Manager - Information Systems,Greg Larson,INFLUENCER,Other,http://www.linkedin.com/in/kadengubler,kaden.gubler@odev.com
+PPD73271,Ortho Development Corporation,Hiroyuki Minamiya,CEO ,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://jp.linkedin.com/in/hiroyuki-minamiya-3231375,hiroyuki.minamiya@odev.com
+PPD59616,Livsmed,Karl Im,President,Jung Joo Lee,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,karl_im@livsmed.com
+PPD59616,Livsmed,Jung Joo Lee,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,jungjoo_ lee@livsmed.com
+PPD59092,Lightmed,Gary Lee,CEO ,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/gary-lee-b8b02a9a/,garylee@lightmed.com
+PPD59092,Lightmed,Jo Chang,VP,Gary Lee,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://tw.linkedin.com/in/jo-chang-4b6a05148,jochang@lightmed.com
+PPD22554,"Champions Oncology, Inc.",Abhi Juwa,IT Manager,Maria Mancini,INFLUENCER,Other,http://www.linkedin.com/in/abhi-juwa,ajuwa@championsoncology.com
+PPD22554,"Champions Oncology, Inc.",Maria Mancini,COO ,Rob Brainin,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/maria-mancini-60ba262b,mmancini@championsoncology.com
+PPD22554,"Champions Oncology, Inc.",Rob Brainin,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/robbrainin,rbrainin@championsoncology.com
+PPD79928,Putnam Plastics,Jim Dandeneau,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jim-dandeneau-853a7511,jdandeneau@putnamplastics.com
+PPD79928,Putnam Plastics,Richard Cicchetti,VP of Operations,Jim Dandeneau,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",,rcicchetti@putnamplastics.com
+PPD79928,Putnam Plastics,Ray Rilling,Director of Technology,Richard Cicchetti,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/ray-rilling-11aa6433,rrilling@putnamplastics.com
+PPD96678,Terumo Medical Corporation,Abbie Lee,Group CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/abbie-lee-1180a5112,abbie.lee@terumomedical.com
+PPD96678,Terumo Medical Corporation,Kalyan Balsubramanian,CIO,Abbie Lee,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/kalyanrb/,kalyan.balsubramanian@terumomedical.com
+PPD96678,Terumo Medical Corporation,Raj R,Corporate VP & CIO,Kalyan Balsubramanian,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/raj-r-0170342b4,raj.r@terumomedical.com
+PPD96678,Terumo Medical Corporation,Tony Randall,IT Director,Raj R,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/tony-randall-7a62a42b,tony.randall@terumomedical.com
+PPD96678,Terumo Medical Corporation,George Reimer,Manager IT Ops,Tony Randall,INFLUENCER,Other,http://www.linkedin.com/in/george-reimer-3978b919,george.reimer@terumomedical.com
+PPD96678,Terumo Medical Corporation,Jayanth Surendran,Director Cloud,Kalyan Balsubramanian,INFLUENCER,Cloud,http://www.linkedin.com/in/jayanthsurendran,jayanth.surendran@terumomedical.com
+PPD96678,Terumo Medical Corporation,Piyush R,Sr. Manager Cloud,Jayanth Surendran,INFLUENCER,Cloud,http://www.linkedin.com/in/piyush-ranjan-04,piyush.r@terumomedical.com
+PPD96678,Terumo Medical Corporation,Sam Shetty,Cloud Manager,Piyush R,INFLUENCER,Cloud,http://www.linkedin.com/in/shettysam,sam.shetty@terumomedical.com
+PPD1252,3-D Matrix North America,Toshi Amanuma,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/toshi-amanuma-017115/,tamanuma@3dmatrix.com
+PPD1252,3-D Matrix North America,Jun Okada,President,Toshi Amanuma,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jun-okada-b8556a/,jokada@3dmatrix.com
+PPD12711,Avantec Vascular Corporation,Jack Hoshino,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/jack-hoshino-9b69a4a5,jhoshino@avantecvascular.com
+PPD12711,Avantec Vascular Corporation,John To,CTO,Jack Hoshino,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/john-to-13aa5231,jto@avantecvascular.com
+PPD25726,"Comfort Medical, LLC",Benjamin Farkas,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/dr-benjamin-farkas-d-c-537026173/,benjamin.farkas@comfortmedical.com
+PPD25726,"Comfort Medical, LLC",Latifah Kiribedda,Director Operational Excellence,Benjamin Farkas,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/latifah-kiribedda-mba-pmp-b255936b/,latifah.kiribedda@comfortmedical.com
+PPD25726,"Comfort Medical, LLC",Noah Kuehn,Manager Platform Enablement,Latifah Kiribedda,INFLUENCER,Other,https://www.linkedin.com/in/umn-noahkuehn/,noah.kuehn@comfortmedical.com
+PPD17837,BostonGene,Andrew Feinberg,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/andrewfeinbergceo/,andrew.feinberg@bostongene.com
+PPD17837,BostonGene,Ricky Boyle,VP AI Solutions,Andrew Feinberg,INFLUENCER,AI/ML,https://www.linkedin.com/in/ricky-boyle-31b13b1/,ricky.boyle@bostongene.com
+PPD17837,BostonGene,david arthur,VP Strategy,Andrew Feinberg,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/davidarthurpharma/,david.arthur@bostongene.com
+PPD30504,"Defibtech, LLC",AJ Pace,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/ajpace,apace@defibtech.com
+PPD30504,"Defibtech, LLC",Valeriy Shevchenko,Manager Business Systems,AJ Pace,INFLUENCER,Other,https://www.linkedin.com/in/valeriy-shevchenko/,vshevchenko@defibtech.com
+PPD35650,Envista Holdings Corporation,Paul Keel,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/paul-keel/,paul.keel@envistaco.com
+PPD35650,Envista Holdings Corporation,Andrew Chen,CIO,Paul Keel,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/achen21/,andrew.chen@envistaco.com
+PPD35650,Envista Holdings Corporation,Ronald Moore,VP of IT,Andrew Chen,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/ronald-moore-6505002,ronald.moore@envistaco.com
+PPD35650,Envista Holdings Corporation,Amit Singh,Global Head of IT,Ronald Moore,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/epiphany,amit.singh@envistaco.com
+PPD35650,Envista Holdings Corporation,Tina Schumacher,Sr. Director CRM,Amit Singh,INFLUENCER,CRM,https://www.linkedin.com/in/tina-schumacher-80787381/,tina.schumacher@envistaco.com
+PPD35650,Envista Holdings Corporation,Nilofer Merali,Global Director IT,Amit Singh,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/nilofer-merali-9228876,nilofer.merali@envistaco.com
+PPD35650,Envista Holdings Corporation,Matt Skelly,Director IT,Nilofer Merali,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/matthew-skelly,matt.skelly@envistaco.com
+PPD35650,Envista Holdings Corporation,Isaac Gutierrez,Global IT Manager,Matt Skelly,INFLUENCER,Other,http://www.linkedin.com/in/isaacvgutierrez,isaac.gutierrez@envistaco.com
+PPD35650,Envista Holdings Corporation,Zahra Saghir,Sr. Manager IT,Isaac Gutierrez,INFLUENCER,Other,http://www.linkedin.com/in/zahrasaghir,zahra.saghir@envistaco.com
+PPD35650,Envista Holdings Corporation,Nicolas Arroyo,IT Manager,Zahra Saghir,INFLUENCER,Other,http://www.linkedin.com/in/nicolasarroyo,nicolas.arroyo@envistaco.com
+PPD63675,Medtronic Diabetes,Que Dallara,EVP & President,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/quethanh/,que.dallara@medtronic.com
+PPD63675,Medtronic Diabetes,Matt Skattum,CIO,Que Dallara,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",http://www.linkedin.com/in/matt-skattum-5356409,matt.skattum@medtronic.com
+PPD63675,Medtronic Diabetes,Samir Shah,VP Software Engineering,Matt Skattum,INFLUENCER,Other,http://www.linkedin.com/in/samir-shah-08b8996,samir.shah@medtronic.com
+PPD63675,Medtronic Diabetes,Shalbha Garg,Director Software Engineering,Samir Shah,INFLUENCER,Other,http://www.linkedin.com/in/shalbha-garg-4597487,shalbha.garg@medtronic.com
+PPD63675,Medtronic Diabetes,Jason Blanke,Sr. IT Project Manager,Shalbha Garg,INFLUENCER,Other,http://www.linkedin.com/in/jason-blanke-49050566,jason.blanke@medtronic.com
+PPD60089,"Lorem Cytori Usa, Inc",Jonathan Soneff,CEO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/jonathan-soneff-a1a2474/,jsoneff@cytori.com
+PPD60089,"Lorem Cytori Usa, Inc",Kenneth Kleinhenz,COO,Jonathan Soneff,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/kenneth-kleinhenz-a8697912/,kkleinhenz@cytori.com
+PPD71228,NuVasive,John A,CTO,,DECISION MAKER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/john-a-062537177/,john@nuvasive.com
+PPD71228,Nuvasive,Mona Wu,VP of AI & Data,John A,INFLUENCER,AI/ML,https://www.linkedin.com/in/mona-wu-b7b33825b/,mona.wu@nuvasive.com
+PPD71228,Nuvasive,Armando Bruno,VP of AI & Data,John A,INFLUENCER,AI/ML,https://www.linkedin.com/in/armando-bruno-442639213/,ab@nuvasive.com
+PPD71228,NuVasive,Hector Aguilar,VP of AI & Data,John A,INFLUENCER,AI/ML,https://www.linkedin.com/in/hector-aguilar-35ba51240/,haguilar@nuvasive.com
+PPD71228,Nuvasive,Amelia Foster,Director of CRM,John A,INFLUENCER,CRM,https://www.linkedin.com/in/amelia-foster-546987113/,afoster@nuvasive.com
+PPD71228,NuVasive,Parag Doshi,IT Manager,Mona Wu,INFLUENCER,Other,http://www.linkedin.com/in/paragbdoshi,pdoshi@nuvasive.com
+PPD71228,NuVasive,Asha Marar,IT Manager,Armando Bruno,INFLUENCER,Other,https://www.linkedin.com/in/ashamarar/,amarar@nuvasive.com
+PPD29591,Danaher Corporation,Martin Stumpe,Chief Technology & AI Officer,,DECISION MAKER,AI/ML,https://www.linkedin.com/in/martinstumpe/,martin.stumpe@danaher.com
+PPD29591,Danaher Corporation,Krishna Gadepalli,"VP, AI Platform",Karan Arora,INFLUENCER,AI/ML,https://www.linkedin.com/in/krishnagadepalli/,krishna.gadepalli@danaher.com
+PPD29591,Danaher Corporation,Priya Katti,"Senior Manager, AI",Girish Simon,INFLUENCER,AI/ML,https://www.linkedin.com/in/priya-katti/,priya.katti@danaher.com
+PPD29591,Danaher Corporation,Vishal Verma,Director Digital Experience (AI),Thomas Hill,INFLUENCER,"Other,AI/ML,Cloud,CRM,Database",https://www.linkedin.com/in/vishaljverma/,vishal.verma@danaher.com
+PPD29591,Danaher Corporation,Martin Kang,Senior Director - AI,Krishna Gadepalli,INFLUENCER,AI/ML,https://www.linkedin.com/in/martin-kang-041b5b42/,martin.kang@danaher.com
+PPD29591,Danaher Corporation,Girish Simon,Director Enterprise AI,Martin Kang,INFLUENCER,AI/ML,http://www.linkedin.com/in/girish-s-62687b5,girish.simon@danaher.com
+PPD29591,Danaher Corporation,Nick Johnson,COO AI and Technology,,INFLUENCER,AI/ML,http://www.linkedin.com/in/nick-johnson-41649316,nicholas.johnson@danaher.com
+PPD29591,Danaher Corporation,Thomas Hill,Sr. Director Digital AI,Krishna Gadepalli,INFLUENCER,AI/ML,http://www.linkedin.com/in/thomaslhill,thomas.hill@dhlifesciences.com
+PPD29591,Danaher Corporation,Christopher Langmead,VP AI,Karan Arora,INFLUENCER,AI/ML,http://www.linkedin.com/in/christopher-langmead-035b984,christopher.langmead@danaher.com
+PPD29591,Danaher Corporation,Karan Arora,SVP Advanced Assays AI,Martin Stumpe,INFLUENCER,AI/ML,http://www.linkedin.com/in/arorak1,karan.arora@danaher.com
