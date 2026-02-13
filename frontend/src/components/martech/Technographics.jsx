@@ -1153,7 +1153,7 @@ const Technographics = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f9fafb',
+        backgroundColor: '#ffffffff',
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
