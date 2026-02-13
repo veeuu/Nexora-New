@@ -13,6 +13,73 @@ const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_char
 // to allow requests from your frontend.
 router.use(cors());
 
+// @route   POST /api/auth/signup
+// @desc    Create a new user account
+// @access  Public
+router.post('/auth/signup', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Validate input
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Username, email, and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Here you would typically:
+    // 1. Check if user already exists
+    // 2. Hash the password
+    // 3. Save to database
+    // For now, we're just validating and returning success
+    // The database will handle the actual storage
+
+    res.status(201).json({
+      message: 'User account created successfully',
+      user: {
+        username,
+        email
+      }
+    });
+  } catch (err) {
+    console.error('Signup error:', err.message);
+    res.status(500).json({ message: 'Server error during signup' });
+  }
+});
+
+// @route   POST /api/auth/login
+// @desc    Authenticate user and return token
+// @access  Public
+router.post('/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    // Here you would typically:
+    // 1. Query database to find user by username
+    // 2. Compare password with hashed password
+    // 3. Generate and return JWT token
+    // For now, we're just validating and returning success
+    // The database will handle the actual authentication
+
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        username
+      }
+    });
+  } catch (err) {
+    console.error('Login error:', err.message);
+    res.status(500).json({ message: 'Server error during login' });
+  }
+});
+
 // @route   GET /api/ntp
 // @desc    Get NTP data for all companies from MongoDB database
 // @access  Public
