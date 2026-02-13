@@ -18,11 +18,11 @@ router.use(cors());
 // @access  Public
 router.post('/auth/signup', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, fullName, password } = req.body;
 
     // Validate input
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'Username, email, and password are required' });
+    if (!email || !fullName || !password) {
+      return res.status(400).json({ message: 'Email, full name, and password are required' });
     }
 
     if (password.length < 6) {
@@ -39,8 +39,8 @@ router.post('/auth/signup', async (req, res) => {
     res.status(201).json({
       message: 'User account created successfully',
       user: {
-        username,
-        email
+        email,
+        fullName
       }
     });
   } catch (err) {
@@ -54,15 +54,15 @@ router.post('/auth/signup', async (req, res) => {
 // @access  Public
 router.post('/auth/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // Validate input
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
     // Here you would typically:
-    // 1. Query database to find user by username
+    // 1. Query database to find user by email
     // 2. Compare password with hashed password
     // 3. Generate and return JWT token
     // For now, we're just validating and returning success
@@ -71,7 +71,7 @@ router.post('/auth/login', async (req, res) => {
     res.status(200).json({
       message: 'Login successful',
       user: {
-        username
+        email
       }
     });
   } catch (err) {
