@@ -14,12 +14,22 @@ const { generateOrgChartForCompany, getCompaniesFromExcel } = require('../org_ch
 router.use(cors());
 
 // @route   GET /api/ntp
-// @desc    Get NTP data for all companies from MongoDB database
+// @desc    Get NTP data for all companies from MongoDB database with pagination
 // @access  Public
 router.get('/ntp', async (req, res) => {
   try {
-    // Always fetch from MongoDB database
-    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
+    // Get pagination parameters from query string
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    // Fetch companies with pagination
+    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 })
+      .skip(skip)
+      .limit(limit);
+    
+    // Get total count
+    const totalCompanies = await Company.countDocuments({});
     
     const ntpData = companies.flatMap(company => {
       const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
@@ -37,7 +47,15 @@ router.get('/ntp', async (req, res) => {
       })) || [];
     });
     
-    res.json(ntpData);
+    res.json({
+      data: ntpData,
+      pagination: {
+        currentPage: page,
+        totalCompanies: totalCompanies,
+        totalRecords: ntpData.length,
+        hasMore: skip + limit < totalCompanies
+      }
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -45,12 +63,22 @@ router.get('/ntp', async (req, res) => {
 });
 
 // @route   GET /api/technographics
-// @desc    Get Technographics data for all companies
+// @desc    Get Technographics data for all companies with pagination
 // @access  Public
 router.get('/technographics', async (req, res) => {
   try {
-    // Fetch without projection to get all fields
-    const allCompanies = await Company.find({});
+    // Get pagination parameters from query string
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    // Fetch companies with pagination
+    const allCompanies = await Company.find({})
+      .skip(skip)
+      .limit(limit);
+
+    // Get total count for pagination metadata
+    const totalCompanies = await Company.countDocuments({});
 
     const technographicsData = allCompanies.flatMap(company => {
       // Firmographics is stored as an object in the database
@@ -75,7 +103,18 @@ router.get('/technographics', async (req, res) => {
       })) || [];
     });
 
-    res.json(technographicsData);
+    // Calculate total pages based on total records (not companies)
+    const totalRecords = technographicsData.length;
+    
+    res.json({
+      data: technographicsData,
+      pagination: {
+        currentPage: page,
+        totalCompanies: totalCompanies,
+        totalRecords: totalRecords,
+        hasMore: skip + limit < totalCompanies
+      }
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -85,11 +124,20 @@ router.get('/technographics', async (req, res) => {
   
 
 // @route   GET /api/buyergroups
-// @desc    Get Buyer Group data for all companies
+// @desc    Get Buyer Group data for all companies with pagination
 // @access  Public
 router.get('/buyergroups', async (req, res) => {
   try {
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 });
+    // Get pagination parameters from query string
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalCompanies = await Company.countDocuments({});
 
     const buyerGroupData = companies.flatMap(company => {
       const about = company.Firmographics?.About || {};
@@ -110,7 +158,15 @@ router.get('/buyergroups', async (req, res) => {
       })) || [];
     });
 
-    res.json(buyerGroupData);
+    res.json({
+      data: buyerGroupData,
+      pagination: {
+        currentPage: page,
+        totalCompanies: totalCompanies,
+        totalRecords: buyerGroupData.length,
+        hasMore: skip + limit < totalCompanies
+      }
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
