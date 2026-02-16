@@ -206,7 +206,7 @@ const RenewalIntelligence = () => {
     const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
-    const rowsPerPage = 9;
+    const rowsPerPage = 7;
     const filterRef = useRef(null);
 
     // Icon mapping for products
@@ -1568,8 +1568,15 @@ const RenewalIntelligence = () => {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 gap: '8px',
-                                marginTop: '20px',
-                                padding: '16px'
+                                position: 'absolute',
+                                bottom: '0',
+                                left: '0',
+                                right: '0',
+                                padding: '16px',
+                                backgroundColor: 'white',
+                                borderTop: '1px solid #e5e7eb',
+                                boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.05)',
+                                zIndex: '100'
                             }}>
                                 {(() => {
                                     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -1868,7 +1875,7 @@ const RenewalIntelligence = () => {
                     border-radius: 12px;
                     padding: 1.25rem 1.5rem 1.5rem;
                     width: 100%;
-                    height:800px;
+                    height:750px;
                     max-width: 100%;
                     overflow-x: hidden;
                 }
@@ -1888,13 +1895,14 @@ const RenewalIntelligence = () => {
                 }
 
                 .table-container {
-                    max-height: 700px;
+                    max-height: 600px;
                     overflow-x: auto;
                     overflow-y: auto;
                     position: relative;
                     border: 1px solid #e5e7eb;
                     border-radius: 10px;
                     background-color: #fff;
+                    padding-bottom: 70px;
                 }
 
                 .sticky-header {
