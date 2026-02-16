@@ -204,6 +204,7 @@ const RenewalIntelligence = () => {
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
+    const [selectedRows, setSelectedRows] = useState(new Set()); // Track selected rows for checkbox
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const rowsPerPage = 7;
@@ -1648,6 +1649,23 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '50px' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedRows.size > 0 && selectedRows.size === tableData.length}
+                                            onChange={(e) => {
+                                              if (e.target.checked) {
+                                                const newSelected = new Set();
+                                                tableData.forEach((_, idx) => newSelected.add(idx));
+                                                setSelectedRows(newSelected);
+                                              } else {
+                                                setSelectedRows(new Set());
+                                              }
+                                            }}
+                                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                          />
+                                        </th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
                                         <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
                                         <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
@@ -1660,6 +1678,22 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '50px' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedRows.size > 0 && selectedRows.size === filteredData.length}
+                                            onChange={(e) => {
+                                              if (e.target.checked) {
+                                                const newSelected = new Set();
+                                                filteredData.forEach((_, idx) => newSelected.add(idx));
+                                                setSelectedRows(newSelected);
+                                              } else {
+                                                setSelectedRows(new Set());
+                                              }
+                                            }}
+                                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                          />
+                                        </th>
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
                                         <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
@@ -1669,7 +1703,7 @@ const RenewalIntelligence = () => {
                                 <tbody>
                                     {filteredData.length === 0 ? (
                                         <tr>
-                                            <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
+                                            <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
                                                 No data available for the selected filters
                                             </td>
                                         </tr>
@@ -1687,6 +1721,23 @@ const RenewalIntelligence = () => {
 
                                                 return (
                                                     <tr key={index}>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px', width: '50px' }}>
+                                                          <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.has(actualIndex)}
+                                                            onChange={(e) => {
+                                                              e.stopPropagation();
+                                                              const newSelected = new Set(selectedRows);
+                                                              if (e.target.checked) {
+                                                                newSelected.add(actualIndex);
+                                                              } else {
+                                                                newSelected.delete(actualIndex);
+                                                              }
+                                                              setSelectedRows(newSelected);
+                                                            }}
+                                                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                          />
+                                                        </td>
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
                                                                 onClick={() => {
