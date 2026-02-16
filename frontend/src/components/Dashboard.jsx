@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IndustryProvider } from '../context/IndustryContext';
 import Header from './Header';
 import Menu from './Menu';
+import Home from './martech/Home';
 import MartechSummary from './martech/Summary';
 import MartechNTP from './martech/NTP';
 import Martechintent from './martech/Intent';
@@ -11,7 +12,7 @@ import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
 
 const Dashboard = ({ onLogout, onNavRef, username }) => {
-  const [activeSection, setActiveSection] = useState('Technographics');
+  const [activeSection, setActiveSection] = useState('Home');
 
   const handleMenuClick = (section) => {
     setActiveSection(section);
@@ -40,11 +41,13 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return [/* 'Insights Panel', */ 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®', 'Product Catalogue'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®', 'Product Catalogue'];
   };
 
   const renderActiveSection = () => {
     switch (activeSection) {
+      case 'Home':
+        return <Home />;
       case 'Summary':
         return <MartechSummary />;
       case 'NTP':
@@ -61,7 +64,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
       case 'Product Catalogue':
         return <ProductCatalogue />;
       default:
-        return <MartechSummary />;
+        return <Home />;
     }
   };
 
@@ -75,7 +78,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
             onMenuClick={handleMenuClick}
             menuItems={getMenuItems()}
           />
-          <main className="main-content">
+          <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             {renderActiveSection()}
           </main>
         </div>
