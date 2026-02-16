@@ -742,10 +742,16 @@ h2 {
 
 th,
 td {
-  padding: 0.5rem 0.4rem;
+  padding: 12px 12px;
   text-align: left;
   border: none;
   font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+}
+
+th {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 th {
@@ -1722,4 +1728,39 @@ tr:hover {
 
 .tech-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+
+
+
+
+/* ========== TABLE COLUMN WIDTHS ========== */
+.table-container table th:nth-child(1),
+.table-container table td:nth-child(1) {
+  width: 50px;
+  min-width: 50px;
+}
+
+.table-container table th:nth-child(2),
+.table-container table td:nth-child(2) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.table-container table th:nth-child(3),
+.table-container table td:nth-child(3) {
+  width: 33.33%;
+  min-width: 150px;
+}
+
+.table-container table th:nth-child(4),
+.table-container table td:nth-child(4) {
+  width: 33.33%;
+  min-width: 150px;
+}
+
+.table-container table th:nth-child(5),
+.table-container table td:nth-child(5) {
+  width: 33.34%;
+  min-width: 150px;
 }

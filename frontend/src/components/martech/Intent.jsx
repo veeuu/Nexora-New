@@ -124,10 +124,7 @@ const Intent = () => {
         console.error("Failed to fetch Intent data:", e);
         setTableData([]); // Set empty data on error
       } finally {
-        // Add 2-second delay before hiding loading screen
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
+        setLoading(false);
       }
     };
 

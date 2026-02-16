@@ -83,4 +83,8 @@ const CompanySchema = new mongoose.Schema({
   Stock_Performance: StockPerformanceSchema
 }, { strict: false, collection: 'data' });
 
+// Add indexes for performance
+CompanySchema.index({ 'Company Name': 1 });
+CompanySchema.index({ 'Technographics.Keyword': 1 });
+
 module.exports = mongoose.model('Company', CompanySchema);

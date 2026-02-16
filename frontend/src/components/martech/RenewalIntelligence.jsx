@@ -210,6 +210,55 @@ const RenewalIntelligence = () => {
     const rowsPerPage = 7;
     const filterRef = useRef(null);
 
+    // Render logo/icon for category
+    const renderCategoryLogo = (categoryName) => {
+      if (!categoryName) return null;
+      
+      const logoPath = getLogoPath(categoryName);
+      
+      if (logoPath) {
+        return (
+          <img
+            src={logoPath}
+            alt={categoryName}
+            title={categoryName}
+            style={{
+              width: '16px',
+              height: '16px',
+              marginRight: '6px',
+              display: 'inline-block',
+              verticalAlign: 'middle',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        );
+      }
+      
+      const iconData = getTechIcon(categoryName);
+      if (iconData) {
+        const { component: IconComponent, color } = iconData;
+        return (
+          <IconComponent
+            size={16}
+            style={{
+              marginRight: '6px',
+              display: 'inline-block',
+              verticalAlign: 'middle',
+              color: color,
+              opacity: 0.85,
+              filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
+            }}
+            title={categoryName}
+          />
+        );
+      }
+      
+      return null;
+    };
+
     // Icon mapping for products
     const getProductIcon = (productName) => {
         if (!productName) return null;
@@ -357,48 +406,24 @@ const RenewalIntelligence = () => {
         setLoading(true);
         const fetchRenewalData = async () => {
             try {
-                const response = await fetch('/api/renewal-intelligence');
-                const data = await response.json();
-
-                // Fetch company data to get domain and linkedinUrl
-                const companiesResponse = await fetch('/api/technographics');
-                const companiesData = await companiesResponse.json();
+                setLoading(true);
                 
-                // Create a map of company name to company details
-                const companyDetailsMap = {};
-                companiesData.forEach(company => {
-                    if (!companyDetailsMap[company.companyName]) {
-                        companyDetailsMap[company.companyName] = {
-                            domain: company.domain,
-                            linkedinUrl: company.linkedinUrl
-                        };
-                    }
-                });
+                // Fetch both in parallel instead of sequentially
+                const [renewalResponse, companyDetailsResponse] = await Promise.all([
+                    fetch('/api/renewal-intelligence'),
+                    fetch('/api/company-details')
+                ]);
 
-                // Fetch product catalogue to get categories and products
-                const productResponse = await fetch('/api/product-catalogue');
-                const productData = await productResponse.json();
-                
-                // Create a map of product name to category
-                const productToCategoryMap = {};
-                const uniqueProductsSet = new Set();
-                
-                productData.forEach(p => {
-                    const productName = p.prodName || p['Product Name'] || p.product || '';
-                    const category = p.category || p.Category || 'Other';
-                    
-                    if (productName) {
-                        productToCategoryMap[productName] = category;
-                        uniqueProductsSet.add(productName);
-                    }
-                });
+                const data = await renewalResponse.json();
 
-                // Extract unique categories
-                const uniqueCategories = [...new Set(productData.map(p => p.category || p.Category || 'Other'))].sort();
+                const companyDetailsMap = await companyDetailsResponse.json();
+                
+                // Extract unique categories from renewal data
+                const uniqueCategories = [...new Set(data.map(item => item.category || 'Other'))].sort();
                 setCategories(uniqueCategories);
                 
-                // Extract unique products
-                const uniqueProducts = Array.from(uniqueProductsSet).sort();
+                // Extract unique products from renewal data
+                const uniqueProducts = [...new Set(data.map(item => item.product || ''))].filter(Boolean).sort();
                 setProducts(uniqueProducts);
 
                 // Add category, domain, and linkedinUrl to renewal data
@@ -406,7 +431,7 @@ const RenewalIntelligence = () => {
                     const companyDetails = companyDetailsMap[row.companyName] || {};
                     return {
                         ...row,
-                        category: productToCategoryMap[row.product] || 'Other',
+                        // Keep the category from the renewal API, don't override it
                         domain: companyDetails.domain || 'N/A',
                         linkedinUrl: companyDetails.linkedinUrl || ''
                     };
@@ -417,10 +442,7 @@ const RenewalIntelligence = () => {
                 console.error('Error fetching renewal data:', error);
                 setTableData([]);
             } finally {
-                // Add 2-second delay before hiding loading screen
-                setTimeout(() => {
-                    setLoading(false);
-                }, 1000);
+                setLoading(false);
             }
         };
         fetchRenewalData();
@@ -1133,6 +1155,7 @@ const RenewalIntelligence = () => {
                                 height: '16px'
                               }}
                             />
+                            {renderCategoryLogo(option)}
                             {option}
                           </div>
                           <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
@@ -1666,9 +1689,9 @@ const RenewalIntelligence = () => {
                                           />
                                         </th>
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
-                                        <th style={{ textAlign: 'left' }}>Company Name</th>
-                                        <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -1695,9 +1718,9 @@ const RenewalIntelligence = () => {
                                           />
                                         </th>
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
-                                        <th style={{ textAlign: 'left' }}>Company Name</th>
-                                        <th style={{ textAlign: 'left' }}>Product</th>
-                                        <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1785,7 +1808,7 @@ const RenewalIntelligence = () => {
                                                                 )}
                                                             </button>
                                                         </td>
-                                                        <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
                                                             const rect = e.target.getBoundingClientRect();
                                                             setTooltip({
                                                                 show: true,
@@ -1844,7 +1867,7 @@ const RenewalIntelligence = () => {
                                                                 </div>
                                                             )}
                                                         </td>
-                                                        <td onMouseEnter={(e) => {
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
                                                             const rect = e.target.getBoundingClientRect();
                                                             setTooltip({
                                                                 show: true,
@@ -1858,7 +1881,7 @@ const RenewalIntelligence = () => {
                                                                 {row.product}
                                                             </span>
                                                         </td>
-                                                        <td onMouseEnter={(e) => {
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
                                                             const rect = e.target.getBoundingClientRect();
                                                             setTooltip({
                                                                 show: true,

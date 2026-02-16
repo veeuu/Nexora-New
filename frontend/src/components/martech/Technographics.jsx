@@ -863,20 +863,18 @@ const Technographics = () => {
         setLoading(true);
         setError(null);
         
-        // Fetch all technographics data
-        const response = await fetch('/api/technographics');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setTableData(data);
+        // Fetch both in parallel instead of sequentially
+        const [techResponse, ntpResponse] = await Promise.all([
+          fetch('/api/technographics'),
+          fetch('/api/ntp')
+        ]);
 
-        // Fetch all NTP data
-        const ntpResponse = await fetch('/api/ntp');
-        if (ntpResponse.ok) {
-          const ntpDataFetched = await ntpResponse.json();
-          setNtpData(ntpDataFetched);
-        }
+        const data = await techResponse.json();
+
+        const ntpDataFetched = await ntpResponse.json();
+
+        setTableData(data);
+        setNtpData(ntpDataFetched);
 
         // Calculate industry counts from the table data
         const industryCounts = {};

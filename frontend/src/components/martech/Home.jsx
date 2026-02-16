@@ -16,50 +16,11 @@ const Home = () => {
       try {
         setLoading(true);
         
-        // Fetch data from all endpoints to calculate stats
-        const [techResponse, ntpResponse, renewalResponse, productResponse] = await Promise.all([
-          fetch('/api/technographics'),
-          fetch('/api/ntp'),
-          fetch('/api/renewal-intelligence'),
-          fetch('/api/product-catalogue')
-        ]);
+        // Fetch aggregated stats from single optimized endpoint
+        const response = await fetch('/api/dashboard-stats');
+        const data = await response.json();
 
-        const techData = await techResponse.json();
-        const ntpData = await ntpResponse.json();
-        const renewalData = await renewalResponse.json();
-        const productData = await productResponse.json();
-
-        // Calculate unique companies
-        const uniqueCompanies = new Set();
-        techData.forEach(item => uniqueCompanies.add(item.companyName));
-        ntpData.forEach(item => uniqueCompanies.add(item.companyName));
-        renewalData.forEach(item => uniqueCompanies.add(item.companyName));
-
-        // Calculate unique technologies
-        const uniqueTechs = new Set();
-        techData.forEach(item => uniqueTechs.add(item.technology));
-        ntpData.forEach(item => uniqueTechs.add(item.technology));
-
-        // Calculate unique products
-        const uniqueProducts = new Set();
-        productData.forEach(item => {
-          const prodName = item.prodName || item['Product Name'] || item.product || '';
-          if (prodName) uniqueProducts.add(prodName);
-        });
-
-        // Calculate unique categories
-        const uniqueCategories = new Set();
-        productData.forEach(item => {
-          const category = item.category || item.Category || 'Other';
-          uniqueCategories.add(category);
-        });
-
-        setStats({
-          totalCompanies: uniqueCompanies.size,
-          totalTechnologies: uniqueTechs.size,
-          totalProducts: uniqueProducts.size,
-          totalCategories: uniqueCategories.size
-        });
+        setStats(data);
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {
@@ -89,13 +50,32 @@ const Home = () => {
             width: '250px',
             height: 'auto',
             marginBottom: '30px',
-            opacity: 0.9
+            opacity: 0.9,
+            animation: 'pulse 2s infinite'
           }}
         />
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '20px',
+          width: '100%',
+          maxWidth: '1000px',
+          marginTop: '40px'
+        }}>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{
+              height: '120px',
+              backgroundColor: '#f3f4f6',
+              borderRadius: '8px',
+              animation: 'pulse 2s infinite'
+            }} />
+          ))}
+        </div>
         <p style={{
           color: '#6b7280',
           fontSize: '14px',
-          textAlign: 'center'
+          textAlign: 'center',
+          marginTop: '30px'
         }}>
           Loading dashboard...
         </p>
@@ -104,7 +84,8 @@ const Home = () => {
   }
 
   return (
-    <div className="home-container">
+    <>
+      <div className="home-container">
       {/* Header */}
       <div className="home-header">
         <h1 className="home-title">
@@ -196,6 +177,7 @@ const Home = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
