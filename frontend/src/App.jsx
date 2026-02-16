@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import ChatBot from './components/ChatBot';
@@ -28,11 +29,20 @@ function App() {
 
   return (
     <div className="App">
-      {isAuthenticated ? (
-        <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} />
-      ) : (
-        <Login onLogin={handleLogin} />
-      )}
+      <Routes>
+        <Route 
+          path="/login" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
+        />
+        <Route 
+          path="/dashboard/*" 
+          element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
+        />
+      </Routes>
       {/* <ChatBot isAuthenticated={isAuthenticated} onNavigate={handleChatbotNavigate} /> */}
     </div>
   );

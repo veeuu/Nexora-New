@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { IndustryProvider } from '../context/IndustryContext';
 import Menu from './Menu';
 import Home from './martech/Home';
@@ -11,10 +12,45 @@ import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
 
 const Dashboard = ({ onLogout, onNavRef, username }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState('Home');
+
+  // Map routes to section names
+  const routeToSection = {
+    '/dashboard': 'Home',
+    '/dashboard/home': 'Home',
+    '/dashboard/technographics': 'Technographics',
+    '/dashboard/renewal-intelligence': 'Renewal Intelligence',
+    '/dashboard/intent': 'Intent',
+    '/dashboard/buying-group': 'Buying Group',
+    '/dashboard/ntp': 'NTP®',
+    '/dashboard/product-catalogue': 'Product Catalogue'
+  };
+
+  // Update active section based on current route
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const section = routeToSection[currentPath] || 'Home';
+    setActiveSection(section);
+  }, [location.pathname]);
 
   const handleMenuClick = (section) => {
     setActiveSection(section);
+    
+    // Map section names to routes
+    const sectionToRoute = {
+      'Home': '/dashboard/home',
+      'Technographics': '/dashboard/technographics',
+      'Renewal Intelligence': '/dashboard/renewal-intelligence',
+      'Intent': '/dashboard/intent',
+      'Buying Group': '/dashboard/buying-group',
+      'NTP®': '/dashboard/ntp',
+      'Product Catalogue': '/dashboard/product-catalogue'
+    };
+    
+    const route = sectionToRoute[section] || '/dashboard/home';
+    navigate(route);
   };
 
   const handleChatbotNavigation = (page) => {
@@ -30,7 +66,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
     };
 
     const section = sectionMap[page.page] || 'Summary';
-    setActiveSection(section);
+    handleMenuClick(section);
   };
 
   useEffect(() => {
@@ -79,7 +115,16 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
             onLogout={onLogout}
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
-            {renderActiveSection()}
+            <Routes>
+              <Route path="/home" element={<Home />} />
+              <Route path="/technographics" element={<MartechTechnographics />} />
+              <Route path="/renewal-intelligence" element={<RenewalIntelligence />} />
+              <Route path="/intent" element={<Martechintent />} />
+              <Route path="/buying-group" element={<MartechBuyingGroup />} />
+              <Route path="/ntp" element={<MartechNTP />} />
+              <Route path="/product-catalogue" element={<ProductCatalogue />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
           </main>
         </div>
       </div>

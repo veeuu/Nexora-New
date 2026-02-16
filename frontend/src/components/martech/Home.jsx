@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductCatalogue from './ProductCatalogue';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import '../../styles/home.css';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalCompanies: 0,
     totalTechnologies: 0,
@@ -236,13 +238,18 @@ const Home = () => {
             </h2>
             <div className="home-quick-links-grid">
               {[
-                { name: 'Technographics', desc: 'View company technology stack' },
-                { name: 'Renewal Intelligence', desc: 'Track renewal timelines' },
-                { name: 'Intent', desc: 'Monitor buying intent signals' },
-                { name: 'NTP®', desc: 'Analyze purchase propensity' },
-                { name: 'Buying Group', desc: 'Identify decision makers' }
+                { name: 'Technographics', desc: 'View company technology stack', route: '/dashboard/technographics' },
+                { name: 'Renewal Intelligence', desc: 'Track renewal timelines', route: '/dashboard/renewal-intelligence' },
+                { name: 'Intent', desc: 'Monitor buying intent signals', route: '/dashboard/intent' },
+                { name: 'NTP®', desc: 'Analyze purchase propensity', route: '/dashboard/ntp' },
+                { name: 'Buying Group', desc: 'Identify decision makers', route: '/dashboard/buying-group' }
               ].map((link, idx) => (
-                <div key={idx} className="home-quick-link-card">
+                <div 
+                  key={idx} 
+                  className="home-quick-link-card"
+                  onClick={() => navigate(link.route)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="home-quick-link-name">
                     {link.name}
                   </div>
