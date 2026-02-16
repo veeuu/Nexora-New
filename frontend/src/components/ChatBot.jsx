@@ -96,7 +96,7 @@ Based on this question, provide a brief, friendly response (1-2 sentences) about
           botMessage += `\n• ${page.page}: ${page.description}`;
         });
       } else {
-        botMessage += '\n\nI couldn\'t find a specific page for that. Try asking about Intent, Technographics, NTP, Buying Groups, or Financial data.';
+        botMessage += '\n\nI couldn\'t find a specific page for that. Try asking about Intent, Technographics, NTP, Buying Groups, Renewal Intelligence, or Product Catalogue.';
       }
 
       setMessages(prev => [...prev, { type: 'bot', text: botMessage, pages: relevantPages }]);
