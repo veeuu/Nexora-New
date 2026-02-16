@@ -495,6 +495,33 @@ const RenewalIntelligence = () => {
         return [...new Set(allQtrs)].sort();
     };
 
+    const getUniqueCategories = () => {
+        if (!tableData) return [];
+        const allCategories = tableData.map(item => item.category);
+        return [...new Set(allCategories)].sort();
+    };
+
+    // Get products for a specific category
+    const getProductsByCategory = (category) => {
+        if (!tableData) return [];
+        const products = tableData
+            .filter(item => item.category === category)
+            .map(item => item.product);
+        return [...new Set(products)].sort();
+    };
+
+    // Helper function to count accounts by category
+    const getAccountCountByCategory = (category) => {
+        if (!tableData) return 0;
+        const uniqueAccounts = new Set();
+        tableData.forEach(row => {
+            if (row.category === category) {
+                uniqueAccounts.add(row.companyName);
+            }
+        });
+        return uniqueAccounts.size;
+    };
+
     // Helper function to count accounts by product
     const getAccountCountByProduct = (product) => {
         if (!tableData) return 0;
@@ -520,16 +547,17 @@ const RenewalIntelligence = () => {
     };
 
     // Check if mandatory filters are selected
-    const hasMandatoryFilters = filters.product.length > 0 && filters.qtr.length > 0;
+    const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 0;
 
     const filteredData = tableData.filter(row => {
-        // Mandatory filters - must have product and qtr
+        // Mandatory filters - must have category and qtr
         if (!hasMandatoryFilters) return false;
 
         const companyMatch = filters.companyName.length === 0 || filters.companyName.includes(row.companyName);
-        const productMatch = filters.product.includes(row.product);
+        const categoryMatch = filters.category.includes(row.category);
+        const productMatch = filters.product.length === 0 || filters.product.includes(row.product);
         const qtrMatch = filters.qtr.includes(row.qtr);
-        return companyMatch && productMatch && qtrMatch;
+        return companyMatch && categoryMatch && productMatch && qtrMatch;
     });
 
     // Calculate chart data from filtered data
@@ -737,7 +765,8 @@ const RenewalIntelligence = () => {
                     }}
                   >
                     {[
-                      { label: 'Company Name', key: 'companyName', mandatory: false }
+                      { label: 'Company Name', key: 'companyName', mandatory: false },
+                      { label: 'Product', key: 'product', mandatory: false }
                     ].map((filterOption) => (
                       <div
                         key={filterOption.key}
@@ -769,11 +798,11 @@ const RenewalIntelligence = () => {
                 )}
               </div>
 
-              {/* Product Filter - Always Visible (Mandatory) */}
-              {activeFilterMenu !== 'product' && (
+              {/* Category Filter - Show only when not selected */}
+              {activeFilterMenu !== 'category' && filters.category.length === 0 && (
                 <div style={{ position: 'relative' }}>
                   <button
-                    onClick={() => setActiveFilterMenu('product')}
+                    onClick={() => setActiveFilterMenu('category')}
                     style={{
                       padding: '8px 14px',
                       backgroundColor: 'white',
@@ -797,7 +826,7 @@ const RenewalIntelligence = () => {
                       e.target.style.borderColor = '#d1d5db';
                     }}
                   >
-                    <span>Product {Array.isArray(filters.product) && filters.product.length > 0 && `(${filters.product.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                   </button>
                 </div>
               )}
@@ -989,8 +1018,8 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Product Filter Chip */}
-                {activeFilterMenu === 'product' && (
+                {/* Category Filter Chip */}
+                {activeFilterMenu === 'category' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
                       backgroundColor: '#dbeafe',
@@ -1003,11 +1032,11 @@ const RenewalIntelligence = () => {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Category ({filters.category.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
-                          setFilters(prev => ({ ...prev, product: [] }));
+                          setFilters(prev => ({ ...prev, category: [] }));
                         }}
                         style={{
                           background: 'none',
@@ -1038,11 +1067,167 @@ const RenewalIntelligence = () => {
                     }}>
                       <div
                         onClick={() => {
+                          if (filters.category.length === getUniqueCategories().length && filters.category.length > 0) {
+                            handleFilterChange('category', []);
+                          } else {
+                            handleFilterChange('category', getUniqueCategories());
+                          }
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                          backgroundColor: filters.category.length === getUniqueCategories().length && filters.category.length > 0 ? '#f3f4f6' : 'white',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.length === getUniqueCategories().length && filters.category.length > 0 ? '#f3f4f6' : 'white'}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.category.length === getUniqueCategories().length && filters.category.length > 0}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        All
+                      </div>
+                      {getUniqueCategories().map((option, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            const newCategories = filters.category.includes(option)
+                              ? filters.category.filter(c => c !== option)
+                              : [...filters.category, option];
+                            handleFilterChange('category', newCategories);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: filters.category.includes(option) ? '#dbeafe' : 'white',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            justifyContent: 'space-between'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(option) ? '#dbeafe' : 'white'}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="checkbox"
+                              checked={filters.category.includes(option)}
+                              onChange={() => {}}
+                              style={{
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px'
+                              }}
+                            />
+                            {option}
+                          </div>
+                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                            {getAccountCountByCategory(option)}
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Save Button */}
+                      <div style={{
+                        padding: '12px',
+                        borderTop: '1px solid #e5e7eb',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'sticky',
+                        bottom: 0
+                      }}>
+                        <button
+                          onClick={() => {
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '6px 16px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Product Filter Chip */}
+                {activeFilterMenu === 'product' && (
+                  <div style={{ position: 'relative' }}>
+                    <div style={{
+                      backgroundColor: '#dbeafe',
+                      border: '1px solid #93c5fd',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#1e40af'
+                    }}>
+                      <span>Product ({filters.product.length})</span>
+                      <button
+                        onClick={() => {
+                          setActiveFilterMenu(null);
+                          setFilters(prev => ({ ...prev, product: [] }));
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          padding: '0',
+                          color: '#1e40af',
+                          lineHeight: '1'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '250px',
+                      maxHeight: '400px',
+                      overflowY: 'auto'
+                    }}>
+                      <div
+                        onClick={() => {
                           if (filters.product.length === getUniqueProducts().length && filters.product.length > 0) {
-                            // If all are selected, deselect all
                             handleFilterChange('product', []);
                           } else {
-                            // Otherwise select all
                             handleFilterChange('product', getUniqueProducts());
                           }
                         }}
@@ -1071,6 +1256,8 @@ const RenewalIntelligence = () => {
                         />
                         All
                       </div>
+                      
+                      {/* Products flat list */}
                       {getUniqueProducts().map((option, idx) => (
                         <div
                           key={idx}
@@ -1348,10 +1535,88 @@ const RenewalIntelligence = () => {
                     </button>
                   </div>
                 )}
+
+                {/* Display saved category filter tag */}
+                {filters.category.length > 0 && activeFilterMenu !== 'category' && (
+                  <div style={{
+                    backgroundColor: '#dbeafe',
+                    border: '1px solid #93c5fd',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#1e40af',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('category')}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Category ({filters.category.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, category: [] }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#1e40af',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
+                {/* Display saved product filter tag */}
+                {filters.product.length > 0 && activeFilterMenu !== 'product' && (
+                  <div style={{
+                    backgroundColor: '#fef3c7',
+                    border: '1px solid #fcd34d',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#92400e',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('product')}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Product ({filters.product.length})
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, product: [] }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#92400e',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
                 </div>
                 
                 {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-                {filters.product.length > 0 && filters.qtr.length > 0 && (
+                {filters.category.length > 0 && filters.qtr.length > 0 && (
                   <button
                     onClick={() => downloadCSV(filteredData)}
                     className="download-csv-button"
@@ -1560,24 +1825,22 @@ const RenewalIntelligence = () => {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                    )}
 
-                            {/* Pagination Controls */}
-                            {filteredData.length > rowsPerPage && (
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                gap: '8px',
-                                position: 'absolute',
-                                bottom: '0',
-                                left: '0',
-                                right: '0',
-                                padding: '16px',
-                                backgroundColor: 'white',
-                                borderTop: '1px solid #e5e7eb',
-                                boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.05)',
-                                zIndex: '100'
-                            }}>
+                    {/* Pagination Controls - Outside table container */}
+                    {hasMandatoryFilters && filteredData.length > rowsPerPage && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '16px',
+                        backgroundColor: 'white',
+                        borderTop: '1px solid #e5e7eb',
+                        marginTop: '16px',
+                        borderRadius: '0 0 10px 10px'
+                    }}>
                                 {(() => {
                                     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
                                     const pages = [];
@@ -1743,9 +2006,7 @@ const RenewalIntelligence = () => {
                                         </>
                                     );
                                 })()}
-                            </div>
-                            )}
-                        </div>
+                    </div>
                     )}
                 </div>
 
@@ -1902,7 +2163,7 @@ const RenewalIntelligence = () => {
                     border: 1px solid #e5e7eb;
                     border-radius: 10px;
                     background-color: #fff;
-                    padding-bottom: 70px;
+                    padding-bottom: 0;
                 }
 
                 .sticky-header {
