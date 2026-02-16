@@ -2275,9 +2275,16 @@ const RenewalIntelligence = () => {
                 }
 
                 /* Explicitly enforce column width constraints so Renewal Intelligence is visible */
-                td:nth-child(1), th:nth-child(1) { width: 33.33%; }
-                td:nth-child(2), th:nth-child(2) { width: 33.33%; }
-                td:nth-child(3), th:nth-child(3) { width: 33.34%; }
+                td:nth-child(1), th:nth-child(1) { width: 50px !important; } /* Checkbox */
+                td:nth-child(2), th:nth-child(2) { width: 120px !important; } /* Reveal */
+                td:nth-child(3), th:nth-child(3) { width: 200px !important; } /* Company Name */
+                td:nth-child(4), th:nth-child(4) { width: 200px !important; } /* Product */
+                td:nth-child(5), th:nth-child(5) { width: 200px !important; } /* Renewal Intelligence */
+
+                /* Add padding to Reveal column for spacing */
+                td:nth-child(2), th:nth-child(2) { 
+                  padding-right: 30px !important;
+                }
 
                 td {
                     position: relative;
