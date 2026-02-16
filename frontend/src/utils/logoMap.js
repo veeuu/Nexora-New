@@ -65,6 +65,7 @@ export const getLogoPath = (techName) => {
     
     // CRM
     "crm": "CRM.png",
+    "crisp": "crisp.png",
     "salesforce": "SalesforceCRM.png",
     "salesforce crm": "SalesforceCRM.png",
     "salesforce.com": "SalesforceCRM.png",

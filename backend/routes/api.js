@@ -13,6 +13,24 @@ const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_char
 // to allow requests from your frontend.
 router.use(cors());
 
+// Cache management for dashboard stats
+let statsCache = null;
+let statsCacheTime = 0;
+const STATS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const getCachedStats = () => {
+  const now = Date.now();
+  if (statsCache && (now - statsCacheTime) < STATS_CACHE_DURATION) {
+    return statsCache;
+  }
+  return null;
+};
+
+const setCachedStats = (stats) => {
+  statsCache = stats;
+  statsCacheTime = Date.now();
+};
+
 // Helper function to inject scrollable CSS into org chart HTML
 function injectScrollableCSS(html) {
   const scrollableCSS = `.container {
@@ -105,16 +123,27 @@ function injectScrollableCSS(html) {
   return html;
 }
 
+// Cache for NTP data
+let ntpCache = null;
+let ntpCacheTime = 0;
+const NTP_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 // @route   GET /api/ntp
-// @desc    Get NTP data for all companies from MongoDB database
+// @desc    Get NTP data for all companies from MongoDB database (with caching)
 // @access  Public
 router.get('/ntp', async (req, res) => {
   try {
-    // Fetch all companies without pagination
-    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, Technographics: 1, _id: 0 });
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (ntpCache && (now - ntpCacheTime) < NTP_CACHE_DURATION) {
+      return res.json(ntpCache);
+    }
+
+    // Fetch only the fields we need for NTP
+    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, _id: 0 });
     
     const ntpData = companies.flatMap(company => {
-      const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
       const about = (company.Firmographics || {}).About || {};
       
       return company.NTP?.map(ntpItem => ({
@@ -126,10 +155,14 @@ router.get('/ntp', async (req, res) => {
         purchaseProbability: ntpItem['Purchase Probability (%)'],
         purchasePrediction: ntpItem['Purchase Prediction'],
         ntpAnalysis: ntpItem['NTP Analysis'],
-        latestDetectedDate: techMap.get(ntpItem.Technology)?.['Latest Date'] || 'N/A',
-        previousDetectedDate: techMap.get(ntpItem.Technology)?.['Previous Date'] || 'N/A'
+        latestDetectedDate: ntpItem['Latest Date'] || 'N/A',
+        previousDetectedDate: ntpItem['Previous Date'] || 'N/A'
       })) || [];
     });
+    
+    // Cache the results
+    ntpCache = ntpData;
+    ntpCacheTime = now;
     
     res.json(ntpData);
   } catch (err) {
@@ -138,11 +171,23 @@ router.get('/ntp', async (req, res) => {
   }
 });
 
+// Cache for technographics data
+let techCache = null;
+let techCacheTime = 0;
+const TECH_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 // @route   GET /api/technographics
-// @desc    Get Technographics data for all companies
+// @desc    Get Technographics data for all companies (with caching)
 // @access  Public
 router.get('/technographics', async (req, res) => {
   try {
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (techCache && (now - techCacheTime) < TECH_CACHE_DURATION) {
+      return res.json(techCache);
+    }
+
     // Fetch all companies without pagination
     const allCompanies = await Company.find({});
 
@@ -169,9 +214,97 @@ router.get('/technographics', async (req, res) => {
       })) || [];
     });
     
+    // Cache the results
+    techCache = technographicsData;
+    techCacheTime = now;
+    
     res.json(technographicsData);
   } catch (err) {
     console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Cache for company details
+let companyDetailsCache = null;
+let companyDetailsCacheTime = 0;
+const COMPANY_DETAILS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+// @route   GET /api/company-details
+// @desc    Get lightweight company details (domain, linkedin) for all companies
+// @access  Public
+router.get('/company-details', async (req, res) => {
+  try {
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (companyDetailsCache && (now - companyDetailsCacheTime) < COMPANY_DETAILS_CACHE_DURATION) {
+      return res.json(companyDetailsCache);
+    }
+
+    // Fetch only the fields we need
+    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
+
+    const companyDetails = {};
+    companies.forEach(company => {
+      const about = (company.Firmographics || {}).About || {};
+      companyDetails[company['Company Name']] = {
+        domain: about.Domain || 'N/A',
+        linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || ''
+      };
+    });
+    
+    // Cache the results
+    companyDetailsCache = companyDetails;
+    companyDetailsCacheTime = now;
+    
+    res.json(companyDetails);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Cache for renewal intelligence data
+let renewalCache = null;
+let renewalCacheTime = 0;
+const RENEWAL_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+// @route   GET /api/renewal-intelligence
+// @desc    Get Renewal Intelligence data (with caching)
+// @access  Public
+router.get('/renewal-intelligence', async (req, res) => {
+  try {
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (renewalCache && (now - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
+      return res.json(renewalCache);
+    }
+
+    const { companyName } = req.query; // Filter by 'Company Name'
+    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+
+    const query = companyName ? { 'Company Name': companyName } : {};
+    const renewalDocs = await renewalCollection.find(query).toArray();
+
+    const renewalData = renewalDocs.map(item => ({
+      companyName: item['Company Name'],
+      category: item.Category || 'N/A', // Add Category field from database
+      product: item.Keyword, // Using Keyword as Product
+      renewalDate: item['Renewal Date'],
+      qtr: item['Renewal Date'] // The quarter is the same as the renewal date
+    }));
+    
+    // Only cache if no company filter (full dataset)
+    if (!companyName) {
+      renewalCache = renewalData;
+      renewalCacheTime = now;
+    }
+    
+    res.json(renewalData);
+  } catch (err) {
+    console.error('Error fetching renewal intelligence data:', err.message);
     res.status(500).send('Server Error');
   }
 });
@@ -237,11 +370,23 @@ router.get('/buyergroups', async (req, res) => {
   }
 });
 
+// Cache for intent data
+let intentCache = null;
+let intentCacheTime = 0;
+const INTENT_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 // @route   GET /api/intent
-// @desc    Get Intent data for all companies
+// @desc    Get Intent data for all companies (with caching)
 // @access  Public
 router.get('/intent', async (req, res) => {
   try {
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
+      return res.json(intentCache);
+    }
+
     // Directly query the 'intent_data' collection
     const intentCollection = mongoose.connection.db.collection('intent_data');
     const intentDocs = await intentCollection.find({}).toArray();
@@ -252,6 +397,10 @@ router.get('/intent', async (req, res) => {
       companyName: item['Company Name'], // Corrected field name
       intentStatus: item['Intent Status']
     }));
+
+    // Cache the results
+    intentCache = intentData;
+    intentCacheTime = now;
 
     res.json(intentData);
   } catch (err) {
@@ -632,6 +781,76 @@ router.post('/org-chart/generate-selected', async (req, res) => {
   } catch (err) {
     console.error('Error generating selected org charts:', err.message);
     res.status(500).json({ error: 'Failed to generate org charts' });
+  }
+});
+
+// @route   GET /api/dashboard-stats
+// @desc    Get aggregated stats for dashboard (optimized with caching)
+// @access  Public
+router.get('/dashboard-stats', async (req, res) => {
+  try {
+    // Check cache first
+    const cached = getCachedStats();
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Use MongoDB aggregation pipeline for efficient counting
+    const statsResult = await Company.aggregate([
+      {
+        $facet: {
+          companies: [
+            { $group: { _id: '$Company Name' } },
+            { $count: 'count' }
+          ],
+          technologies: [
+            { $unwind: '$Technographics' },
+            { $match: { 'Technographics.Keyword': { $exists: true, $ne: null } } },
+            { $group: { _id: '$Technographics.Keyword' } },
+            { $count: 'count' }
+          ]
+        }
+      }
+    ]);
+
+    const companyCount = statsResult[0].companies[0]?.count || 0;
+    const techCount = statsResult[0].technologies[0]?.count || 0;
+
+    // Get product stats from product collection
+    const productCatalogueCollection = mongoose.connection.db.collection('product_catlog_2025');
+    const productStats = await productCatalogueCollection.aggregate([
+      {
+        $facet: {
+          products: [
+            { $match: { 'Product Name': { $exists: true, $ne: null } } },
+            { $group: { _id: '$Product Name' } },
+            { $count: 'count' }
+          ],
+          categories: [
+            { $match: { 'Category': { $exists: true, $ne: null } } },
+            { $group: { _id: '$Category' } },
+            { $count: 'count' }
+          ]
+        }
+      }
+    ]).toArray();
+
+    const productCount = productStats[0].products[0]?.count || 0;
+    const categoryCount = productStats[0].categories[0]?.count || 0;
+
+    const stats = {
+      totalCompanies: companyCount,
+      totalTechnologies: techCount,
+      totalProducts: productCount,
+      totalCategories: categoryCount
+    };
+
+    // Cache the results
+    setCachedStats(stats);
+    res.json(stats);
+  } catch (err) {
+    console.error('Error fetching dashboard stats:', err.message);
+    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
