@@ -201,7 +201,7 @@ body {
 
 .menu-solutions-image {
   width: 100%;
-  max-width: 220px;
+  max-width: 150px;
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -703,12 +703,12 @@ body {
     background: #ffffff;
   border-radius: 12px;
   padding: 0.4rem 0.5rem 0.5rem;
-  padding-top: 1.5rem;
+  padding-top: 0.01rem;
   margin-bottom: 0.5rem;
-  margin-left: 2.5rem;
+  margin-left: 0.5rem;
   margin-right: 2rem;
-  width: calc(100% - 4.5rem);
-  max-width: calc(100% - 4.5rem);
+  width: calc(100% - 2.5rem);
+  max-width: calc(100% - 2.5rem);
   overflow-x: hidden;
   min-height: 800px;
 }

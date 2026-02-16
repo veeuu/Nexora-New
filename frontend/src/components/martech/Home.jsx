@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import ProductCatalogue from './ProductCatalogue';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import '../../styles/home.css';
 
@@ -10,6 +11,10 @@ const Home = () => {
     totalCategories: 0
   });
   const [loading, setLoading] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showProductCatalogue, setShowProductCatalogue] = useState(false);
+  const [showDataDictionary, setShowDataDictionary] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -29,6 +34,17 @@ const Home = () => {
     };
 
     fetchStats();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   if (loading) {
@@ -88,94 +104,157 @@ const Home = () => {
       <div className="home-container">
       {/* Header */}
       <div className="home-header">
-        <h1 className="home-title">
-          Welcome to Nexora
-        </h1>
-        <p className="home-subtitle">
-          Your comprehensive B2B intelligence platform
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="home-stats-grid">
-        {/* Companies Card */}
-        <div className="home-stat-card home-stat-card-blue">
-          <div className="home-stat-number home-stat-number-blue">
-            {stats.totalCompanies}
-          </div>
-          <div className="home-stat-label home-stat-label-blue">
-            Total Companies
-          </div>
-          <p className="home-stat-description home-stat-description-blue">
-            Across all data sources
-          </p>
+        <div>
+          {(showProductCatalogue || showDataDictionary) && (
+            <button 
+              className="home-back-btn"
+              onClick={() => {
+                setShowProductCatalogue(false);
+                setShowDataDictionary(false);
+              }}
+              title="Back to Home"
+            >
+              ← Back
+            </button>
+          )}
+          {!showProductCatalogue && !showDataDictionary && (
+            <>
+              <h1 className="home-title">
+                Welcome to Nexora
+              </h1>
+              <p className="home-subtitle">
+                Your comprehensive B2B intelligence platform
+              </p>
+            </>
+          )}
         </div>
-
-        {/* Technologies Card */}
-        <div className="home-stat-card home-stat-card-green">
-          <div className="home-stat-number home-stat-number-green">
-            {stats.totalTechnologies}
-          </div>
-          <div className="home-stat-label home-stat-label-green">
-            Total Technologies
-          </div>
-          <p className="home-stat-description home-stat-description-green">
-            Tracked and monitored
-          </p>
-        </div>
-
-        {/* Products Card */}
-        <div className="home-stat-card home-stat-card-yellow">
-          <div className="home-stat-number home-stat-number-yellow">
-            {stats.totalProducts}
-          </div>
-          <div className="home-stat-label home-stat-label-yellow">
-            Total Products
-          </div>
-          <p className="home-stat-description home-stat-description-yellow">
-            In our catalogue
-          </p>
-        </div>
-
-        {/* Categories Card */}
-        <div className="home-stat-card home-stat-card-pink">
-          <div className="home-stat-number home-stat-number-pink">
-            {stats.totalCategories}
-          </div>
-          <div className="home-stat-label home-stat-label-pink">
-            Product Categories
-          </div>
-          <p className="home-stat-description home-stat-description-pink">
-            Organized and indexed
-          </p>
-        </div>
-      </div>
-
-      {/* Quick Links */}
-      <div className="home-quick-links-section">
-        <h2 className="home-quick-links-title">
-          Quick Links
-        </h2>
-        <div className="home-quick-links-grid">
-          {[
-            { name: 'Technographics', desc: 'View company technology stack' },
-            { name: 'Renewal Intelligence', desc: 'Track renewal timelines' },
-            { name: 'Intent', desc: 'Monitor buying intent signals' },
-            { name: 'NTP®', desc: 'Analyze purchase propensity' },
-            { name: 'Buying Group', desc: 'Identify decision makers' },
-            { name: 'Product Catalogue', desc: 'Browse product database' }
-          ].map((link, idx) => (
-            <div key={idx} className="home-quick-link-card">
-              <div className="home-quick-link-name">
-                {link.name}
-              </div>
-              <div className="home-quick-link-description">
-                {link.desc}
-              </div>
+        
+        {/* Dropdown in top right */}
+        <div className="home-header-dropdown" ref={dropdownRef}>
+          <button 
+            className="home-dropdown-btn"
+            onClick={() => setShowDropdown(!showDropdown)}
+          >
+            Resources <span className="home-dropdown-arrow">↓</span>
+          </button>
+          {showDropdown && (
+            <div className="home-dropdown-menu">
+              <button 
+                className="home-dropdown-item"
+                onClick={() => {
+                  setShowProductCatalogue(true);
+                  setShowDataDictionary(false);
+                  setShowDropdown(false);
+                }}
+              >
+                Product Catalogue
+              </button>
+              <button 
+                className="home-dropdown-item"
+                onClick={() => {
+                  setShowDataDictionary(true);
+                  setShowProductCatalogue(false);
+                  setShowDropdown(false);
+                }}
+              >
+                Data Dictionary
+              </button>
             </div>
-          ))}
+          )}
         </div>
       </div>
+
+      {/* Show Product Catalogue, Data Dictionary or Home Content */}
+      {showProductCatalogue ? (
+        <ProductCatalogue />
+      ) : showDataDictionary ? (
+        <div className="home-data-dictionary-placeholder">
+          <h2>Data Dictionary</h2>
+          <p>Data Dictionary content coming soon...</p>
+        </div>
+      ) : (
+        <>
+          {/* Stats Grid */}
+          <div className="home-stats-grid">
+            {/* Companies Card */}
+            <div className="home-stat-card home-stat-card-blue">
+              <div className="home-stat-number home-stat-number-blue">
+                {stats.totalCompanies}
+              </div>
+              <div className="home-stat-label home-stat-label-blue">
+                Total Companies
+              </div>
+              <p className="home-stat-description home-stat-description-blue">
+                Across all data sources
+              </p>
+            </div>
+
+            {/* Technologies Card */}
+            <div className="home-stat-card home-stat-card-green">
+              <div className="home-stat-number home-stat-number-green">
+                {stats.totalTechnologies}
+              </div>
+              <div className="home-stat-label home-stat-label-green">
+                Total Technologies
+              </div>
+              <p className="home-stat-description home-stat-description-green">
+                Tracked and monitored
+              </p>
+            </div>
+
+            {/* Products Card */}
+            <div className="home-stat-card home-stat-card-yellow">
+              <div className="home-stat-number home-stat-number-yellow">
+                {stats.totalProducts}
+              </div>
+              <div className="home-stat-label home-stat-label-yellow">
+                Total Products
+              </div>
+              <p className="home-stat-description home-stat-description-yellow">
+                In our catalogue
+              </p>
+            </div>
+
+            {/* Categories Card */}
+            <div className="home-stat-card home-stat-card-pink">
+              <div className="home-stat-number home-stat-number-pink">
+                {stats.totalCategories}
+              </div>
+              <div className="home-stat-label home-stat-label-pink">
+                Product Categories
+              </div>
+              <p className="home-stat-description home-stat-description-pink">
+                Organized and indexed
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div className="home-quick-links-section">
+            <h2 className="home-quick-links-title">
+              Quick Links
+            </h2>
+            <div className="home-quick-links-grid">
+              {[
+                { name: 'Technographics', desc: 'View company technology stack' },
+                { name: 'Renewal Intelligence', desc: 'Track renewal timelines' },
+                { name: 'Intent', desc: 'Monitor buying intent signals' },
+                { name: 'NTP®', desc: 'Analyze purchase propensity' },
+                { name: 'Buying Group', desc: 'Identify decision makers' }
+              ].map((link, idx) => (
+                <div key={idx} className="home-quick-link-card">
+                  <div className="home-quick-link-name">
+                    {link.name}
+                  </div>
+                  <div className="home-quick-link-description">
+                    {link.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
     </>
   );

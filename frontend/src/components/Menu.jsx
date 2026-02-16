@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import solutionsImage from '../assets/unnamed (1).png';
+import nexoraLogo from '../assets/nexora-white.png';
 
 const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +62,7 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
           <span></span>
           <span></span>
         </div>
-        <img src={solutionsImage} alt="Solutions" className="menu-solutions-image" />
+        <img src={nexoraLogo} alt="Nexora" className="menu-solutions-image" />
       </div>
       <ul className={`menu-items ${isOpen ? 'open' : ''}`}>
         {menuItems.map((item) => (
