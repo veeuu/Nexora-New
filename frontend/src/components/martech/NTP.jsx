@@ -270,7 +270,7 @@ const NTP = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 6;
+  const rowsPerPage = 9;
   const filterRef = useRef(null);
   const scrollRefsMap = useRef(new Map());
   const techScrollRef = useRef(null);
@@ -729,7 +729,6 @@ const NTP = () => {
               >
                 {[
                   { label: 'Company Name', key: 'companyName', mandatory: false },
-                  { label: 'Category', key: 'category', mandatory: false },
                   { label: 'Technology', key: 'technology', mandatory: false }
                 ].map((filterOption) => (
                   <div
@@ -909,7 +908,7 @@ const NTP = () => {
                           accentColor: '#3b82f6'
                         }}
                       />
-                      {option}
+                      <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{option}</span>
                     </div>
                   );
                 })}

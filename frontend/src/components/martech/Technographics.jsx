@@ -1616,7 +1616,7 @@ const Technographics = () => {
                         onChange={() => {}}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span>{company}</span>
+                      <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{company}</span>
                     </div>
                   </div>
                 ))}
