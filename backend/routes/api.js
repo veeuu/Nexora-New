@@ -115,10 +115,12 @@ router.get('/ntp', async (req, res) => {
     
     const ntpData = companies.flatMap(company => {
       const techMap = new Map((company.Technographics || []).map(t => [t.Keyword, t]));
+      const about = (company.Firmographics || {}).About || {};
       
       return company.NTP?.map(ntpItem => ({
         companyName: company['Company Name'],
-        domain: company.Firmographics?.About?.Domain || 'N/A',
+        domain: about.Domain || 'N/A',
+        linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
         category: ntpItem.Category,
         technology: ntpItem.Technology,
         purchaseProbability: ntpItem['Purchase Probability (%)'],
@@ -160,7 +162,7 @@ router.get('/technographics', async (req, res) => {
         category: techItem.Category,
         technology: techItem.Keyword,
         domain: about.Domain || 'N/A',
-        linkedinUrl: about.linkedinUrl || '',
+        linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
         previousDetectedDate: techItem['Previous Date'] || 'N/A',
         latestDetectedDate: techItem['Latest Date'] || 'N/A',
         renewalDate: techItem['Renewal Date'] || 'N/A'

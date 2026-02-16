@@ -730,7 +730,7 @@ th,
 td {
   padding: 0.5rem 0.4rem;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border: none;
   font-size: clamp(0.85rem, 1.5vw, 0.95rem);
 }
 
@@ -740,6 +740,23 @@ th {
   position: sticky;
   top: 0;
   z-index: 1;
+  border: none;
+}
+
+.table-container table {
+  border-collapse: collapse;
+}
+
+.table-container table tbody tr {
+  border: none;
+}
+
+.table-container table tbody td {
+  border: none;
+}
+
+.table-container table tbody tr.company-separator {
+  border-top: 1px solid #e5e7eb;
 }
 
 .table-container table thead tr:first-child th {
@@ -1652,4 +1669,25 @@ tr:hover {
     background-color: white;
     color: #000;
   }
+}
+
+
+
+/* ========== TECH SCROLL CONTAINER ========== */
+.tech-scroll-container::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.tech-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tech-scroll-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.tech-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
