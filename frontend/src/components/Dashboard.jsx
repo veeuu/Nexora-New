@@ -40,7 +40,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®', 'Product Catalogue'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®'];
   };
 
   const renderActiveSection = () => {

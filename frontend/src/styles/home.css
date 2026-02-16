@@ -3,7 +3,11 @@
 }
 
 .home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 40px;
+  gap: 20px;
 }
 
 .home-title {
@@ -173,4 +177,126 @@
   50% {
     opacity: 0.5;
   }
+}
+
+/* Dropdown Styles */
+.home-header-dropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.home-dropdown-btn {
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #0d2439eb 0%, #0050b3 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-dropdown-btn:hover {
+  background: linear-gradient(135deg, #0a1f2e 0%, #003d8a 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.home-dropdown-btn:active {
+  background: linear-gradient(135deg, #051829 0%, #002d66 100%);
+  transform: translateY(0);
+}
+
+.home-dropdown-arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 16px;
+}
+
+.home-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 180px;
+  overflow: hidden;
+}
+
+.home-dropdown-item {
+  display: block;
+  padding: 12px 16px;
+  color: #1f2937;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.home-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.home-dropdown-item:hover {
+  background-color: #f3f4f6;
+  color: #0050b3;
+}
+
+.home-dropdown-item:active {
+  background-color: #e5e7eb;
+}
+
+/* Back Button */
+.home-back-btn {
+  padding: 8px 16px;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.home-back-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.home-back-btn:active {
+  background-color: #d1d5db;
+}
+
+/* Data Dictionary Placeholder */
+.home-data-dictionary-placeholder {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+}
+
+.home-data-dictionary-placeholder h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.home-data-dictionary-placeholder p {
+  font-size: 16px;
+  color: #6b7280;
 }
