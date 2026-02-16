@@ -176,6 +176,31 @@ router.get('/technographics', async (req, res) => {
   
   
 
+// @route   GET /api/renewal-intelligence
+// @desc    Get Renewal Intelligence data
+// @access  Public
+router.get('/renewal-intelligence', async (req, res) => {
+  try {
+    const { companyName } = req.query; // Filter by 'Company Name'
+    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+
+    const query = companyName ? { 'Company Name': companyName } : {};
+    const renewalDocs = await renewalCollection.find(query).toArray();
+
+    const renewalData = renewalDocs.map(item => ({
+      companyName: item['Company Name'],
+      category: item.Category || 'N/A', // Add Category field from database
+      product: item.Keyword, // Using Keyword as Product
+      renewalDate: item['Renewal Date'],
+      qtr: item['Renewal Date'] // The quarter is the same as the renewal date
+    }));
+    res.json(renewalData);
+  } catch (err) {
+    console.error('Error fetching renewal intelligence data:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET /api/buyergroups
 // @desc    Get Buyer Group data for all companies
 // @access  Public
@@ -210,8 +235,8 @@ router.get('/buyergroups', async (req, res) => {
   }
 });
 
-// @route   GET /api/mutualfunds
-// @desc    Get Mutual Fund Holders data for all companies
+// @route   GET /api/intent
+// @desc    Get Intent data for all companies
 // @access  Public
 router.get('/intent', async (req, res) => {
   try {
@@ -233,6 +258,9 @@ router.get('/intent', async (req, res) => {
   }
 });
 
+// @route   GET /api/renewal-intelligence
+// @desc    Get Renewal Intelligence data
+// @access  Public
 router.get('/renewal-intelligence', async (req, res) => {
   try {
     const { companyName } = req.query; // Filter by 'Company Name'

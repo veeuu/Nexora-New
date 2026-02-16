@@ -9,30 +9,12 @@ import MartechTechnographics from './martech/Technographics';
 import RenewalIntelligence from './martech/RenewalIntelligence';
 import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
-import MarketSummary from './market/Summary';
-// import MarketNTP from './market/NTP'; // Commented out as requested
-import MarketFinancial from './market/Financial';
-import StockPerformance from './market/StockPerformance';
-import BuyerGroup from './market/BuyerGroup';
-import Growth from './market/Growth';
-import MutualFund from './market/MutualFund'; // Added import for MutualFund
 
 const Dashboard = ({ onLogout, onNavRef, username }) => {
-  const [activeView, setActiveView] = useState('Martech');
   const [activeSection, setActiveSection] = useState('Technographics');
-  const [selectedRegion, setSelectedRegion] = useState('');
-
-  const handleDropdownChange = (value) => {
-    setActiveView(value);
-    setActiveSection('Summary');
-  };
 
   const handleMenuClick = (section) => {
     setActiveSection(section);
-  };
-
-  const handleRegionChange = (region) => {
-    setSelectedRegion(region);
   };
 
   const handleChatbotNavigation = (page) => {
@@ -44,16 +26,10 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
       'NTP': 'NTP®',
       'Buying Group': 'Buying Group',
       'Renewal Intelligence': 'Renewal Intelligence',
-      'Summary': 'Summary',
-      'Financial': 'Financial',
-      'Stock Performance': 'Stock Performance',
-      'Buyer Group': 'Buyer Group'
+      'Summary': 'Summary'
     };
 
-    const view = ['Intent', 'Technographics', 'NTP', 'Buying Group', 'Renewal Intelligence'].includes(page.page) ? 'Martech' : 'Market';
     const section = sectionMap[page.page] || 'Summary';
-
-    setActiveView(view);
     setActiveSection(section);
   };
 
@@ -64,51 +40,28 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return activeView === 'Martech'
-      ? [/* 'Insights Panel', */ 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®', 'Product Catalogue']
-      : ['Summary', /* 'NTP', */ 'Financial', 'Stock Performance', 'Buyer Group', 'Growth', 'Mutual Fund']; // Added 'Mutual Fund' to the menu
+    return [/* 'Insights Panel', */ 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'NTP®', 'Product Catalogue'];
   };
 
   const renderActiveSection = () => {
-    if (activeView === 'Martech') {
-      switch (activeSection) {
-        case 'Summary':
-          return <MartechSummary />;
-        case 'NTP':
-        case 'NTP®':
-          return <MartechNTP selectedRegion={selectedRegion} />;
-        case 'Intent':
-          return <Martechintent />;
-        case 'Technographics':
-          return <MartechTechnographics />;
-        case 'Renewal Intelligence':
-          return <RenewalIntelligence />;
-        case 'Buying Group':
-          return <MartechBuyingGroup />;
-        case 'Product Catalogue':
-          return <ProductCatalogue />;
-        default:
-          return <MartechSummary />;
-      }
-    } else {
-      switch (activeSection) {
-        case 'Summary':
-          return <MarketSummary />;
-        // case 'NTP':
-        //   return <MarketNTP />; // Commented out
-        case 'Financial':
-          return <MarketFinancial />;
-        case 'Stock Performance':
-          return <StockPerformance />;
-        case 'Buyer Group':
-          return <BuyerGroup />;
-        case 'Growth':
-          return <Growth />;
-        case 'Mutual Fund':
-          return <MutualFund />;
-        default:
-          return <MarketSummary />;
-      }
+    switch (activeSection) {
+      case 'Summary':
+        return <MartechSummary />;
+      case 'NTP':
+      case 'NTP®':
+        return <MartechNTP />;
+      case 'Intent':
+        return <Martechintent />;
+      case 'Technographics':
+        return <MartechTechnographics />;
+      case 'Renewal Intelligence':
+        return <RenewalIntelligence />;
+      case 'Buying Group':
+        return <MartechBuyingGroup />;
+      case 'Product Catalogue':
+        return <ProductCatalogue />;
+      default:
+        return <MartechSummary />;
     }
   };
 
