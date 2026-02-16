@@ -3036,7 +3036,8 @@ const Technographics = () => {
                       hint: 'Click to view NTP Analysis',
                       x: rect.right - 20,
                       y: rect.bottom + 20,
-                      isCompanyName: true
+                      isCompanyName: true,
+                      isBlurred: !revealedRows.has(`${actualIndex}-${row.companyName}`)
                     });
                   };
 
@@ -3067,7 +3068,6 @@ const Technographics = () => {
                     <tr 
                       key={index} 
                       style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent', cursor: 'pointer', borderBottom: '1px solid #e5e7eb' }}
-                      onClick={() => setSelectedCompany(row.companyName)}
                     >
                       <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
                         <input
@@ -3143,7 +3143,10 @@ const Technographics = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
                             <>
-                              <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                              <div 
+                                style={{ fontWeight: '600', color: '#1f2937', cursor: 'pointer' }}
+                                onClick={() => setSelectedCompany(row.companyName)}
+                              >
                                 {highlightText(row.companyName, searchTerm)}
                               </div>
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -3634,7 +3637,7 @@ const Technographics = () => {
             lineHeight: '1.4'
           }}
         >
-          <div style={{ fontWeight: '600', marginBottom: tooltip.hint ? '6px' : '0' }}>
+          <div style={{ fontWeight: '600', marginBottom: tooltip.hint ? '6px' : '0', filter: tooltip.isBlurred ? 'blur(6px)' : 'none' }}>
             {tooltip.text}
           </div>
           {tooltip.hint && (
@@ -3658,7 +3661,12 @@ const Technographics = () => {
       )}
 
       {/* Side Panel for NTP Details */}
-      {selectedCompany && (
+      {selectedCompany && (() => {
+        // Find the selected company in filteredData to check if it's revealed
+        const selectedRowIndex = filteredData.findIndex(row => row.companyName === selectedCompany);
+        const isRevealed = selectedRowIndex >= 0 && revealedRows.has(`${selectedRowIndex}-${selectedCompany}`);
+
+        return isRevealed ? (
         <>
           <div 
             style={{
@@ -3750,7 +3758,8 @@ const Technographics = () => {
             </div>
           </div>
         </>
-      )}
+        ) : null;
+      })()}
 
       <style>{`
         .technographics-container {
