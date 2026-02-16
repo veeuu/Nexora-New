@@ -3771,20 +3771,32 @@ const Technographics = () => {
         }
         
         /* Set specific column widths */
-        th:nth-child(1), td:nth-child(1) { width: 40px; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 80px; } /* Reveal */
-        th:nth-child(3), td:nth-child(3) { width: 150px; } /* Company Name */
-        th:nth-child(4), td:nth-child(4) { width: 150px; } /* Industry */
-        th:nth-child(5), td:nth-child(5) { width: 120px; } /* Region */
-        th:nth-child(6), td:nth-child(6) { width: 150px; } /* Employee Size */
-        th:nth-child(7), td:nth-child(7) { width: 120px; } /* Revenue */
-        th:nth-child(8), td:nth-child(8) { width: 150px; } /* Technology */
-        th:nth-child(9), td:nth-child(9) { width: 150px; } /* Category */
-        th:nth-child(10), td:nth-child(10) { width: 140px; } /* Previous Detected Date */
-        th:nth-child(11), td:nth-child(11) { width: 140px; } /* Latest Detected Date */
+        th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
+        th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+        th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+        th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
+        th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+        th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+        th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
+        th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
+        th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
+        th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
+        th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
         
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
+          th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
+          th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+          th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+          th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
+          th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+          th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+          th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
+          th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
+          th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
+          th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
+          th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
+          
           td:nth-child(7) {
             padding-left: 8px !important;
           }
