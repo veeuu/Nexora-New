@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { IndustryProvider } from '../context/IndustryContext';
-import Header from './Header';
 import Menu from './Menu';
 import Home from './martech/Home';
 import MartechSummary from './martech/Summary';
@@ -71,12 +70,13 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   return (
     <IndustryProvider>
       <div className="dashboard">
-        <Header username={username} onLogout={onLogout} />
         <div className="dashboard-content">
           <Menu
             activeSection={activeSection}
             onMenuClick={handleMenuClick}
             menuItems={getMenuItems()}
+            username={username}
+            onLogout={onLogout}
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             {renderActiveSection()}
