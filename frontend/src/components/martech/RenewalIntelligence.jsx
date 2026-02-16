@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
+import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -192,6 +193,7 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
 const RenewalIntelligence = () => {
     const [filters, setFilters] = useState({
         companyName: [],
+        category: [],
         product: [],
         qtr: []
     });
@@ -201,6 +203,9 @@ const RenewalIntelligence = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
     const rowsPerPage = 9;
     const filterRef = useRef(null);
 
@@ -353,7 +358,60 @@ const RenewalIntelligence = () => {
             try {
                 const response = await fetch('/api/renewal-intelligence');
                 const data = await response.json();
-                setTableData(data);
+
+                // Fetch company data to get domain and linkedinUrl
+                const companiesResponse = await fetch('/api/technographics');
+                const companiesData = await companiesResponse.json();
+                
+                // Create a map of company name to company details
+                const companyDetailsMap = {};
+                companiesData.forEach(company => {
+                    if (!companyDetailsMap[company.companyName]) {
+                        companyDetailsMap[company.companyName] = {
+                            domain: company.domain,
+                            linkedinUrl: company.linkedinUrl
+                        };
+                    }
+                });
+
+                // Fetch product catalogue to get categories and products
+                const productResponse = await fetch('/api/product-catalogue');
+                const productData = await productResponse.json();
+                
+                // Create a map of product name to category
+                const productToCategoryMap = {};
+                const uniqueProductsSet = new Set();
+                
+                productData.forEach(p => {
+                    const productName = p.prodName || p['Product Name'] || p.product || '';
+                    const category = p.category || p.Category || 'Other';
+                    
+                    if (productName) {
+                        productToCategoryMap[productName] = category;
+                        uniqueProductsSet.add(productName);
+                    }
+                });
+
+                // Extract unique categories
+                const uniqueCategories = [...new Set(productData.map(p => p.category || p.Category || 'Other'))].sort();
+                setCategories(uniqueCategories);
+                
+                // Extract unique products
+                const uniqueProducts = Array.from(uniqueProductsSet).sort();
+                setProducts(uniqueProducts);
+
+                // Add category, domain, and linkedinUrl to renewal data
+                const dataWithDetails = data.map(row => {
+                    const companyDetails = companyDetailsMap[row.companyName] || {};
+                    return {
+                        ...row,
+                        category: productToCategoryMap[row.product] || 'Other',
+                        domain: companyDetails.domain || 'N/A',
+                        linkedinUrl: companyDetails.linkedinUrl || ''
+                    };
+                });
+
+                setTableData(dataWithDetails);
             } catch (error) {
                 console.error('Error fetching renewal data:', error);
                 setTableData([]);
@@ -462,13 +520,13 @@ const RenewalIntelligence = () => {
     };
 
     // Check if mandatory filters are selected
-    const hasMandatoryFilters = filters.companyName.length > 0 && filters.product.length > 0 && filters.qtr.length > 0;
+    const hasMandatoryFilters = filters.product.length > 0 && filters.qtr.length > 0;
 
     const filteredData = tableData.filter(row => {
-        // Mandatory filters - must have all three: company name, product, and qtr
+        // Mandatory filters - must have product and qtr
         if (!hasMandatoryFilters) return false;
 
-        const companyMatch = filters.companyName.includes(row.companyName);
+        const companyMatch = filters.companyName.length === 0 || filters.companyName.includes(row.companyName);
         const productMatch = filters.product.includes(row.product);
         const qtrMatch = filters.qtr.includes(row.qtr);
         return companyMatch && productMatch && qtrMatch;
@@ -679,9 +737,7 @@ const RenewalIntelligence = () => {
                     }}
                   >
                     {[
-                      { label: 'Account Name', key: 'companyName', mandatory: true },
-                      { label: 'Product', key: 'product', mandatory: true },
-                      { label: 'Renewal Timeline', key: 'qtr', mandatory: true }
+                      { label: 'Company Name', key: 'companyName', mandatory: false }
                     ].map((filterOption) => (
                       <div
                         key={filterOption.key}
@@ -713,7 +769,73 @@ const RenewalIntelligence = () => {
                 )}
               </div>
 
-                {/* Account Name Filter Chip */}
+              {/* Product Filter - Always Visible (Mandatory) */}
+              {activeFilterMenu !== 'product' && (
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setActiveFilterMenu('product')}
+                    style={{
+                      padding: '8px 14px',
+                      backgroundColor: 'white',
+                      color: '#3b82f6',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#f3f4f6';
+                      e.target.style.borderColor = '#3b82f6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <span>Product {Array.isArray(filters.product) && filters.product.length > 0 && `(${filters.product.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                  </button>
+                </div>
+              )}
+
+              {/* Renewal Timeline Filter - Always Visible (Mandatory) */}
+              {activeFilterMenu !== 'qtr' && (
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setActiveFilterMenu('qtr')}
+                    style={{
+                      padding: '8px 14px',
+                      backgroundColor: 'white',
+                      color: '#3b82f6',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#f3f4f6';
+                      e.target.style.borderColor = '#3b82f6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <span>Renewal Timeline {Array.isArray(filters.qtr) && filters.qtr.length > 0 && `(${filters.qtr.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                  </button>
+                </div>
+              )}
+
+                {/* Company Name Filter Chip */}
                 {activeFilterMenu === 'companyName' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
@@ -727,7 +849,7 @@ const RenewalIntelligence = () => {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Company Name ({filters.companyName.length})</span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1205,7 +1327,7 @@ const RenewalIntelligence = () => {
                   onClick={() => setActiveFilterMenu('companyName')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Account Name ({filters.companyName.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                      Company Name ({filters.companyName.length})
                     </span>
                     <button
                       onClick={(e) => {
@@ -1226,84 +1348,10 @@ const RenewalIntelligence = () => {
                     </button>
                   </div>
                 )}
-
-                {filters.product.length > 0 && activeFilterMenu !== 'product' && (
-                  <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#92400e',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setActiveFilterMenu('product')}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Product ({filters.product.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFilters(prev => ({ ...prev, product: [] }));
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        padding: '0',
-                        color: '#92400e',
-                        lineHeight: '1'
-                      }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-
-                {filters.qtr.length > 0 && activeFilterMenu !== 'qtr' && (
-                  <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#92400e',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => setActiveFilterMenu('qtr')}
-                  >
-                    <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFilters(prev => ({ ...prev, qtr: [] }));
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '16px',
-                        padding: '0',
-                        color: '#92400e',
-                        lineHeight: '1'
-                      }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
                 </div>
                 
                 {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-                {filters.companyName.length > 0 && filters.product.length > 0 && filters.qtr.length > 0 && (
+                {filters.product.length > 0 && filters.qtr.length > 0 && (
                   <button
                     onClick={() => downloadCSV(filteredData)}
                     className="download-csv-button"
@@ -1347,6 +1395,7 @@ const RenewalIntelligence = () => {
                             <table>
                                 <thead className="sticky-header">
                                     <tr>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
                                         <th style={{ textAlign: 'left' }}>Company Name</th>
                                         <th style={{ textAlign: 'left' }}>Product</th>
                                         <th style={{ textAlign: 'left' }}>Renewal Intelligence</th>
@@ -1366,46 +1415,147 @@ const RenewalIntelligence = () => {
                                             const endIndex = startIndex + rowsPerPage;
                                             const paginatedData = filteredData.slice(startIndex, endIndex);
 
-                                            return paginatedData.map((row, index) => (
-                                                <tr key={index}>
-                                                    <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
-                                                        const rect = e.target.getBoundingClientRect();
-                                                        setTooltip({
-                                                            show: true,
-                                                            text: row.companyName,
-                                                            x: rect.right - 20,
-                                                            y: rect.bottom + 20
-                                                        });
-                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                        {row.companyName}
-                                                    </td>
-                                                    <td onMouseEnter={(e) => {
-                                                        const rect = e.target.getBoundingClientRect();
-                                                        setTooltip({
-                                                            show: true,
-                                                            text: row.product,
-                                                            x: rect.right - 20,
-                                                            y: rect.bottom + 20
-                                                        });
-                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                        <span style={{ display: 'flex', alignItems: 'center' }}>
-                                                            {renderProductIcon(row.product)}
-                                                            {row.product}
-                                                        </span>
-                                                    </td>
-                                                    <td onMouseEnter={(e) => {
-                                                        const rect = e.target.getBoundingClientRect();
-                                                        setTooltip({
-                                                            show: true,
-                                                            text: row.qtr,
-                                                            x: rect.right - 20,
-                                                            y: rect.bottom + 20
-                                                        });
-                                                    }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
-                                                        {row.qtr}
-                                                    </td>
-                                                </tr>
-                                            ));
+                                            return paginatedData.map((row, index) => {
+                                                const actualIndex = startIndex + index;
+                                                const rowKey = `${actualIndex}-${row.companyName}`;
+                                                const isRevealed = revealedRows.has(rowKey);
+
+                                                return (
+                                                    <tr key={index}>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px' }}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setRevealedRows(prev => {
+                                                                        const newSet = new Set(prev);
+                                                                        newSet.add(rowKey);
+                                                                        return newSet;
+                                                                    });
+                                                                }}
+                                                                disabled={isRevealed}
+                                                                style={{
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '6px',
+                                                                    padding: '6px 12px',
+                                                                    backgroundColor: isRevealed ? '#e5e7eb' : '#d1fae5',
+                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                                                                    borderRadius: '6px',
+                                                                    cursor: isRevealed ? 'not-allowed' : 'pointer',
+                                                                    fontSize: '13px',
+                                                                    fontWeight: '500',
+                                                                    color: isRevealed ? '#9ca3af' : '#047857',
+                                                                    transition: 'all 0.2s',
+                                                                    whiteSpace: 'nowrap',
+                                                                    opacity: isRevealed ? 0.6 : 1
+                                                                }}
+                                                                onMouseEnter={(e) => {
+                                                                    if (!isRevealed) {
+                                                                        e.currentTarget.style.backgroundColor = '#a7f3d0';
+                                                                        e.currentTarget.style.borderColor = '#6ee7b7';
+                                                                    }
+                                                                }}
+                                                                onMouseLeave={(e) => {
+                                                                    if (!isRevealed) {
+                                                                        e.currentTarget.style.backgroundColor = '#d1fae5';
+                                                                        e.currentTarget.style.borderColor = '#a7f3d0';
+                                                                    }
+                                                                }}
+                                                                title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
+                                                            >
+                                                                {isRevealed ? (
+                                                                    <FaEye size={16} />
+                                                                ) : (
+                                                                    <FaEyeSlash size={16} />
+                                                                )}
+                                                            </button>
+                                                        </td>
+                                                        <td style={{ textAlign: 'left' }} onMouseEnter={(e) => {
+                                                            const rect = e.target.getBoundingClientRect();
+                                                            setTooltip({
+                                                                show: true,
+                                                                text: row.companyName,
+                                                                x: rect.right - 20,
+                                                                y: rect.bottom + 20
+                                                            });
+                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                            {isRevealed ? (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                                    <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                                                                        {row.companyName}
+                                                                    </div>
+                                                                    <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                        {row.domain && row.domain !== 'N/A' && (
+                                                                            <a
+                                                                                href={`https://${row.domain}`}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                style={{
+                                                                                    color: '#3b82f6',
+                                                                                    textDecoration: 'none',
+                                                                                    opacity: 1,
+                                                                                    transition: 'opacity 0.2s'
+                                                                                }}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                                                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                                                                title={`Visit ${row.domain}`}
+                                                                            >
+                                                                                <FaGlobe size={16} />
+                                                                            </a>
+                                                                        )}
+                                                                        {row.linkedinUrl && (
+                                                                            <a
+                                                                                href={row.linkedinUrl}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                style={{
+                                                                                    color: '#0a66c2',
+                                                                                    textDecoration: 'none',
+                                                                                    opacity: 1,
+                                                                                    transition: 'opacity 0.2s'
+                                                                                }}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                                                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                                                                title="View LinkedIn Profile"
+                                                                            >
+                                                                                <FaLinkedin size={20} />
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                                                    ••••••••••••••••••
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td onMouseEnter={(e) => {
+                                                            const rect = e.target.getBoundingClientRect();
+                                                            setTooltip({
+                                                                show: true,
+                                                                text: row.product,
+                                                                x: rect.right - 20,
+                                                                y: rect.bottom + 20
+                                                            });
+                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                                                                {renderProductIcon(row.product)}
+                                                                {row.product}
+                                                            </span>
+                                                        </td>
+                                                        <td onMouseEnter={(e) => {
+                                                            const rect = e.target.getBoundingClientRect();
+                                                            setTooltip({
+                                                                show: true,
+                                                                text: row.qtr,
+                                                                x: rect.right - 20,
+                                                                y: rect.bottom + 20
+                                                            });
+                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                            {row.qtr}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            });
                                         })()
                                     )}
                                 </tbody>
