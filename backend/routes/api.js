@@ -13,6 +13,98 @@ const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_char
 // to allow requests from your frontend.
 router.use(cors());
 
+// Helper function to inject scrollable CSS into org chart HTML
+function injectScrollableCSS(html) {
+  const scrollableCSS = `.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  .chart-wrapper {
+    flex: 1;
+    overflow: auto;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px;
+  }
+  #chart {
+    transform-origin: top center;
+    transition: transform 0.2s ease;
+  }`;
+
+  // Replace the existing .container CSS
+  const containerRegex = /\.container\s*\{[^}]*\}/;
+  if (containerRegex.test(html)) {
+    html = html.replace(containerRegex, '.container { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: auto; }');
+  }
+
+  // Replace the existing .chart-wrapper CSS
+  const chartWrapperRegex = /\.chart-wrapper\s*\{[^}]*\}/;
+  if (chartWrapperRegex.test(html)) {
+    html = html.replace(chartWrapperRegex, '.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }');
+  } else {
+    // If .chart-wrapper doesn't exist, inject it into the style tag
+    html = html.replace(/<\/style>/, `.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }</style>`);
+  }
+
+  // Add zoom capability to #chart element
+  html = html.replace(/<\/style>/, `#chart { transform-origin: top center; transition: transform 0.2s ease; }</style>`);
+
+  // Add script to handle zoom from parent window and auto-detect optimal zoom
+  const zoomScript = `<script>
+    window.currentZoom = 100;
+    window.optimalZoom = 100;
+
+    // Calculate optimal zoom on page load
+    window.addEventListener('load', function() {
+      const chartElement = document.getElementById('chart');
+      if (chartElement && chartElement.getBoundingClientRect) {
+        const chartRect = chartElement.getBoundingClientRect();
+        const containerWidth = window.innerWidth - 40; // Account for padding
+        const containerHeight = 520; // Container height from React component
+
+        // Calculate zoom to fit width
+        const widthZoom = (containerWidth / chartRect.width) * 100;
+        // Calculate zoom to fit height
+        const heightZoom = (containerHeight / chartRect.height) * 100;
+
+        // Use the smaller zoom to fit both dimensions
+        window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+        window.optimalZoom = Math.max(window.optimalZoom, 30); // Min 30%
+        window.optimalZoom = Math.round(window.optimalZoom / 10) * 10; // Round to nearest 10
+
+        // Apply optimal zoom
+        chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+        window.currentZoom = window.optimalZoom;
+
+        // Send optimal zoom back to parent
+        window.parent.postMessage({
+          type: 'optimalZoomCalculated',
+          zoomLevel: window.optimalZoom
+        }, '*');
+      }
+    });
+
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'setZoom') {
+        const zoomLevel = event.data.zoomLevel || window.optimalZoom;
+        const chartElement = document.getElementById('chart');
+        if (chartElement) {
+          chartElement.style.transform = 'scale(' + (zoomLevel / 100) + ')';
+          window.currentZoom = zoomLevel;
+        }
+      }
+    });
+  </script>`;
+
+  html = html.replace(/<\/body>/, zoomScript + '</body>');
+  return html;
+}
+
 // @route   GET /api/ntp
 // @desc    Get NTP data for all companies from MongoDB database
 // @access  Public
