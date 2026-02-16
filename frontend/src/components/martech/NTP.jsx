@@ -5,7 +5,7 @@ import nexoraLogo from '../../assets/nexora-logo.png';
 import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
-import { FaLinkedin, FaGlobe } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -276,6 +276,8 @@ const NTP = () => {
   const techScrollRef = useRef(null);
   const propensityScrollRef = useRef(null);
   const analysisScrollRef = useRef(null);
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [revealedRows, setRevealedRows] = useState(new Set());
 
   // Sync scroll across all three columns
   const handleTechScroll = (e) => {
@@ -1617,12 +1619,29 @@ const NTP = () => {
         <table>
           <thead className="sticky-header">
             <tr>
-              <th>Company Name</th>
-              <th>Category</th>
-              <th>Purchase Prediction</th>
-              <th>Technology</th>
-              <th style={{ textAlign: 'center' }}>Purchase Propensity (%)</th>
-              <th>NTP Analysis</th>
+              <th style={{ width: '50px', textAlign: 'center', padding: '12px 8px' }}>
+                <input
+                  type="checkbox"
+                  checked={selectedRows.size > 0 && selectedRows.size === filteredData.length && filteredData.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const newSelected = new Set();
+                      filteredData.forEach((_, index) => newSelected.add(index));
+                      setSelectedRows(newSelected);
+                    } else {
+                      setSelectedRows(new Set());
+                    }
+                  }}
+                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+              </th>
+              <th style={{ width: '70px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Reveal</th>
+              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Company Name</th>
+              <th style={{ width: '110px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Category</th>
+              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Prediction</th>
+              <th style={{ width: '120px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Technology</th>
+              <th style={{ width: '130px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Propensity (%)</th>
+              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>NTP Analysis</th>
             </tr>
           </thead>
           <tbody>
@@ -1682,67 +1701,153 @@ const NTP = () => {
 
                   return (
                     <tr key={`${companyIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
+                      {/* Checkbox - shown only on first technology row */}
+                      {isFirstTechRow && (
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '50px', padding: '12px 8px' }}>
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.has(startIndex + companyIndex)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const newSelected = new Set(selectedRows);
+                              if (e.target.checked) {
+                                newSelected.add(startIndex + companyIndex);
+                              } else {
+                                newSelected.delete(startIndex + companyIndex);
+                              }
+                              setSelectedRows(newSelected);
+                            }}
+                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                          />
+                        </td>
+                      )}
+
+                      {/* Reveal Button - shown only on first technology row */}
+                      {isFirstTechRow && (
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '70px', padding: '12px 8px' }}>
+                          <button
+                            onClick={() => {
+                              const rowKey = `${startIndex + companyIndex}-${company.companyName}`;
+                              setRevealedRows(prev => {
+                                const newSet = new Set(prev);
+                                newSet.add(rowKey);
+                                return newSet;
+                              });
+                            }}
+                            disabled={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '6px 12px',
+                              backgroundColor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
+                              border: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                              borderRadius: '6px',
+                              cursor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
+                              fontSize: '13px',
+                              fontWeight: '500',
+                              color: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
+                              transition: 'all 0.2s',
+                              whiteSpace: 'nowrap',
+                              opacity: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 0.6 : 1
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                                e.currentTarget.style.backgroundColor = '#a7f3d0';
+                                e.currentTarget.style.borderColor = '#6ee7b7';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                                e.currentTarget.style.backgroundColor = '#d1fae5';
+                                e.currentTarget.style.borderColor = '#a7f3d0';
+                              }
+                            }}
+                            title={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
+                          >
+                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                              <FaEye size={16} />
+                            ) : (
+                              <FaEyeSlash size={16} />
+                            )}
+                          </button>
+                        </td>
+                      )}
+
                       {/* Company Name - shown only on first technology row */}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                              {highlightText(company.companyName, searchTerm)}
-                            </div>
-                            <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              {company.domain && (
-                                <a
-                                  href={`https://${company.domain}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    color: '#6b7280',
-                                    textDecoration: 'none',
-                                    transition: 'color 0.2s, transform 0.2s',
-                                    cursor: 'pointer'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.color = '#3b82f6';
-                                    e.currentTarget.style.transform = 'scale(1.2)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.color = '#6b7280';
-                                    e.currentTarget.style.transform = 'scale(1)';
-                                  }}
-                                  title={`Visit ${company.domain}`}
-                                >
-                                  <FaGlobe size={16} />
-                                </a>
-                              )}
-                              {company.linkedinUrl && (
-                                <a
-                                  href={company.linkedinUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    color: '#0077b5',
-                                    textDecoration: 'none',
-                                    transition: 'opacity 0.2s'
-                                  }}
-                                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                                  title="View LinkedIn Profile"
-                                >
-                                  <FaLinkedin size={20} />
-                                </a>
-                              )}
-                            </div>
+                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                              <>
+                                <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                                  {highlightText(company.companyName, searchTerm)}
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  {company.domain && (
+                                    <a
+                                      href={`https://${company.domain}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        color: '#6b7280',
+                                        textDecoration: 'none',
+                                        transition: 'color 0.2s, transform 0.2s',
+                                        cursor: 'pointer'
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.color = '#3b82f6';
+                                        e.currentTarget.style.transform = 'scale(1.2)';
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.color = '#6b7280';
+                                        e.currentTarget.style.transform = 'scale(1)';
+                                      }}
+                                      title={`Visit ${company.domain}`}
+                                    >
+                                      <FaGlobe size={16} />
+                                    </a>
+                                  )}
+                                  {company.linkedinUrl && (
+                                    <a
+                                      href={company.linkedinUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        color: '#0077b5',
+                                        textDecoration: 'none',
+                                        transition: 'opacity 0.2s'
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                      title="View LinkedIn Profile"
+                                    >
+                                      <FaLinkedin size={20} />
+                                    </a>
+                                  )}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                  ••••••••••••••••••
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                  ••••••••••
+                                </div>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}
 
                       {/* Category - shown only on first technology row */}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '110px', padding: '12px 8px' }}>
                           <span style={{ display: 'flex', alignItems: 'center' }}>
                             {renderTechLogo(company.category)}
                             {highlightText(company.category, searchTerm)}
@@ -1752,13 +1857,13 @@ const NTP = () => {
 
                       {/* Purchase Prediction - shown only on first technology row */}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
                           {highlightText(company.purchasePrediction, searchTerm)}
                         </td>
                       )}
 
                       {/* Technology */}
-                      <td>
+                      <td style={{ width: '120px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
                           <div 
                             ref={techScrollRef}
@@ -1792,7 +1897,7 @@ const NTP = () => {
                       </td>
 
                       {/* Purchase Propensity (%) */}
-                      <td style={{ textAlign: 'center' }}>
+                      <td style={{ textAlign: 'center', width: '130px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
                           <div 
                             ref={propensityScrollRef}
@@ -1825,7 +1930,7 @@ const NTP = () => {
                       {/* NTP Analysis */}
                       <td 
                         onClick={() => company.technologies.length <= 3 && handleAnalysisClick(tech.ntpAnalysis)}
-                        style={{ cursor: company.technologies.length <= 3 ? 'pointer' : 'default', color: '#010810ff', textDecoration: company.technologies.length <= 3 ? 'underline' : 'none' }}
+                        style={{ cursor: company.technologies.length <= 3 ? 'pointer' : 'default', color: '#010810ff', textDecoration: company.technologies.length <= 3 ? 'underline' : 'none', width: '130px', padding: '12px 8px' }}
                       >
                         {company.technologies.length > 3 ? (
                           <div 
