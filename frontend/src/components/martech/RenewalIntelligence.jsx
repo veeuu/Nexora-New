@@ -207,7 +207,7 @@ const RenewalIntelligence = () => {
     const [selectedRows, setSelectedRows] = useState(new Set()); // Track selected rows for checkbox
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
-    const rowsPerPage = 7;
+    const rowsPerPage = 9;
     const filterRef = useRef(null);
 
     // Render logo/icon for category
@@ -1001,7 +1001,7 @@ const RenewalIntelligence = () => {
                               height: '16px'
                             }}
                           />
-                          {option}
+                          <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{option}</span>
                         </div>
                       ))}
 
