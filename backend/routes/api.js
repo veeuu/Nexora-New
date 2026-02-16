@@ -243,6 +243,7 @@ router.get('/renewal-intelligence', async (req, res) => {
 
     const renewalData = renewalDocs.map(item => ({
       companyName: item['Company Name'],
+      category: item.Category || 'N/A', // Add Category field from database
       product: item.Keyword, // Using Keyword as Product
       renewalDate: item['Renewal Date'],
       qtr: item['Renewal Date'] // The quarter is the same as the renewal date
