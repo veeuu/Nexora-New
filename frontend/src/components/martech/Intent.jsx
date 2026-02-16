@@ -930,7 +930,7 @@ const Intent = () => {
         </div>
       </div> */}
 
-      <div className="table-container" style={{ backgroundColor: '#e8eef7', marginTop: '24px' }}>
+      <div className="table-container" style={{ backgroundColor: '#ffffff', marginTop: '24px' }}>
         <table>
           <thead className="sticky-header">
             <tr>
@@ -948,7 +948,7 @@ const Intent = () => {
               return paginatedData.map((row, idx) => {
                 const isHighlighted = rowMatchesSearch(row, searchTerm);
                 return (
-                  <tr key={idx} style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent' }}>
+                  <tr key={idx} style={{ backgroundColor: isHighlighted ? '#fefce8' : '#ffffff' }}>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.companyName, searchTerm)}
                     </td>
