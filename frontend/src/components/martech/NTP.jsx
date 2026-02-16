@@ -396,11 +396,6 @@ const NTP = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('NTP Data received:', data);
-        if (data.length > 0) {
-          console.log('First record:', data[0]);
-          console.log('linkedinUrl field:', data[0].linkedinUrl);
-        }
         setTableData(data);
       } catch (e) {
         setError(e.message);
