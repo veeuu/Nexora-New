@@ -3066,7 +3066,7 @@ const Technographics = () => {
                   return (
                     <tr 
                       key={index} 
-                      style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent', cursor: 'pointer' }}
+                      style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent', cursor: 'pointer', borderBottom: '1px solid #e5e7eb' }}
                       onClick={() => setSelectedCompany(row.companyName)}
                     >
                       <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
@@ -3318,215 +3318,296 @@ const Technographics = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination Controls - All in One Row */}
       {hasMandatoryFilters && groupedDataArray.length > rowsPerPage && (
         <div style={{
           display: 'flex',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: '8px',
           marginTop: '24px',
-          padding: '0 20px',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          paddingBottom: '15px',
+          borderBottom: '1px solid #e5e7eb'
         }}>
-          {(() => {
-            const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-            const pages = [];
-            const maxPagesToShow = 5;
+          <div style={{
+            fontSize: '14px',
+            color: '#1f2937',
+            fontWeight: '600'
+          }}>
+            Page {currentPage} of {Math.ceil(groupedDataArray.length / rowsPerPage).toLocaleString()}
+          </div>
 
-            // Previous button
-            pages.push(
-              <button
-                key="prev"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                style={{
-                  padding: '8px 12px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  backgroundColor: currentPage === 1 ? '#f3f4f6' : '#f9fafb',
-                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                  fontSize: '16px',
-                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                  fontWeight: '600',
-                  transition: 'all 0.2s',
-                  opacity: currentPage === 1 ? 0.5 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (currentPage > 1) {
-                    e.target.style.backgroundColor = '#e5e7eb';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (currentPage > 1) {
-                    e.target.style.backgroundColor = '#f9fafb';
-                  }
-                }}
-              >
-                ←
-              </button>
-            );
+          {/* Pagination Buttons */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            {(() => {
+              const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+              const maxPagesToShow = 5;
+              let startPage = 1;
+              let endPage = Math.min(maxPagesToShow, totalPages);
 
-            // Calculate page range
-            let startPage = 1;
-            let endPage = Math.min(maxPagesToShow, totalPages);
+              if (currentPage > maxPagesToShow) {
+                startPage = currentPage - Math.floor(maxPagesToShow / 2);
+                endPage = startPage + maxPagesToShow - 1;
 
-            if (currentPage > maxPagesToShow) {
-              startPage = currentPage - Math.floor(maxPagesToShow / 2);
-              endPage = startPage + maxPagesToShow - 1;
-
-              if (endPage > totalPages) {
-                endPage = totalPages;
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
-              }
-            }
-
-            // Show first page if not in range
-            if (startPage > 1) {
-              pages.push(
-                <button
-                  key={1}
-                  onClick={() => setCurrentPage(1)}
-                  style={{
-                    padding: '8px 14px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    backgroundColor: '#f3f4f6',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: '#6b7280',
-                    fontWeight: '500',
-                    minWidth: '40px',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#e5e7eb';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = '#f3f4f6';
-                  }}
-                >
-                  1
-                </button>
-              );
-
-              if (startPage > 2) {
-                pages.push(
-                  <span key="dots1" style={{ color: '#9ca3af', fontSize: '16px', fontWeight: '600', padding: '0 4px' }}>
-                    ...
-                  </span>
-                );
-              }
-            }
-
-            // Page numbers
-            for (let i = startPage; i <= endPage; i++) {
-              pages.push(
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i)}
-                  style={{
-                    padding: '8px 14px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    backgroundColor: i === currentPage ? '#dbeafe' : '#f3f4f6',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: i === currentPage ? '#1e40af' : '#6b7280',
-                    fontWeight: i === currentPage ? '600' : '500',
-                    minWidth: '40px',
-                    transition: 'all 0.2s',
-                    boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (i !== currentPage) {
-                      e.target.style.backgroundColor = '#e5e7eb';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (i !== currentPage) {
-                      e.target.style.backgroundColor = '#f3f4f6';
-                    }
-                  }}
-                >
-                  {i}
-                </button>
-              );
-            }
-
-            // Show last page if not in range
-            if (endPage < totalPages) {
-              if (endPage < totalPages - 1) {
-                pages.push(
-                  <span key="dots2" style={{ color: '#9ca3af', fontSize: '16px', fontWeight: '600', padding: '0 4px' }}>
-                    ...
-                  </span>
-                );
+                if (endPage > totalPages) {
+                  endPage = totalPages;
+                  startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
               }
 
-              pages.push(
-                <button
-                  key={totalPages}
-                  onClick={() => setCurrentPage(totalPages)}
-                  style={{
-                    padding: '8px 14px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    backgroundColor: '#f3f4f6',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    color: '#6b7280',
-                    fontWeight: '500',
-                    minWidth: '40px',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#e5e7eb';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = '#f3f4f6';
-                  }}
-                >
-                  {totalPages}
-                </button>
+              return (
+                <>
+                  {/* First Page Button */}
+                  <button
+                    key="first"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      fontSize: '16px',
+                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                      fontWeight: '600',
+                      transition: 'all 0.2s',
+                      opacity: currentPage === 1 ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage > 1) {
+                        e.target.style.backgroundColor = '#f9fafb';
+                        e.target.style.borderColor = '#9ca3af';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentPage > 1) {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                      }
+                    }}
+                    title="First page"
+                  >
+                    ≪
+                  </button>
+
+                  {/* Previous Page Button */}
+                  <button
+                    key="prev"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      fontSize: '16px',
+                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                      fontWeight: '600',
+                      transition: 'all 0.2s',
+                      opacity: currentPage === 1 ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage > 1) {
+                        e.target.style.backgroundColor = '#f9fafb';
+                        e.target.style.borderColor = '#9ca3af';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentPage > 1) {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                      }
+                    }}
+                    title="Previous page"
+                  >
+                    ‹
+                  </button>
+
+                  {/* Page Numbers */}
+                  {startPage > 1 && (
+                    <>
+                      <button
+                        key={1}
+                        onClick={() => setCurrentPage(1)}
+                        style={{
+                          padding: '8px 12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          backgroundColor: 'white',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          color: '#6b7280',
+                          fontWeight: '500',
+                          minWidth: '40px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }}
+                      >
+                        1
+                      </button>
+                      {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                    </>
+                  )}
+
+                  {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      style={{
+                        padding: '8px 12px',
+                        border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: i === currentPage ? '#dbeafe' : 'white',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: i === currentPage ? '#1e40af' : '#6b7280',
+                        fontWeight: i === currentPage ? '600' : '500',
+                        minWidth: '40px',
+                        transition: 'all 0.2s',
+                        boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (i !== currentPage) {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (i !== currentPage) {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                    >
+                      {i}
+                    </button>
+                  ))}
+
+                  {endPage < totalPages && (
+                    <>
+                      {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                      <button
+                        key={totalPages}
+                        onClick={() => setCurrentPage(totalPages)}
+                        style={{
+                          padding: '8px 12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          backgroundColor: 'white',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          color: '#6b7280',
+                          fontWeight: '500',
+                          minWidth: '40px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }}
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Next Page Button */}
+                  <button
+                    key="next"
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                      fontSize: '16px',
+                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                      fontWeight: '600',
+                      transition: 'all 0.2s',
+                      opacity: currentPage === totalPages ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage < totalPages) {
+                        e.target.style.backgroundColor = '#f9fafb';
+                        e.target.style.borderColor = '#9ca3af';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentPage < totalPages) {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                      }
+                    }}
+                    title="Next page"
+                  >
+                    ›
+                  </button>
+
+                  {/* Last Page Button */}
+                  <button
+                    key="last"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    style={{
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                      fontSize: '16px',
+                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                      fontWeight: '600',
+                      transition: 'all 0.2s',
+                      opacity: currentPage === totalPages ? 0.5 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentPage < totalPages) {
+                        e.target.style.backgroundColor = '#f9fafb';
+                        e.target.style.borderColor = '#9ca3af';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentPage < totalPages) {
+                        e.target.style.backgroundColor = 'white';
+                        e.target.style.borderColor = '#d1d5db';
+                      }
+                    }}
+                    title="Last page"
+                  >
+                    ≫
+                  </button>
+                </>
               );
-            }
+            })()}
+          </div>
 
-            // Next button
-            pages.push(
-              <button
-                key="next"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                style={{
-                  padding: '8px 12px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#f9fafb',
-                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                  fontSize: '16px',
-                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                  fontWeight: '600',
-                  transition: 'all 0.2s',
-                  opacity: currentPage === totalPages ? 0.5 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (currentPage < totalPages) {
-                    e.target.style.backgroundColor = '#e5e7eb';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (currentPage < totalPages) {
-                    e.target.style.backgroundColor = '#f9fafb';
-                  }
-                }}
-              >
-                →
-              </button>
-            );
-
-            return pages;
-          })()}
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, groupedDataArray.length)} of {groupedDataArray.length.toLocaleString()} results
+          </div>
         </div>
       )}
 
