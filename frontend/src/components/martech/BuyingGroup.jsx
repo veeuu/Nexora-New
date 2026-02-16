@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaLinkedin, FaTimes } from 'react-icons/fa';
+import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
 import nexoraLogo from '../../assets/nexora-logo.png';
 
 const BuyingGroup = () => {
@@ -437,6 +437,37 @@ const BuyingGroup = () => {
                     title="Reset Zoom"
                 >
                     Reset
+                </button>
+
+                <button
+                    onClick={handleImageClick}
+                    style={{
+                        padding: '0',
+                        border: 'none',
+                        borderRadius: '50%',
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                        fontSize: '18px',
+                        color: '#9ca3af',
+                        transition: 'all 0.2s',
+                        marginLeft: 'auto',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '40px',
+                        height: '40px'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.color = '#6b7280';
+                        e.target.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.target.style.color = '#9ca3af';
+                        e.target.style.transform = 'scale(1)';
+                    }}
+                    title="View Team Details"
+                >
+                    <FaInfoCircle size={20} />
                 </button>
             </div>
 
