@@ -3779,9 +3779,9 @@ const Technographics = () => {
         th:nth-child(6), td:nth-child(6) { width: 150px; } /* Employee Size */
         th:nth-child(7), td:nth-child(7) { width: 120px; } /* Revenue */
         th:nth-child(8), td:nth-child(8) { width: 150px; } /* Technology */
-        {/* th:nth-child(9), td:nth-child(9) { width: 150px; } Category - COMMENTED OUT */}
-        {/* th:nth-child(10), td:nth-child(10) { width: 140px; } Previous Detected Date - COMMENTED OUT */}
-        {/* th:nth-child(11), td:nth-child(11) { width: 140px; } Latest Detected Date - COMMENTED OUT */}
+        th:nth-child(9), td:nth-child(9) { width: 150px; } /* Category */
+        th:nth-child(10), td:nth-child(10) { width: 140px; } /* Previous Detected Date */
+        th:nth-child(11), td:nth-child(11) { width: 140px; } /* Latest Detected Date */
         
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
