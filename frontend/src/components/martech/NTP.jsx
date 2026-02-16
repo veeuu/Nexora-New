@@ -2279,12 +2279,14 @@ const NTP = () => {
           vertical-align: middle;
         }
         
-        th:nth-child(1), td:nth-child(1) { width: 16.66%; white-space: normal; }
-        th:nth-child(2), td:nth-child(2) { width: 16.66%; white-space: nowrap; }
-        th:nth-child(3), td:nth-child(3) { width: 16.66%; white-space: nowrap; }
-        th:nth-child(4), td:nth-child(4) { width: 16.66%; white-space: nowrap; }
-        th:nth-child(5), td:nth-child(5) { width: 16.66%; white-space: nowrap; }
-        th:nth-child(6), td:nth-child(6) { width: 16.66%; white-space: nowrap; }
+        th:nth-child(1), td:nth-child(1) { width: 50px !important; white-space: normal; } /* Checkbox */
+        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; } /* Reveal */
+        th:nth-child(3), td:nth-child(3) { width: 140px !important; white-space: nowrap; } /* Company Name */
+        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; } /* Category */
+        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; } /* Purchase Prediction */
+        th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; } /* Technology */
+        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; } /* Purchase Propensity */
+        th:nth-child(8), td:nth-child(8) { width: 140px !important; white-space: nowrap; } /* NTP Analysis */
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
