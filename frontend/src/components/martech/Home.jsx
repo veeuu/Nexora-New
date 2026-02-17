@@ -148,6 +148,7 @@ const Home = () => {
                   setShowDataDictionary(false);
                   setShowDropdown(false);
                 }}
+                style={{ backgroundColor: '#f0f9ff', color: '#0369a1' }}
               >
                 Product Catalogue
               </button>
@@ -158,6 +159,7 @@ const Home = () => {
                   setShowProductCatalogue(false);
                   setShowDropdown(false);
                 }}
+                style={{ backgroundColor: '#f0f9ff', color: '#0369a1' }}
               >
                 Data Dictionary
               </button>

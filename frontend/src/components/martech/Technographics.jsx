@@ -737,7 +737,7 @@ const Technographics = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
-  const rowsPerPage = 7;
+  const rowsPerPage = 10;
   const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
   // Render logo image or colored icon for technology
@@ -3662,9 +3662,8 @@ const Technographics = () => {
 
       {/* Side Panel for NTP Details */}
       {selectedCompany && (() => {
-        // Find the selected company in filteredData to check if it's revealed
-        const selectedRowIndex = filteredData.findIndex(row => row.companyName === selectedCompany);
-        const isRevealed = selectedRowIndex >= 0 && revealedRows.has(`${selectedRowIndex}-${selectedCompany}`);
+        // Check if any row with this company name is revealed
+        const isRevealed = Array.from(revealedRows).some(key => key.endsWith(`-${selectedCompany}`));
 
         return isRevealed ? (
         <>
