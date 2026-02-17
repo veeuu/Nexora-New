@@ -459,6 +459,28 @@ router.get('/product-catalogue', async (req, res) => {
   }
 });
 
+// @route   GET /api/data-dictionary
+// @desc    Get Tech Data Dictionary definitions
+// @access  Public
+router.get('/data-dictionary', async (req, res) => {
+  try {
+    const dataDictionaryCollection = mongoose.connection.db.collection('tech_data_dictionary');
+    const dataDictionary = await dataDictionaryCollection.find({}).toArray();
+
+    // Sort by Data Attribute name for better organization
+    const sortedData = dataDictionary.sort((a, b) => {
+      const attrA = a['Data Attribute'] || '';
+      const attrB = b['Data Attribute'] || '';
+      return attrA.localeCompare(attrB);
+    });
+
+    res.json(sortedData);
+  } catch (err) {
+    console.error('Error fetching data dictionary:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET /api/org-chart/companies
 // @desc    Get list of all companies with org chart data
 // @access  Public
