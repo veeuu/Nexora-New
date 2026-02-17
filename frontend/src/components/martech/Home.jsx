@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCatalogue from './ProductCatalogue';
+import DataDictionary from './DataDictionary';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import '../../styles/home.css';
 
@@ -172,10 +173,7 @@ const Home = () => {
       {showProductCatalogue ? (
         <ProductCatalogue />
       ) : showDataDictionary ? (
-        <div className="home-data-dictionary-placeholder">
-          <h2>Data Dictionary</h2>
-          <p>Data Dictionary content coming soon...</p>
-        </div>
+        <DataDictionary />
       ) : (
         <>
           {/* Stats Grid */}
