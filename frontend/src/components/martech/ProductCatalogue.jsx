@@ -16,7 +16,7 @@ const ProductCatalogue = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 9;
+  const rowsPerPage = 10;
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => {
