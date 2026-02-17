@@ -119,7 +119,7 @@ const DataDictionary = () => {
   }
 
   return (
-    <div style={{ padding: '0' }}>
+    <div style={{ padding: '0', marginTop: '-40px' }}>
       {/* Header */}
       <div style={{
         display: 'flex',
