@@ -176,62 +176,23 @@ const Home = () => {
         <>
           {/* Stats Grid */}
           <div className="home-stats-grid">
-            {/* Products Card */}
-            <div className="home-stat-card home-stat-card-yellow">
-              <div className="home-stat-number home-stat-number-yellow">
-                20k+
+            {/* Total Companies Card */}
+            <div className="home-stat-card home-stat-card-teal">
+              <div className="home-stat-number home-stat-number-teal">
+                100K+
               </div>
-              <div className="home-stat-label home-stat-label-yellow">
-                Buying Group
+              <div className="home-stat-label home-stat-label-teal">
+                Total Companies
               </div>
-              <p className="home-stat-description home-stat-description-yellow">
-                Companies tracked
-              </p>
-            </div>
-
-            {/* Categories Card */}
-            <div className="home-stat-card home-stat-card-pink">
-              <div className="home-stat-number home-stat-number-pink">
-                20k+
-              </div>
-              <div className="home-stat-label home-stat-label-pink">
-                Renewal Intelligence
-              </div>
-              <p className="home-stat-description home-stat-description-pink">
-                Renewal records
-              </p>
-            </div>
-
-            {/* NTP Card */}
-            <div className="home-stat-card home-stat-card-blue">
-              <div className="home-stat-number home-stat-number-blue">
-                22k+
-              </div>
-              <div className="home-stat-label home-stat-label-blue">
-                NTP
-              </div>
-              <p className="home-stat-description home-stat-description-blue">
-                Purchase propensity scores
-              </p>
-            </div>
-
-            {/* Intent Card */}
-            <div className="home-stat-card home-stat-card-purple">
-              <div className="home-stat-number home-stat-number-purple">
-                20k+
-              </div>
-              <div className="home-stat-label home-stat-label-purple">
-                Intent
-              </div>
-              <p className="home-stat-description home-stat-description-purple">
-                Intent signals tracked
+              <p className="home-stat-description home-stat-description-teal">
+                In our database
               </p>
             </div>
 
             {/* Technographics Card */}
             <div className="home-stat-card home-stat-card-orange">
               <div className="home-stat-number home-stat-number-orange">
-                45k+
+                45K+
               </div>
               <div className="home-stat-label home-stat-label-orange">
                 Technographics
@@ -241,16 +202,55 @@ const Home = () => {
               </p>
             </div>
 
-            {/* Total Companies Card */}
-            <div className="home-stat-card home-stat-card-teal">
-              <div className="home-stat-number home-stat-number-teal">
-                100k+
+            {/* Renewal Intelligence Card */}
+            <div className="home-stat-card home-stat-card-pink">
+              <div className="home-stat-number home-stat-number-pink">
+                20K+
               </div>
-              <div className="home-stat-label home-stat-label-teal">
-                Total Companies
+              <div className="home-stat-label home-stat-label-pink">
+                Renewal Intelligence
               </div>
-              <p className="home-stat-description home-stat-description-teal">
-                In our database
+              <p className="home-stat-description home-stat-description-pink">
+                Renewal records
+              </p>
+            </div>
+
+            {/* Intent Card */}
+            <div className="home-stat-card home-stat-card-purple">
+              <div className="home-stat-number home-stat-number-purple">
+                20K+
+              </div>
+              <div className="home-stat-label home-stat-label-purple">
+                Intent
+              </div>
+              <p className="home-stat-description home-stat-description-purple">
+                Intent signals tracked
+              </p>
+            </div>
+
+            {/* Buying Group Card */}
+            <div className="home-stat-card home-stat-card-yellow">
+              <div className="home-stat-number home-stat-number-yellow">
+                20K+
+              </div>
+              <div className="home-stat-label home-stat-label-yellow">
+                Buying Group
+              </div>
+              <p className="home-stat-description home-stat-description-yellow">
+                Companies tracked
+              </p>
+            </div>
+
+            {/* NTP Card */}
+            <div className="home-stat-card home-stat-card-blue">
+              <div className="home-stat-number home-stat-number-blue">
+                22K+
+              </div>
+              <div className="home-stat-label home-stat-label-blue">
+                NTP
+              </div>
+              <p className="home-stat-description home-stat-description-blue">
+                Purchase propensity scores
               </p>
             </div>
           </div>
