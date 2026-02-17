@@ -148,7 +148,6 @@ const Home = () => {
                   setShowDataDictionary(false);
                   setShowDropdown(false);
                 }}
-                style={{ backgroundColor: '#f0f9ff', color: '#0369a1' }}
               >
                 Product Catalogue
               </button>
@@ -159,7 +158,6 @@ const Home = () => {
                   setShowProductCatalogue(false);
                   setShowDropdown(false);
                 }}
-                style={{ backgroundColor: '#f0f9ff', color: '#0369a1' }}
               >
                 Data Dictionary
               </button>
@@ -180,55 +178,81 @@ const Home = () => {
         <>
           {/* Stats Grid */}
           <div className="home-stats-grid">
-            {/* Companies Card */}
-            <div className="home-stat-card home-stat-card-blue">
-              <div className="home-stat-number home-stat-number-blue">
-                {stats.totalCompanies}
-              </div>
-              <div className="home-stat-label home-stat-label-blue">
-                Total Companies
-              </div>
-              <p className="home-stat-description home-stat-description-blue">
-                Across all data sources
-              </p>
-            </div>
-
-            {/* Technologies Card */}
-            <div className="home-stat-card home-stat-card-green">
-              <div className="home-stat-number home-stat-number-green">
-                {stats.totalTechnologies}
-              </div>
-              <div className="home-stat-label home-stat-label-green">
-                Total Technologies
-              </div>
-              <p className="home-stat-description home-stat-description-green">
-                Tracked and monitored
-              </p>
-            </div>
-
             {/* Products Card */}
             <div className="home-stat-card home-stat-card-yellow">
               <div className="home-stat-number home-stat-number-yellow">
-                {stats.totalProducts}
+                20k+
               </div>
               <div className="home-stat-label home-stat-label-yellow">
-                Total Products
+                Buying Group
               </div>
               <p className="home-stat-description home-stat-description-yellow">
-                In our catalogue
+                Companies tracked
               </p>
             </div>
 
             {/* Categories Card */}
             <div className="home-stat-card home-stat-card-pink">
               <div className="home-stat-number home-stat-number-pink">
-                {stats.totalCategories}
+                20k+
               </div>
               <div className="home-stat-label home-stat-label-pink">
-                Product Categories
+                Renewal Intelligence
               </div>
               <p className="home-stat-description home-stat-description-pink">
-                Organized and indexed
+                Renewal records
+              </p>
+            </div>
+
+            {/* NTP Card */}
+            <div className="home-stat-card home-stat-card-blue">
+              <div className="home-stat-number home-stat-number-blue">
+                22k+
+              </div>
+              <div className="home-stat-label home-stat-label-blue">
+                NTP
+              </div>
+              <p className="home-stat-description home-stat-description-blue">
+                Purchase propensity scores
+              </p>
+            </div>
+
+            {/* Intent Card */}
+            <div className="home-stat-card home-stat-card-purple">
+              <div className="home-stat-number home-stat-number-purple">
+                20k+
+              </div>
+              <div className="home-stat-label home-stat-label-purple">
+                Intent
+              </div>
+              <p className="home-stat-description home-stat-description-purple">
+                Intent signals tracked
+              </p>
+            </div>
+
+            {/* Technographics Card */}
+            <div className="home-stat-card home-stat-card-orange">
+              <div className="home-stat-number home-stat-number-orange">
+                45k+
+              </div>
+              <div className="home-stat-label home-stat-label-orange">
+                Technographics
+              </div>
+              <p className="home-stat-description home-stat-description-orange">
+                Technology records
+              </p>
+            </div>
+
+            {/* Total Companies Card */}
+            <div className="home-stat-card home-stat-card-teal">
+              <div className="home-stat-number home-stat-number-teal">
+                100k+
+              </div>
+              <div className="home-stat-label home-stat-label-teal">
+                Total Companies
+              </div>
+              <p className="home-stat-description home-stat-description-teal">
+                In our database
               </p>
             </div>
           </div>
