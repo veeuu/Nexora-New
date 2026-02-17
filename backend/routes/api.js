@@ -126,102 +126,354 @@ function injectScrollableCSS(html) {
 // Cache for NTP data
 let ntpCache = null;
 let ntpCacheTime = 0;
+let ntpCacheBuilding = false;
 const NTP_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
-// @route   GET /api/ntp
-// @desc    Get NTP data for all companies from MongoDB database (with caching)
+// Build NTP cache in background (optimized with indexes)
+const buildNtpCache = async () => {
+  if (ntpCacheBuilding) return;
+  
+  try {
+    ntpCacheBuilding = true;
+    const startTime = Date.now();
+    console.log('[NTP-CACHE] Building NTP cache...');
+    
+    const fetchStart = Date.now();
+    // Fetch all companies in one query (indexes should make this faster now)
+    const companies = await Company.find({})
+      .select('Company Name NTP Firmographics')
+      .lean()
+      .hint({ '_id': 1 }); // Use index hint for faster query
+    
+    const fetchTime = Date.now() - fetchStart;
+    console.log(`[NTP-CACHE] Fetched ${companies.length} companies in ${fetchTime}ms`);
+
+    const processStart = Date.now();
+    let ntpData = [];
+    
+    companies.forEach(company => {
+      const about = (company.Firmographics || {}).About || {};
+      
+      (company.NTP || []).forEach(ntpItem => {
+        ntpData.push({
+          companyName: company['Company Name'],
+          domain: about.Domain || 'N/A',
+          linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
+          category: ntpItem.Category,
+          technology: ntpItem.Technology,
+          purchaseProbability: ntpItem['Purchase Probability (%)'],
+          purchasePrediction: ntpItem['Purchase Prediction'],
+          ntpAnalysis: ntpItem['NTP Analysis'],
+          latestDetectedDate: ntpItem['Latest Date'] || 'N/A',
+          previousDetectedDate: ntpItem['Previous Date'] || 'N/A'
+        });
+      });
+    });
+    
+    const processTime = Date.now() - processStart;
+    console.log(`[NTP-CACHE] Processed ${ntpData.length} records in ${processTime}ms`);
+
+    ntpCache = ntpData;
+    ntpCacheTime = Date.now();
+    const totalTime = Date.now() - startTime;
+    console.log(`[NTP-CACHE] ✓ NTP cache built: ${ntpData.length} records in ${totalTime}ms`);
+  } catch (err) {
+    console.error('[NTP-CACHE] Error building NTP cache:', err);
+  } finally {
+    ntpCacheBuilding = false;
+  }
+};
+
+// Build cache on server start
+buildNtpCache();
+
+// Rebuild cache every 10 minutes
+setInterval(() => {
+  if (Date.now() - ntpCacheTime > NTP_CACHE_DURATION) {
+    buildNtpCache();
+  }
+}, 5 * 60 * 1000); // Check every 5 minutes
+
+// Cache for NTP metadata
+let ntpMetadataCache = null;
+let ntpMetadataCacheTime = 0;
+
+// @route   GET /api/ntp/metadata
+// @desc    Get filter options for NTP (lightweight)
 // @access  Public
-router.get('/ntp', async (req, res) => {
+router.get('/ntp/metadata', async (req, res) => {
   try {
     const now = Date.now();
     
-    // Return cached data if still valid
-    if (ntpCache && (now - ntpCacheTime) < NTP_CACHE_DURATION) {
-      return res.json(ntpCache);
+    // Return cached metadata if still valid
+    if (ntpMetadataCache && (now - ntpMetadataCacheTime) < NTP_CACHE_DURATION) {
+      return res.json(ntpMetadataCache);
     }
 
-    // Fetch only the fields we need for NTP
-    const companies = await Company.find({}, { 'Company Name': 1, NTP: 1, Firmographics: 1, _id: 0 });
-    
-    const ntpData = companies.flatMap(company => {
-      const about = (company.Firmographics || {}).About || {};
+    const allCompanies = await Company.find({}).select('Company Name NTP Firmographics');
+
+    const metadata = {
+      categories: new Set(),
+      technologies: new Set(),
+      predictions: new Set(),
+      companies: new Set(),
+      totalRecords: 0
+    };
+
+    allCompanies.forEach(company => {
+      if (company['Company Name']) metadata.companies.add(company['Company Name']);
       
-      return company.NTP?.map(ntpItem => ({
-        companyName: company['Company Name'],
-        domain: about.Domain || 'N/A',
-        linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
-        category: ntpItem.Category,
-        technology: ntpItem.Technology,
-        purchaseProbability: ntpItem['Purchase Probability (%)'],
-        purchasePrediction: ntpItem['Purchase Prediction'],
-        ntpAnalysis: ntpItem['NTP Analysis'],
-        latestDetectedDate: ntpItem['Latest Date'] || 'N/A',
-        previousDetectedDate: ntpItem['Previous Date'] || 'N/A'
-      })) || [];
+      (company.NTP || []).forEach(ntpItem => {
+        if (ntpItem.Category) metadata.categories.add(ntpItem.Category);
+        if (ntpItem.Technology) metadata.technologies.add(ntpItem.Technology);
+        if (ntpItem['Purchase Prediction']) metadata.predictions.add(ntpItem['Purchase Prediction']);
+        metadata.totalRecords++;
+      });
     });
+
+    const result = {
+      categories: Array.from(metadata.categories).sort(),
+      technologies: Array.from(metadata.technologies).sort(),
+      predictions: Array.from(metadata.predictions).sort(),
+      companies: Array.from(metadata.companies).sort(),
+      totalRecords: metadata.totalRecords
+    };
+
+    ntpMetadataCache = result;
+    ntpMetadataCacheTime = now;
     
-    // Cache the results
-    ntpCache = ntpData;
-    ntpCacheTime = now;
-    
-    res.json(ntpData);
+    res.json(result);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('[NTP-METADATA] Error:', err.message);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
+// @route   GET /api/ntp
+// @desc    Get NTP data with server-side pagination (from cache)
+// @access  Public
+router.get('/ntp', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 500;
+    const skip = (page - 1) * limit;
+
+    // If cache is ready, return immediately
+    if (ntpCache && ntpCache.length > 0) {
+      const paginatedData = ntpCache.slice(skip, skip + limit);
+      console.log(`[NTP] ✓ Page ${page}: ${paginatedData.length} records from cache`);
+      
+      return res.json({
+        data: paginatedData,
+        total: ntpCache.length,
+        page,
+        limit,
+        pages: Math.ceil(ntpCache.length / limit)
+      });
+    }
+
+    // If cache is not ready, start building it (non-blocking)
+    if (!ntpCacheBuilding) {
+      console.log('[NTP] Cache not ready, starting build in background...');
+      buildNtpCache(); // Start building but don't wait
+    }
+
+    // Return 503 immediately - frontend will retry
+    console.log(`[NTP] Cache not ready for page ${page}, returning 503`);
+    return res.status(503).json({ 
+      error: 'Cache building in progress', 
+      data: [],
+      retryAfter: 1000 // Suggest retry after 1 second
+    });
+  } catch (err) {
+    console.error('[NTP] Error:', err.message);
+    res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
 // Cache for technographics data
 let techCache = null;
 let techCacheTime = 0;
+let techCacheBuilding = false;
 const TECH_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
-// @route   GET /api/technographics
-// @desc    Get Technographics data for all companies (with caching)
-// @access  Public
-router.get('/technographics', async (req, res) => {
+// Build technographics cache in background (optimized with indexes)
+const buildTechCache = async () => {
+  if (techCacheBuilding) return;
+  
   try {
-    const now = Date.now();
+    techCacheBuilding = true;
+    const startTime = Date.now();
+    console.log('[CACHE] Building technographics cache...');
     
-    // Return cached data if still valid
-    if (techCache && (now - techCacheTime) < TECH_CACHE_DURATION) {
-      return res.json(techCache);
-    }
+    const fetchStart = Date.now();
+    // Fetch all companies in one query (indexes should make this faster now)
+    const companies = await Company.find({})
+      .select('Company Name Firmographics Technographics Financial_Data')
+      .lean()
+      .hint({ '_id': 1 }); // Use index hint for faster query
+    
+    const fetchTime = Date.now() - fetchStart;
+    console.log(`[CACHE] Fetched ${companies.length} companies in ${fetchTime}ms`);
 
-    // Fetch all companies without pagination
-    const allCompanies = await Company.find({});
-
-    const technographicsData = allCompanies.flatMap(company => {
-      // Firmographics is stored as an object in the database
+    const processStart = Date.now();
+    let technographicsData = [];
+    
+    companies.forEach((company, idx) => {
       const firmographics = company.Firmographics || {};
       const about = firmographics.About || {};
       const location = firmographics.Location || {};
       const finance = company.Financial_Data?.Finance || {};
 
-      return (company.Technographics || []).map(techItem => ({
-        companyName: company['Company Name'],
-        region: location.Country || 'N/A',
-        industry: about.Industry || 'N/A',
-        employeeSize: about['Full Time employees'] || about['Full time employees'] || about.Employees || 'N/A',
-        revenue: finance['Total Revenue'] || 'N/A',
-        category: techItem.Category,
-        technology: techItem.Keyword,
-        domain: about.Domain || 'N/A',
-        linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
-        previousDetectedDate: techItem['Previous Date'] || 'N/A',
-        latestDetectedDate: techItem['Latest Date'] || 'N/A',
-        renewalDate: techItem['Renewal Date'] || 'N/A'
-      })) || [];
+      (company.Technographics || []).forEach(techItem => {
+        technographicsData.push({
+          companyName: company['Company Name'],
+          region: location.Country || 'N/A',
+          industry: about.Industry || 'N/A',
+          employeeSize: about['Full Time employees'] || about['Full time employees'] || about.Employees || 'N/A',
+          revenue: finance['Total Revenue'] || 'N/A',
+          category: techItem.Category,
+          technology: techItem.Keyword,
+          domain: about.Domain || 'N/A',
+          linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
+          previousDetectedDate: techItem['Previous Date'] || 'N/A',
+          latestDetectedDate: techItem['Latest Date'] || 'N/A',
+          renewalDate: techItem['Renewal Date'] || 'N/A'
+        });
+      });
     });
     
-    // Cache the results
+    const processTime = Date.now() - processStart;
+    console.log(`[CACHE] Processed ${technographicsData.length} records in ${processTime}ms`);
+
     techCache = technographicsData;
-    techCacheTime = now;
+    techCacheTime = Date.now();
+    const totalTime = Date.now() - startTime;
+    console.log(`[CACHE] ✓ Technographics cache built: ${technographicsData.length} records in ${totalTime}ms`);
+  } catch (err) {
+    console.error('[CACHE] Error building technographics cache:', err);
+  } finally {
+    techCacheBuilding = false;
+  }
+};
+
+// Build cache on server start
+buildTechCache();
+
+// Rebuild cache every 10 minutes
+setInterval(() => {
+  if (Date.now() - techCacheTime > TECH_CACHE_DURATION) {
+    buildTechCache();
+  }
+}, 5 * 60 * 1000); // Check every 5 minutes
+
+// Cache for technographics metadata (filters, counts)
+let techMetadataCache = null;
+let techMetadataCacheTime = 0;
+
+// @route   GET /api/technographics/metadata
+// @desc    Get filter options and counts for technographics (lightweight)
+// @access  Public
+router.get('/technographics/metadata', async (req, res) => {
+  try {
+    const now = Date.now();
     
-    res.json(technographicsData);
+    // Return cached metadata if still valid
+    if (techMetadataCache && (now - techMetadataCacheTime) < TECH_CACHE_DURATION) {
+      return res.json(techMetadataCache);
+    }
+
+    const allCompanies = await Company.find({}).select('Firmographics Technographics');
+
+    const metadata = {
+      regions: new Set(),
+      industries: new Set(),
+      categories: new Set(),
+      employeeSizes: new Set(),
+      revenues: new Set(),
+      totalRecords: 0
+    };
+
+    allCompanies.forEach(company => {
+      const firmographics = company.Firmographics || {};
+      const about = firmographics.About || {};
+      const location = firmographics.Location || {};
+      const finance = company.Financial_Data?.Finance || {};
+
+      if (location.Country) metadata.regions.add(location.Country);
+      if (about.Industry) metadata.industries.add(about.Industry);
+      if (about['Full Time employees'] || about['Full time employees'] || about.Employees) {
+        metadata.employeeSizes.add(about['Full Time employees'] || about['Full time employees'] || about.Employees);
+      }
+      if (finance['Total Revenue']) metadata.revenues.add(finance['Total Revenue']);
+
+      (company.Technographics || []).forEach(tech => {
+        if (tech.Category) metadata.categories.add(tech.Category);
+        metadata.totalRecords++;
+      });
+    });
+
+    const result = {
+      regions: Array.from(metadata.regions).sort(),
+      industries: Array.from(metadata.industries).sort(),
+      categories: Array.from(metadata.categories).sort(),
+      employeeSizes: Array.from(metadata.employeeSizes).sort(),
+      revenues: Array.from(metadata.revenues).sort(),
+      totalRecords: metadata.totalRecords
+    };
+
+    techMetadataCache = result;
+    techMetadataCacheTime = now;
+    
+    res.json(result);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET /api/technographics
+// @desc    Get Technographics data with server-side pagination (from cache)
+// @access  Public
+// @route   GET /api/technographics
+// @desc    Get Technographics data with server-side pagination (from cache)
+// @access  Public
+router.get('/technographics', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
+    // If cache is ready, return immediately
+    if (techCache && techCache.length > 0) {
+      const paginatedData = techCache.slice(skip, skip + limit);
+      console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
+      
+      return res.json({
+        data: paginatedData,
+        total: techCache.length,
+        page,
+        limit,
+        pages: Math.ceil(techCache.length / limit)
+      });
+    }
+
+    // If cache is not ready, start building it (non-blocking)
+    if (!techCacheBuilding) {
+      console.log('[TECH] Cache not ready, starting build in background...');
+      buildTechCache(); // Start building but don't wait
+    }
+
+    // Return 503 immediately - frontend will retry
+    console.log(`[TECH] Cache not ready for page ${page}, returning 503`);
+    return res.status(503).json({ 
+      error: 'Cache building in progress', 
+      data: [],
+      retryAfter: 1000 // Suggest retry after 1 second
+    });
+  } catch (err) {
+    console.error('[TECH] Error:', err.message);
+    res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
@@ -270,66 +522,101 @@ let renewalCache = null;
 let renewalCacheTime = 0;
 const RENEWAL_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
-// @route   GET /api/renewal-intelligence
-// @desc    Get Renewal Intelligence data (with caching)
+// Cache for renewal metadata
+let renewalMetadataCache = null;
+let renewalMetadataCacheTime = 0;
+
+// @route   GET /api/renewal-intelligence/metadata
+// @desc    Get filter options for renewal intelligence
 // @access  Public
-router.get('/renewal-intelligence', async (req, res) => {
+router.get('/renewal-intelligence/metadata', async (req, res) => {
   try {
     const now = Date.now();
     
-    // Return cached data if still valid
-    if (renewalCache && (now - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
-      return res.json(renewalCache);
+    if (renewalMetadataCache && (now - renewalMetadataCacheTime) < RENEWAL_CACHE_DURATION) {
+      return res.json(renewalMetadataCache);
     }
 
-    const { companyName } = req.query; // Filter by 'Company Name'
     const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+    const renewalDocs = await renewalCollection.find({}).toArray();
 
-    const query = companyName ? { 'Company Name': companyName } : {};
-    const renewalDocs = await renewalCollection.find(query).toArray();
+    const metadata = {
+      categories: new Set(),
+      products: new Set(),
+      quarters: new Set(),
+      companies: new Set(),
+      totalRecords: renewalDocs.length
+    };
 
-    const renewalData = renewalDocs.map(item => ({
-      companyName: item['Company Name'],
-      category: item.Category || 'N/A', // Add Category field from database
-      product: item.Keyword, // Using Keyword as Product
-      renewalDate: item['Renewal Date'],
-      qtr: item['Renewal Date'] // The quarter is the same as the renewal date
-    }));
+    renewalDocs.forEach(item => {
+      if (item.Category) metadata.categories.add(item.Category);
+      if (item.Keyword) metadata.products.add(item.Keyword);
+      if (item['Renewal Date']) metadata.quarters.add(item['Renewal Date']);
+      if (item['Company Name']) metadata.companies.add(item['Company Name']);
+    });
+
+    const result = {
+      categories: Array.from(metadata.categories).sort(),
+      products: Array.from(metadata.products).sort(),
+      quarters: Array.from(metadata.quarters).sort(),
+      companies: Array.from(metadata.companies).sort(),
+      totalRecords: metadata.totalRecords
+    };
+
+    renewalMetadataCache = result;
+    renewalMetadataCacheTime = now;
     
-    // Only cache if no company filter (full dataset)
-    if (!companyName) {
-      renewalCache = renewalData;
-      renewalCacheTime = now;
-    }
-    
-    res.json(renewalData);
+    res.json(result);
   } catch (err) {
-    console.error('Error fetching renewal intelligence data:', err.message);
+    console.error('Error fetching renewal metadata:', err.message);
     res.status(500).send('Server Error');
   }
 });
-  
-  
 
 // @route   GET /api/renewal-intelligence
-// @desc    Get Renewal Intelligence data
+// @desc    Get Renewal Intelligence data with pagination
 // @access  Public
 router.get('/renewal-intelligence', async (req, res) => {
   try {
-    const { companyName } = req.query; // Filter by 'Company Name'
-    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+    const { companyName } = req.query;
 
+    // Return cached data for first page if available
+    if (page === 1 && !companyName && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
+      return res.json(renewalCache);
+    }
+
+    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
     const query = companyName ? { 'Company Name': companyName } : {};
+    
     const renewalDocs = await renewalCollection.find(query).toArray();
 
     const renewalData = renewalDocs.map(item => ({
       companyName: item['Company Name'],
-      category: item.Category || 'N/A', // Add Category field from database
-      product: item.Keyword, // Using Keyword as Product
+      category: item.Category || 'N/A',
+      product: item.Keyword,
       renewalDate: item['Renewal Date'],
-      qtr: item['Renewal Date'] // The quarter is the same as the renewal date
+      qtr: item['Renewal Date']
     }));
-    res.json(renewalData);
+
+    // Apply pagination
+    const paginatedData = renewalData.slice(skip, skip + limit);
+    
+    // Cache first page of full dataset
+    if (page === 1 && !companyName) {
+      renewalCache = paginatedData;
+      renewalCacheTime = Date.now();
+    }
+    
+    res.json({
+      data: paginatedData,
+      total: renewalData.length,
+      page,
+      limit,
+      pages: Math.ceil(renewalData.length / limit)
+    });
   } catch (err) {
     console.error('Error fetching renewal intelligence data:', err.message);
     res.status(500).send('Server Error');
@@ -405,31 +692,6 @@ router.get('/intent', async (req, res) => {
     res.json(intentData);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route   GET /api/renewal-intelligence
-// @desc    Get Renewal Intelligence data
-// @access  Public
-router.get('/renewal-intelligence', async (req, res) => {
-  try {
-    const { companyName } = req.query; // Filter by 'Company Name'
-    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
-
-    const query = companyName ? { 'Company Name': companyName } : {};
-    const renewalDocs = await renewalCollection.find(query).toArray();
-
-    const renewalData = renewalDocs.map(item => ({
-      companyName: item['Company Name'],
-      category: item.Category || 'N/A', // Add Category field from database
-      product: item.Keyword, // Using Keyword as Product
-      renewalDate: item['Renewal Date'],
-      qtr: item['Renewal Date'] // The quarter is the same as the renewal date
-    }));
-    res.json(renewalData);
-  } catch (err) {
-    console.error('Error fetching renewal intelligence data:', err.message);
     res.status(500).send('Server Error');
   }
 });

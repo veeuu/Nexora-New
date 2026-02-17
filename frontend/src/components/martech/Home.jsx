@@ -247,7 +247,7 @@ const Home = () => {
                 22K+
               </div>
               <div className="home-stat-label home-stat-label-blue">
-                NTP
+                Next Tech Purchase
               </div>
               <p className="home-stat-description home-stat-description-blue">
                 Purchase propensity scores

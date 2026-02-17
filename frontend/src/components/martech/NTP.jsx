@@ -6,6 +6,8 @@ import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
+import PerformanceMetrics from '../PerformanceMetrics';
+import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -257,6 +259,7 @@ const NTP = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [measurements, setMeasurements] = useState({});
   const [filters, setFilters] = useState({
     companyName: [],
     technology: [],
@@ -270,7 +273,9 @@ const NTP = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 9;
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageCache, setPageCache] = useState({});
+  const rowsPerPage = 500; // Server-side pagination
   const filterRef = useRef(null);
   const scrollRefsMap = useRef(new Map());
   const techScrollRef = useRef(null);
@@ -350,6 +355,43 @@ const NTP = () => {
     return null;
   };
 
+  // Fetch a specific page
+  const fetchPage = async (pageNum) => {
+    if (pageCache[pageNum]) {
+      return pageCache[pageNum];
+    }
+
+    try {
+      const response = await fetch(`/api/ntp?page=${pageNum}&limit=500`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setPageCache(prev => ({ ...prev, [pageNum]: data }));
+      return data;
+    } catch (err) {
+      console.error(`Failed to fetch page ${pageNum}:`, err);
+      return null;
+    }
+  };
+
+  // Prefetch adjacent pages
+  const prefetchAdjacentPages = async (pageNum) => {
+    const pagesToPrefetch = [];
+    
+    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); // Previous page
+    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); // Next page
+    
+    // Prefetch in background without blocking
+    pagesToPrefetch.forEach(page => {
+      if (!pageCache[page]) {
+        fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
+      }
+    });
+  };
+
   const handleFilterChange = (filterName, value) => {
     // For all filters, toggle the value in the array
     setFilters(prev => {
@@ -393,17 +435,62 @@ const NTP = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/ntp');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        performanceMonitor.reset();
+        performanceMonitor.start('total-load');
         
-        setTableData(data);
+        performanceMonitor.start('api-fetch');
+        
+        // Fetch metadata and first page with retry logic
+        const metadataResponse = await fetch('/api/ntp/metadata');
+        const metadata = await metadataResponse.json();
+        
+        // Fetch page 1 with retry logic for 503
+        let page1Data = null;
+        let retries = 10;
+        
+        while (!page1Data && retries > 0) {
+          const page1Response = await fetch('/api/ntp?page=1&limit=500');
+          
+          if (page1Response.status === 503) {
+            // Cache building in progress, retry with exponential backoff
+            const delay = Math.min(500 * Math.pow(1.5, 10 - retries), 5000);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            retries--;
+          } else if (page1Response.ok) {
+            page1Data = await page1Response.json();
+          } else {
+            throw new Error(`HTTP error! status: ${page1Response.status}`);
+          }
+        }
+        
+        if (!page1Data) {
+          throw new Error('Failed to fetch page 1 after retries');
+        }
+        
+        performanceMonitor.end('api-fetch');
+        
+        performanceMonitor.start('parse-json');
+        // Metadata already parsed above
+        performanceMonitor.end('parse-json');
+
+        performanceMonitor.start('state-update');
+        setTableData(page1Data.data || []);
+        setPageCache(prev => ({ ...prev, 1: page1Data }));
+        setTotalPages(page1Data.pages || 1);
+        
+        // Prefetch page 2 in background (non-blocking)
+        if (page1Data.pages > 1) {
+          fetchPage(2).catch(err => console.error('Prefetch page 2 failed:', err));
+        }
+        
+        performanceMonitor.end('state-update');
+        performanceMonitor.end('total-load');
+        setMeasurements(performanceMonitor.getAllMeasurements());
+        performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch NTP data:", e);
-        setTableData([]); // Set empty data on error
+        setTableData([]);
       } finally {
         setLoading(false);
       }
@@ -411,6 +498,33 @@ const NTP = () => {
 
     fetchData();
   }, []);
+
+  // Handle page changes with prefetching
+  useEffect(() => {
+    const handlePageChange = async () => {
+      if (currentPage === 1) return; // Already loaded on init
+      
+      try {
+        const pageData = pageCache[currentPage];
+        if (pageData) {
+          setTableData(pageData.data || []);
+          // Prefetch adjacent pages in background
+          prefetchAdjacentPages(currentPage);
+        } else {
+          // Fetch the page if not cached
+          const data = await fetchPage(currentPage);
+          if (data) {
+            setTableData(data.data || []);
+            prefetchAdjacentPages(currentPage);
+          }
+        }
+      } catch (err) {
+        console.error(`Failed to load page ${currentPage}:`, err);
+      }
+    };
+
+    handlePageChange();
+  }, [currentPage, pageCache]);
 
   // Handle click outside to close filter dropdowns
   useEffect(() => {
@@ -2591,6 +2705,7 @@ const NTP = () => {
           th:nth-child(6), td:nth-child(6) { width: 16.66%; }
         }
       `}</style>
+      <PerformanceMetrics measurements={measurements} isVisible={true} />
     </div>
   );
 };

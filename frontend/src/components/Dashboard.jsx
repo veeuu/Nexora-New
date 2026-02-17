@@ -24,7 +24,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
     '/dashboard/renewal-intelligence': 'Renewal Intelligence',
     '/dashboard/intent': 'Intent',
     '/dashboard/buying-group': 'Buying Group',
-    '/dashboard/ntp': 'NTP®',
+    '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue'
   };
 
