@@ -1079,13 +1079,10 @@ const Technographics = () => {
 
   const filteredData = tableData
     .filter(row => {
-      // Mandatory filters - must have both company name and category
-      if (!hasMandatoryFilters) return false;
+      // Apply company name filter if selected
+      if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
 
-      // Apply company name filter
-      if (!filters.companyName.includes(String(row.companyName))) return false;
-
-      // Apply category filter
+      // Apply category filter if selected
       if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
 
       // Apply region filter if selected
@@ -1314,7 +1311,7 @@ const Technographics = () => {
       <div className="section-subtle-divider" />
       
       {/* Filter UI - Similar to the reference image */}
-      <div style={{ marginBottom: '20px' }} ref={filterRef}>
+      <div style={{ marginBottom: '16px' }} ref={filterRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {/* Filter Button with Dropdown Menu */}
@@ -2883,64 +2880,7 @@ const Technographics = () => {
           )}
           </div>
           
-          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
-          {hasMandatoryFilters && (
-            <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0 }}>
-              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="13" x2="12" y2="17"></line>
-                <line x1="8" y1="13" x2="8" y2="17"></line>
-                <line x1="16" y1="13" x2="16" y2="17"></line>
-              </svg>
-              Download CSV
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Message for mandatory filters */}
-      {!hasMandatoryFilters && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '20px',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fcd34d',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            flex: 1,
-            maxWidth: 'fit-content'
-          }}>
-            <div style={{
-              fontSize: '18px',
-              color: '#d97706',
-              flexShrink: 0
-            }}>
-              ⓘ
-            </div>
-            <div style={{
-              fontSize: '13px',
-              color: '#92400e',
-              fontWeight: '500',
-              whiteSpace: 'nowrap'
-            }}>
-              {filters.companyName.length === 0 && filters.category.length > 0 ? (
-                'Please select a Company Name to view data'
-              ) : filters.companyName.length > 0 && filters.category.length === 0 ? (
-                'Please select a Category to view data'
-              ) : (
-                'Please select both Company Name and Category to view data'
-              )}
-            </div>
-          </div>
+          {/* Download CSV Button */}
           <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0, marginLeft: 'auto' }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -2952,7 +2892,7 @@ const Technographics = () => {
             Download CSV
           </button>
         </div>
-      )}
+      </div>
 
       <div className="table-container">
         <table>
@@ -2991,13 +2931,12 @@ const Technographics = () => {
             </tr>
           </thead>
           <tbody>
-            {hasMandatoryFilters ? (
-              filteredData.length > 0 ? (
-                (() => {
-                  const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-                  const startIndex = (currentPage - 1) * rowsPerPage;
-                  const endIndex = startIndex + rowsPerPage;
-                  const paginatedData = groupedDataArray.slice(startIndex, endIndex);
+            {groupedDataArray.length > 0 ? (
+              (() => {
+                const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+                const startIndex = (currentPage - 1) * rowsPerPage;
+                const endIndex = startIndex + rowsPerPage;
+                const paginatedData = groupedDataArray.slice(startIndex, endIndex);
 
                   return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
@@ -3312,17 +3251,17 @@ const Technographics = () => {
               ) : (
                 <tr>
                   <td colSpan="9" style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                    No data found for the selected company
+                    No data found
                   </td>
                 </tr>
               )
-            ) : null}
+            }
           </tbody>
         </table>
       </div>
 
       {/* Pagination Controls - All in One Row */}
-      {hasMandatoryFilters && groupedDataArray.length > rowsPerPage && (
+      {groupedDataArray.length > rowsPerPage && (
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',

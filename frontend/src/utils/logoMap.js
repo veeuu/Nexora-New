@@ -156,8 +156,11 @@ export const getTechIcon = (techName) => {
     "aiml": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "artificial intelligence": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "artificial intelligence (ai)": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
+    "artificial intellige": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
+    "artificial intelligen": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "machine learning": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "machine learningmachnine learning": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
+    "machine learn": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "deep learning": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "nlp": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
     "natural language processing": { component: FaRobot, color: "#8B5CF6", strokeWidth: 1.5 },
@@ -264,9 +267,14 @@ export const getTechIcon = (techName) => {
   
   // Check for partial matches in FA icons
   for (const [key, iconData] of Object.entries(faIcons)) {
-    if (normalized.includes(key) && key.length > 2) {
+    if ((normalized.includes(key) || key.includes(normalized)) && key.length > 2) {
       return { component: iconData.component, color: iconData.color };
     }
+  }
+  
+  // Fallback: Check if it contains "artificial" or "machine" keywords
+  if (normalized.includes("artificial") || normalized.includes("machine")) {
+    return { component: FaRobot, color: "#8B5CF6" };
   }
   
   // Check SI icons
@@ -280,7 +288,7 @@ export const getTechIcon = (techName) => {
   
   // Check for partial matches in SI icons
   for (const [key, iconData] of Object.entries(siIcons)) {
-    if (normalized.includes(key) && key.length > 2) {
+    if ((normalized.includes(key) || key.includes(normalized)) && key.length > 2) {
       const IconComponent = SiIcons[iconData.name];
       if (IconComponent) {
         return { component: IconComponent, color: iconData.color };
