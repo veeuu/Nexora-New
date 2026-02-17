@@ -862,14 +862,23 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       scrollZoom: false
     };
     
+    // Extract categories from shapes BEFORE Plotly renders
+    window.categoriesMap = {};
+    if (layout && layout.shapes) {
+      layout.shapes.forEach((shape, index) => {
+        if (shape.categories && Array.isArray(shape.categories)) {
+          window.categoriesMap[index] = shape.categories;
+          console.log('Stored categories for shape', index, ':', shape.categories);
+        }
+      });
+    }
+    console.log('Initial categories map:', window.categoriesMap);
+    
     if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
-
-    // Store shapes data for highlighting
-    window.shapesData = layout.shapes || [];
 
     // Listen for messages from parent window
     window.addEventListener('message', function(event) {
@@ -883,53 +892,67 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
         const plotDiv = document.querySelector('#chart');
         console.log('Plot div found:', !!plotDiv);
         
-        if (!plotDiv || !plotDiv.data) return;
+        if (!plotDiv || !plotDiv.layout) {
+          console.log('Plot div or layout not found');
+          return;
+        }
 
-        // Access Plotly's internal data
-        const layout = plotDiv.layout;
-        if (!layout || !layout.shapes) {
+        // Access Plotly's internal layout
+        const plotLayout = plotDiv.layout;
+        if (!plotLayout || !plotLayout.shapes) {
           console.log('No shapes found in layout');
           return;
         }
 
-        console.log('Total shapes:', layout.shapes.length);
+        console.log('Total shapes:', plotLayout.shapes.length);
+        console.log('Categories map:', window.categoriesMap);
 
+        // Create update object for Plotly
+        const updateObj = {};
+        let shapesUpdated = 0;
+        
         // Update shapes based on category
-        layout.shapes.forEach((shape, index) => {
-          console.log('Shape', index, '- categories:', shape.categories);
-          
-          // Reset line
-          shape.line = shape.line || {};
+        plotLayout.shapes.forEach((shape, index) => {
+          const shapeCategories = window.categoriesMap[index] || [];
+          console.log('Processing shape', index, '- stored categories:', shapeCategories, '- looking for:', category);
           
           if (category === 'All' || category === '') {
-            shape.line.width = 0;
-            shape.line.color = shape.fillcolor;
-          } else if (shape.categories && shape.categories.includes(category)) {
+            // Remove highlight
+            updateObj[\`shapes[\${index}].line.width\`] = 0;
+            updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
+            console.log('Removing highlight from shape', index);
+          } else if (shapeCategories && shapeCategories.length > 0 && shapeCategories.includes(category)) {
             // Highlight if category is in the person's categories array
             const categoryColors = {
-              'IT': '#000000ff',
-              'Generalized': '#000000ff',
+              'IT': '#000000',
+              'Generalized': '#000000',
               'AI': '#000000',
               'AI/ML': '#000000',
-              'Cloud': '#000000ff',
-              'CRM': '#000000ff',
-              'Database': '#000000ff',
-              'Other': '#000000ff'
+              'Cloud': '#000000',
+              'CRM': '#000000',
+              'Database': '#000000',
+              'Other': '#000000'
             };
-            shape.line.width = 3;
-            shape.line.color = categoryColors[category] || '#000';
-            console.log('Highlighting shape with category:', category);
+            updateObj[\`shapes[\${index}].line.width\`] = 3;
+            updateObj[\`shapes[\${index}].line.color\`] = categoryColors[category] || '#000';
+            console.log('Highlighting shape', index, 'with category:', category);
+            shapesUpdated++;
           } else {
-            shape.line.width = 0;
-            shape.line.color = shape.fillcolor;
+            // No match, remove highlight
+            updateObj[\`shapes[\${index}].line.width\`] = 0;
+            updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
           }
         });
 
+        console.log('Update object:', updateObj);
+        console.log('Shapes updated:', shapesUpdated);
+
         // Redraw the plot
-        Plotly.relayout(plotDiv, layout);
+        Plotly.relayout(plotDiv, updateObj);
         console.log('Plot redrawn');
       }
     });
+  </script>
   </script>
 </body>
 </html>`;
