@@ -24,7 +24,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
     '/dashboard/renewal-intelligence': 'Renewal Intelligence',
     '/dashboard/intent': 'Intent',
     '/dashboard/buying-group': 'Buying Group',
-    '/dashboard/ntp': 'Next Technology Purchase®',
+    '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue'
   };
 
@@ -45,7 +45,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
       'Renewal Intelligence': '/dashboard/renewal-intelligence',
       'Intent': '/dashboard/intent',
       'Buying Group': '/dashboard/buying-group',
-      'Next Technology Purchase®': '/dashboard/ntp',
+      'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue'
     };
     
@@ -59,7 +59,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
     const sectionMap = {
       'Intent': 'Intent',
       'Technographics': 'Technographics',
-      'NTP': 'Next Technology Purchase®',
+      'NTP': 'Next Tech Purchase®',
       'Buying Group': 'Buying Group',
       'Renewal Intelligence': 'Renewal Intelligence',
       'Summary': 'Summary'
@@ -76,7 +76,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Technology Purchase®'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®'];
   };
 
   const renderActiveSection = () => {
@@ -86,7 +86,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
       case 'Summary':
         return <MartechSummary />;
       case 'NTP':
-      case 'Next Technology Purchase®':
+      case 'Next Tech Purchase®':
         return <MartechNTP />;
       case 'Intent':
         return <Martechintent />;
