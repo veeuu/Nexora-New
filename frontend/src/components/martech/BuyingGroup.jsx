@@ -161,6 +161,28 @@ const BuyingGroup = () => {
         setTimeout(applyZoom, 500);
     }, [zoomLevel, orgChartUrl]);
 
+    // Send category highlighting to iframe when selectedCategory changes
+    useEffect(() => {
+        if (!iframeRef.current || !orgChartUrl) return;
+
+        const iframe = iframeRef.current;
+        
+        const highlightCategory = () => {
+            try {
+                iframe.contentWindow.postMessage({
+                    type: 'highlightCategory',
+                    category: selectedCategory || 'All'
+                }, '*');
+            } catch (err) {
+                console.log('Cannot send highlight message to iframe:', err);
+            }
+        };
+
+        // Send highlight message after a longer delay to ensure iframe is fully loaded
+        const timer = setTimeout(highlightCategory, 1000);
+        return () => clearTimeout(timer);
+    }, [selectedCategory, orgChartUrl]);
+
     const handleCompanyChange = (e) => {
         const companyName = e.target.value;
         setSelectedCompany(companyName);
@@ -188,12 +210,29 @@ const BuyingGroup = () => {
         setZoomLevel(100);
     };
 
-    // Get persons for selected company
+    // Get persons for selected company, filtered by category if one is selected
     const getCompanyPersons = () => {
         if (!selectedCompany || !personDetailsData[selectedCompany]) {
             return [];
         }
-        return personDetailsData[selectedCompany];
+        
+        let persons = personDetailsData[selectedCompany];
+        
+        // If a specific category is selected (not "All"), filter by that category
+        if (selectedCategory && selectedCategory !== '') {
+            persons = persons.filter(person => {
+                // Parse the categories from the person's category field
+                const personCategories = (person.category || '')
+                    .split(',')
+                    .map(cat => cat.trim())
+                    .filter(cat => cat.length > 0);
+                
+                // Check if the selected category is in the person's categories
+                return personCategories.includes(selectedCategory);
+            });
+        }
+        
+        return persons;
     };
 
     const companyPersons = getCompanyPersons();
@@ -306,6 +345,34 @@ const BuyingGroup = () => {
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
                     {/* <label style={{ textAlign: 'center' }}>Category</label> */}
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={() => setSelectedCategory('')}
+                            style={{
+                                padding: '10px 16px',
+                                border: selectedCategory === '' ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontWeight: selectedCategory === '' ? '600' : '500',
+                                backgroundColor: selectedCategory === '' ? '#3b82f6' : 'white',
+                                color: selectedCategory === '' ? 'white' : '#374151',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedCategory !== '') {
+                                    e.target.style.borderColor = '#9ca3af';
+                                    e.target.style.backgroundColor = '#f9fafb';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedCategory !== '') {
+                                    e.target.style.borderColor = '#d1d5db';
+                                    e.target.style.backgroundColor = 'white';
+                                }
+                            }}
+                            >
+                            All
+                        </button>
                         {categories.map((category, index) => (
                             <button
                                 key={index}
@@ -659,7 +726,7 @@ const BuyingGroup = () => {
                                     textTransform: 'uppercase',
                                     letterSpacing: '1px'
                                 }}>
-                                    Team Members ({companyPersons.length})
+                                    Team Members {selectedCategory ? `(${selectedCategory})` : ''} ({companyPersons.length})
                                 </h3>
 
                                 <div style={{
