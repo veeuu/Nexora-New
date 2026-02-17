@@ -1292,8 +1292,8 @@ const Technographics = () => {
         </div>
       )}
       
-      <div className="header-actions">
-        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Technographics</h2>
+      <div className="header-actions" style={{ marginBottom: '16px', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '700', margin: '0' }}>Technographics</h2>
         {/* <div className="search-bar">
           <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -3327,8 +3327,8 @@ const Technographics = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '24px',
-          marginBottom: '20px',
+          marginTop: '35px',
+          marginBottom: '14px',
           paddingBottom: '15px',
           borderBottom: '1px solid #e5e7eb'
         }}>
@@ -3764,14 +3764,14 @@ const Technographics = () => {
         .technographics-container {
           background: #ffffff;
           border-radius: 12px;
-          padding: 0.4rem 0.5rem 0.5rem;
-          margin-bottom: 0.5rem;
+          padding: 0.4rem 0.5rem 0;
+          margin-bottom: 0;
           margin-left: 2.5rem;
           margin-top: 0;
           width: calc(100% - 3rem);
           max-width: calc(100% - 3rem);
-          overflow-x: hidden;
-          min-height: 800px;
+          overflow: visible;
+          min-height: 400px;
           position: relative;
           top: 0;
         }
@@ -3786,24 +3786,24 @@ const Technographics = () => {
         }
 
         .table-container {
-          max-height: 550px;
-          overflow-x: auto;
-          overflow-y: auto;
+          max-height: 480px;
+          overflow-x: hidden;
+          overflow-y: scroll;
           position: relative;
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
 
         .table-container::-webkit-scrollbar {
-          display: none;
+          width: 0 !important;
         }
 
         .table-container::-webkit-scrollbar-track {
-          display: none;
+          background: transparent !important;
         }
 
         .table-container::-webkit-scrollbar-thumb {
-          display: none;
+          background: transparent !important;
         }
 
         .tech-scroll-container::-webkit-scrollbar {
