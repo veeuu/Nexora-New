@@ -247,7 +247,7 @@ const Home = () => {
                 22K+
               </div>
               <div className="home-stat-label home-stat-label-blue">
-                Next Tech Purchase
+                Next Tech Purchase®
               </div>
               <p className="home-stat-description home-stat-description-blue">
                 Purchase propensity scores
@@ -265,7 +265,7 @@ const Home = () => {
                 { name: 'Technographics', desc: 'View company technology stack', route: '/dashboard/technographics' },
                 { name: 'Renewal Intelligence', desc: 'Track renewal timelines', route: '/dashboard/renewal-intelligence' },
                 { name: 'Intent', desc: 'Monitor buying intent signals', route: '/dashboard/intent' },
-                { name: 'NTP®', desc: 'Analyze purchase propensity', route: '/dashboard/ntp' },
+                { name: 'Next Tech Purchase®', desc: 'Analyze purchase propensity', route: '/dashboard/ntp' },
                 { name: 'Buying Group', desc: 'Identify decision makers', route: '/dashboard/buying-group' }
               ].map((link, idx) => (
                 <div 
