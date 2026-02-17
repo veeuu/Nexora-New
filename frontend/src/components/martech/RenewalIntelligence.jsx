@@ -2342,7 +2342,7 @@ const RenewalIntelligence = () => {
                 }
 
                 .table-container {
-                    max-height: 600px;
+                    max-height: 470px;
                     overflow-x: auto;
                     overflow-y: auto;
                     position: relative;

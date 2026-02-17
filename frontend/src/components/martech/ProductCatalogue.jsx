@@ -286,8 +286,8 @@ const ProductCatalogue = () => {
         </div>
       )}
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Product Catalogue</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '700' }}>Product Catalogue</h2>
         <div className="year-dropdown">
           <label className="year-label">Year :</label>
           <select 
@@ -561,7 +561,11 @@ const ProductCatalogue = () => {
           marginTop: '20px',
           marginBottom: '20px',
           paddingBottom: '15px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1px solid #e5e7eb',
+          position: 'sticky',
+          bottom: 0,
+          backgroundColor: '#ffffff',
+          zIndex: 100
       }}>
           <div style={{
               fontSize: '14px',
@@ -576,7 +580,8 @@ const ProductCatalogue = () => {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              paddingBottom: '10px'
           }}>
               {(() => {
                   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -1014,7 +1019,7 @@ const ProductCatalogue = () => {
         }
 
         .table-container {
-          max-height: 550px;
+          max-height:390px;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
