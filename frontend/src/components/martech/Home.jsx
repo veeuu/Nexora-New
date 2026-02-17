@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCatalogue from './ProductCatalogue';
 import DataDictionary from './DataDictionary';
+import AnimatedStatCard from '../AnimatedStatCard';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import '../../styles/home.css';
 
@@ -123,7 +124,7 @@ const Home = () => {
           {!showProductCatalogue && !showDataDictionary && (
             <>
               <h1 className="home-title">
-                Welcome to Nexora
+                Welcome to Nexora®
               </h1>
               <p className="home-subtitle">
                 Your comprehensive B2B intelligence platform
@@ -176,83 +177,59 @@ const Home = () => {
         <>
           {/* Stats Grid */}
           <div className="home-stats-grid">
-            {/* Total Companies Card */}
-            <div className="home-stat-card home-stat-card-teal">
-              <div className="home-stat-number home-stat-number-teal">
-                100K+
-              </div>
-              <div className="home-stat-label home-stat-label-teal">
-                Total Companies
-              </div>
-              <p className="home-stat-description home-stat-description-teal">
-                In our database
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="100K+"
+              label="Total Companies"
+              cardClass="home-stat-card-teal"
+              numberClass="home-stat-number-teal"
+              labelClass="home-stat-label-teal"
+              maxValue={100000}
+            />
 
-            {/* Technographics Card */}
-            <div className="home-stat-card home-stat-card-orange">
-              <div className="home-stat-number home-stat-number-orange">
-                45K+
-              </div>
-              <div className="home-stat-label home-stat-label-orange">
-                Technographics
-              </div>
-              <p className="home-stat-description home-stat-description-orange">
-                Technology records
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="45K+"
+              label="Technographics"
+              cardClass="home-stat-card-orange"
+              numberClass="home-stat-number-orange"
+              labelClass="home-stat-label-orange"
+              maxValue={100000}
+            />
 
-            {/* Renewal Intelligence Card */}
-            <div className="home-stat-card home-stat-card-pink">
-              <div className="home-stat-number home-stat-number-pink">
-                20K+
-              </div>
-              <div className="home-stat-label home-stat-label-pink">
-                Renewal Intelligence
-              </div>
-              <p className="home-stat-description home-stat-description-pink">
-                Renewal records
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="20K+"
+              label="Renewal Intelligence"
+              cardClass="home-stat-card-pink"
+              numberClass="home-stat-number-pink"
+              labelClass="home-stat-label-pink"
+              maxValue={100000}
+            />
 
-            {/* Intent Card */}
-            <div className="home-stat-card home-stat-card-purple">
-              <div className="home-stat-number home-stat-number-purple">
-                20K+
-              </div>
-              <div className="home-stat-label home-stat-label-purple">
-                Intent
-              </div>
-              <p className="home-stat-description home-stat-description-purple">
-                Intent signals tracked
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="20K+"
+              label="Intent"
+              cardClass="home-stat-card-purple"
+              numberClass="home-stat-number-purple"
+              labelClass="home-stat-label-purple"
+              maxValue={100000}
+            />
 
-            {/* Buying Group Card */}
-            <div className="home-stat-card home-stat-card-yellow">
-              <div className="home-stat-number home-stat-number-yellow">
-                20K+
-              </div>
-              <div className="home-stat-label home-stat-label-yellow">
-                Buying Group
-              </div>
-              <p className="home-stat-description home-stat-description-yellow">
-                Companies tracked
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="20K+"
+              label="Buying Group"
+              cardClass="home-stat-card-yellow"
+              numberClass="home-stat-number-yellow"
+              labelClass="home-stat-label-yellow"
+              maxValue={100000}
+            />
 
-            {/* NTP Card */}
-            <div className="home-stat-card home-stat-card-blue">
-              <div className="home-stat-number home-stat-number-blue">
-                22K+
-              </div>
-              <div className="home-stat-label home-stat-label-blue">
-                Next Tech Purchase®
-              </div>
-              <p className="home-stat-description home-stat-description-blue">
-                Purchase propensity scores
-              </p>
-            </div>
+            <AnimatedStatCard
+              number="22K+"
+              label="Next Tech Purchase®"
+              cardClass="home-stat-card-blue"
+              numberClass="home-stat-number-blue"
+              labelClass="home-stat-label-blue"
+              maxValue={100000}
+            />
           </div>
 
           {/* Quick Links */}
@@ -265,7 +242,7 @@ const Home = () => {
                 { name: 'Technographics', desc: 'View company technology stack', route: '/dashboard/technographics' },
                 { name: 'Renewal Intelligence', desc: 'Track renewal timelines', route: '/dashboard/renewal-intelligence' },
                 { name: 'Intent', desc: 'Monitor buying intent signals', route: '/dashboard/intent' },
-                { name: 'Next Tech Purchase®', desc: 'Analyze purchase propensity', route: '/dashboard/ntp' },
+                { name: 'Next Tech Purchase®', desc: 'Analyzend  purchase propensity', route: '/dashboard/ntp' },
                 { name: 'Buying Group', desc: 'Identify decision makers', route: '/dashboard/buying-group' }
               ].map((link, idx) => (
                 <div 

@@ -4,7 +4,6 @@ import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
-import PerformanceMetrics from '../PerformanceMetrics';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Country name to country code mapping
@@ -3972,7 +3971,6 @@ const Technographics = () => {
         }
       `}</style>
     </div>
-    <PerformanceMetrics measurements={measurements} isVisible={true} />
     </>
   );
 };
