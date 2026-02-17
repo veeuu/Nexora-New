@@ -702,15 +702,15 @@ body {
 {
     background: #ffffff;
   border-radius: 12px;
-  padding: 0.4rem 0.5rem 0.5rem;
-  padding-top: 0.01rem;
+  padding: 0px 20px 0px 20px;
   margin-bottom: 0.5rem;
   margin-left: 0.5rem;
   margin-right: 2rem;
+  margin-top: -20px;
   width: calc(100% - 2.5rem);
   max-width: calc(100% - 2.5rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: auto;
 }
 
 .intent-container
@@ -867,14 +867,18 @@ h2 {
   min-width: 900px;
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th,
 td {
-  padding: 12px 12px;
+  padding: 14px 16px;
   text-align: left;
   border: none;
   font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 th {
@@ -1263,7 +1267,7 @@ tr:hover {
 
   .home-content {
     background-color: #ffffff;
-    padding: 1.5rem;
+    padding: 0.1rem;
     margin-left: 30px;
   }
 
@@ -1866,30 +1870,30 @@ tr:hover {
 /* ========== TABLE COLUMN WIDTHS ========== */
 .table-container table th:nth-child(1),
 .table-container table td:nth-child(1) {
-  width: 50px;
-  min-width: 50px;
+  width: 25%;
+  min-width: 150px;
 }
 
 .table-container table th:nth-child(2),
 .table-container table td:nth-child(2) {
-  width: 80px;
-  min-width: 80px;
+  width: 25%;
+  min-width: 150px;
 }
 
 .table-container table th:nth-child(3),
 .table-container table td:nth-child(3) {
-  width: 33.33%;
+  width: 25%;
   min-width: 150px;
 }
 
 .table-container table th:nth-child(4),
 .table-container table td:nth-child(4) {
-  width: 33.33%;
+  width: 25%;
   min-width: 150px;
 }
 
 .table-container table th:nth-child(5),
 .table-container table td:nth-child(5) {
-  width: 33.34%;
+  width: 25%;
   min-width: 150px;
 }
