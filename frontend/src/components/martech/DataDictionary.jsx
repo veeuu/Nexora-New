@@ -1,193 +1,188 @@
-import { useState, useEffect } from 'react';
-import nexoraLogo from '../../assets/nexora-logo.png';
+import { useState } from 'react';
+import '../../styles/dataDictionary.css';
 
 const DataDictionary = () => {
-  const [dataDictionary, setDataDictionary] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('All'); // All, Standard, Special
 
-  useEffect(() => {
-    const fetchDataDictionary = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/data-dictionary');
-        const data = await response.json();
-        setDataDictionary(data);
-      } catch (error) {
-        console.error('Error fetching data dictionary:', error);
-        setDataDictionary([]);
-      } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
-      }
-    };
+  // Hardcoded data dictionary with additional details
+  const dataDictionary = [
+    {
+      'Data Attribute': 'Technographics',
+      'Definition': 'The technology product(s) the company uses',
+      'Standard / Special': 'Standard',
+      'Example': 'Salesforce, Microsoft 365, AWS',
+      'Use Case': 'Identify what technologies a company is using'
+    },
+    {
+      'Data Attribute': 'Intent',
+      'Definition': 'A measure of the intensity of the signal for a given product and the likelihood of the existence of a product',
+      'Standard / Special': 'Standard',
+      'Example': 'High, Medium, Low, High-Medium, Greenfield ',
+      'Use Case': 'Understand buying signals and product interest levels'
+    },
+    {
+      'Data Attribute': 'First discovered',
+      'Definition': 'Date when technology usage was first discovered',
+      'Standard / Special': 'Standard',
+      'Example': '2023-01-15',
+      'Use Case': 'Track when a company started using a technology'
+    },
+    {
+      'Data Attribute': 'Last discovered',
+      'Definition': 'Last date the technology usage was discovered',
+      'Standard / Special': 'Standard',
+      'Example': '2024-02-10',
+      'Use Case': 'Determine if technology is still actively used'
+    },
+    {
+      'Data Attribute': 'Vendor',
+      'Definition': 'Company that makes the product',
+      'Standard / Special': 'Standard',
+      'Example': 'Salesforce Inc., Microsoft Corp',
+      'Use Case': 'Identify technology vendors for outreach'
+    },
+    {
+      'Data Attribute': 'Category',
+      'Definition': 'Classification of common products',
+      'Standard / Special': 'Standard',
+      'Example': 'Cloud, AI/ML, Database, CRM',
+      'Use Case': 'Group technologies by business function'
+    },
+    {
+      'Data Attribute': 'SubCategory',
+      'Definition': 'Sub-classification of the product',
+      'Standard / Special': 'Standard',
+      'Example': 'Sales Automation, Email Marketing',
+      'Use Case': 'Narrow down specific technology types'
+    },
+    {
+      'Data Attribute': 'Description',
+      'Definition': 'Brief summary of the product description',
+      'Standard / Special': 'Standard',
+      'Example': 'Cloud-based CRM platform for sales teams',
+      'Use Case': 'Understand what a technology does'
+    },
+    {
+      'Data Attribute': 'Renewal Intelligence',
+      'Definition': 'Renewal Cycle of a product',
+      'Standard / Special': 'Special',
+      'Example': 'Annual, Monthly, Multi-year',
+      'Use Case': 'Predict renewal dates for sales opportunities'
+    },
+    {
+      'Data Attribute': 'Skills Matrix',
+      'Definition': 'Relative percentage of resources discovered in an organization skilled in given technologies',
+      'Standard / Special': 'Special',
+      'Example': '45% of team skilled in Python',
+      'Use Case': 'Identify skill gaps and training needs'
+    },
+    {
+      'Data Attribute': 'Adoption/De-adoption Matrix',
+      'Definition': 'Technology platforms being adopted or de-adopted at an organization level',
+      'Standard / Special': 'Special',
+      'Example': 'Adopting: Kubernetes, De-adopting: Legacy systems',
+      'Use Case': 'Track technology migration trends'
+    },
+    {
+      'Data Attribute': 'Actively used (in-project) technologies',
+      'Definition': 'List of technologies detected as being used in current and recent projects',
+      'Standard / Special': 'Special',
+      'Example': 'React, Node.js, PostgreSQL',
+      'Use Case': 'Find companies actively using specific tech stacks'
+    }
+  ];
 
-    fetchDataDictionary();
-  }, []);
-
-  // Filter data based on search term and type
-  const filteredData = dataDictionary.filter(item => {
+  // Filter data based on search term
+  const searchFilteredData = dataDictionary.filter(item => {
     const matchesSearch = 
       (item['Data Attribute'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item['Definition'] || '').toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesType = 
-      filterType === 'All' || 
-      (item['Standard / Special'] || '').toLowerCase() === filterType.toLowerCase();
-    
-    return matchesSearch && matchesType;
+    return matchesSearch;
   });
 
-  // Separate standard and special attributes
-  const standardAttributes = filteredData.filter(item => 
+  // Separate into categories
+  const standardItems = searchFilteredData.filter(item => 
     (item['Standard / Special'] || '').toLowerCase() === 'standard'
   );
-  const specialAttributes = filteredData.filter(item => 
+  const specialItems = searchFilteredData.filter(item => 
     (item['Standard / Special'] || '').toLowerCase() === 'special'
   );
 
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '800px',
-        backgroundColor: '#ffffff',
-        borderRadius: '8px',
-        padding: '40px 20px'
-      }}>
-        <img 
-          src={nexoraLogo} 
-          alt="Nexora Logo" 
-          style={{
-            width: '250px',
-            height: 'auto',
-            marginBottom: '30px',
-            objectFit: 'contain'
-          }}
-        />
-        <h3 style={{
-          margin: '0 0 10px 0',
-          color: '#1f2937',
-          fontSize: '18px',
-          fontWeight: '600'
-        }}>
-          Loading Data Dictionary
-        </h3>
-        <p style={{
-          margin: '0 0 30px 0',
-          color: '#6b7280',
-          fontSize: '14px',
-          textAlign: 'center',
-          maxWidth: '300px'
-        }}>
-          Fetching data attribute definitions...
-        </p>
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          alignItems: 'center'
-        }}>
-          {[0, 0.2, 0.4].map((delay, i) => (
-            <div key={i} style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
-              animation: `bounce 1.4s infinite ${delay}s`
-            }} />
-          ))}
+  // Render items grid
+  const renderItemsGrid = (items, type) => (
+    <div className="data-items-grid">
+      {items.length > 0 ? (
+        items.map((item, index) => (
+          <div
+            key={`${type}-${index}`}
+            className={`data-card ${type}`}
+          >
+            <div className="card-header">
+              <h3 className="card-title">
+                {item['Data Attribute']}
+              </h3>
+            </div>
+
+            <div className="card-content">
+              <div className="content-block">
+                <h4 className="block-label">Definition</h4>
+                <p className="block-text">
+                  {item['Definition']}
+                </p>
+              </div>
+
+              <div className="content-block">
+                <h4 className="block-label">Example</h4>
+                <p className="block-text example">
+                  {item['Example']}
+                </p>
+              </div>
+
+              <div className="content-block">
+                <h4 className="block-label">Use Case</h4>
+                <p className="block-text">
+                  {item['Use Case']}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="no-results-grid">
+          <p className="no-results-title">No {type} attributes found</p>
         </div>
-        <style>{`
-          @keyframes bounce {
-            0%, 80%, 100% {
-              opacity: 0.3;
-              transform: translateY(0);
-            }
-            40% {
-              opacity: 1;
-              transform: translateY(-10px);
-            }
-          }
-        `}</style>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
 
   return (
-    <div style={{ padding: '0', marginTop: '-40px' }}>
+    <div className="data-dictionary-container">
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '24px'
-      }}>
+      <div className="data-dictionary-header">
         <div>
-          <h2 style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            color: '#1f2937',
-            margin: '0 0 8px 0'
-          }}>
-            Data Dictionary
+          <h2 className="data-dictionary-title">
+            📚 Data Dictionary
           </h2>
-          <p style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            margin: 0
-          }}>
-            Comprehensive definitions of all data attributes
+          <p className="data-dictionary-subtitle">
+            Complete guide to all data attributes and their meanings
           </p>
         </div>
       </div>
 
-      <div style={{
-        height: '1px',
-        background: 'linear-gradient(to right, #e5e7eb 0%, #d1d5db 50%, #e5e7eb 100%)',
-        margin: '20px 0'
-      }} />
+      <div className="data-dictionary-divider" />
 
-      {/* Search and Filter Bar */}
-      <div style={{
-        display: 'flex',
-        gap: '12px',
-        marginBottom: '24px',
-        flexWrap: 'wrap'
-      }}>
-        {/* Search Input */}
-        <div style={{ flex: '1', minWidth: '300px', position: 'relative' }}>
+      {/* Search Bar */}
+      <div className="data-dictionary-controls">
+        <div className="search-input-wrapper">
           <input
             type="text"
             placeholder="Search attributes or definitions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 40px 10px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px',
-              outline: 'none',
-              transition: 'border-color 0.2s'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-            onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+            className="search-input"
           />
           <svg
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: '20px',
-              height: '20px',
-              color: '#9ca3af'
-            }}
+            className="search-icon"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -197,297 +192,43 @@ const DataDictionary = () => {
             <path d="m20 20-4.5-4.5"></path>
           </svg>
         </div>
+      </div>
 
-        {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {['All', 'Standard', 'Special'].map(type => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              style={{
-                padding: '10px 20px',
-                border: filterType === type ? '2px solid #3b82f6' : '1px solid #d1d5db',
-                borderRadius: '6px',
-                backgroundColor: filterType === type ? '#dbeafe' : 'white',
-                color: filterType === type ? '#1e40af' : '#6b7280',
-                fontSize: '14px',
-                fontWeight: filterType === type ? '600' : '500',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                if (filterType !== type) {
-                  e.target.style.backgroundColor = '#f9fafb';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (filterType !== type) {
-                  e.target.style.backgroundColor = 'white';
-                }
-              }}
-            >
-              {type}
-            </button>
-          ))}
+      {/* Standard Attributes Section */}
+      {standardItems.length > 0 && (
+        <div className="category-section standard-section">
+          <div className="category-header">
+            <div className="category-icon standard">✓</div>
+            <div className="category-info">
+              <h3 className="category-title">Standard Attributes</h3>
+              <p className="category-description">Core data attributes available with every technographic list</p>
+            </div>
+            <span className="category-count">{standardItems.length}</span>
+          </div>
+          {renderItemsGrid(standardItems, 'standard')}
         </div>
-      </div>
+      )}
 
-      {/* Results Count */}
-      <div style={{
-        marginBottom: '16px',
-        fontSize: '14px',
-        color: '#6b7280'
-      }}>
-        Showing {filteredData.length} of {dataDictionary.length} attributes
-      </div>
-
-      {/* Data Dictionary Cards */}
-      {filterType === 'All' ? (
-        <>
-          {/* Standard Attributes Section */}
-          {standardAttributes.length > 0 && (
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{
-                fontSize: '20px',
-                fontWeight: '600',
-                color: '#1f2937',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#10b981'
-                }}></span>
-                Standard Attributes ({standardAttributes.length})
-              </h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-                gap: '16px'
-              }}>
-                {standardAttributes.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      padding: '20px',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      backgroundColor: 'white',
-                      transition: 'all 0.2s',
-                      cursor: 'default'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                      e.currentTarget.style.borderColor = '#10b981';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor = '#e5e7eb';
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '12px'
-                    }}>
-                      <h4 style={{
-                        fontSize: '16px',
-                        fontWeight: '600',
-                        color: '#1f2937',
-                        margin: 0
-                      }}>
-                        {item['Data Attribute']}
-                      </h4>
-                      <span style={{
-                        padding: '4px 8px',
-                        backgroundColor: '#d1fae5',
-                        color: '#065f46',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        borderRadius: '4px'
-                      }}>
-                        Standard
-                      </span>
-                    </div>
-                    <p style={{
-                      fontSize: '14px',
-                      color: '#6b7280',
-                      lineHeight: '1.6',
-                      margin: 0
-                    }}>
-                      {item['Definition']}
-                    </p>
-                  </div>
-                ))}
-              </div>
+      {/* Special Attributes Section */}
+      {specialItems.length > 0 && (
+        <div className="category-section special-section">
+          <div className="category-header">
+            <div className="category-icon special">⭐</div>
+            <div className="category-info">
+              <h3 className="category-title">Special Attributes</h3>
+              <p className="category-description">Premium attributes available for additional costs</p>
             </div>
-          )}
-
-          {/* Special Attributes Section */}
-          {specialAttributes.length > 0 && (
-            <div>
-              <h3 style={{
-                fontSize: '20px',
-                fontWeight: '600',
-                color: '#1f2937',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#f59e0b'
-                }}></span>
-                Special Attributes ({specialAttributes.length})
-              </h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-                gap: '16px'
-              }}>
-                {specialAttributes.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      padding: '20px',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      backgroundColor: 'white',
-                      transition: 'all 0.2s',
-                      cursor: 'default'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                      e.currentTarget.style.borderColor = '#f59e0b';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor = '#e5e7eb';
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '12px'
-                    }}>
-                      <h4 style={{
-                        fontSize: '16px',
-                        fontWeight: '600',
-                        color: '#1f2937',
-                        margin: 0
-                      }}>
-                        {item['Data Attribute']}
-                      </h4>
-                      <span style={{
-                        padding: '4px 8px',
-                        backgroundColor: '#fef3c7',
-                        color: '#92400e',
-                        fontSize: '12px',
-                        fontWeight: '500',
-                        borderRadius: '4px'
-                      }}>
-                        Special
-                      </span>
-                    </div>
-                    <p style={{
-                      fontSize: '14px',
-                      color: '#6b7280',
-                      lineHeight: '1.6',
-                      margin: 0
-                    }}>
-                      {item['Definition']}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        /* Filtered View */
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-          gap: '16px'
-        }}>
-          {filteredData.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                padding: '20px',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                backgroundColor: 'white',
-                transition: 'all 0.2s',
-                cursor: 'default'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                e.currentTarget.style.borderColor = filterType === 'Standard' ? '#10b981' : '#f59e0b';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = '#e5e7eb';
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}>
-                <h4 style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  margin: 0
-                }}>
-                  {item['Data Attribute']}
-                </h4>
-                <span style={{
-                  padding: '4px 8px',
-                  backgroundColor: (item['Standard / Special'] || '').toLowerCase() === 'standard' ? '#d1fae5' : '#fef3c7',
-                  color: (item['Standard / Special'] || '').toLowerCase() === 'standard' ? '#065f46' : '#92400e',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  borderRadius: '4px'
-                }}>
-                  {item['Standard / Special']}
-                </span>
-              </div>
-              <p style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                lineHeight: '1.6',
-                margin: 0
-              }}>
-                {item['Definition']}
-              </p>
-            </div>
-          ))}
+            <span className="category-count">{specialItems.length}</span>
+          </div>
+          {renderItemsGrid(specialItems, 'special')}
         </div>
       )}
 
       {/* No Results */}
-      {filteredData.length === 0 && (
-        <div style={{
-          textAlign: 'center',
-          padding: '60px 20px',
-          color: '#9ca3af'
-        }}>
-          <p style={{ fontSize: '16px', marginBottom: '8px' }}>No attributes found</p>
-          <p style={{ fontSize: '14px' }}>Try adjusting your search or filter</p>
+      {standardItems.length === 0 && specialItems.length === 0 && (
+        <div className="no-results-container">
+          <p className="no-results-title">No attributes found</p>
+          <p className="no-results-subtitle">Try adjusting your search</p>
         </div>
       )}
     </div>
