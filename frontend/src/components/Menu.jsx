@@ -75,7 +75,7 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
           </li>
         ))}
       </ul>
-      <div className="menu-credits-section">
+      {/* <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">
           <span className="menu-credits-count">4 of 500</span>
@@ -83,7 +83,7 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
         <div className="menu-credits-bar">
           <div className="menu-credits-fill" style={{ width: '8%' }}></div>
         </div>
-      </div>
+      </div> */}
       <div className="menu-profile-section" ref={profileRef}>
         <button 
           className="menu-profile-btn"
