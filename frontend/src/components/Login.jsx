@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import logo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
+// import logo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import nexoraLogo from '../assets/nexora-logo.png';
-import heroImage from '../assets/ChatGPT_Image_Jan_22__2026__11_00_18_AM-removebg-preview.png';
+import heroImage from '../assets/unnamed.jpg';
 import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
@@ -251,7 +251,7 @@ const Login = ({ onLogin }) => {
       <div className="login-right">
         <div className="login-form-wrapper">
           <div className="login-logo-vertical">
-            <img src={logo} alt="Proplus Data" className="logo-img-large" />
+            
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
           </div>
 

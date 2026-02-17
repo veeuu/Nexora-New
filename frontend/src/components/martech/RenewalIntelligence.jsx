@@ -3,6 +3,8 @@ import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
+import PerformanceMetrics from '../PerformanceMetrics';
+import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
@@ -207,6 +209,7 @@ const RenewalIntelligence = () => {
     const [selectedRows, setSelectedRows] = useState(new Set()); // Track selected rows for checkbox
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
+    const [measurements, setMeasurements] = useState({});
     const rowsPerPage = 9;
     const filterRef = useRef(null);
 
@@ -404,26 +407,37 @@ const RenewalIntelligence = () => {
     // Fetch renewal data once on component mount
     useEffect(() => {
         setLoading(true);
+        performanceMonitor.reset();
+        performanceMonitor.start('total-load');
+        
         const fetchRenewalData = async () => {
             try {
                 setLoading(true);
                 
-                // Fetch both in parallel instead of sequentially
-                const [renewalResponse, companyDetailsResponse] = await Promise.all([
-                    fetch('/api/renewal-intelligence'),
-                    fetch('/api/company-details')
+                // Fetch metadata and first page in parallel
+                performanceMonitor.start('api-fetch');
+                const [renewalResponse, companyDetailsResponse, metadataResponse] = await Promise.all([
+                    fetch('/api/renewal-intelligence?page=1&limit=500'),
+                    fetch('/api/company-details'),
+                    fetch('/api/renewal-intelligence/metadata')
                 ]);
+                performanceMonitor.end('api-fetch');
 
-                const data = await renewalResponse.json();
-
+                performanceMonitor.start('parse-json');
+                const renewalData = await renewalResponse.json();
                 const companyDetailsMap = await companyDetailsResponse.json();
+                const metadata = await metadataResponse.json();
+                performanceMonitor.end('parse-json');
+
+                performanceMonitor.start('process-data');
+                // Use data from response (first page only)
+                const data = renewalData.data || renewalData;
                 
-                // Extract unique categories from renewal data
-                const uniqueCategories = [...new Set(data.map(item => item.category || 'Other'))].sort();
+                // Use metadata for categories and products
+                const uniqueCategories = metadata.categories || [];
+                const uniqueProducts = metadata.products || [];
+                
                 setCategories(uniqueCategories);
-                
-                // Extract unique products from renewal data
-                const uniqueProducts = [...new Set(data.map(item => item.product || ''))].filter(Boolean).sort();
                 setProducts(uniqueProducts);
 
                 // Add category, domain, and linkedinUrl to renewal data
@@ -431,13 +445,19 @@ const RenewalIntelligence = () => {
                     const companyDetails = companyDetailsMap[row.companyName] || {};
                     return {
                         ...row,
-                        // Keep the category from the renewal API, don't override it
                         domain: companyDetails.domain || 'N/A',
                         linkedinUrl: companyDetails.linkedinUrl || ''
                     };
                 });
+                performanceMonitor.end('process-data');
 
+                performanceMonitor.start('state-update');
                 setTableData(dataWithDetails);
+                performanceMonitor.end('state-update');
+                
+                performanceMonitor.end('total-load');
+                setMeasurements(performanceMonitor.getAllMeasurements());
+                performanceMonitor.logSummary();
             } catch (error) {
                 console.error('Error fetching renewal data:', error);
                 setTableData([]);
@@ -714,6 +734,7 @@ const RenewalIntelligence = () => {
     }
 
     return (
+        <>
         <div className="renewal-intelligence-container">
             <div className="header-actions">
                 <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
@@ -2415,7 +2436,9 @@ const RenewalIntelligence = () => {
                     background-color: #f5f5f5;
                 }
             `}</style>
+            <PerformanceMetrics measurements={measurements} isVisible={true} />
         </div>
+        </>
     );
 };
 

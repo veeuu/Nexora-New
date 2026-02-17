@@ -4,6 +4,8 @@ import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
+import PerformanceMetrics from '../PerformanceMetrics';
+import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Country name to country code mapping
 const countryCodeMap = {
@@ -737,6 +739,10 @@ const Technographics = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
+  const [measurements, setMeasurements] = useState({});
+  const [pageCache, setPageCache] = useState({}); // Cache for loaded pages
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageLoading, setPageLoading] = useState(false);
   const rowsPerPage = 10;
   const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
@@ -857,27 +863,125 @@ const Technographics = () => {
     }
   }, [openFilterDropdown, showFilters]);
 
+  // Fetch page data with caching and retry logic
+  const fetchPage = async (pageNum, retries = 5, delay = 500) => {
+    if (pageCache[pageNum]) {
+      return pageCache[pageNum];
+    }
+
+    try {
+      const response = await fetch(`/api/technographics?page=${pageNum}&limit=500`);
+      const data = await response.json();
+      
+      // If cache is building (503), retry with exponential backoff
+      if (response.status === 503 && retries > 0) {
+        console.log(`[FETCH] Page ${pageNum}: Cache building, retrying in ${delay}ms... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); // Max 5s delay
+      }
+      
+      // Check if data is empty
+      if (!data.data || data.data.length === 0) {
+        console.warn(`[FETCH] Page ${pageNum}: No data returned`, data);
+        return data;
+      }
+      
+      setPageCache(prev => ({
+        ...prev,
+        [pageNum]: data
+      }));
+      
+      return data;
+    } catch (err) {
+      console.error(`[FETCH] Page ${pageNum}: Error:`, err);
+      return null;
+    }
+  };
+
+  // Prefetch adjacent pages
+  const prefetchAdjacentPages = async (pageNum) => {
+    const pagesToPrefetch = [];
+    
+    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); // Previous page
+    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); // Next page
+    
+    // Prefetch in background without blocking
+    pagesToPrefetch.forEach(page => {
+      if (!pageCache[page]) {
+        fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
+      }
+    });
+  };
+
+  // Initial load - fetch page 1 only, prefetch page 2 in background
   useEffect(() => {
-    const fetchData = async () => {
+    const initializeData = async () => {
       try {
         setLoading(true);
         setError(null);
+        performanceMonitor.reset();
+        performanceMonitor.start('total-load');
         
-        // Fetch both in parallel instead of sequentially
-        const [techResponse, ntpResponse] = await Promise.all([
-          fetch('/api/technographics'),
-          fetch('/api/ntp')
-        ]);
+        // Fetch metadata and first page with retry logic
+        performanceMonitor.start('api-fetch');
+        
+        // Fetch metadata (should be fast)
+        const metadataResponse = await fetch('/api/technographics/metadata');
+        const metadata = await metadataResponse.json();
+        
+        // Fetch page 1 with retry logic for 503
+        let page1Data = null;
+        let retries = 10;
+        let delay = 500;
+        
+        while (!page1Data && retries > 0) {
+          const page1Response = await fetch('/api/technographics?page=1&limit=500');
+          
+          if (page1Response.status === 503) {
+            console.log(`[INIT] Cache building, retrying in ${delay}ms... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay = Math.min(delay * 1.5, 5000); // Exponential backoff, max 5s
+            retries--;
+          } else {
+            page1Data = await page1Response.json();
+            break;
+          }
+        }
+        
+        performanceMonitor.end('api-fetch');
 
-        const data = await techResponse.json();
+        if (!page1Data) {
+          throw new Error('Failed to fetch page 1 after multiple retries');
+        }
 
-        const ntpDataFetched = await ntpResponse.json();
+        performanceMonitor.start('parse-json');
+        // Metadata already parsed above
+        performanceMonitor.end('parse-json');
 
-        setTableData(data);
-        setNtpData(ntpDataFetched);
-
-        // Calculate industry counts from the table data
+        performanceMonitor.start('process-data');
+        
+        // Cache page 1
+        setPageCache({
+          1: page1Data
+        });
+        
+        setTotalPages(page1Data.pages || 1);
+        
+        // Prefetch page 2 in background (non-blocking)
+        if (page1Data.pages > 1) {
+          fetchPage(2).catch(err => console.error('Prefetch page 2 failed:', err));
+        }
+        
+        // Use first page data for initial display
+        const data = page1Data.data || [];
+        
+        // Calculate industry counts from the metadata
         const industryCounts = {};
+        metadata.industries.forEach(industry => {
+          industryCounts[industry] = 0;
+        });
+        
+        // Count from first page data
         data.forEach(row => {
           const industry = row.industry || 'Other';
           industryCounts[industry] = (industryCounts[industry] || 0) + 1;
@@ -888,9 +992,6 @@ const Technographics = () => {
           label,
           value
         }));
-
-        // Update the shared context with real industry data
-        setIndustryData(industryArray);
 
         // Calculate technology adoption by region and category
         const techByRegion = {};
@@ -924,20 +1025,50 @@ const Technographics = () => {
             techDataWithPercentages[region][category] = percentage;
           });
         });
+        performanceMonitor.end('process-data');
 
+        performanceMonitor.start('state-update');
+        setTableData(data);
+        setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
         setAvailableRegions(Array.from(regions).sort());
+        performanceMonitor.end('state-update');
+        
+        performanceMonitor.end('total-load');
+        setMeasurements(performanceMonitor.getAllMeasurements());
+        performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
         console.error("Failed to fetch Technographics data:", e);
-        setTableData([]); // Set empty data on error
+        setTableData([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    initializeData();
   }, [setIndustryData, setTechnologyData, setAvailableRegions]);
+
+  // Handle page changes with prefetching
+  const handlePageChange = async (newPage) => {
+    if (newPage === currentPage) return;
+    
+    setCurrentPage(newPage);
+    setPageLoading(true);
+
+    try {
+      const pageData = await fetchPage(newPage);
+      if (pageData) {
+        setTableData(pageData.data || []);
+        // Prefetch adjacent pages in background
+        prefetchAdjacentPages(newPage);
+      }
+    } catch (err) {
+      console.error('Error changing page:', err);
+    } finally {
+      setPageLoading(false);
+    }
+  };
 
   const getUniqueOptions = (key) => {
     if (!tableData) return [];
@@ -1244,6 +1375,7 @@ const Technographics = () => {
   }
 
   return (
+    <>
     <div className="technographics-container">
       {/* Error Banner */}
       {error && (
@@ -3261,7 +3393,7 @@ const Technographics = () => {
       </div>
 
       {/* Pagination Controls - All in One Row */}
-      {groupedDataArray.length > rowsPerPage && (
+      {totalPages > 1 && (
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -3276,7 +3408,7 @@ const Technographics = () => {
             color: '#1f2937',
             fontWeight: '600'
           }}>
-            Page {currentPage} of {Math.ceil(groupedDataArray.length / rowsPerPage).toLocaleString()}
+            Page {currentPage} of {totalPages.toLocaleString()}
           </div>
 
           {/* Pagination Buttons */}
@@ -3307,7 +3439,7 @@ const Technographics = () => {
                   {/* First Page Button */}
                   <button
                     key="first"
-                    onClick={() => setCurrentPage(1)}
+                    onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
                     style={{
                       padding: '8px 12px',
@@ -3341,7 +3473,7 @@ const Technographics = () => {
                   {/* Previous Page Button */}
                   <button
                     key="prev"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     style={{
                       padding: '8px 12px',
@@ -3377,7 +3509,7 @@ const Technographics = () => {
                     <>
                       <button
                         key={1}
-                        onClick={() => setCurrentPage(1)}
+                        onClick={() => handlePageChange(1)}
                         style={{
                           padding: '8px 12px',
                           border: '1px solid #d1d5db',
@@ -3408,7 +3540,7 @@ const Technographics = () => {
                   {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
                     <button
                       key={i}
-                      onClick={() => setCurrentPage(i)}
+                      onClick={() => handlePageChange(i)}
                       style={{
                         padding: '8px 12px',
                         border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
@@ -3444,7 +3576,7 @@ const Technographics = () => {
                       {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
                       <button
                         key={totalPages}
-                        onClick={() => setCurrentPage(totalPages)}
+                        onClick={() => handlePageChange(totalPages)}
                         style={{
                           padding: '8px 12px',
                           border: '1px solid #d1d5db',
@@ -3474,7 +3606,7 @@ const Technographics = () => {
                   {/* Next Page Button */}
                   <button
                     key="next"
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
                     style={{
                       padding: '8px 12px',
@@ -3508,7 +3640,7 @@ const Technographics = () => {
                   {/* Last Page Button */}
                   <button
                     key="last"
-                    onClick={() => setCurrentPage(totalPages)}
+                    onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
                     style={{
                       padding: '8px 12px',
@@ -3840,6 +3972,8 @@ const Technographics = () => {
         }
       `}</style>
     </div>
+    <PerformanceMetrics measurements={measurements} isVisible={true} />
+    </>
   );
 };
 
