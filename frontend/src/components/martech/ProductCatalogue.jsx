@@ -164,11 +164,11 @@ const ProductCatalogue = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '800px',
+        justifyContent: 'flex-start',
+        height: '100vh',
         backgroundColor: '#ffffffff',
         borderRadius: '8px',
-        padding: '40px 20px'
+        padding: '80px 20px 40px 20px'
       }}>
         {/* Nexora Logo */}
         <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />

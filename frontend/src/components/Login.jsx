@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // import logo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import nexoraLogo from '../assets/nexora-logo.png';
-import heroImage from '../assets/Everything You Need to Win, In One Platform..svg';
+import heroImage from '../assets/LOGIN PAGE LEFT.svg';
 import '../styles/login.css';
 
 const Login = ({ onLogin }) => {

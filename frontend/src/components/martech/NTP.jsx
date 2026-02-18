@@ -6,7 +6,7 @@ import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
-import PerformanceMetrics from '../PerformanceMetrics';
+// import PerformanceMetrics from '../PerformanceMetrics';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Generic Custom Dropdown Component (without icons)
@@ -2705,7 +2705,7 @@ const NTP = () => {
           th:nth-child(6), td:nth-child(6) { width: 16.66%; }
         }
       `}</style>
-      <PerformanceMetrics measurements={measurements} isVisible={true} />
+      {/* <PerformanceMetrics measurements={measurements} isVisible={true} /> */}
     </div>
   );
 };
