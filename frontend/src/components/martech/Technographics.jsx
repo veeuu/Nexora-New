@@ -1027,6 +1027,15 @@ const Technographics = () => {
         performanceMonitor.end('process-data');
 
         performanceMonitor.start('state-update');
+        
+        // Debug: Log first few records to check company names
+        console.log('[DEBUG] First 5 records from API:', data.slice(0, 5).map(r => ({
+          companyName: r.companyName,
+          industry: r.industry,
+          region: r.region,
+          technology: r.technology
+        })));
+        
         setTableData(data);
         setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
@@ -1070,9 +1079,24 @@ const Technographics = () => {
   };
 
   const getUniqueOptions = (key) => {
-    if (!tableData) return [];
-    const allValues = tableData.map(item => item[key]);
-    return [...new Set(allValues)].sort();
+    if (!tableData || tableData.length === 0) {
+      console.log(`[DEBUG] getUniqueOptions('${key}'): tableData is empty or undefined`);
+      return [];
+    }
+    
+    const allValues = tableData
+      .map(item => item[key])
+      .filter(val => val !== undefined && val !== null);
+    
+    const uniqueValues = [...new Set(allValues)].sort();
+    
+    // Debug log for company names
+    if (key === 'companyName') {
+      console.log(`[DEBUG] getUniqueOptions('${key}'): Found ${uniqueValues.length} unique values from ${tableData.length} rows`);
+      console.log('[DEBUG] Sample company names:', uniqueValues.slice(0, 10));
+    }
+    
+    return uniqueValues;
   };
 
   // Helper function to count companies by category
@@ -1713,9 +1737,19 @@ const Technographics = () => {
                 </div>
 
                 {/* Company Options with Checkboxes */}
-                {getUniqueOptions('companyName')
-                  .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
-                  .map((company, idx) => (
+                {getUniqueOptions('companyName').length === 0 ? (
+                  <div style={{
+                    padding: '20px 12px',
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                    fontSize: '13px'
+                  }}>
+                    {loading ? 'Loading companies...' : 'No companies found'}
+                  </div>
+                ) : (
+                  getUniqueOptions('companyName')
+                    .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
+                    .map((company, idx) => (
                   <div
                     key={idx}
                     onClick={() => {
@@ -1747,9 +1781,10 @@ const Technographics = () => {
                       <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{company}</span>
                     </div>
                   </div>
-                ))}
+                ))
+                )}
 
-                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && (
+                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueOptions('companyName').length > 0 && (
                   <div style={{
                     padding: '10px 12px',
                     textAlign: 'center',
