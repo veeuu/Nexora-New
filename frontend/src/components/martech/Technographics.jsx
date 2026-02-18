@@ -6,6 +6,7 @@ import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
+// Country name to country code mapping
 const countryCodeMap = {
   'United States': 'US', 'USA': 'US', 'UNITED STATES': 'US',
   'Canada': 'CA', 'CANADA': 'CA',
@@ -65,30 +66,33 @@ const countryCodeMap = {
 const extractCountryCode = (region) => {
   if (!region) return '';
   const trimmed = region.trim();
-
-if (countryCodeMap[trimmed]) {
+  
+  // First try exact match
+  if (countryCodeMap[trimmed]) {
     return countryCodeMap[trimmed];
   }
-
-const upper = trimmed.toUpperCase();
+  
+  // Try uppercase match
+  const upper = trimmed.toUpperCase();
   if (countryCodeMap[upper]) {
     return countryCodeMap[upper];
   }
-
-if (trimmed.length === 2) {
+  
+  // If it's already a 2-letter code, return it
+  if (trimmed.length === 2) {
     return trimmed.toUpperCase();
   }
-
+  
   return '';
 };
 
 const renderCountryFlag = (region) => {
   const code = extractCountryCode(region);
   if (!code) return null;
-
+  
   const FlagComponent = Flag[code];
   if (!FlagComponent) return null;
-
+  
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '16px', borderRadius: '2px', overflow: 'hidden', flexShrink: 0 }}>
       <FlagComponent style={{ width: '20px', height: '13px' }} />
@@ -96,6 +100,7 @@ const renderCountryFlag = (region) => {
   );
 };
 
+// Custom Dropdown Component with Logos
 const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -104,7 +109,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -221,6 +226,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   );
 };
 
+// Multi-Select Dropdown Component with Search
 const MultiSelectDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -231,7 +237,7 @@ const MultiSelectDropdown = ({ value, onChange, options }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -425,6 +431,7 @@ const MultiSelectDropdown = ({ value, onChange, options }) => {
   );
 };
 
+// Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompanyFilter = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -433,7 +440,7 @@ const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompany
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -565,29 +572,30 @@ const employeeSizeRanges = [
 ];
 
 const revenueRanges = [
-  { label: '$0�$1M', min: 0, max: 1000000 },
-  { label: '$1M�$5M', min: 1000000, max: 5000000 },
-  { label: '$5M�$10M', min: 5000000, max: 10000000 },
-  { label: '$10M�$25M', min: 10000000, max: 25000000 },
-  { label: '$25M�$50M', min: 25000000, max: 50000000 },
-  { label: '$50M�$100M', min: 50000000, max: 100000000 },
-  { label: '$100M�$250M', min: 100000000, max: 250000000 },
-  { label: '$250M�$500M', min: 250000000, max: 500000000 },
-  { label: '$500M�$1B', min: 500000000, max: 1000000000 },
-  { label: '$1B�$10B', min: 1000000000, max: 10000000000 },
+  { label: '$0–$1M', min: 0, max: 1000000 },
+  { label: '$1M–$5M', min: 1000000, max: 5000000 },
+  { label: '$5M–$10M', min: 5000000, max: 10000000 },
+  { label: '$10M–$25M', min: 10000000, max: 25000000 },
+  { label: '$25M–$50M', min: 25000000, max: 50000000 },
+  { label: '$50M–$100M', min: 50000000, max: 100000000 },
+  { label: '$100M–$250M', min: 100000000, max: 250000000 },
+  { label: '$250M–$500M', min: 250000000, max: 500000000 },
+  { label: '$500M–$1B', min: 500000000, max: 1000000000 },
+  { label: '$1B–$10B', min: 1000000000, max: 10000000000 },
   { label: '$10B+', min: 10000000000, max: Infinity }
 ];
 
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
-
-if (value.includes('+') || value.includes('�') || value.includes('-') || value.includes(',')) {
+  
+  // If the value already contains formatting characters (like +, –, -, commas), return as-is
+  if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
     return value;
   }
-
+  
   const num = parseInt(value);
   if (isNaN(num)) return value;
-
+  
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
   } else if (num >= 1000) {
@@ -598,54 +606,57 @@ if (value.includes('+') || value.includes('�') || value.includes('-') || value
 
 const getEmployeeSizeRange = (value) => {
   if (!value || value === 'N/A') return null;
-
+  
   const num = parseInt(value);
   if (isNaN(num)) return null;
-
+  
   return employeeSizeRanges.find(range => num >= range.min && num <= range.max);
 };
 
 const getRevenueRange = (value) => {
   if (!value || value === 'N/A') return null;
-
-const cleanValue = String(value).replace(/[$,]/g, '');
+  
+  // Remove currency symbols and convert to number
+  const cleanValue = String(value).replace(/[$,]/g, '');
   const num = parseFloat(cleanValue);
   if (isNaN(num)) return null;
-
+  
   return revenueRanges.find(range => num >= range.min && num <= range.max);
 };
 
 const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
   if (!employeeSize || employeeSize === 'N/A') return false;
-
+  
   const num = parseInt(employeeSize);
   if (isNaN(num)) return false;
-
+  
   const range = employeeSizeRanges.find(r => r.label === rangeLabel);
   if (!range) return false;
-
+  
   return num >= range.min && num <= range.max;
 };
 
 const isRevenueInRange = (revenue, rangeLabel) => {
   if (!revenue || revenue === 'N/A') return false;
-
-const cleanValue = String(revenue).replace(/[$,]/g, '');
+  
+  // Remove currency symbols and convert to number
+  const cleanValue = String(revenue).replace(/[$,]/g, '');
   const num = parseFloat(cleanValue);
   if (isNaN(num)) return false;
-
+  
   const range = revenueRanges.find(r => r.label === rangeLabel);
   if (!range) return false;
-
+  
   return num >= range.min && num <= range.max;
 };
 
 const Speedometer = ({ value }) => {
-
+  // Parse the value to get just the number
   const numValue = parseInt(value) || 0;
   const clampedValue = Math.min(Math.max(numValue, 0), 100);
-
-let rotation;
+  
+  // Calculate rotation based on 5 zones (180 degree arc):
+  let rotation;
   if (clampedValue <= 20) {
     rotation = -90;
   } else if (clampedValue <= 40) {
@@ -663,7 +674,7 @@ let rotation;
       <div style={{ position: 'relative', width: '50px', height: '28px' }}>
         <svg width="50" height="28" viewBox="0 0 100 55" style={{ position: 'absolute', top: 0, left: 0 }}>
           <defs>
-            {}
+            {/* Gradient for smooth color transition */}
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ef4444" />
               <stop offset="20%" stopColor="#f97316" />
@@ -672,8 +683,8 @@ let rotation;
               <stop offset="100%" stopColor="#10b981" />
             </linearGradient>
           </defs>
-
-          {}
+          
+          {/* Single smooth gradient arc - inner position */}
           <path
             d="M 8 50 A 45 45 0 0 1 92 50"
             fill="none"
@@ -681,19 +692,19 @@ let rotation;
             strokeWidth="10"
             strokeLinecap="round"
           />
-
-          {}
+          
+          {/* Black needle - smaller and inside the gauge */}
           <g style={{ transform: `rotate(${rotation}deg)`, transformOrigin: '50px 50px', transition: 'transform 0.3s ease' }}>
             <line x1="50" y1="50" x2="50" y2="20" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" />
             <circle cx="50" cy="50" r="2" fill="#000000" />
           </g>
-
-          {}
+          
+          {/* Center pointer dot - smaller */}
           <circle cx="50" cy="50" r="3.5" fill="#ffffff" stroke="#000000" strokeWidth="1.5" />
         </svg>
       </div>
-
-      {}
+      
+      {/* Percentage value below the chart */}
       <div style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>
         {clampedValue}%
       </div>
@@ -725,21 +736,25 @@ const Technographics = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
-  const [revealedRows, setRevealedRows] = useState(new Set());
+  const [currentPage, setCurrentPage] = useState(1); // Current page for display
+  const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
   const [measurements, setMeasurements] = useState({});
-  const [pageCache, setPageCache] = useState({});
+  const [pageCache, setPageCache] = useState({}); // Cache for loaded pages
   const [totalPages, setTotalPages] = useState(0);
   const [pageLoading, setPageLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0); // Track total records from API
+  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); // Track total after grouping
   const rowsPerPage = 10;
-  const scrollRefsMap = useRef(new Map());
+  const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
-const renderTechLogo = (techName) => {
+  // Render logo image or colored icon for technology
+  const renderTechLogo = (techName) => {
     if (!techName) return null;
-
+    
     const logoPath = getLogoPath(techName);
-
-if (logoPath) {
+    
+    // If logo exists, use it
+    if (logoPath) {
       return (
         <img
           src={logoPath}
@@ -754,14 +769,15 @@ if (logoPath) {
             objectFit: 'contain'
           }}
           onError={(e) => {
-
+            // Fallback if image fails to load
             e.target.style.display = 'none';
           }}
         />
       );
     }
-
-const iconData = getTechIcon(techName);
+    
+    // Otherwise use colored icon
+    const iconData = getTechIcon(techName);
     if (iconData) {
       const { component: IconComponent, color } = iconData;
       return (
@@ -779,17 +795,19 @@ const iconData = getTechIcon(techName);
         />
       );
     }
-
+    
     return null;
   };
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to page 1 when filters change
+    setPageCache({}); // Clear cache when filters change
+    setTotalRecords(0); // Reset total records
   };
 
   const handleDownloadCSV = () => {
-    const dataToDownload = selectedRows.size > 0
+    const dataToDownload = selectedRows.size > 0 
       ? groupedDataArray.filter((_, index) => selectedRows.has(index))
       : groupedDataArray;
 
@@ -820,20 +838,21 @@ const iconData = getTechIcon(techName);
     document.body.removeChild(link);
   };
 
-useEffect(() => {
+  // Handle click outside to close filter dropdowns
+  useEffect(() => {
     const handleClickOutside = (event) => {
-
+      // Check if click is outside the filter container
       if (filterRef.current && !filterRef.current.contains(event.target)) {
-
+        // Also check if the click is not on any dropdown that might be positioned absolutely
         const dropdowns = document.querySelectorAll('[data-filter-dropdown]');
         let isClickOnDropdown = false;
-
+        
         dropdowns.forEach(dropdown => {
           if (dropdown.contains(event.target)) {
             isClickOnDropdown = true;
           }
         });
-
+        
         if (!isClickOnDropdown) {
           setOpenFilterDropdown(null);
           setShowFilters(false);
@@ -847,122 +866,170 @@ useEffect(() => {
     }
   }, [openFilterDropdown, showFilters]);
 
-const fetchPage = async (pageNum, retries = 5, delay = 500) => {
+  // Fetch page data with caching and retry logic
+  const fetchPage = async (pageNum, retries = 5, delay = 500) => {
     if (pageCache[pageNum]) {
       return pageCache[pageNum];
     }
 
     try {
-      const response = await fetch(`/api/technographics?page=${pageNum}&limit=500`);
-      const data = await response.json();
-
-if (response.status === 503 && retries > 0) {
-
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000));
+      // Build query string with filters
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', pageNum);
+      queryParams.append('limit', 500);
+      
+      // Add filter parameters
+      if (filters.companyName.length > 0) {
+        filters.companyName.forEach(name => queryParams.append('companyName', name));
+      }
+      if (filters.region.length > 0) {
+        filters.region.forEach(region => queryParams.append('region', region));
+      }
+      if (filters.technology.length > 0) {
+        filters.technology.forEach(tech => queryParams.append('technology', tech));
+      }
+      if (filters.category.length > 0) {
+        filters.category.forEach(cat => queryParams.append('category', cat));
+      }
+      if (filters.industry.length > 0) {
+        filters.industry.forEach(ind => queryParams.append('industry', ind));
       }
 
-if (!data.data || data.data.length === 0) {
+      const response = await fetch(`/api/technographics?${queryParams.toString()}`);
+      const data = await response.json();
+      
+      // If cache is building (503), retry with exponential backoff
+      if (response.status === 503 && retries > 0) {
+        console.log(`[FETCH] Page ${pageNum}: Cache building, retrying in ${delay}ms... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); // Max 5s delay
+      }
+      
+      // Check if data is empty
+      if (!data.data || data.data.length === 0) {
         console.warn(`[FETCH] Page ${pageNum}: No data returned`, data);
         return data;
       }
-
+      
       setPageCache(prev => ({
         ...prev,
         [pageNum]: data
       }));
-
+      
       return data;
     } catch (err) {
-
+      console.error(`[FETCH] Page ${pageNum}: Error:`, err);
       return null;
     }
   };
 
-const prefetchAdjacentPages = async (pageNum) => {
+  // Prefetch adjacent pages
+  const prefetchAdjacentPages = async (pageNum) => {
     const pagesToPrefetch = [];
-
-    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1);
-    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1);
-
-pagesToPrefetch.forEach(page => {
+    
+    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); // Previous page
+    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); // Next page
+    
+    // Prefetch in background without blocking
+    pagesToPrefetch.forEach(page => {
       if (!pageCache[page]) {
-
+        fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
       }
     });
   };
 
-useEffect(() => {
+  // Initial load - fetch page 1 only, prefetch page 2 in background
+  useEffect(() => {
     const initializeData = async () => {
       try {
         setLoading(true);
         setError(null);
         performanceMonitor.reset();
         performanceMonitor.start('total-load');
-
-performanceMonitor.start('api-fetch');
-
-const metadataResponse = await fetch('/api/technographics/metadata');
+        
+        // Fetch metadata and all data with retry logic
+        performanceMonitor.start('api-fetch');
+        
+        // Fetch metadata (should be fast)
+        const metadataResponse = await fetch('/api/technographics/metadata');
         const metadata = await metadataResponse.json();
-
-let page1Data = null;
+        
+        // Fetch ALL data with retry logic for 503
+        let allData = null;
         let retries = 10;
         let delay = 500;
-
-        while (!page1Data && retries > 0) {
-          const page1Response = await fetch('/api/technographics?page=1&limit=500');
-
-          if (page1Response.status === 503) {
-
+        
+        while (!allData && retries > 0) {
+          const allDataResponse = await fetch('/api/technographics/all');
+          
+          if (allDataResponse.status === 503) {
+            console.log(`[INIT] Cache building, retrying in ${delay}ms... (${retries} retries left)`);
             await new Promise(resolve => setTimeout(resolve, delay));
-            delay = Math.min(delay * 1.5, 5000);
+            delay = Math.min(delay * 1.5, 5000); // Exponential backoff, max 5s
             retries--;
           } else {
-            page1Data = await page1Response.json();
+            allData = await allDataResponse.json();
             break;
           }
         }
 
+        // Fetch NTP data
+        let ntpAllData = null;
+        let ntpRetries = 10;
+        let ntpDelay = 500;
+        
+        while (!ntpAllData && ntpRetries > 0) {
+          const ntpResponse = await fetch('/api/ntp/all');
+          
+          if (ntpResponse.status === 503) {
+            console.log(`[INIT] NTP cache building, retrying in ${ntpDelay}ms... (${ntpRetries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, ntpDelay));
+            ntpDelay = Math.min(ntpDelay * 1.5, 5000);
+            ntpRetries--;
+          } else if (ntpResponse.ok) {
+            ntpAllData = await ntpResponse.json();
+            break;
+          }
+        }
+        
         performanceMonitor.end('api-fetch');
 
-        if (!page1Data) {
-          throw new Error('Failed to fetch page 1 after multiple retries');
+        if (!allData) {
+          throw new Error('Failed to fetch all data after multiple retries');
         }
 
         performanceMonitor.start('parse-json');
-
+        // Metadata already parsed above
         performanceMonitor.end('parse-json');
 
         performanceMonitor.start('process-data');
-
-setPageCache({
-          1: page1Data
-        });
-
-        setTotalPages(page1Data.pages || 1);
-
-if (page1Data.pages > 1) {
-
-        }
-
-const data = page1Data.data || [];
-
-const industryCounts = {};
+        
+        // Store total records from API
+        setTotalRecords(allData.total || 0);
+        
+        // Use all data for calculations
+        const data = allData.data || [];
+        
+        // Calculate industry counts from all data
+        const industryCounts = {};
         metadata.industries.forEach(industry => {
           industryCounts[industry] = 0;
         });
-
-data.forEach(row => {
+        
+        // Count from all data
+        data.forEach(row => {
           const industry = row.industry || 'Other';
           industryCounts[industry] = (industryCounts[industry] || 0) + 1;
         });
 
-const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
+        // Convert to array format for pie chart
+        const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
           label,
           value
         }));
 
-const techByRegion = {};
+        // Calculate technology adoption by region and category
+        const techByRegion = {};
         const regions = new Set();
 
         data.forEach(row => {
@@ -982,7 +1049,8 @@ const techByRegion = {};
           techByRegion[region][category]++;
         });
 
-const techDataWithPercentages = {};
+        // Calculate percentages for each region
+        const techDataWithPercentages = {};
         Object.keys(techByRegion).forEach(region => {
           const total = Object.values(techByRegion[region]).reduce((sum, count) => sum + count, 0);
           techDataWithPercentages[region] = {};
@@ -995,19 +1063,33 @@ const techDataWithPercentages = {};
         performanceMonitor.end('process-data');
 
         performanceMonitor.start('state-update');
-
+        
+        // Debug: Log first few records to check company names
+        console.log('[DEBUG] First 5 records from API:', data.slice(0, 5).map(r => ({
+          companyName: r.companyName,
+          industry: r.industry,
+          region: r.region,
+          technology: r.technology
+        })));
+        
         setTableData(data);
         setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
         setAvailableRegions(Array.from(regions).sort());
+        
+        // Set NTP data if available
+        if (ntpAllData && ntpAllData.data) {
+          setNtpData(ntpAllData.data);
+        }
+        
         performanceMonitor.end('state-update');
-
+        
         performanceMonitor.end('total-load');
         setMeasurements(performanceMonitor.getAllMeasurements());
         performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
-
+        console.error("Failed to fetch Technographics data:", e);
         setTableData([]);
       } finally {
         setLoading(false);
@@ -1017,46 +1099,76 @@ const techDataWithPercentages = {};
     initializeData();
   }, [setIndustryData, setTechnologyData, setAvailableRegions]);
 
-const handlePageChange = async (newPage) => {
-    if (newPage === currentPage) return;
+  // Reload data when filters change
+  useEffect(() => {
+    if (Object.keys(pageCache).length > 0) {
+      // Filters changed, reload all data
+      const reloadAllData = async () => {
+        try {
+          setPageLoading(true);
+          
+          // Build query string with filters
+          const queryParams = new URLSearchParams();
+          
+          // Add filter parameters
+          if (filters.companyName.length > 0) {
+            filters.companyName.forEach(name => queryParams.append('companyName', name));
+          }
+          if (filters.region.length > 0) {
+            filters.region.forEach(region => queryParams.append('region', region));
+          }
+          if (filters.technology.length > 0) {
+            filters.technology.forEach(tech => queryParams.append('technology', tech));
+          }
+          if (filters.category.length > 0) {
+            filters.category.forEach(cat => queryParams.append('category', cat));
+          }
+          if (filters.industry.length > 0) {
+            filters.industry.forEach(ind => queryParams.append('industry', ind));
+          }
 
-    setCurrentPage(newPage);
-    setPageLoading(true);
-
-    try {
-      const pageData = await fetchPage(newPage);
-      if (pageData) {
-        setTableData(pageData.data || []);
-
-        prefetchAdjacentPages(newPage);
-      }
-    } catch (err) {
-
-    } finally {
-      setPageLoading(false);
+          const response = await fetch(`/api/technographics/all?${queryParams.toString()}`);
+          const allData = await response.json();
+          
+          if (allData && allData.data) {
+            setTableData(allData.data || []);
+            setTotalRecords(allData.total || 0);
+          }
+        } catch (err) {
+          console.error('Error reloading all data:', err);
+        } finally {
+          setPageLoading(false);
+        }
+      };
+      reloadAllData();
     }
-  };
+  }, [filters]);
+
+  // No pagination needed - all data is loaded at once
 
   const getUniqueOptions = (key) => {
     if (!tableData || tableData.length === 0) {
-
+      console.log(`[DEBUG] getUniqueOptions('${key}'): tableData is empty or undefined`);
       return [];
     }
-
+    
     const allValues = tableData
       .map(item => item[key])
       .filter(val => val !== undefined && val !== null);
-
+    
     const uniqueValues = [...new Set(allValues)].sort();
-
-if (key === 'companyName') {
-
-}
-
+    
+    // Debug log for company names
+    if (key === 'companyName') {
+      console.log(`[DEBUG] getUniqueOptions('${key}'): Found ${uniqueValues.length} unique values from ${tableData.length} rows`);
+      console.log('[DEBUG] Sample company names:', uniqueValues.slice(0, 10));
+    }
+    
     return uniqueValues;
   };
 
-const getCompanyCountByCategory = (category) => {
+  // Helper function to count companies by category
+  const getCompanyCountByCategory = (category) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1067,7 +1179,8 @@ const getCompanyCountByCategory = (category) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByRegion = (region) => {
+  // Helper function to count companies by region
+  const getCompanyCountByRegion = (region) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1078,7 +1191,8 @@ const getCompanyCountByRegion = (region) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByIndustry = (industry) => {
+  // Helper function to count companies by industry
+  const getCompanyCountByIndustry = (industry) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1089,7 +1203,8 @@ const getCompanyCountByIndustry = (industry) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByRevenue = (revenue) => {
+  // Helper function to count companies by revenue
+  const getCompanyCountByRevenue = (revenue) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1100,7 +1215,8 @@ const getCompanyCountByRevenue = (revenue) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByTechnology = (technology) => {
+  // Helper function to count companies by technology
+  const getCompanyCountByTechnology = (technology) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1111,7 +1227,8 @@ const getCompanyCountByTechnology = (technology) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByEmployeeSize = (rangeLabel) => {
+  // Helper function to count companies by employee size
+  const getCompanyCountByEmployeeSize = (rangeLabel) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -1126,32 +1243,36 @@ const getCompanyCountByEmployeeSize = (rangeLabel) => {
     if (!companyName || !ntpData || ntpData.length === 0) {
       return [];
     }
-
-const normalizedCompanyName = String(companyName).trim().toLowerCase();
-
+    
+    // Normalize company name for comparison
+    const normalizedCompanyName = String(companyName).trim().toLowerCase();
+    
     let data = ntpData.filter(row => {
       const rowCompanyName = String(row.companyName || '').trim().toLowerCase();
       return rowCompanyName === normalizedCompanyName;
     });
-
-if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
+    
+    // Filter by selected category if one is chosen (category is an array)
+    if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
       data = data.filter(row => {
         const rowCategory = String(row.category || '').trim().toLowerCase();
         return filters.category.some(cat => String(cat).trim().toLowerCase() === rowCategory);
       });
     }
-
+    
     return data;
   };
 
-const rowMatchesSearch = (row) => {
+  // Helper function to check if a row matches search term
+  const rowMatchesSearch = (row) => {
     if (!searchTerm) return false;
     return Object.values(row).some(value =>
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
-const highlightText = (text, search) => {
+  // Helper function to highlight matching text
+  const highlightText = (text, search) => {
     if (!search || !text) return text;
     const textStr = String(text);
     const searchLower = search.toLowerCase();
@@ -1175,36 +1296,44 @@ const highlightText = (text, search) => {
     );
   };
 
-const hasMandatoryFilters = filters.companyName.length > 0 && filters.category.length > 0;
+  // Check if mandatory filters are selected
+  const hasMandatoryFilters = filters.companyName.length > 0 && filters.category.length > 0;
 
   const filteredData = tableData
     .filter(row => {
-
+      // Apply company name filter if selected
       if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
 
-if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
+      // Apply category filter if selected
+      if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
 
-if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
+      // Apply region filter if selected
+      if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
 
-if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
+      // Apply technology filter if selected
+      if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
 
-if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
+      // Apply industry filter if selected
+      if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
 
-if (filters.employeeSize.length > 0 && !filters.employeeSize.some(range => isEmployeeSizeInRange(row.employeeSize, range))) return false;
+      // Apply employee size filter if selected
+      if (filters.employeeSize.length > 0 && !filters.employeeSize.some(range => isEmployeeSizeInRange(row.employeeSize, range))) return false;
 
-if (filters.revenue.length > 0) {
+      // Apply revenue filter if selected (using ranges)
+      if (filters.revenue.length > 0) {
         const matchesRevenue = filters.revenue.some(rangeLabel => isRevenueInRange(row.revenue, rangeLabel));
         if (!matchesRevenue) return false;
       }
 
-const searchMatches = !searchTerm || Object.values(row).some(value =>
+      // Apply search term if present
+      const searchMatches = !searchTerm || Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
 
       return searchMatches;
     })
     .sort((a, b) => {
-
+      // Sort: matching rows first, then others
       const aMatches = rowMatchesSearch(a);
       const bMatches = rowMatchesSearch(b);
 
@@ -1213,9 +1342,10 @@ const searchMatches = !searchTerm || Object.values(row).some(value =>
       return 0;
     });
 
-const groupedData = filteredData.reduce((acc, row) => {
+  // Group rows by company and combine technologies with their dates
+  const groupedData = filteredData.reduce((acc, row) => {
     const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
-
+    
     if (!acc[key]) {
       acc[key] = {
         ...row,
@@ -1238,11 +1368,19 @@ const groupedData = filteredData.reduce((acc, row) => {
         });
       }
     }
-
+    
     return acc;
   }, {});
 
   const groupedDataArray = Object.values(groupedData);
+
+  // Update total grouped records whenever groupedDataArray changes
+  useEffect(() => {
+    setTotalGroupedRecords(groupedDataArray.length);
+    // Recalculate total pages based on grouped data
+    const calculatedPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+    setTotalPages(calculatedPages);
+  }, [groupedDataArray.length]);
 
   if (loading) {
     return (
@@ -1256,10 +1394,10 @@ const groupedData = filteredData.reduce((acc, row) => {
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        {}
-        <img
-          src={nexoraLogo}
-          alt="Nexora Logo"
+        {/* Nexora Logo */}
+        <img 
+          src={nexoraLogo} 
+          alt="Nexora Logo" 
           style={{
             width: '250px',
             height: 'auto',
@@ -1268,10 +1406,17 @@ const groupedData = filteredData.reduce((acc, row) => {
           }}
         />
 
-        {}
-        {}
+        {/* Loading Text */}
+        {/* <h3 style={{
+          margin: '0 0 10px 0',
+          color: '#1f2937',
+          fontSize: '18px',
+          fontWeight: '600'
+        }}>
+          Loading Technographics Data
+        </h3> */}
 
-        {}
+        {/* Subtext */}
         <p style={{
           margin: '0 0 30px 0',
           color: '#6b7280',
@@ -1282,7 +1427,7 @@ const groupedData = filteredData.reduce((acc, row) => {
           Fetching and processing company technology data...
         </p>
 
-        {}
+        {/* Progress Dots */}
         <div style={{
           display: 'flex',
           gap: '8px',
@@ -1311,7 +1456,7 @@ const groupedData = filteredData.reduce((acc, row) => {
           }} />
         </div>
 
-        {}
+        {/* Styles for animations */}
         <style>{`
           @keyframes bounce {
             0%, 80%, 100% {
@@ -1331,7 +1476,7 @@ const groupedData = filteredData.reduce((acc, row) => {
   return (
     <>
     <div className="technographics-container">
-      {}
+      {/* Error Banner */}
       {error && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -1348,7 +1493,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            ?
+            ⚠
           </div>
           <div style={{
             fontSize: '14px',
@@ -1370,23 +1515,37 @@ const groupedData = filteredData.reduce((acc, row) => {
               lineHeight: '1'
             }}
           >
-            ?
+            ✕
           </button>
         </div>
       )}
-
+      
       <div className="header-actions" style={{ marginBottom: '16px', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: '700', margin: '0' }}>Technographics</h2>
-        {}
+        {/* <div className="search-bar">
+          <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search companies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="10" cy="10" r="7"></circle>
+            <path d="m20 20-4.5-4.5"></path>
+          </svg>
+        </div> */}
       </div>
 
       <div className="section-subtle-divider" />
-
-      {}
+      
+      {/* Filter UI - Similar to the reference image */}
       <div style={{ marginBottom: '16px' }} ref={filterRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          {}
+          {/* Filter Button with Dropdown Menu */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -1416,7 +1575,7 @@ const groupedData = filteredData.reduce((acc, row) => {
               <span>+ Filter</span>
             </button>
 
-            {}
+            {/* Filter Menu Dropdown */}
             {showFilters && (
               <div
                 style={{
@@ -1469,7 +1628,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             )}
           </div>
 
-          {}
+          {/* Company Name Filter - Always Visible (Mandatory) */}
           {activeFilterMenu !== 'companyName' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -1502,7 +1661,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Category Filter - Always Visible (Mandatory) */}
           {activeFilterMenu !== 'category' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -1535,7 +1694,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Filter Type Chip - Show selected filter type with dropdown */}
           {activeFilterMenu === 'companyName' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1566,11 +1725,11 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
-              {}
+              
+              {/* Dropdown with search and checkboxes for company options */}
               <div
                 data-filter-dropdown="companyName"
                 style={{
@@ -1588,7 +1747,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   overflowY: 'auto'
                 }}
               >
-                {}
+                {/* Search Box */}
                 <div style={{
                   padding: '12px',
                   borderBottom: '1px solid #e5e7eb',
@@ -1613,14 +1772,14 @@ const groupedData = filteredData.reduce((acc, row) => {
                   />
                 </div>
 
-                {}
+                {/* ALL Option */}
                 <div
                   onClick={() => {
                     if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-
+                      // If all are selected, deselect all
                       handleFilterChange('companyName', []);
                     } else {
-
+                      // Otherwise, select all
                       handleFilterChange('companyName', getUniqueOptions('companyName'));
                     }
                   }}
@@ -1641,10 +1800,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                     checked={filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
                     onChange={() => {
                       if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('companyName', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('companyName', getUniqueOptions('companyName'));
                       }
                     }}
@@ -1653,7 +1812,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   All
                 </div>
 
-                {}
+                {/* Company Options with Checkboxes */}
                 {getUniqueOptions('companyName').length === 0 ? (
                   <div style={{
                     padding: '20px 12px',
@@ -1712,7 +1871,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   </div>
                 )}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1749,7 +1908,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Display saved filter tags */}
           {activeFilterMenu === 'region' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1782,11 +1941,11 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
-              {}
+              
+              {/* Dropdown with all region options - only show when clicked */}
               {openFilterDropdown === 'region' && (
                 <div
                   data-filter-dropdown="region"
@@ -1808,10 +1967,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                   <div
                     onClick={() => {
                       if (filters.region.length === getUniqueOptions('region').length && filters.region.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('region', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('region', getUniqueOptions('region'));
                       }
                     }}
@@ -1888,7 +2047,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                     </div>
                   ))}
 
-                  {}
+                  {/* Save Button */}
                   <div style={{
                     padding: '12px',
                     borderTop: '1px solid #e5e7eb',
@@ -1926,7 +2085,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Display saved filter tag */}
           {filters.region.length > 0 && activeFilterMenu !== 'region' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -1958,7 +2117,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                ✕
               </button>
             </div>
           )}
@@ -1992,7 +2151,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
               <div style={{
@@ -2012,7 +2171,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                 <div
                   onClick={() => {
                     const allOptions = getUniqueOptions('category');
-
+                    // Toggle: if all selected, deselect all; otherwise select all
                     if (filters.category.length === allOptions.length) {
                       handleFilterChange('category', []);
                     } else {
@@ -2037,7 +2196,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                     checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
                     onChange={() => {
                       const allOptions = getUniqueOptions('category');
-
+                      // Toggle: if all selected, deselect all; otherwise select all
                       if (filters.category.length === allOptions.length) {
                         handleFilterChange('category', []);
                       } else {
@@ -2082,7 +2241,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   </div>
                 ))}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -2118,7 +2277,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Display saved filter tag */}
           {activeFilterMenu === 'industry' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -2151,10 +2310,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
+              
               {openFilterDropdown === 'industry' && (
                 <div
                   data-filter-dropdown="industry"
@@ -2176,10 +2335,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                   <div
                     onClick={() => {
                       if (filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('industry', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('industry', getUniqueOptions('industry'));
                       }
                     }}
@@ -2323,7 +2482,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                ✕
               </button>
             </div>
           )}
@@ -2360,10 +2519,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
+              
               {openFilterDropdown === 'employeeSize' && (
                 <div
                   data-filter-dropdown="employeeSize"
@@ -2385,10 +2544,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                   <div
                     onClick={() => {
                       if (filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('employeeSize', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('employeeSize', employeeSizeRanges.map(r => r.label));
                       }
                     }}
@@ -2532,7 +2691,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                ✕
               </button>
             </div>
           )}
@@ -2569,10 +2728,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
+              
               {openFilterDropdown === 'revenue' && (
                 <div
                   data-filter-dropdown="revenue"
@@ -2594,10 +2753,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                   <div
                     onClick={() => {
                       if (filters.revenue.length === revenueRanges.length && filters.revenue.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('revenue', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('revenue', revenueRanges.map(r => r.label));
                       }
                     }}
@@ -2738,7 +2897,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                ✕
               </button>
             </div>
           )}
@@ -2775,11 +2934,11 @@ const groupedData = filteredData.reduce((acc, row) => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
-
-              {}
+              
+              {/* Dropdown with all technology options - only show when clicked */}
               {openFilterDropdown === 'technology' && (
                 <div
                   data-filter-dropdown="technology"
@@ -2801,10 +2960,10 @@ const groupedData = filteredData.reduce((acc, row) => {
                   <div
                     onClick={() => {
                       if (filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0) {
-
+                        // If all are selected, deselect all
                         handleFilterChange('technology', []);
                       } else {
-
+                        // Otherwise, select all
                         handleFilterChange('technology', getUniqueOptions('technology'));
                       }
                     }}
@@ -2881,7 +3040,7 @@ const groupedData = filteredData.reduce((acc, row) => {
                     </div>
                   ))}
 
-                  {}
+                  {/* Save Button */}
                   <div style={{
                     padding: '12px',
                     borderTop: '1px solid #e5e7eb',
@@ -2919,7 +3078,7 @@ const groupedData = filteredData.reduce((acc, row) => {
             </div>
           )}
 
-          {}
+          {/* Display saved filter tag */}
           {filters.technology.length > 0 && activeFilterMenu !== 'technology' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -2951,19 +3110,19 @@ const groupedData = filteredData.reduce((acc, row) => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                ✕
               </button>
             </div>
           )}
 
-          {}
+          {/* Applied Filters Display */}
           {(filters.companyName.length > 0 || filters.region || filters.category || filters.technology) && !activeFilterMenu && (
             <>
             </>
           )}
           </div>
-
-          {}
+          
+          {/* Download CSV Button */}
           <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0, marginLeft: 'auto' }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3016,17 +3175,21 @@ const groupedData = filteredData.reduce((acc, row) => {
           <tbody>
             {groupedDataArray.length > 0 ? (
               (() => {
-                const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-                const startIndex = (currentPage - 1) * rowsPerPage;
-                const endIndex = startIndex + rowsPerPage;
+                // Pagination: 10 rows per page
+                const rowsPerPageConst = 10;
+                const pageNum = currentPage || 1;
+                const startIndex = (pageNum - 1) * rowsPerPageConst;
+                const endIndex = startIndex + rowsPerPageConst;
                 const paginatedData = groupedDataArray.slice(startIndex, endIndex);
+                const totalPagesCount = Math.ceil(groupedDataArray.length / rowsPerPageConst);
 
-                  return paginatedData.map((row, index) => {
+                return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
                     const isHighlighted = rowMatchesSearch(row);
                     const rowKey = `${actualIndex}-${row.companyName}`;
-
-if (!scrollRefsMap.current.has(rowKey)) {
+                    
+                    // Get or create refs for this row
+                    if (!scrollRefsMap.current.has(rowKey)) {
                       scrollRefsMap.current.set(rowKey, {
                         tech: null,
                         prevDate: null,
@@ -3062,7 +3225,8 @@ if (!scrollRefsMap.current.has(rowKey)) {
                     });
                   };
 
-const handleTechScroll = (e) => {
+                  // Handle scroll sync
+                  const handleTechScroll = (e) => {
                     if (refs.prevDate) {
                       refs.prevDate.scrollTop = e.target.scrollTop;
                     }
@@ -3085,8 +3249,8 @@ const handleTechScroll = (e) => {
                   };
 
                   return (
-                    <tr
-                      key={index}
+                    <tr 
+                      key={index} 
                       style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent', cursor: 'pointer', borderBottom: '1px solid #e5e7eb' }}
                     >
                       <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
@@ -3163,7 +3327,7 @@ const handleTechScroll = (e) => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
                             <>
-                              <div
+                              <div 
                                 style={{ fontWeight: '600', color: '#1f2937', cursor: 'pointer' }}
                                 onClick={() => setSelectedCompany(row.companyName)}
                               >
@@ -3220,10 +3384,10 @@ const handleTechScroll = (e) => {
                           ) : (
                             <>
                               <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ������������������
+                                ••••••••••••••••••
                               </div>
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ����������
+                                ••••••••••
                               </div>
                             </>
                           )}
@@ -3244,13 +3408,18 @@ const handleTechScroll = (e) => {
                       <td style={{ paddingLeft: '20px' }} onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.revenue, searchTerm)}
                       </td>
-                      {}
+                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
+                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                          {renderTechLogo(row.category)}
+                          {highlightText(row.category, searchTerm)}
+                        </span>
+                      </td> */}
                       <td style={{ paddingLeft: '8px' }}>
-                        <div
+                        <div 
                           ref={(el) => { if (el) refs.tech = el; }}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
                             gap: '8px',
                             maxHeight: '96px',
                             overflowY: 'auto',
@@ -3271,11 +3440,11 @@ const handleTechScroll = (e) => {
                         </div>
                       </td>
                       <td style={{ paddingLeft: '8px', textAlign: 'center' }}>
-                        <div
+                        <div 
                           ref={(el) => { if (el) refs.prevDate = el; }}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
                             gap: '8px',
                             maxHeight: '96px',
                             overflowY: 'auto',
@@ -3296,11 +3465,11 @@ const handleTechScroll = (e) => {
                         </div>
                       </td>
                       <td style={{ paddingLeft: '8px', textAlign: 'center' }}>
-                        <div
+                        <div 
                           ref={(el) => { if (el) refs.latestDate = el; }}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
+                          style={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
                             gap: '8px',
                             maxHeight: '96px',
                             overflowY: 'auto',
@@ -3336,300 +3505,306 @@ const handleTechScroll = (e) => {
         </table>
       </div>
 
-      {}
-      {totalPages > 1 && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '35px',
-          marginBottom: '14px',
-          paddingBottom: '15px',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
-          <div style={{
-            fontSize: '14px',
-            color: '#1f2937',
-            fontWeight: '600'
-          }}>
-            Page {currentPage} of {totalPages.toLocaleString()}
-          </div>
+      {/* Pagination Display */}
+      {groupedDataArray.length > 0 && (() => {
+        const rowsPerPageConst = 10;
+        const totalPages = Math.ceil(groupedDataArray.length / rowsPerPageConst);
+        const maxPagesToShow = 5;
+        let startPage = 1;
+        let endPage = Math.min(maxPagesToShow, totalPages);
 
-          {}
+        if (currentPage > maxPagesToShow) {
+          startPage = currentPage - Math.floor(maxPagesToShow / 2);
+          endPage = startPage + maxPagesToShow - 1;
+
+          if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+          }
+        }
+
+        const startIndex = (currentPage - 1) * rowsPerPageConst;
+        const endIndex = Math.min(startIndex + rowsPerPageConst, groupedDataArray.length);
+
+        return (
           <div style={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '8px'
+            marginTop: '20px',
+            marginBottom: '20px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #e5e7eb'
           }}>
-            {(() => {
-              const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-              const maxPagesToShow = 5;
-              let startPage = 1;
-              let endPage = Math.min(maxPagesToShow, totalPages);
+            <div style={{
+              fontSize: '14px',
+              color: '#1f2937',
+              fontWeight: '600'
+            }}>
+              Page {currentPage} of {totalPages.toLocaleString()}
+            </div>
 
-              if (currentPage > maxPagesToShow) {
-                startPage = currentPage - Math.floor(maxPagesToShow / 2);
-                endPage = startPage + maxPagesToShow - 1;
-
-                if (endPage > totalPages) {
-                  endPage = totalPages;
-                  startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                }
-              }
-
-              return (
-                <>
-                  {}
-                  <button
-                    key="first"
-                    onClick={() => handlePageChange(1)}
-                    disabled={currentPage === 1}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === 1 ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="First page"
-                  >
-                    �
-                  </button>
-
-                  {}
-                  <button
-                    key="prev"
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === 1 ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Previous page"
-                  >
-                    �
-                  </button>
-
-                  {}
-                  {startPage > 1 && (
-                    <>
-                      <button
-                        key={1}
-                        onClick={() => handlePageChange(1)}
-                        style={{
-                          padding: '8px 12px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          fontWeight: '500',
-                          minWidth: '40px',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }}
-                      >
-                        1
-                      </button>
-                      {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                    </>
-                  )}
-
-                  {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+            {/* Pagination Buttons */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              {(() => {
+                return (
+                  <>
+                    {/* First Page Button */}
                     <button
-                      key={i}
-                      onClick={() => handlePageChange(i)}
+                      key="first"
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
                       style={{
                         padding: '8px 12px',
-                        border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                        border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        color: i === currentPage ? '#1e40af' : '#6b7280',
-                        fontWeight: i === currentPage ? '600' : '500',
-                        minWidth: '40px',
+                        backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
                         transition: 'all 0.2s',
-                        boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                        opacity: currentPage === 1 ? 0.5 : 1
                       }}
                       onMouseEnter={(e) => {
-                        if (i !== currentPage) {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (i !== currentPage) {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
                         }
                       }}
+                      title="First page"
                     >
-                      {i}
+                      ≪
                     </button>
-                  ))}
 
-                  {endPage < totalPages && (
-                    <>
-                      {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                      <button
-                        key={totalPages}
-                        onClick={() => handlePageChange(totalPages)}
-                        style={{
-                          padding: '8px 12px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          fontWeight: '500',
-                          minWidth: '40px',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
+                    {/* Previous Page Button */}
+                    <button
+                      key="prev"
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === 1 ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
-                        }}
-                        onMouseLeave={(e) => {
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Previous page"
+                    >
+                      ‹
+                    </button>
+
+                    {/* Page Numbers */}
+                    {startPage > 1 && (
+                      <>
+                        <button
+                          key={1}
+                          onClick={() => setCurrentPage(1)}
+                          style={{
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                            minWidth: '40px',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }}
+                        >
+                          1
+                        </button>
+                        {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                      </>
+                    )}
+
+                    {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i)}
+                        style={{
+                          padding: '8px 12px',
+                          border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          backgroundColor: i === currentPage ? '#dbeafe' : 'white',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          color: i === currentPage ? '#1e40af' : '#6b7280',
+                          fontWeight: i === currentPage ? '600' : '500',
+                          minWidth: '40px',
+                          transition: 'all 0.2s',
+                          boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (i !== currentPage) {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (i !== currentPage) {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }
                         }}
                       >
-                        {totalPages}
+                        {i}
                       </button>
-                    </>
-                  )}
+                    ))}
 
-                  {}
-                  <button
-                    key="next"
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === totalPages ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Next page"
-                  >
-                    �
-                  </button>
+                    {endPage < totalPages && (
+                      <>
+                        {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                        <button
+                          key={totalPages}
+                          onClick={() => setCurrentPage(totalPages)}
+                          style={{
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                            minWidth: '40px',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }}
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
 
-                  {}
-                  <button
-                    key="last"
-                    onClick={() => handlePageChange(totalPages)}
-                    disabled={currentPage === totalPages}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === totalPages ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Last page"
-                  >
-                    �
-                  </button>
-                </>
-              );
-            })()}
+                    {/* Next Page Button */}
+                    <button
+                      key="next"
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === totalPages ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Next page"
+                    >
+                      ›
+                    </button>
+
+                    {/* Last Page Button */}
+                    <button
+                      key="last"
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === totalPages ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Last page"
+                    >
+                      ≫
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              fontWeight: '500'
+            }}>
+              Showing {startIndex + 1}-{endIndex} of {groupedDataArray.length.toLocaleString()} results
+            </div>
           </div>
+        );
+      })()}
 
-          <div style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
-            Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, groupedDataArray.length)} of {groupedDataArray.length.toLocaleString()} results
-          </div>
-        </div>
-      )}
-
-      {}
+      {/* Custom Tooltip */}
       {tooltip.show && (
         <div
           style={{
@@ -3657,7 +3832,7 @@ const handleTechScroll = (e) => {
           </div>
           {tooltip.hint && (
             <div style={{ fontSize: '11px', color: 'rgb(0, 102, 204)', fontWeight: '400', fontStyle: 'italic' }}>
-              ?? {tooltip.hint}
+              💡 {tooltip.hint}
             </div>
           )}
           <div
@@ -3675,14 +3850,14 @@ const handleTechScroll = (e) => {
         </div>
       )}
 
-      {}
+      {/* Side Panel for NTP Details */}
       {selectedCompany && (() => {
-
+        // Check if any row with this company name is revealed
         const isRevealed = Array.from(revealedRows).some(key => key.endsWith(`-${selectedCompany}`));
 
         return isRevealed ? (
         <>
-          <div
+          <div 
             style={{
               position: 'fixed',
               top: 0,
@@ -3694,7 +3869,7 @@ const handleTechScroll = (e) => {
             }}
             onClick={() => setSelectedCompany(null)}
           />
-          <div
+          <div 
             style={{
               position: 'fixed',
               right: 0,
@@ -3721,7 +3896,7 @@ const handleTechScroll = (e) => {
                     color: '#666'
                   }}
                 >
-                  ?
+                  ✕
                 </button>
               </div>
             </div>
@@ -3732,7 +3907,7 @@ const handleTechScroll = (e) => {
                   <h4 style={{ marginTop: 0, color: '#010810', marginBottom: '15px' }}>Technologies & Purchase Probability</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     {getNtpDataForCompany(selectedCompany).map((item, idx) => (
-                      <div
+                      <div 
                         key={idx}
                         style={{
                           padding: '12px',
@@ -3832,7 +4007,7 @@ const handleTechScroll = (e) => {
         .tech-scroll-container::-webkit-scrollbar-thumb {
           display: none;
         }
-
+        
         .technographics-sticky-header {
           position: sticky;
           top: 0;
@@ -3840,22 +4015,22 @@ const handleTechScroll = (e) => {
           z-index: 10;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
+        
         .technographics-sticky-header th {
           position: sticky;
           top: 0;
         }
-
+        
         table {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
-              overflow: auto;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+              overflow: auto;              /* keep scrolling enabled */
+          scrollbar-width: none;       /* Firefox */
+          -ms-overflow-style: none;    /* IE and Edge */
 
         }
-
+        
         th, td {
           padding: 12px 15px;
           text-align: left;
@@ -3865,50 +4040,52 @@ const handleTechScroll = (e) => {
           text-overflow: ellipsis;
           cursor: default;
         }
-
+        
         td {
           position: relative;
         }
-
+        
         td:hover {
           background-color: #f9fafb;
         }
-
-th:nth-child(1), td:nth-child(1) { width: 50px !important; }
-        th:nth-child(2), td:nth-child(2) { width: 80px !important; }
-        th:nth-child(3), td:nth-child(3) { width: 140px !important; }
-        th:nth-child(4), td:nth-child(4) { width: 120px !important; }
-        th:nth-child(5), td:nth-child(5) { width: 90px !important; }
-        th:nth-child(6), td:nth-child(6) { width: 140px !important; }
-        th:nth-child(7), td:nth-child(7) { width: 110px !important; }
-        th:nth-child(8), td:nth-child(8) { width: 140px !important; }
-        th:nth-child(9), td:nth-child(9) { width: 140px !important; }
-        th:nth-child(10), td:nth-child(10) { width: 140px !important; }
-        th:nth-child(11), td:nth-child(11) { width: 140px !important; }
-
-@media (min-width: 1024px) {
-          th:nth-child(1), td:nth-child(1) { width: 50px !important; }
-          th:nth-child(2), td:nth-child(2) { width: 80px !important; }
-          th:nth-child(3), td:nth-child(3) { width: 140px !important; }
-          th:nth-child(4), td:nth-child(4) { width: 120px !important; }
-          th:nth-child(5), td:nth-child(5) { width: 90px !important; }
-          th:nth-child(6), td:nth-child(6) { width: 140px !important; }
-          th:nth-child(7), td:nth-child(7) { width: 110px !important; }
-          th:nth-child(8), td:nth-child(8) { width: 140px !important; }
-          th:nth-child(9), td:nth-child(9) { width: 140px !important; }
-          th:nth-child(10), td:nth-child(10) { width: 140px !important; }
-          th:nth-child(11), td:nth-child(11) { width: 140px !important; }
-
+        
+        /* Set specific column widths */
+        th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
+        th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+        th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+        th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
+        th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+        th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+        th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
+        th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
+        th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
+        th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
+        th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
+        
+        /* Technology column padding for desktop */
+        @media (min-width: 1024px) {
+          th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
+          th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+          th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+          th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
+          th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+          th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+          th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
+          th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
+          th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
+          th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
+          th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
+          
           td:nth-child(7) {
             padding-left: 8px !important;
           }
         }
-
+        
         th {
           background-color: #f8f9fa;
           font-weight: 600;
         }
-
+        
         tr:hover {
           background-color: #f5f5f5;
         }

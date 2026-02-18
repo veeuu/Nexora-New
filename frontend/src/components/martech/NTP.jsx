@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
@@ -6,9 +6,10 @@ import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
-
+// import PerformanceMetrics from '../PerformanceMetrics';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
+// Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -17,7 +18,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -127,6 +128,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
+// Custom Dropdown Component with Logos/Icons for Technology/Category
 const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -135,7 +137,7 @@ const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
           buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -257,32 +259,28 @@ const NTP = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [measurements, setMeasurements] = useState({});
   const [filters, setFilters] = useState({
     companyName: [],
     technology: [],
     purchasePrediction: [],
     category: []
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [modalContent, setModalContent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageCache, setPageCache] = useState({});
-  const rowsPerPage = 500;
   const filterRef = useRef(null);
-  const scrollRefsMap = useRef(new Map());
   const techScrollRef = useRef(null);
   const propensityScrollRef = useRef(null);
   const analysisScrollRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [revealedRows, setRevealedRows] = useState(new Set());
+  const rowsPerPage = 10;
 
-const handleTechScroll = (e) => {
+  // Sync scroll across all three columns
+  const handleTechScroll = (e) => {
     const scrollTop = e.target.scrollTop;
     if (propensityScrollRef.current) propensityScrollRef.current.scrollTop = scrollTop;
     if (analysisScrollRef.current) analysisScrollRef.current.scrollTop = scrollTop;
@@ -300,12 +298,14 @@ const handleTechScroll = (e) => {
     if (propensityScrollRef.current) propensityScrollRef.current.scrollTop = scrollTop;
   };
 
-const renderTechLogo = (techName) => {
+  // Render logo image or colored icon for technology
+  const renderTechLogo = (techName) => {
     if (!techName) return null;
-
+    
     const logoPath = getLogoPath(techName);
-
-if (logoPath) {
+    
+    // If logo exists, use it
+    if (logoPath) {
       return (
         <img
           src={logoPath}
@@ -320,14 +320,15 @@ if (logoPath) {
             objectFit: 'contain'
           }}
           onError={(e) => {
-
+            // Fallback if image fails to load
             e.target.style.display = 'none';
           }}
         />
       );
     }
-
-const iconData = getTechIcon(techName);
+    
+    // Otherwise use colored icon
+    const iconData = getTechIcon(techName);
     if (iconData) {
       const { component: IconComponent, color } = iconData;
       return (
@@ -345,46 +346,12 @@ const iconData = getTechIcon(techName);
         />
       );
     }
-
+    
     return null;
   };
 
-const fetchPage = async (pageNum) => {
-    if (pageCache[pageNum]) {
-      return pageCache[pageNum];
-    }
-
-    try {
-      const response = await fetch(`/api/ntp?page=${pageNum}&limit=500`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setPageCache(prev => ({ ...prev, [pageNum]: data }));
-      return data;
-    } catch (err) {
-
-      return null;
-    }
-  };
-
-const prefetchAdjacentPages = async (pageNum) => {
-    const pagesToPrefetch = [];
-
-    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1);
-    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1);
-
-pagesToPrefetch.forEach(page => {
-      if (!pageCache[page]) {
-
-      }
-    });
-  };
-
   const handleFilterChange = (filterName, value) => {
-
+    // For all filters, toggle the value in the array
     setFilters(prev => {
       const currentValues = Array.isArray(prev[filterName]) ? prev[filterName] : [];
       const newValues = currentValues.includes(value)
@@ -392,7 +359,7 @@ pagesToPrefetch.forEach(page => {
         : [...currentValues, value];
       return { ...prev, [filterName]: newValues };
     });
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   const handleDownloadCSV = (dataToDownload) => {
@@ -428,56 +395,51 @@ pagesToPrefetch.forEach(page => {
         setError(null);
         performanceMonitor.reset();
         performanceMonitor.start('total-load');
-
+        
         performanceMonitor.start('api-fetch');
-
-const metadataResponse = await fetch('/api/ntp/metadata');
-        const metadata = await metadataResponse.json();
-
-let page1Data = null;
+        
+        // Fetch metadata and all data with retry logic
+        const metadataResponse = await fetch('/api/ntp/metadata');
+        await metadataResponse.json();
+        
+        // Fetch ALL data with retry logic for 503
+        let allData = null;
         let retries = 10;
-
-        while (!page1Data && retries > 0) {
-          const page1Response = await fetch('/api/ntp?page=1&limit=500');
-
-          if (page1Response.status === 503) {
-
+        
+        while (!allData && retries > 0) {
+          const allDataResponse = await fetch('/api/ntp/all');
+          
+          if (allDataResponse.status === 503) {
+            // Cache building in progress, retry with exponential backoff
             const delay = Math.min(500 * Math.pow(1.5, 10 - retries), 5000);
             await new Promise(resolve => setTimeout(resolve, delay));
             retries--;
-          } else if (page1Response.ok) {
-            page1Data = await page1Response.json();
+          } else if (allDataResponse.ok) {
+            allData = await allDataResponse.json();
           } else {
-            throw new Error(`HTTP error! status: ${page1Response.status}`);
+            throw new Error(`HTTP error! status: ${allDataResponse.status}`);
           }
         }
-
-        if (!page1Data) {
-          throw new Error('Failed to fetch page 1 after retries');
+        
+        if (!allData) {
+          throw new Error('Failed to fetch all data after retries');
         }
-
+        
         performanceMonitor.end('api-fetch');
-
+        
         performanceMonitor.start('parse-json');
-
+        // Metadata already parsed above
         performanceMonitor.end('parse-json');
 
         performanceMonitor.start('state-update');
-        setTableData(page1Data.data || []);
-        setPageCache(prev => ({ ...prev, 1: page1Data }));
-        setTotalPages(page1Data.pages || 1);
-
-if (page1Data.pages > 1) {
-
-        }
-
+        setTableData(allData.data || []);
+        
         performanceMonitor.end('state-update');
         performanceMonitor.end('total-load');
-        setMeasurements(performanceMonitor.getAllMeasurements());
         performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
-
+        console.error("Failed to fetch NTP data:", e);
         setTableData([]);
       } finally {
         setLoading(false);
@@ -487,33 +449,8 @@ if (page1Data.pages > 1) {
     fetchData();
   }, []);
 
-useEffect(() => {
-    const handlePageChange = async () => {
-      if (currentPage === 1) return;
-
-      try {
-        const pageData = pageCache[currentPage];
-        if (pageData) {
-          setTableData(pageData.data || []);
-
-          prefetchAdjacentPages(currentPage);
-        } else {
-
-          const data = await fetchPage(currentPage);
-          if (data) {
-            setTableData(data.data || []);
-            prefetchAdjacentPages(currentPage);
-          }
-        }
-      } catch (err) {
-
-      }
-    };
-
-    handlePageChange();
-  }, [currentPage, pageCache]);
-
-useEffect(() => {
+  // Handle click outside to close filter dropdowns
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setActiveFilterMenu(null);
@@ -533,7 +470,8 @@ useEffect(() => {
     return [...new Set(allValues)].sort();
   };
 
-const getCompanyCountByCategory = (category) => {
+  // Helper function to count companies by category
+  const getCompanyCountByCategory = (category) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -544,7 +482,8 @@ const getCompanyCountByCategory = (category) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByTechnology = (technology) => {
+  // Helper function to count companies by technology
+  const getCompanyCountByTechnology = (technology) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -555,7 +494,8 @@ const getCompanyCountByTechnology = (technology) => {
     return uniqueCompanies.size;
   };
 
-const getCompanyCountByPurchasePrediction = (prediction) => {
+  // Helper function to count companies by purchase prediction
+  const getCompanyCountByPurchasePrediction = (prediction) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
     tableData.forEach(row => {
@@ -568,40 +508,30 @@ const getCompanyCountByPurchasePrediction = (prediction) => {
 
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
-  const filteredData = (() => {
-
+  const filteredData = useMemo(() => {
+    // Check if mandatory filters are applied (both Category and Purchase Prediction)
     const hasCategoryFilter = Array.isArray(filters.category) && filters.category.length > 0;
     const hasPurchasePredictionFilter = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0;
 
-if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
+    // If mandatory filters are not applied, return empty array
+    if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
       return [];
     }
 
     return tableData
       .filter(row => {
-
+        // Apply all filters with OR logic within each filter type
         const filterMatches = Object.keys(filters).every(key => {
           const selectedValues = Array.isArray(filters[key]) ? filters[key] : [];
-          if (selectedValues.length === 0) return true;
-
+          if (selectedValues.length === 0) return true; // No filter applied for this key
+          
           const rowValue = String(row[key]).toLowerCase();
           return selectedValues.some(val => String(val).toLowerCase() === rowValue);
         });
 
-        const searchMatches = !searchTerm || Object.values(row).some(value =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        return filterMatches && searchMatches;
-      })
-      .sort((a, b) => {
-        const aMatches = rowMatchesSearch(a, searchTerm);
-        const bMatches = rowMatchesSearch(b, searchTerm);
-        if (aMatches && !bMatches) return -1;
-        if (!aMatches && bMatches) return 1;
-        return 0;
+        return filterMatches;
       });
-  })();
+  }, [tableData, filters]);
 
   const handleAnalysisClick = (analysis) => {
     setModalContent(analysis);
@@ -619,10 +549,10 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        {}
-        <img
-          src={nexoraLogo}
-          alt="Nexora"
+        {/* Nexora Logo */}
+        <img 
+          src={nexoraLogo} 
+          alt="Nexora" 
           style={{
             width: '250px',
             height: 'auto',
@@ -631,17 +561,17 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           }}
         />
 
-        {}
+        {/* Loading Text */}
         <h3 style={{
           margin: '0 0 10px 0',
           color: '#1f2937',
           fontSize: '18px',
           fontWeight: '600'
         }}>
-
+         
         </h3>
 
-        {}
+        {/* Subtext */}
         <p style={{
           margin: '0 0 30px 0',
           color: '#6b7280',
@@ -652,7 +582,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           Fetching and processing technology purchase predictions...
         </p>
 
-        {}
+        {/* Progress Dots */}
         <div style={{
           display: 'flex',
           gap: '8px',
@@ -681,7 +611,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           }} />
         </div>
 
-        {}
+        {/* Styles for animations */}
         <style>{`
           @keyframes bounce {
             0%, 80%, 100% {
@@ -700,7 +630,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
 
   return (
     <div className="ntp-container">
-      {}
+      {/* Error Banner */}
       {error && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -717,7 +647,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            �
+            ⚠
           </div>
           <div style={{
             fontSize: '14px',
@@ -743,11 +673,25 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           </button>
         </div>
       )}
-
+      
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Next Tech Purchase®</h2>
         <div className="actions-right" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {}
+          {/* <div className="search-bar">
+            <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search companies..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="10" cy="10" r="7"></circle>
+              <path d="m20 20-4.5-4.5"></path>
+            </svg>
+          </div> */}
           <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -758,12 +702,12 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
         </div>
       </div>
       <div className="section-subtle-divider" />
-
+      
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-
-          {}
+          
+          {/* Filter Button */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -793,7 +737,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
               <span>+ Filter</span>
             </button>
 
-            {}
+            {/* Filter Menu Dropdown */}
             {showFilters && (
               <div
                 style={{
@@ -843,7 +787,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             )}
           </div>
 
-          {}
+          {/* Purchase Prediction Filter - Always Visible (Mandatory) */}
           {activeFilterMenu !== 'purchasePrediction' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -925,10 +869,10 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.companyName) && filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
-
+                      // If all are selected, deselect all
                       setFilters(prev => ({ ...prev, companyName: [] }));
                     } else {
-
+                      // Otherwise select all
                       setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
                     }
                   }}
@@ -995,7 +939,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                   );
                 })}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1031,7 +975,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-          {}
+          {/* Purchase Prediction Filter Chip */}
           {activeFilterMenu === 'purchasePrediction' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1081,10 +1025,10 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').length && getUniqueOptions('purchasePrediction').length > 0) {
-
+                      // If all are selected, deselect all
                       setFilters(prev => ({ ...prev, purchasePrediction: [] }));
                     } else {
-
+                      // Otherwise select all
                       setFilters(prev => ({ ...prev, purchasePrediction: getUniqueOptions('purchasePrediction') }));
                     }
                   }}
@@ -1157,7 +1101,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                   );
                 })}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1193,7 +1137,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-          {}
+          {/* Category Filter Button - Always Visible (Mandatory) */}
           {activeFilterMenu !== 'category' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -1226,7 +1170,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-          {}
+          {/* Category Filter Chip - Active Menu */}
           {activeFilterMenu === 'category' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1276,10 +1220,10 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0) {
-
+                      // If all are selected, deselect all
                       setFilters(prev => ({ ...prev, category: [] }));
                     } else {
-
+                      // Otherwise select all
                       setFilters(prev => ({ ...prev, category: getUniqueOptions('category') }));
                     }
                   }}
@@ -1355,7 +1299,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                   );
                 })}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1391,7 +1335,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-          {}
+          {/* Technology Filter Chip */}
           {activeFilterMenu === 'technology' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1441,10 +1385,10 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0) {
-
+                      // If all are selected, deselect all
                       setFilters(prev => ({ ...prev, technology: [] }));
                     } else {
-
+                      // Otherwise select all
                       setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
                     }
                   }}
@@ -1518,7 +1462,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                   );
                 })}
 
-                {}
+                {/* Save Button */}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1554,7 +1498,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-          {}
+          {/* Display saved filter tags */}
           {Array.isArray(filters.companyName) && filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -1591,7 +1535,11 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
 
-{Array.isArray(filters.technology) && filters.technology.length > 0 && activeFilterMenu !== 'technology' && (
+
+
+
+
+          {Array.isArray(filters.technology) && filters.technology.length > 0 && activeFilterMenu !== 'technology' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -1629,8 +1577,8 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             </div>
           )}
           </div>
-
-          {}
+          
+          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
           {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && (
             <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
               <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1646,7 +1594,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
         </div>
       </div>
 
-      {}
+      {/* Message for mandatory filters */}
       {((!Array.isArray(filters.purchasePrediction) || filters.purchasePrediction.length === 0) || (!Array.isArray(filters.category) || filters.category.length === 0)) && (
         <div style={{
           display: 'flex',
@@ -1692,7 +1640,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           </button>
         </div>
       )}
-
+      
       <div className="table-container">
         <table>
           <thead className="sticky-header">
@@ -1724,7 +1672,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
           </thead>
           <tbody>
             {(() => {
-
+              // Group data by Category and Purchase Prediction
               const groupedData = {};
               filteredData.forEach(row => {
                 const key = `${row.category}|${row.purchasePrediction}`;
@@ -1735,8 +1683,9 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
                     companies: new Map()
                   };
                 }
-
-if (!groupedData[key].companies.has(row.companyName)) {
+                
+                // Group by company name
+                if (!groupedData[key].companies.has(row.companyName)) {
                   groupedData[key].companies.set(row.companyName, {
                     companyName: row.companyName,
                     domain: row.domain,
@@ -1744,7 +1693,7 @@ if (!groupedData[key].companies.has(row.companyName)) {
                     technologies: []
                   });
                 }
-
+                
                 groupedData[key].companies.get(row.companyName).technologies.push({
                   technology: row.technology,
                   purchaseProbability: row.purchaseProbability,
@@ -1752,43 +1701,48 @@ if (!groupedData[key].companies.has(row.companyName)) {
                 });
               });
 
-const allCompanies = [];
+              // Flatten to get all companies - WITH PAGINATION
+              const allCompanies = [];
               Object.values(groupedData).forEach(group => {
                 Array.from(group.companies.values()).forEach(company => {
                   allCompanies.push({ ...company, category: group.category, purchasePrediction: group.purchasePrediction });
                 });
               });
 
-const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
+              // Calculate pagination
+              const totalCompanies = allCompanies.length;
+              const totalPages = Math.ceil(totalCompanies / rowsPerPage);
               const startIndex = (currentPage - 1) * rowsPerPage;
-              const endIndex = startIndex + rowsPerPage;
+              const endIndex = Math.min(startIndex + rowsPerPage, totalCompanies);
               const paginatedCompanies = allCompanies.slice(startIndex, endIndex);
 
+              // Show paginated companies
               return paginatedCompanies.map((company, companyIndex) => {
+                const actualIndex = startIndex + companyIndex;
                 const companyRowSpan = company.technologies.length > 3 ? 1 : company.technologies.length;
 
                 return company.technologies.map((tech, techIndex) => {
                   const isFirstTechRow = techIndex === 0;
-
+                  // Only render rows for first 3 techs, or all if <= 3
                   if (company.technologies.length > 3 && techIndex > 0) {
                     return null;
                   }
 
                   return (
-                    <tr key={`${companyIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
-                      {}
+                    <tr key={`${actualIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
+                      {/* Checkbox - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '50px', padding: '12px 8px' }}>
                           <input
                             type="checkbox"
-                            checked={selectedRows.has(startIndex + companyIndex)}
+                            checked={selectedRows.has(actualIndex)}
                             onChange={(e) => {
                               e.stopPropagation();
                               const newSelected = new Set(selectedRows);
                               if (e.target.checked) {
-                                newSelected.add(startIndex + companyIndex);
+                                newSelected.add(actualIndex);
                               } else {
-                                newSelected.delete(startIndex + companyIndex);
+                                newSelected.delete(actualIndex);
                               }
                               setSelectedRows(newSelected);
                             }}
@@ -1797,50 +1751,50 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                         </td>
                       )}
 
-                      {}
+                      {/* Reveal Button - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '70px', padding: '12px 8px' }}>
                           <button
                             onClick={() => {
-                              const rowKey = `${startIndex + companyIndex}-${company.companyName}`;
+                              const rowKey = `${actualIndex}-${company.companyName}`;
                               setRevealedRows(prev => {
                                 const newSet = new Set(prev);
                                 newSet.add(rowKey);
                                 return newSet;
                               });
                             }}
-                            disabled={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)}
+                            disabled={revealedRows.has(`${actualIndex}-${company.companyName}`)}
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '6px',
                               padding: '6px 12px',
-                              backgroundColor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
-                              border: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                              backgroundColor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
+                              border: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
                               borderRadius: '6px',
-                              cursor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
+                              cursor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
                               fontSize: '13px',
                               fontWeight: '500',
-                              color: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
+                              color: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
                               transition: 'all 0.2s',
                               whiteSpace: 'nowrap',
-                              opacity: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 0.6 : 1
+                              opacity: revealedRows.has(`${companyIndex}-${company.companyName}`) ? 0.6 : 1
                             }}
                             onMouseEnter={(e) => {
-                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                              if (!revealedRows.has(`${companyIndex}-${company.companyName}`)) {
                                 e.currentTarget.style.backgroundColor = '#a7f3d0';
                                 e.currentTarget.style.borderColor = '#6ee7b7';
                               }
                             }}
                             onMouseLeave={(e) => {
-                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                              if (!revealedRows.has(`${actualIndex}-${company.companyName}`)) {
                                 e.currentTarget.style.backgroundColor = '#d1fae5';
                                 e.currentTarget.style.borderColor = '#a7f3d0';
                               }
                             }}
-                            title={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
+                            title={revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                           >
-                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
                               <FaEye size={16} />
                             ) : (
                               <FaEyeSlash size={16} />
@@ -1849,14 +1803,14 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                         </td>
                       )}
 
-                      {}
+                      {/* Company Name - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
                               <>
                                 <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                                  {highlightText(company.companyName, searchTerm)}
+                                  {company.companyName}
                                 </div>
                                 <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   {company.domain && (
@@ -1920,31 +1874,31 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                         </td>
                       )}
 
-                      {}
+                      {/* Category - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '110px', padding: '12px 8px' }}>
                           <span style={{ display: 'flex', alignItems: 'center' }}>
                             {renderTechLogo(company.category)}
-                            {highlightText(company.category, searchTerm)}
+                            {company.category}
                           </span>
                         </td>
                       )}
 
-                      {}
+                      {/* Purchase Prediction - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
-                          {highlightText(company.purchasePrediction, searchTerm)}
+                          {company.purchasePrediction}
                         </td>
                       )}
 
-                      {}
+                      {/* Technology */}
                       <td style={{ width: '120px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
-                          <div
+                          <div 
                             ref={techScrollRef}
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
+                            style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column', 
                               gap: '8px',
                               maxHeight: '96px',
                               overflowY: 'auto',
@@ -1959,26 +1913,26 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                             {company.technologies.map((t, idx) => (
                               <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                                 {renderTechLogo(t.technology)}
-                                {highlightText(t.technology, searchTerm)}
+                                {t.technology}
                               </span>
                             ))}
                           </div>
                         ) : (
                           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                             {renderTechLogo(tech.technology)}
-                            {highlightText(tech.technology, searchTerm)}
+                            {tech.technology}
                           </span>
                         )}
                       </td>
 
-                      {}
+                      {/* Purchase Propensity (%) */}
                       <td style={{ textAlign: 'center', width: '130px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
-                          <div
+                          <div 
                             ref={propensityScrollRef}
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
+                            style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column', 
                               gap: '8px',
                               maxHeight: '96px',
                               overflowY: 'auto',
@@ -1993,26 +1947,26 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                           >
                             {company.technologies.map((t, idx) => (
                               <span key={idx} style={{ whiteSpace: 'nowrap' }}>
-                                {highlightText(t.purchaseProbability, searchTerm)}
+                                {t.purchaseProbability}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          highlightText(tech.purchaseProbability, searchTerm)
+                          tech.purchaseProbability
                         )}
                       </td>
 
-                      {}
-                      <td
+                      {/* NTP Analysis */}
+                      <td 
                         onClick={() => company.technologies.length <= 3 && handleAnalysisClick(tech.ntpAnalysis)}
                         style={{ cursor: company.technologies.length <= 3 ? 'pointer' : 'default', color: '#010810ff', textDecoration: company.technologies.length <= 3 ? 'underline' : 'none', width: '130px', padding: '12px 8px' }}
                       >
                         {company.technologies.length > 3 ? (
-                          <div
+                          <div 
                             ref={analysisScrollRef}
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
+                            style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column', 
                               gap: '8px',
                               maxHeight: '96px',
                               overflowY: 'auto',
@@ -2025,17 +1979,17 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                             onScroll={handleAnalysisScroll}
                           >
                             {company.technologies.map((t, idx) => (
-                              <span
-                                key={idx}
+                              <span 
+                                key={idx} 
                                 style={{ whiteSpace: 'nowrap', cursor: 'pointer', textDecoration: 'underline', color: '#010810ff' }}
                                 onClick={() => handleAnalysisClick(t.ntpAnalysis)}
                               >
-                                {t.ntpAnalysis ? highlightText(`${t.ntpAnalysis.substring(0, 30)}...`, searchTerm) : 'N/A'}
+                                {t.ntpAnalysis ? `${t.ntpAnalysis.substring(0, 30)}...` : 'N/A'}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          tech.ntpAnalysis ? highlightText(`${tech.ntpAnalysis.substring(0, 30)}...`, searchTerm) : 'N/A'
+                          tech.ntpAnalysis ? `${tech.ntpAnalysis.substring(0, 30)}...` : 'N/A'
                         )}
                       </td>
                     </tr>
@@ -2047,75 +2001,48 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
         </table>
       </div>
 
-      {}
-      {(() => {
-
+      {/* Pagination Controls */}
+      {filteredData.length > 0 && (() => {
         const groupedData = {};
         filteredData.forEach(row => {
           const key = `${row.category}|${row.purchasePrediction}`;
           if (!groupedData[key]) {
-            groupedData[key] = {
-              category: row.category,
-              purchasePrediction: row.purchasePrediction,
-              companies: new Map()
-            };
+            groupedData[key] = { companies: new Map() };
           }
-
           if (!groupedData[key].companies.has(row.companyName)) {
-            groupedData[key].companies.set(row.companyName, {
-              companyName: row.companyName,
-              domain: row.domain,
-              linkedinUrl: row.linkedinUrl,
-              technologies: []
-            });
+            groupedData[key].companies.set(row.companyName, true);
           }
-
-          groupedData[key].companies.get(row.companyName).technologies.push({
-            technology: row.technology,
-            purchaseProbability: row.purchaseProbability,
-            ntpAnalysis: row.ntpAnalysis
-          });
         });
-
-        const allCompanies = [];
-        Object.values(groupedData).forEach(group => {
-          Array.from(group.companies.values()).forEach(company => {
-            allCompanies.push(company);
-          });
-        });
-
-        const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
+        const totalCompanies = Object.values(groupedData).reduce((sum, g) => sum + g.companies.size, 0);
+        const totalPages = Math.ceil(totalCompanies / rowsPerPage);
         const startIndex = (currentPage - 1) * rowsPerPage + 1;
-        const endIndex = Math.min(currentPage * rowsPerPage, allCompanies.length);
-        const totalResults = allCompanies.length;
+        const endIndex = Math.min(currentPage * rowsPerPage, totalCompanies);
 
         return totalPages > 1 ? (
-          <>
-            {}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '20px',
+            marginBottom: '20px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #e5e7eb'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: '#1f2937',
+              fontWeight: '600'
+            }}>
+              Page {currentPage} of {totalPages.toLocaleString()}
+            </div>
+
+            {/* Pagination Buttons */}
             <div style={{
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
-              marginTop: '20px',
-              marginBottom: '20px',
-              paddingBottom: '15px',
-              borderBottom: '1px solid #e5e7eb'
+              gap: '8px'
             }}>
-              <div style={{
-                fontSize: '14px',
-                color: '#1f2937',
-                fontWeight: '600'
-              }}>
-                Page {currentPage} of {totalPages.toLocaleString()}
-              </div>
-
-              {}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
               {(() => {
                 const maxPagesToShow = 5;
                 let startPage = 1;
@@ -2133,7 +2060,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
 
                 return (
                   <>
-                    {}
+                    {/* First Page Button */}
                     <button
                       key="first"
                       onClick={() => setCurrentPage(1)}
@@ -2167,7 +2094,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                       ≪
                     </button>
 
-                    {}
+                    {/* Previous Page Button */}
                     <button
                       key="prev"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -2201,7 +2128,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                       ‹
                     </button>
 
-                    {}
+                    {/* Page Numbers */}
                     {startPage > 1 && (
                       <>
                         <button
@@ -2300,7 +2227,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                       </>
                     )}
 
-                    {}
+                    {/* Next Page Button */}
                     <button
                       key="next"
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -2334,7 +2261,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                       ›
                     </button>
 
-                    {}
+                    {/* Last Page Button */}
                     <button
                       key="last"
                       onClick={() => setCurrentPage(totalPages)}
@@ -2370,17 +2297,16 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                   </>
                 );
               })()}
-              </div>
-
-              <div style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                fontWeight: '500'
-              }}>
-                Showing {startIndex}-{endIndex} of {totalResults.toLocaleString()} results
-              </div>
             </div>
-          </>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              fontWeight: '500'
+            }}>
+              Showing {startIndex}-{endIndex} of {totalCompanies.toLocaleString()} results
+            </div>
+          </div>
         ) : null;
       })()}
 
@@ -2401,7 +2327,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
           <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="summary-modal-header">
               <h2>Next Tech Purchase® Summary - Analytics Overview</h2>
-              <button
+              <button 
                 className="close-button"
                 onClick={() => setShowSummary(false)}
                 style={{
@@ -2445,7 +2371,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
           overflow-y: auto;
           position: relative;
         }
-
+        
         .sticky-header {
           position: sticky;
           top: 0;
@@ -2453,18 +2379,18 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
           z-index: 10;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
+        
         .sticky-header th {
           position: sticky;
           top: 0;
         }
-
+        
         table {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
         }
-
+        
         th, td {
           padding: 12px 16px;
           text-align: left;
@@ -2474,26 +2400,26 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
           cursor: default;
           vertical-align: middle;
         }
-
-        th:nth-child(1), td:nth-child(1) { width: 50px !important; white-space: normal; }
-        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; }
-        th:nth-child(3), td:nth-child(3) { width: 140px !important; white-space: nowrap; }
-        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; }
-        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; }
-        th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; }
-        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; }
-        th:nth-child(8), td:nth-child(8) { width: 140px !important; white-space: nowrap; }
-
+        
+        th:nth-child(1), td:nth-child(1) { width: 50px !important; white-space: normal; } /* Checkbox */
+        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; } /* Reveal */
+        th:nth-child(3), td:nth-child(3) { width: 140px !important; white-space: nowrap; } /* Company Name */
+        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; } /* Category */
+        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; } /* Purchase Prediction */
+        th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; } /* Technology */
+        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; } /* Purchase Propensity */
+        th:nth-child(8), td:nth-child(8) { width: 140px !important; white-space: nowrap; } /* NTP Analysis */
+        
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
-
+        
         th {
           background-color: #f8f9fa;
           font-weight: 600;
           font-size: 14px;
           color: #1f2937;
         }
-
+        
         tr:hover {
           background-color: #f5f5f5;
         }
@@ -2666,7 +2592,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
           th:nth-child(6), td:nth-child(6) { width: 16.66%; }
         }
       `}</style>
-      {}
+      {/* <PerformanceMetrics measurements={measurements} isVisible={true} /> */}
     </div>
   );
 };
