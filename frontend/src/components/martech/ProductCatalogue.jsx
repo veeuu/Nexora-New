@@ -70,10 +70,10 @@ const ProductCatalogue = () => {
         setTableData(data);
       } catch (e) {
         setError(e.message);
-        console.error("Failed to fetch Product Catalogue data:", e);
-        setTableData([]); // Set empty data on error
+
+        setTableData([]);
       } finally {
-        // Add 2-second delay before hiding loading screen
+
         setTimeout(() => {
           setLoading(false);
         }, 2000);
@@ -83,8 +83,7 @@ const ProductCatalogue = () => {
     fetchData();
   }, [selectedYear]);
 
-  // Handle click outside to close dropdowns
-  useEffect(() => {
+useEffect(() => {
     const handleClickOutside = (event) => {
       const filterContainer = document.querySelector('.filter-container');
       if (filterContainer && !filterContainer.contains(event.target)) {
@@ -107,8 +106,7 @@ const ProductCatalogue = () => {
     return [...new Set(allValues)].sort();
   };
 
-  // Helper function to count products by category
-  const getProductCountByCategory = (category) => {
+const getProductCountByCategory = (category) => {
     if (!tableData) return 0;
     const uniqueProducts = new Set();
     tableData.forEach(row => {
@@ -119,8 +117,7 @@ const ProductCatalogue = () => {
     return uniqueProducts.size;
   };
 
-  // Helper function to count products by subcategory
-  const getProductCountBySubCategory = (subCategory) => {
+const getProductCountBySubCategory = (subCategory) => {
     if (!tableData) return 0;
     const uniqueProducts = new Set();
     tableData.forEach(row => {
@@ -170,20 +167,20 @@ const ProductCatalogue = () => {
         borderRadius: '8px',
         padding: '80px 20px 40px 20px'
       }}>
-        {/* Nexora Logo */}
+        {}
         <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
 
-        {/* Loading Text */}
+        {}
         <h3 style={{
           margin: '0 0 10px 0',
           color: '#1f2937',
           fontSize: '18px',
           fontWeight: '600'
         }}>
-          
+
         </h3>
 
-        {/* Subtext */}
+        {}
         <p style={{
           margin: '0 0 30px 0',
           color: '#6b7280',
@@ -194,7 +191,7 @@ const ProductCatalogue = () => {
           Fetching and processing product information...
         </p>
 
-        {/* Progress Dots */}
+        {}
         <div style={{
           display: 'flex',
           gap: '8px',
@@ -223,7 +220,7 @@ const ProductCatalogue = () => {
           }} />
         </div>
 
-        {/* Styles for animations */}
+        {}
         <style>{`
           @keyframes bounce {
             0%, 80%, 100% {
@@ -242,7 +239,7 @@ const ProductCatalogue = () => {
 
   return (
     <div className="product-catalogue-container">
-      {/* Error Banner */}
+      {}
       {error && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -259,7 +256,7 @@ const ProductCatalogue = () => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            ⚠
+            �
           </div>
           <div style={{
             fontSize: '14px',
@@ -285,12 +282,12 @@ const ProductCatalogue = () => {
           </button>
         </div>
       )}
-      
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: '700' }}>Product Catalogue</h2>
         <div className="year-dropdown">
           <label className="year-label">Year :</label>
-          <select 
+          <select
             value={selectedYear}
             onChange={(e) => handleYearChange(e.target.value)}
             className="year-select"
@@ -301,12 +298,12 @@ const ProductCatalogue = () => {
         </div>
       </div>
       <div className="section-subtle-divider" />
-      
+
       <div style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div className="filter-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          
-          {/* Category Filter Chip */}
+
+          {}
           {activeFilterMenu !== 'category' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -388,7 +385,7 @@ const ProductCatalogue = () => {
                 <div
                   onClick={() => {
                     const allOptions = getUniqueOptions('category');
-                    // Toggle: if all selected, deselect all; otherwise select all
+
                     if (filters.category.length === allOptions.length) {
                       setFilters(prev => ({ ...prev, category: [] }));
                     } else {
@@ -413,7 +410,7 @@ const ProductCatalogue = () => {
                     checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
                     onChange={() => {
                       const allOptions = getUniqueOptions('category');
-                      // Toggle: if all selected, deselect all; otherwise select all
+
                       if (filters.category.length === allOptions.length) {
                         setFilters(prev => ({ ...prev, category: [] }));
                       } else {
@@ -457,7 +454,7 @@ const ProductCatalogue = () => {
                   </div>
                 ))}
 
-                {/* Save Button */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -493,8 +490,8 @@ const ProductCatalogue = () => {
             </div>
           )}
           </div>
-          
-          {/* Download CSV Button */}
+
+          {}
           <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -507,7 +504,7 @@ const ProductCatalogue = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="table-container">
         <table>
           <thead className="sticky-header">
@@ -538,7 +535,7 @@ const ProductCatalogue = () => {
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.subCategory)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.subCategory, searchTerm)}
                     </td>
-                    <td 
+                    <td
                       onClick={() => handleDescriptionClick(row.description)}
                       style={{ cursor: 'pointer', color: '#010810ff', textDecoration: 'underline' }}
                     >
@@ -552,7 +549,7 @@ const ProductCatalogue = () => {
         </table>
       </div>
 
-      {/* Pagination Controls - All in One Row */}
+      {}
       {filteredData.length > rowsPerPage && (
       <div style={{
           display: 'flex',
@@ -575,7 +572,7 @@ const ProductCatalogue = () => {
               Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
           </div>
 
-          {/* Pagination Buttons */}
+          {}
           <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -601,7 +598,7 @@ const ProductCatalogue = () => {
 
                   return (
                       <>
-                          {/* First Page Button */}
+                          {}
                           <button
                               key="first"
                               onClick={() => setCurrentPage(1)}
@@ -635,7 +632,7 @@ const ProductCatalogue = () => {
                               ≪
                           </button>
 
-                          {/* Previous Page Button */}
+                          {}
                           <button
                               key="prev"
                               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -669,7 +666,7 @@ const ProductCatalogue = () => {
                               ‹
                           </button>
 
-                          {/* Page Numbers */}
+                          {}
                           {startPage > 1 && (
                               <>
                                   <button
@@ -768,7 +765,7 @@ const ProductCatalogue = () => {
                               </>
                           )}
 
-                          {/* Next Page Button */}
+                          {}
                           <button
                               key="next"
                               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -802,7 +799,7 @@ const ProductCatalogue = () => {
                               ›
                           </button>
 
-                          {/* Last Page Button */}
+                          {}
                           <button
                               key="last"
                               onClick={() => setCurrentPage(totalPages)}
@@ -1024,7 +1021,7 @@ const ProductCatalogue = () => {
           overflow-y: auto;
           position: relative;
         }
-        
+
         .sticky-header {
           position: sticky;
           top: 0;
@@ -1032,18 +1029,18 @@ const ProductCatalogue = () => {
           z-index: 10;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .sticky-header th {
           position: sticky;
           top: 0;
         }
-        
+
         table {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
         }
-        
+
         th, td {
           padding: 12px 15px;
           text-align: left;
@@ -1053,20 +1050,20 @@ const ProductCatalogue = () => {
           text-overflow: ellipsis;
           cursor: default;
         }
-        
+
         th:nth-child(1), td:nth-child(1) { width: 25%; }
         th:nth-child(2), td:nth-child(2) { width: 25%; }
         th:nth-child(3), td:nth-child(3) { width: 25%; }
         th:nth-child(4), td:nth-child(4) { width: 25%; }
-        
+
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
-        
+
         th {
           background-color: #f8f9fa;
           font-weight: 600;
         }
-        
+
         tr:hover {
           background-color: #f5f5f5;
         }

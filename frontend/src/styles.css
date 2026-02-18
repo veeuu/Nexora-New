@@ -1898,3 +1898,16 @@ tr:hover {
   width: 12%;
   min-width: 100px;
 }
+
+/* ========== INTENT TABLE COLUMN WIDTHS ========== */
+.intent-container .table-container table th:nth-child(1),
+.intent-container .table-container table td:nth-child(1) {
+  width: 50%;
+  min-width: 300px;
+}
+
+.intent-container .table-container table th:nth-child(2),
+.intent-container .table-container table td:nth-child(2) {
+  width: 50%;
+  min-width: 200px;
+}
