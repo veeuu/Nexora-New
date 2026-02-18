@@ -156,12 +156,12 @@ const buildNtpCache = async () => {
     ntpCacheTime = Date.now();
     const totalTime = Date.now() - startTime;
   } catch (err) {
+    console.error('[NTP-CACHE] Error building NTP cache:', err.message);
   } finally {
     ntpCacheBuilding = false;
   }
 };
 
-<<<<<<< HEAD
 // Build cache on server start - wait for MongoDB connection
 setTimeout(() => {
   if (mongoose.connection.readyState === 1) {
@@ -175,15 +175,13 @@ setTimeout(() => {
     });
   }
 }, 3000); // Wait 3 seconds after module load
-=======
-buildNtpCache();
->>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
 
+// Rebuild cache every 10 minutes
 setInterval(() => {
   if (Date.now() - ntpCacheTime > NTP_CACHE_DURATION) {
     buildNtpCache();
   }
-}, 5 * 60 * 1000);
+}, 5 * 60 * 1000); // Check every 5 minutes
 
 let ntpMetadataCache = null;
 let ntpMetadataCacheTime = 0;
@@ -336,12 +334,12 @@ const techArray = company.Technographics || [];
     techCacheTime = Date.now();
     const totalTime = Date.now() - startTime;
   } catch (err) {
+    console.error('[CACHE] Error building technographics cache:', err.message);
   } finally {
     techCacheBuilding = false;
   }
 };
 
-<<<<<<< HEAD
 // Build cache on server start - wait for MongoDB connection
 setTimeout(() => {
   if (mongoose.connection.readyState === 1) {
@@ -355,15 +353,13 @@ setTimeout(() => {
     });
   }
 }, 3000); // Wait 3 seconds after module load
-=======
-buildTechCache();
->>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
 
+// Rebuild cache every 10 minutes
 setInterval(() => {
   if (Date.now() - techCacheTime > TECH_CACHE_DURATION) {
     buildTechCache();
   }
-}, 5 * 60 * 1000);
+}, 5 * 60 * 1000); // Check every 5 minutes
 
 let techMetadataCache = null;
 let techMetadataCacheTime = 0;
