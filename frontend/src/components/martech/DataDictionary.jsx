@@ -4,8 +4,7 @@ import '../../styles/dataDictionary.css';
 const DataDictionary = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Hardcoded data dictionary with additional details
-  const dataDictionary = [
+const dataDictionary = [
     {
       'Data Attribute': 'Technographics',
       'Definition': 'The technology product(s) the company uses',
@@ -92,24 +91,21 @@ const DataDictionary = () => {
     }
   ];
 
-  // Filter data based on search term
-  const searchFilteredData = dataDictionary.filter(item => {
-    const matchesSearch = 
+const searchFilteredData = dataDictionary.filter(item => {
+    const matchesSearch =
       (item['Data Attribute'] || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item['Definition'] || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
-  // Separate into categories
-  const standardItems = searchFilteredData.filter(item => 
+const standardItems = searchFilteredData.filter(item =>
     (item['Standard / Special'] || '').toLowerCase() === 'standard'
   );
-  const specialItems = searchFilteredData.filter(item => 
+  const specialItems = searchFilteredData.filter(item =>
     (item['Standard / Special'] || '').toLowerCase() === 'special'
   );
 
-  // Render items grid
-  const renderItemsGrid = (items, type) => (
+const renderItemsGrid = (items, type) => (
     <div className="data-items-grid">
       {items.length > 0 ? (
         items.map((item, index) => (
@@ -157,7 +153,7 @@ const DataDictionary = () => {
 
   return (
     <div className="data-dictionary-container">
-      {/* Header */}
+      {}
       <div className="data-dictionary-header">
         <div>
           <h2 className="data-dictionary-title">
@@ -171,7 +167,7 @@ const DataDictionary = () => {
 
       <div className="data-dictionary-divider" />
 
-      {/* Search Bar */}
+      {}
       <div className="data-dictionary-controls">
         <div className="search-input-wrapper">
           <input
@@ -194,7 +190,7 @@ const DataDictionary = () => {
         </div>
       </div>
 
-      {/* Standard Attributes Section */}
+      {}
       {standardItems.length > 0 && (
         <div className="category-section standard-section">
           <div className="category-header">
@@ -209,7 +205,7 @@ const DataDictionary = () => {
         </div>
       )}
 
-      {/* Special Attributes Section */}
+      {}
       {specialItems.length > 0 && (
         <div className="category-section special-section">
           <div className="category-header">
@@ -224,7 +220,7 @@ const DataDictionary = () => {
         </div>
       )}
 
-      {/* No Results */}
+      {}
       {standardItems.length === 0 && specialItems.length === 0 && (
         <div className="no-results-container">
           <p className="no-results-title">No attributes found</p>

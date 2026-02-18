@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Performance Metrics Display Component
- * Shows latency breakdown for different stages of data loading
- */
 const PerformanceMetrics = ({ measurements, isVisible = false }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -11,11 +7,9 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
     return null;
   }
 
-  // Calculate total time
-  const total = Object.values(measurements).reduce((sum, val) => sum + val, 0);
+const total = Object.values(measurements).reduce((sum, val) => sum + val, 0);
 
-  // Sort measurements by duration (longest first)
-  const sortedMeasurements = Object.entries(measurements)
+const sortedMeasurements = Object.entries(measurements)
     .sort(([, a], [, b]) => b - a)
     .map(([label, duration]) => ({
       label,
@@ -23,11 +17,10 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
       percentage: ((duration / total) * 100).toFixed(1)
     }));
 
-  // Determine color based on total time
-  const getStatusColor = () => {
-    if (total < 1000) return '#10b981'; // Green - fast
-    if (total < 3000) return '#f59e0b'; // Amber - moderate
-    return '#ef4444'; // Red - slow
+const getStatusColor = () => {
+    if (total < 1000) return '#10b981';
+    if (total < 3000) return '#f59e0b';
+    return '#ef4444';
   };
 
   const getStatusLabel = () => {
@@ -53,7 +46,7 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
         overflow: 'hidden'
       }}
     >
-      {/* Header */}
+      {}
       <div
         onClick={() => setExpanded(!expanded)}
         style={{
@@ -84,10 +77,10 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
         </span>
       </div>
 
-      {/* Content */}
+      {}
       {expanded && (
         <div style={{ padding: '16px', backgroundColor: '#f9fafb' }}>
-          {/* Total Time */}
+          {}
           <div style={{
             marginBottom: '12px',
             padding: '8px 12px',
@@ -100,7 +93,7 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
             Total Load Time: {total.toFixed(2)}ms
           </div>
 
-          {/* Breakdown */}
+          {}
           <div style={{ marginBottom: '8px', fontWeight: '600', color: '#1f2937' }}>
             Breakdown:
           </div>
@@ -156,7 +149,7 @@ const PerformanceMetrics = ({ measurements, isVisible = false }) => {
             </div>
           ))}
 
-          {/* Tips */}
+          {}
           <div style={{
             marginTop: '12px',
             padding: '8px 12px',

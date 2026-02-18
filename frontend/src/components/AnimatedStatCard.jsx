@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-const AnimatedStatCard = ({ 
-  number, 
-  label, 
-  cardClass, 
-  numberClass, 
+const AnimatedStatCard = ({
+  number,
+  label,
+  cardClass,
+  numberClass,
   labelClass,
   showProgressBar = true,
   maxValue = 100000
@@ -13,8 +13,7 @@ const AnimatedStatCard = ({
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
 
-  // Extract numeric value from number string (e.g., "100K+" -> 100000)
-  const extractNumericValue = (str) => {
+const extractNumericValue = (str) => {
     const match = str.match(/(\d+)/);
     if (!match) return 0;
     const num = parseInt(match[1]);
@@ -26,8 +25,7 @@ const AnimatedStatCard = ({
   const numericValue = extractNumericValue(number);
   const progressPercentage = (numericValue / maxValue) * 100;
 
-  // Intersection Observer for animation trigger
-  useEffect(() => {
+useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -45,21 +43,19 @@ const AnimatedStatCard = ({
     return () => observer.disconnect();
   }, []);
 
-  // Animated counter
-  useEffect(() => {
+useEffect(() => {
     if (!isVisible) return;
 
     let animationFrame;
     let currentValue = 0;
-    const duration = 5000; // 5 seconds
+    const duration = 5000;
     const startTime = Date.now();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing function for smooth animation
-      const easeOutQuad = 1 - Math.pow(1 - progress, 2);
+const easeOutQuad = 1 - Math.pow(1 - progress, 2);
       currentValue = Math.floor(numericValue * easeOutQuad);
 
       setDisplayNumber(currentValue);
@@ -73,8 +69,7 @@ const AnimatedStatCard = ({
     return () => cancelAnimationFrame(animationFrame);
   }, [isVisible, numericValue]);
 
-  // Format display number
-  const formatNumber = (num) => {
+const formatNumber = (num) => {
     if (num >= 1000000) {
       const formatted = (num / 1000000).toFixed(1);
       return formatted.replace(/\.0$/, '') + 'M';
@@ -87,7 +82,7 @@ const AnimatedStatCard = ({
   };
 
   return (
-    <div 
+    <div
       ref={cardRef}
       className={`home-stat-card ${cardClass}`}
       style={{
@@ -98,7 +93,7 @@ const AnimatedStatCard = ({
       <div className={`home-stat-number ${numberClass}`}>
         {formatNumber(displayNumber)}+
       </div>
-      
+
       <div className={`home-stat-label ${labelClass}`}>
         {label}
       </div>
