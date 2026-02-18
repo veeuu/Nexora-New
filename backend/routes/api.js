@@ -4,7 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose'); // Import mongoose
 const path = require('path');
 // Assuming this file is in your 'routes' folder
-const yahooFinance = require('yahoo-finance2').default;
+
 const Company = require('../models/Company');
 const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 
