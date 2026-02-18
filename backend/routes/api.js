@@ -740,29 +740,33 @@ let intentCacheTime = 0;
 const INTENT_CACHE_DURATION = 10 * 60 * 1000;
 
 router.get('/intent', async (req, res) => {
+  console.log('[INTENT-API] Request received');
   try {
     const now = Date.now();
 
-if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
+    if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
+      console.log('[INTENT-API] Returning cached data');
       return res.json(intentCache);
     }
 
-const intentCollection = mongoose.connection.db.collection('intent_data');
+    console.log('[INTENT-API] Fetching from MongoDB...');
+    const intentCollection = mongoose.connection.db.collection('intent_data');
     const intentDocs = await intentCollection.find({}).toArray();
+    console.log(`[INTENT-API] Found ${intentDocs.length} documents`);
 
-const intentData = intentDocs.map(item => ({
-
+    const intentData = intentDocs.map(item => ({
       companyName: item['Company Name'],
       intentStatus: item['Intent Status']
     }));
 
-intentCache = intentData;
+    intentCache = intentData;
     intentCacheTime = now;
 
+    console.log('[INTENT-API] Sending response');
     res.json(intentData);
   } catch (err) {
-
-    res.status(500).send('Server Error');
+    console.error('[INTENT-API] Error:', err);
+    res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
 
