@@ -736,12 +736,14 @@ const Technographics = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1); // Current page for display
   const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
   const [measurements, setMeasurements] = useState({});
   const [pageCache, setPageCache] = useState({}); // Cache for loaded pages
   const [totalPages, setTotalPages] = useState(0);
   const [pageLoading, setPageLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0); // Track total records from API
+  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); // Track total after grouping
   const rowsPerPage = 10;
   const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
 
@@ -799,7 +801,9 @@ const Technographics = () => {
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to page 1 when filters change
+    setPageCache({}); // Clear cache when filters change
+    setTotalRecords(0); // Reset total records
   };
 
   const handleDownloadCSV = () => {
@@ -869,7 +873,29 @@ const Technographics = () => {
     }
 
     try {
-      const response = await fetch(`/api/technographics?page=${pageNum}&limit=500`);
+      // Build query string with filters
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', pageNum);
+      queryParams.append('limit', 500);
+      
+      // Add filter parameters
+      if (filters.companyName.length > 0) {
+        filters.companyName.forEach(name => queryParams.append('companyName', name));
+      }
+      if (filters.region.length > 0) {
+        filters.region.forEach(region => queryParams.append('region', region));
+      }
+      if (filters.technology.length > 0) {
+        filters.technology.forEach(tech => queryParams.append('technology', tech));
+      }
+      if (filters.category.length > 0) {
+        filters.category.forEach(cat => queryParams.append('category', cat));
+      }
+      if (filters.industry.length > 0) {
+        filters.industry.forEach(ind => queryParams.append('industry', ind));
+      }
+
+      const response = await fetch(`/api/technographics?${queryParams.toString()}`);
       const data = await response.json();
       
       // If cache is building (503), retry with exponential backoff
@@ -921,36 +947,55 @@ const Technographics = () => {
         performanceMonitor.reset();
         performanceMonitor.start('total-load');
         
-        // Fetch metadata and first page with retry logic
+        // Fetch metadata and all data with retry logic
         performanceMonitor.start('api-fetch');
         
         // Fetch metadata (should be fast)
         const metadataResponse = await fetch('/api/technographics/metadata');
         const metadata = await metadataResponse.json();
         
-        // Fetch page 1 with retry logic for 503
-        let page1Data = null;
+        // Fetch ALL data with retry logic for 503
+        let allData = null;
         let retries = 10;
         let delay = 500;
         
-        while (!page1Data && retries > 0) {
-          const page1Response = await fetch('/api/technographics?page=1&limit=500');
+        while (!allData && retries > 0) {
+          const allDataResponse = await fetch('/api/technographics/all');
           
-          if (page1Response.status === 503) {
+          if (allDataResponse.status === 503) {
             console.log(`[INIT] Cache building, retrying in ${delay}ms... (${retries} retries left)`);
             await new Promise(resolve => setTimeout(resolve, delay));
             delay = Math.min(delay * 1.5, 5000); // Exponential backoff, max 5s
             retries--;
           } else {
-            page1Data = await page1Response.json();
+            allData = await allDataResponse.json();
+            break;
+          }
+        }
+
+        // Fetch NTP data
+        let ntpAllData = null;
+        let ntpRetries = 10;
+        let ntpDelay = 500;
+        
+        while (!ntpAllData && ntpRetries > 0) {
+          const ntpResponse = await fetch('/api/ntp/all');
+          
+          if (ntpResponse.status === 503) {
+            console.log(`[INIT] NTP cache building, retrying in ${ntpDelay}ms... (${ntpRetries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, ntpDelay));
+            ntpDelay = Math.min(ntpDelay * 1.5, 5000);
+            ntpRetries--;
+          } else if (ntpResponse.ok) {
+            ntpAllData = await ntpResponse.json();
             break;
           }
         }
         
         performanceMonitor.end('api-fetch');
 
-        if (!page1Data) {
-          throw new Error('Failed to fetch page 1 after multiple retries');
+        if (!allData) {
+          throw new Error('Failed to fetch all data after multiple retries');
         }
 
         performanceMonitor.start('parse-json');
@@ -959,28 +1004,19 @@ const Technographics = () => {
 
         performanceMonitor.start('process-data');
         
-        // Cache page 1
-        setPageCache({
-          1: page1Data
-        });
+        // Store total records from API
+        setTotalRecords(allData.total || 0);
         
-        setTotalPages(page1Data.pages || 1);
+        // Use all data for calculations
+        const data = allData.data || [];
         
-        // Prefetch page 2 in background (non-blocking)
-        if (page1Data.pages > 1) {
-          fetchPage(2).catch(err => console.error('Prefetch page 2 failed:', err));
-        }
-        
-        // Use first page data for initial display
-        const data = page1Data.data || [];
-        
-        // Calculate industry counts from the metadata
+        // Calculate industry counts from all data
         const industryCounts = {};
         metadata.industries.forEach(industry => {
           industryCounts[industry] = 0;
         });
         
-        // Count from first page data
+        // Count from all data
         data.forEach(row => {
           const industry = row.industry || 'Other';
           industryCounts[industry] = (industryCounts[industry] || 0) + 1;
@@ -1040,6 +1076,12 @@ const Technographics = () => {
         setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
         setAvailableRegions(Array.from(regions).sort());
+        
+        // Set NTP data if available
+        if (ntpAllData && ntpAllData.data) {
+          setNtpData(ntpAllData.data);
+        }
+        
         performanceMonitor.end('state-update');
         
         performanceMonitor.end('total-load');
@@ -1057,26 +1099,52 @@ const Technographics = () => {
     initializeData();
   }, [setIndustryData, setTechnologyData, setAvailableRegions]);
 
-  // Handle page changes with prefetching
-  const handlePageChange = async (newPage) => {
-    if (newPage === currentPage) return;
-    
-    setCurrentPage(newPage);
-    setPageLoading(true);
+  // Reload data when filters change
+  useEffect(() => {
+    if (Object.keys(pageCache).length > 0) {
+      // Filters changed, reload all data
+      const reloadAllData = async () => {
+        try {
+          setPageLoading(true);
+          
+          // Build query string with filters
+          const queryParams = new URLSearchParams();
+          
+          // Add filter parameters
+          if (filters.companyName.length > 0) {
+            filters.companyName.forEach(name => queryParams.append('companyName', name));
+          }
+          if (filters.region.length > 0) {
+            filters.region.forEach(region => queryParams.append('region', region));
+          }
+          if (filters.technology.length > 0) {
+            filters.technology.forEach(tech => queryParams.append('technology', tech));
+          }
+          if (filters.category.length > 0) {
+            filters.category.forEach(cat => queryParams.append('category', cat));
+          }
+          if (filters.industry.length > 0) {
+            filters.industry.forEach(ind => queryParams.append('industry', ind));
+          }
 
-    try {
-      const pageData = await fetchPage(newPage);
-      if (pageData) {
-        setTableData(pageData.data || []);
-        // Prefetch adjacent pages in background
-        prefetchAdjacentPages(newPage);
-      }
-    } catch (err) {
-      console.error('Error changing page:', err);
-    } finally {
-      setPageLoading(false);
+          const response = await fetch(`/api/technographics/all?${queryParams.toString()}`);
+          const allData = await response.json();
+          
+          if (allData && allData.data) {
+            setTableData(allData.data || []);
+            setTotalRecords(allData.total || 0);
+          }
+        } catch (err) {
+          console.error('Error reloading all data:', err);
+        } finally {
+          setPageLoading(false);
+        }
+      };
+      reloadAllData();
     }
-  };
+  }, [filters]);
+
+  // No pagination needed - all data is loaded at once
 
   const getUniqueOptions = (key) => {
     if (!tableData || tableData.length === 0) {
@@ -1305,6 +1373,14 @@ const Technographics = () => {
   }, {});
 
   const groupedDataArray = Object.values(groupedData);
+
+  // Update total grouped records whenever groupedDataArray changes
+  useEffect(() => {
+    setTotalGroupedRecords(groupedDataArray.length);
+    // Recalculate total pages based on grouped data
+    const calculatedPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+    setTotalPages(calculatedPages);
+  }, [groupedDataArray.length]);
 
   if (loading) {
     return (
@@ -3099,12 +3175,15 @@ const Technographics = () => {
           <tbody>
             {groupedDataArray.length > 0 ? (
               (() => {
-                const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-                const startIndex = (currentPage - 1) * rowsPerPage;
-                const endIndex = startIndex + rowsPerPage;
+                // Pagination: 10 rows per page
+                const rowsPerPageConst = 10;
+                const pageNum = currentPage || 1;
+                const startIndex = (pageNum - 1) * rowsPerPageConst;
+                const endIndex = startIndex + rowsPerPageConst;
                 const paginatedData = groupedDataArray.slice(startIndex, endIndex);
+                const totalPagesCount = Math.ceil(groupedDataArray.length / rowsPerPageConst);
 
-                  return paginatedData.map((row, index) => {
+                return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
                     const isHighlighted = rowMatchesSearch(row);
                     const rowKey = `${actualIndex}-${row.companyName}`;
@@ -3426,298 +3505,304 @@ const Technographics = () => {
         </table>
       </div>
 
-      {/* Pagination Controls - All in One Row */}
-      {totalPages > 1 && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '35px',
-          marginBottom: '14px',
-          paddingBottom: '15px',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
-          <div style={{
-            fontSize: '14px',
-            color: '#1f2937',
-            fontWeight: '600'
-          }}>
-            Page {currentPage} of {totalPages.toLocaleString()}
-          </div>
+      {/* Pagination Display */}
+      {groupedDataArray.length > 0 && (() => {
+        const rowsPerPageConst = 10;
+        const totalPages = Math.ceil(groupedDataArray.length / rowsPerPageConst);
+        const maxPagesToShow = 5;
+        let startPage = 1;
+        let endPage = Math.min(maxPagesToShow, totalPages);
 
-          {/* Pagination Buttons */}
+        if (currentPage > maxPagesToShow) {
+          startPage = currentPage - Math.floor(maxPagesToShow / 2);
+          endPage = startPage + maxPagesToShow - 1;
+
+          if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+          }
+        }
+
+        const startIndex = (currentPage - 1) * rowsPerPageConst;
+        const endIndex = Math.min(startIndex + rowsPerPageConst, groupedDataArray.length);
+
+        return (
           <div style={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '8px'
+            marginTop: '20px',
+            marginBottom: '20px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #e5e7eb'
           }}>
-            {(() => {
-              const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
-              const maxPagesToShow = 5;
-              let startPage = 1;
-              let endPage = Math.min(maxPagesToShow, totalPages);
+            <div style={{
+              fontSize: '14px',
+              color: '#1f2937',
+              fontWeight: '600'
+            }}>
+              Page {currentPage} of {totalPages.toLocaleString()}
+            </div>
 
-              if (currentPage > maxPagesToShow) {
-                startPage = currentPage - Math.floor(maxPagesToShow / 2);
-                endPage = startPage + maxPagesToShow - 1;
-
-                if (endPage > totalPages) {
-                  endPage = totalPages;
-                  startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                }
-              }
-
-              return (
-                <>
-                  {/* First Page Button */}
-                  <button
-                    key="first"
-                    onClick={() => handlePageChange(1)}
-                    disabled={currentPage === 1}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === 1 ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="First page"
-                  >
-                    ≪
-                  </button>
-
-                  {/* Previous Page Button */}
-                  <button
-                    key="prev"
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === 1 ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage > 1) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Previous page"
-                  >
-                    ‹
-                  </button>
-
-                  {/* Page Numbers */}
-                  {startPage > 1 && (
-                    <>
-                      <button
-                        key={1}
-                        onClick={() => handlePageChange(1)}
-                        style={{
-                          padding: '8px 12px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          fontWeight: '500',
-                          minWidth: '40px',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }}
-                      >
-                        1
-                      </button>
-                      {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                    </>
-                  )}
-
-                  {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+            {/* Pagination Buttons */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              {(() => {
+                return (
+                  <>
+                    {/* First Page Button */}
                     <button
-                      key={i}
-                      onClick={() => handlePageChange(i)}
+                      key="first"
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
                       style={{
                         padding: '8px 12px',
-                        border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                        border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        color: i === currentPage ? '#1e40af' : '#6b7280',
-                        fontWeight: i === currentPage ? '600' : '500',
-                        minWidth: '40px',
+                        backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
                         transition: 'all 0.2s',
-                        boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                        opacity: currentPage === 1 ? 0.5 : 1
                       }}
                       onMouseEnter={(e) => {
-                        if (i !== currentPage) {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (i !== currentPage) {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
                         }
                       }}
+                      title="First page"
                     >
-                      {i}
+                      ≪
                     </button>
-                  ))}
 
-                  {endPage < totalPages && (
-                    <>
-                      {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                      <button
-                        key={totalPages}
-                        onClick={() => handlePageChange(totalPages)}
-                        style={{
-                          padding: '8px 12px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          fontWeight: '500',
-                          minWidth: '40px',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
+                    {/* Previous Page Button */}
+                    <button
+                      key="prev"
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === 1 ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === 1 ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
-                        }}
-                        onMouseLeave={(e) => {
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage > 1) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Previous page"
+                    >
+                      ‹
+                    </button>
+
+                    {/* Page Numbers */}
+                    {startPage > 1 && (
+                      <>
+                        <button
+                          key={1}
+                          onClick={() => setCurrentPage(1)}
+                          style={{
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                            minWidth: '40px',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }}
+                        >
+                          1
+                        </button>
+                        {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                      </>
+                    )}
+
+                    {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i)}
+                        style={{
+                          padding: '8px 12px',
+                          border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                          borderRadius: '6px',
+                          backgroundColor: i === currentPage ? '#dbeafe' : 'white',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          color: i === currentPage ? '#1e40af' : '#6b7280',
+                          fontWeight: i === currentPage ? '600' : '500',
+                          minWidth: '40px',
+                          transition: 'all 0.2s',
+                          boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (i !== currentPage) {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (i !== currentPage) {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }
                         }}
                       >
-                        {totalPages}
+                        {i}
                       </button>
-                    </>
-                  )}
+                    ))}
 
-                  {/* Next Page Button */}
-                  <button
-                    key="next"
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === totalPages ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Next page"
-                  >
-                    ›
-                  </button>
+                    {endPage < totalPages && (
+                      <>
+                        {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                        <button
+                          key={totalPages}
+                          onClick={() => setCurrentPage(totalPages)}
+                          style={{
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                            minWidth: '40px',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#f9fafb';
+                            e.target.style.borderColor = '#9ca3af';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#d1d5db';
+                          }}
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
 
-                  {/* Last Page Button */}
-                  <button
-                    key="last"
-                    onClick={() => handlePageChange(totalPages)}
-                    disabled={currentPage === totalPages}
-                    style={{
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                      fontSize: '16px',
-                      color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                      fontWeight: '600',
-                      transition: 'all 0.2s',
-                      opacity: currentPage === totalPages ? 0.5 : 1
-                    }}
-                    onMouseEnter={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentPage < totalPages) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                    title="Last page"
-                  >
-                    ≫
-                  </button>
-                </>
-              );
-            })()}
+                    {/* Next Page Button */}
+                    <button
+                      key="next"
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === totalPages ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Next page"
+                    >
+                      ›
+                    </button>
+
+                    {/* Last Page Button */}
+                    <button
+                      key="last"
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      style={{
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        fontSize: '16px',
+                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        opacity: currentPage === totalPages ? 0.5 : 1
+                      }}
+                      onMouseEnter={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = '#f9fafb';
+                          e.target.style.borderColor = '#9ca3af';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (currentPage < totalPages) {
+                          e.target.style.backgroundColor = 'white';
+                          e.target.style.borderColor = '#d1d5db';
+                        }
+                      }}
+                      title="Last page"
+                    >
+                      ≫
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              fontWeight: '500'
+            }}>
+              Showing {startIndex + 1}-{endIndex} of {groupedDataArray.length.toLocaleString()} results
+            </div>
           </div>
-
-          <div style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
-            Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, groupedDataArray.length)} of {groupedDataArray.length.toLocaleString()} results
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Custom Tooltip */}
       {tooltip.show && (

@@ -290,6 +290,57 @@ router.get('/ntp', async (req, res) => {
   }
 });
 
+// @route   GET /api/ntp/all
+// @desc    Get ALL NTP data without pagination
+// @access  Public
+router.get('/ntp/all', async (req, res) => {
+  try {
+    // Parse filter parameters
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
+    };
+
+    // If cache is ready, apply filters and return all data
+    if (ntpCache && ntpCache.length > 0) {
+      // Apply filters
+      let filteredData = ntpCache.filter(row => {
+        if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
+        if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
+        if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
+        if (filters.prediction.length > 0 && !filters.prediction.includes(String(row.purchasePrediction))) return false;
+        return true;
+      });
+
+      console.log(`[NTP-ALL] ✓ Returning ${filteredData.length} records (filtered from ${ntpCache.length})`);
+      
+      return res.json({
+        data: filteredData,
+        total: filteredData.length
+      });
+    }
+
+    // If cache is not ready, start building it (non-blocking)
+    if (!ntpCacheBuilding) {
+      console.log('[NTP-ALL] Cache not ready, starting build in background...');
+      buildNtpCache(); // Start building but don't wait
+    }
+
+    // Return 503 immediately - frontend will retry
+    console.log(`[NTP-ALL] Cache not ready, returning 503`);
+    return res.status(503).json({ 
+      error: 'Cache building in progress', 
+      data: [],
+      retryAfter: 1000 // Suggest retry after 1 second
+    });
+  } catch (err) {
+    console.error('[NTP-ALL] Error:', err.message);
+    res.status(500).json({ error: 'Server Error', data: [] });
+  }
+});
+
 // Cache for technographics data
 let techCache = null;
 let techCacheTime = 0;
@@ -464,10 +515,7 @@ router.get('/technographics/metadata', async (req, res) => {
 });
 
 // @route   GET /api/technographics
-// @desc    Get Technographics data with server-side pagination (from cache)
-// @access  Public
-// @route   GET /api/technographics
-// @desc    Get Technographics data with server-side pagination (from cache)
+// @desc    Get Technographics data with server-side pagination and filtering
 // @access  Public
 router.get('/technographics', async (req, res) => {
   try {
@@ -475,26 +523,42 @@ router.get('/technographics', async (req, res) => {
     const limit = parseInt(req.query.limit) || 100;
     const skip = (page - 1) * limit;
 
-    // If cache is ready, return immediately
+    // Parse filter parameters
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      region: req.query.region ? (Array.isArray(req.query.region) ? req.query.region : [req.query.region]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      industry: req.query.industry ? (Array.isArray(req.query.industry) ? req.query.industry : [req.query.industry]) : [],
+      employeeSize: req.query.employeeSize ? (Array.isArray(req.query.employeeSize) ? req.query.employeeSize : [req.query.employeeSize]) : [],
+      revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
+    };
+
+    // If cache is ready, apply filters and return
     if (techCache && techCache.length > 0) {
-      const paginatedData = techCache.slice(skip, skip + limit);
+      // Apply filters
+      let filteredData = techCache.filter(row => {
+        if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
+        if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
+        if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
+        if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
+        if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
+        return true;
+      });
+
+      const totalFiltered = filteredData.length;
+      const paginatedData = filteredData.slice(skip, skip + limit);
       
-      // Log sample data for debugging
       if (page === 1 && paginatedData.length > 0) {
-        console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
-        console.log('[TECH] Sample records:', paginatedData.slice(0, 3).map(r => ({
-          companyName: r.companyName,
-          technology: r.technology,
-          region: r.region
-        })));
+        console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records (filtered: ${totalFiltered}/${techCache.length})`);
       }
       
       return res.json({
         data: paginatedData,
-        total: techCache.length,
+        total: totalFiltered,
         page,
         limit,
-        pages: Math.ceil(techCache.length / limit)
+        pages: Math.ceil(totalFiltered / limit)
       });
     }
 
@@ -513,6 +577,61 @@ router.get('/technographics', async (req, res) => {
     });
   } catch (err) {
     console.error('[TECH] Error:', err.message);
+    res.status(500).json({ error: 'Server Error', data: [] });
+  }
+});
+
+// @route   GET /api/technographics/all
+// @desc    Get ALL Technographics data without pagination
+// @access  Public
+router.get('/technographics/all', async (req, res) => {
+  try {
+    // Parse filter parameters
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      region: req.query.region ? (Array.isArray(req.query.region) ? req.query.region : [req.query.region]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      industry: req.query.industry ? (Array.isArray(req.query.industry) ? req.query.industry : [req.query.industry]) : [],
+      employeeSize: req.query.employeeSize ? (Array.isArray(req.query.employeeSize) ? req.query.employeeSize : [req.query.employeeSize]) : [],
+      revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
+    };
+
+    // If cache is ready, apply filters and return all data
+    if (techCache && techCache.length > 0) {
+      // Apply filters
+      let filteredData = techCache.filter(row => {
+        if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
+        if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
+        if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
+        if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
+        if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
+        return true;
+      });
+
+      console.log(`[TECH-ALL] ✓ Returning ${filteredData.length} records (filtered from ${techCache.length})`);
+      
+      return res.json({
+        data: filteredData,
+        total: filteredData.length
+      });
+    }
+
+    // If cache is not ready, start building it (non-blocking)
+    if (!techCacheBuilding) {
+      console.log('[TECH-ALL] Cache not ready, starting build in background...');
+      buildTechCache(); // Start building but don't wait
+    }
+
+    // Return 503 immediately - frontend will retry
+    console.log(`[TECH-ALL] Cache not ready, returning 503`);
+    return res.status(503).json({ 
+      error: 'Cache building in progress', 
+      data: [],
+      retryAfter: 1000 // Suggest retry after 1 second
+    });
+  } catch (err) {
+    console.error('[TECH-ALL] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
