@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+ï»¿import { useState, useEffect, useRef } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -565,23 +565,23 @@ const employeeSizeRanges = [
 ];
 
 const revenueRanges = [
-  { label: '$0–$1M', min: 0, max: 1000000 },
-  { label: '$1M–$5M', min: 1000000, max: 5000000 },
-  { label: '$5M–$10M', min: 5000000, max: 10000000 },
-  { label: '$10M–$25M', min: 10000000, max: 25000000 },
-  { label: '$25M–$50M', min: 25000000, max: 50000000 },
-  { label: '$50M–$100M', min: 50000000, max: 100000000 },
-  { label: '$100M–$250M', min: 100000000, max: 250000000 },
-  { label: '$250M–$500M', min: 250000000, max: 500000000 },
-  { label: '$500M–$1B', min: 500000000, max: 1000000000 },
-  { label: '$1B–$10B', min: 1000000000, max: 10000000000 },
+  { label: '$0ï¿½$1M', min: 0, max: 1000000 },
+  { label: '$1Mï¿½$5M', min: 1000000, max: 5000000 },
+  { label: '$5Mï¿½$10M', min: 5000000, max: 10000000 },
+  { label: '$10Mï¿½$25M', min: 10000000, max: 25000000 },
+  { label: '$25Mï¿½$50M', min: 25000000, max: 50000000 },
+  { label: '$50Mï¿½$100M', min: 50000000, max: 100000000 },
+  { label: '$100Mï¿½$250M', min: 100000000, max: 250000000 },
+  { label: '$250Mï¿½$500M', min: 250000000, max: 500000000 },
+  { label: '$500Mï¿½$1B', min: 500000000, max: 1000000000 },
+  { label: '$1Bï¿½$10B', min: 1000000000, max: 10000000000 },
   { label: '$10B+', min: 10000000000, max: Infinity }
 ];
 
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
 
-if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
+if (value.includes('+') || value.includes('ï¿½') || value.includes('-') || value.includes(',')) {
     return value;
   }
 
@@ -995,12 +995,6 @@ const techDataWithPercentages = {};
         performanceMonitor.end('process-data');
 
         performanceMonitor.start('state-update');
-
-companyName: r.companyName,
-          industry: r.industry,
-          region: r.region,
-          technology: r.technology
-        })));
 
         setTableData(data);
         setIndustryData(industryArray);
@@ -3178,7 +3172,7 @@ const handleTechScroll = (e) => {
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 {row.domain && (
                                   <a
-                                    href={`https:
+                                    href={`https://${row.domain}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
@@ -3226,10 +3220,10 @@ const handleTechScroll = (e) => {
                           ) : (
                             <>
                               <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ••••••••••••••••••
+                                ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                               </div>
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ••••••••••
+                                ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                               </div>
                             </>
                           )}
@@ -3417,7 +3411,7 @@ const handleTechScroll = (e) => {
                     }}
                     title="First page"
                   >
-                    «
+                    ï¿½
                   </button>
 
                   {}
@@ -3451,7 +3445,7 @@ const handleTechScroll = (e) => {
                     }}
                     title="Previous page"
                   >
-                    ‹
+                    ï¿½
                   </button>
 
                   {}
@@ -3584,7 +3578,7 @@ const handleTechScroll = (e) => {
                     }}
                     title="Next page"
                   >
-                    ›
+                    ï¿½
                   </button>
 
                   {}
@@ -3618,7 +3612,7 @@ const handleTechScroll = (e) => {
                     }}
                     title="Last page"
                   >
-                    »
+                    ï¿½
                   </button>
                 </>
               );

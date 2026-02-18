@@ -717,7 +717,7 @@ if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            âš
+            ï¿½
           </div>
           <div style={{
             fontSize: '14px',
@@ -1861,7 +1861,7 @@ const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
                                 <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   {company.domain && (
                                     <a
-                                      href={`https:
+                                      href={`https://${company.domain}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{
