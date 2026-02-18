@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
+import IntentPieChart from './IntentPieChart';
 
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -161,6 +162,27 @@ const getAccountCountByIntentStatus = (intentStatus) => {
       }
     });
     return uniqueAccounts.size;
+  };
+
+  const getPieChartData = () => {
+    if (!tableData || tableData.length === 0) return [];
+    
+    const statusCounts = {};
+    tableData.forEach(row => {
+      // Only count rows with valid intent status (not null, undefined, or empty)
+      if (row.intentStatus && String(row.intentStatus).trim()) {
+        const status = String(row.intentStatus).trim();
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      }
+    });
+
+    const total = Object.values(statusCounts).reduce((sum, count) => sum + count, 0);
+    
+    return Object.entries(statusCounts).map(([name, value]) => ({
+      name,
+      value,
+      percentage: ((value / total) * 100).toFixed(1)
+    }));
   };
 
   const hasMandatoryFilters = filters.intentStatus.length > 0;
@@ -344,16 +366,8 @@ useEffect(() => {
             </div>
             <div className="summary-charts-grid">
               <div className="chart-item">
-                <h3>Intent Distribution</h3>
-                <img src="/intent_distribution.png" alt="Intent Distribution" />
-              </div>
-              <div className="chart-item">
-                <h3>Intent Pie Chart</h3>
-                <img src="/intent_pie_chart.png" alt="Intent Pie Chart" />
-              </div>
-              <div className="chart-item">
-                <h3>Intent Nightingale Rose</h3>
-                <img src="/intent_nightingale_rose.png" alt="Intent Nightingale Rose" />
+                <h3>Intent Status Percentage Breakdown</h3>
+                <IntentPieChart data={getPieChartData()} />
               </div>
             </div>
           </div>
@@ -1398,9 +1412,9 @@ useEffect(() => {
           background: white;
           border-radius: 12px;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          max-width: 1200px;
-          width: 95%;
-          max-height: 90vh;
+          max-width: 1100px;
+          width: 92%;
+          max-height: 85vh;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
@@ -1424,16 +1438,19 @@ useEffect(() => {
         }
 
         .summary-charts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          display: flex;
+          justify-content: center;
+          align-items: center;
           gap: 20px;
-          padding: 20px;
+          padding: 40px 20px;
+          flex: 1;
         }
 
         .chart-item {
           display: flex;
           flex-direction: column;
           gap: 12px;
+          width: 100%;
         }
 
         .chart-item h3 {
