@@ -3,11 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
-<<<<<<< HEAD
-=======
 connectDB();
 
->>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
 const app = express();
 
 app.use(cors());
@@ -24,7 +21,7 @@ const authRouter = require('./routes/auth');
 app.use('/api', apiRouter);
 app.use('/api/auth', authRouter);
 
-<<<<<<< HEAD
+
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
@@ -45,8 +42,8 @@ const startServer = async () => {
 
 // Start the server
 startServer();
-=======
+
 app.listen(PORT, '0.0.0.0', () => {
 
 });
->>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
+
