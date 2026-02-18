@@ -1070,8 +1070,10 @@ const Technographics = () => {
   };
 
   const getUniqueOptions = (key) => {
-    if (!tableData) return [];
-    const allValues = tableData.map(item => item[key]);
+    if (!tableData || tableData.length === 0) return [];
+    const allValues = tableData
+      .map(item => item[key])
+      .filter(val => val !== undefined && val !== null && val !== '');
     return [...new Set(allValues)].sort();
   };
 
