@@ -6,7 +6,6 @@ import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
-// Country name to country code mapping
 const countryCodeMap = {
   'United States': 'US', 'USA': 'US', 'UNITED STATES': 'US',
   'Canada': 'CA', 'CANADA': 'CA',
@@ -66,19 +65,16 @@ const countryCodeMap = {
 const extractCountryCode = (region) => {
   if (!region) return '';
   const trimmed = region.trim();
-  
-  // First try exact match
+
   if (countryCodeMap[trimmed]) {
     return countryCodeMap[trimmed];
   }
-  
-  // Try uppercase match
+
   const upper = trimmed.toUpperCase();
   if (countryCodeMap[upper]) {
     return countryCodeMap[upper];
   }
-  
-  // If it's already a 2-letter code, return it
+
   if (trimmed.length === 2) {
     return trimmed.toUpperCase();
   }
@@ -100,7 +96,6 @@ const renderCountryFlag = (region) => {
   );
 };
 
-// Custom Dropdown Component with Logos
 const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -226,7 +221,6 @@ const CustomTechDropdown = ({ value, onChange, options, renderLogo }) => {
   );
 };
 
-// Multi-Select Dropdown Component with Search
 const MultiSelectDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -431,7 +425,6 @@ const MultiSelectDropdown = ({ value, onChange, options }) => {
   );
 };
 
-// Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options, showFlags = false, isCompanyFilter = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -587,8 +580,7 @@ const revenueRanges = [
 
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
-  
-  // If the value already contains formatting characters (like +, –, -, commas), return as-is
+
   if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
     return value;
   }
@@ -615,8 +607,7 @@ const getEmployeeSizeRange = (value) => {
 
 const getRevenueRange = (value) => {
   if (!value || value === 'N/A') return null;
-  
-  // Remove currency symbols and convert to number
+
   const cleanValue = String(value).replace(/[$,]/g, '');
   const num = parseFloat(cleanValue);
   if (isNaN(num)) return null;
@@ -638,8 +629,7 @@ const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
 
 const isRevenueInRange = (revenue, rangeLabel) => {
   if (!revenue || revenue === 'N/A') return false;
-  
-  // Remove currency symbols and convert to number
+
   const cleanValue = String(revenue).replace(/[$,]/g, '');
   const num = parseFloat(cleanValue);
   if (isNaN(num)) return false;
@@ -651,11 +641,10 @@ const isRevenueInRange = (revenue, rangeLabel) => {
 };
 
 const Speedometer = ({ value }) => {
-  // Parse the value to get just the number
+  
   const numValue = parseInt(value) || 0;
   const clampedValue = Math.min(Math.max(numValue, 0), 100);
-  
-  // Calculate rotation based on 5 zones (180 degree arc):
+
   let rotation;
   if (clampedValue <= 20) {
     rotation = -90;
@@ -674,7 +663,7 @@ const Speedometer = ({ value }) => {
       <div style={{ position: 'relative', width: '50px', height: '28px' }}>
         <svg width="50" height="28" viewBox="0 0 100 55" style={{ position: 'absolute', top: 0, left: 0 }}>
           <defs>
-            {/* Gradient for smooth color transition */}
+            {}
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#ef4444" />
               <stop offset="20%" stopColor="#f97316" />
@@ -684,7 +673,7 @@ const Speedometer = ({ value }) => {
             </linearGradient>
           </defs>
           
-          {/* Single smooth gradient arc - inner position */}
+          {}
           <path
             d="M 8 50 A 45 45 0 0 1 92 50"
             fill="none"
@@ -693,18 +682,18 @@ const Speedometer = ({ value }) => {
             strokeLinecap="round"
           />
           
-          {/* Black needle - smaller and inside the gauge */}
+          {}
           <g style={{ transform: `rotate(${rotation}deg)`, transformOrigin: '50px 50px', transition: 'transform 0.3s ease' }}>
             <line x1="50" y1="50" x2="50" y2="20" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" />
             <circle cx="50" cy="50" r="2" fill="#000000" />
           </g>
           
-          {/* Center pointer dot - smaller */}
+          {}
           <circle cx="50" cy="50" r="3.5" fill="#ffffff" stroke="#000000" strokeWidth="1.5" />
         </svg>
       </div>
       
-      {/* Percentage value below the chart */}
+      {}
       <div style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>
         {clampedValue}%
       </div>
@@ -736,24 +725,22 @@ const Technographics = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpData, setNtpData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1); // Current page for display
-  const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [revealedRows, setRevealedRows] = useState(new Set()); 
   const [measurements, setMeasurements] = useState({});
-  const [pageCache, setPageCache] = useState({}); // Cache for loaded pages
+  const [pageCache, setPageCache] = useState({}); 
   const [totalPages, setTotalPages] = useState(0);
   const [pageLoading, setPageLoading] = useState(false);
-  const [totalRecords, setTotalRecords] = useState(0); // Track total records from API
-  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); // Track total after grouping
+  const [totalRecords, setTotalRecords] = useState(0); 
+  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); 
   const rowsPerPage = 10;
-  const scrollRefsMap = useRef(new Map()); // Map to store refs for each row
+  const scrollRefsMap = useRef(new Map()); 
 
-  // Render logo image or colored icon for technology
   const renderTechLogo = (techName) => {
     if (!techName) return null;
     
     const logoPath = getLogoPath(techName);
-    
-    // If logo exists, use it
+
     if (logoPath) {
       return (
         <img
@@ -769,14 +756,13 @@ const Technographics = () => {
             objectFit: 'contain'
           }}
           onError={(e) => {
-            // Fallback if image fails to load
+            
             e.target.style.display = 'none';
           }}
         />
       );
     }
-    
-    // Otherwise use colored icon
+
     const iconData = getTechIcon(techName);
     if (iconData) {
       const { component: IconComponent, color } = iconData;
@@ -801,9 +787,9 @@ const Technographics = () => {
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }));
-    setCurrentPage(1); // Reset to page 1 when filters change
-    setPageCache({}); // Clear cache when filters change
-    setTotalRecords(0); // Reset total records
+    setCurrentPage(1); 
+    setPageCache({}); 
+    setTotalRecords(0); 
   };
 
   const handleDownloadCSV = () => {
@@ -838,12 +824,11 @@ const Technographics = () => {
     document.body.removeChild(link);
   };
 
-  // Handle click outside to close filter dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside the filter container
+      
       if (filterRef.current && !filterRef.current.contains(event.target)) {
-        // Also check if the click is not on any dropdown that might be positioned absolutely
+        
         const dropdowns = document.querySelectorAll('[data-filter-dropdown]');
         let isClickOnDropdown = false;
         
@@ -866,19 +851,17 @@ const Technographics = () => {
     }
   }, [openFilterDropdown, showFilters]);
 
-  // Fetch page data with caching and retry logic
   const fetchPage = async (pageNum, retries = 5, delay = 500) => {
     if (pageCache[pageNum]) {
       return pageCache[pageNum];
     }
 
     try {
-      // Build query string with filters
+      
       const queryParams = new URLSearchParams();
       queryParams.append('page', pageNum);
       queryParams.append('limit', 500);
-      
-      // Add filter parameters
+
       if (filters.companyName.length > 0) {
         filters.companyName.forEach(name => queryParams.append('companyName', name));
       }
@@ -897,15 +880,13 @@ const Technographics = () => {
 
       const response = await fetch(`/api/technographics?${queryParams.toString()}`);
       const data = await response.json();
-      
-      // If cache is building (503), retry with exponential backoff
+
       if (response.status === 503 && retries > 0) {
         console.log(`[FETCH] Page ${pageNum}: Cache building, retrying in ${delay}ms... (${retries} retries left)`);
         await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); // Max 5s delay
+        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); 
       }
-      
-      // Check if data is empty
+
       if (!data.data || data.data.length === 0) {
         console.warn(`[FETCH] Page ${pageNum}: No data returned`, data);
         return data;
@@ -923,14 +904,12 @@ const Technographics = () => {
     }
   };
 
-  // Prefetch adjacent pages
   const prefetchAdjacentPages = async (pageNum) => {
     const pagesToPrefetch = [];
     
-    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); // Previous page
-    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); // Next page
-    
-    // Prefetch in background without blocking
+    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); 
+    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); 
+
     pagesToPrefetch.forEach(page => {
       if (!pageCache[page]) {
         fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
@@ -938,7 +917,6 @@ const Technographics = () => {
     });
   };
 
-  // Initial load - fetch page 1 only, prefetch page 2 in background
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -946,15 +924,12 @@ const Technographics = () => {
         setError(null);
         performanceMonitor.reset();
         performanceMonitor.start('total-load');
-        
-        // Fetch metadata and all data with retry logic
+
         performanceMonitor.start('api-fetch');
-        
-        // Fetch metadata (should be fast)
+
         const metadataResponse = await fetch('/api/technographics/metadata');
         const metadata = await metadataResponse.json();
-        
-        // Fetch ALL data with retry logic for 503
+
         let allData = null;
         let retries = 10;
         let delay = 500;
@@ -965,7 +940,7 @@ const Technographics = () => {
           if (allDataResponse.status === 503) {
             console.log(`[INIT] Cache building, retrying in ${delay}ms... (${retries} retries left)`);
             await new Promise(resolve => setTimeout(resolve, delay));
-            delay = Math.min(delay * 1.5, 5000); // Exponential backoff, max 5s
+            delay = Math.min(delay * 1.5, 5000); 
             retries--;
           } else {
             allData = await allDataResponse.json();
@@ -973,7 +948,6 @@ const Technographics = () => {
           }
         }
 
-        // Fetch NTP data
         let ntpAllData = null;
         let ntpRetries = 10;
         let ntpDelay = 500;
@@ -999,36 +973,30 @@ const Technographics = () => {
         }
 
         performanceMonitor.start('parse-json');
-        // Metadata already parsed above
+        
         performanceMonitor.end('parse-json');
 
         performanceMonitor.start('process-data');
-        
-        // Store total records from API
+
         setTotalRecords(allData.total || 0);
-        
-        // Use all data for calculations
+
         const data = allData.data || [];
-        
-        // Calculate industry counts from all data
+
         const industryCounts = {};
         metadata.industries.forEach(industry => {
           industryCounts[industry] = 0;
         });
-        
-        // Count from all data
+
         data.forEach(row => {
           const industry = row.industry || 'Other';
           industryCounts[industry] = (industryCounts[industry] || 0) + 1;
         });
 
-        // Convert to array format for pie chart
         const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
           label,
           value
         }));
 
-        // Calculate technology adoption by region and category
         const techByRegion = {};
         const regions = new Set();
 
@@ -1049,7 +1017,6 @@ const Technographics = () => {
           techByRegion[region][category]++;
         });
 
-        // Calculate percentages for each region
         const techDataWithPercentages = {};
         Object.keys(techByRegion).forEach(region => {
           const total = Object.values(techByRegion[region]).reduce((sum, count) => sum + count, 0);
@@ -1063,8 +1030,7 @@ const Technographics = () => {
         performanceMonitor.end('process-data');
 
         performanceMonitor.start('state-update');
-        
-        // Debug: Log first few records to check company names
+
         console.log('[DEBUG] First 5 records from API:', data.slice(0, 5).map(r => ({
           companyName: r.companyName,
           industry: r.industry,
@@ -1076,8 +1042,7 @@ const Technographics = () => {
         setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
         setAvailableRegions(Array.from(regions).sort());
-        
-        // Set NTP data if available
+
         if (ntpAllData && ntpAllData.data) {
           setNtpData(ntpAllData.data);
         }
@@ -1099,18 +1064,15 @@ const Technographics = () => {
     initializeData();
   }, [setIndustryData, setTechnologyData, setAvailableRegions]);
 
-  // Reload data when filters change
   useEffect(() => {
     if (Object.keys(pageCache).length > 0) {
-      // Filters changed, reload all data
+      
       const reloadAllData = async () => {
         try {
           setPageLoading(true);
-          
-          // Build query string with filters
+
           const queryParams = new URLSearchParams();
-          
-          // Add filter parameters
+
           if (filters.companyName.length > 0) {
             filters.companyName.forEach(name => queryParams.append('companyName', name));
           }
@@ -1144,8 +1106,6 @@ const Technographics = () => {
     }
   }, [filters]);
 
-  // No pagination needed - all data is loaded at once
-
   const getUniqueOptions = (key) => {
     if (!tableData || tableData.length === 0) {
       console.log(`[DEBUG] getUniqueOptions('${key}'): tableData is empty or undefined`);
@@ -1157,8 +1117,7 @@ const Technographics = () => {
       .filter(val => val !== undefined && val !== null);
     
     const uniqueValues = [...new Set(allValues)].sort();
-    
-    // Debug log for company names
+
     if (key === 'companyName') {
       console.log(`[DEBUG] getUniqueOptions('${key}'): Found ${uniqueValues.length} unique values from ${tableData.length} rows`);
       console.log('[DEBUG] Sample company names:', uniqueValues.slice(0, 10));
@@ -1167,7 +1126,6 @@ const Technographics = () => {
     return uniqueValues;
   };
 
-  // Helper function to count companies by category
   const getCompanyCountByCategory = (category) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1179,7 +1137,6 @@ const Technographics = () => {
     return uniqueCompanies.size;
   };
 
-  // Helper function to count companies by region
   const getCompanyCountByRegion = (region) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1191,7 +1148,6 @@ const Technographics = () => {
     return uniqueCompanies.size;
   };
 
-  // Helper function to count companies by industry
   const getCompanyCountByIndustry = (industry) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1203,7 +1159,6 @@ const Technographics = () => {
     return uniqueCompanies.size;
   };
 
-  // Helper function to count companies by revenue
   const getCompanyCountByRevenue = (revenue) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1215,7 +1170,6 @@ const Technographics = () => {
     return uniqueCompanies.size;
   };
 
-  // Helper function to count companies by technology
   const getCompanyCountByTechnology = (technology) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1227,7 +1181,6 @@ const Technographics = () => {
     return uniqueCompanies.size;
   };
 
-  // Helper function to count companies by employee size
   const getCompanyCountByEmployeeSize = (rangeLabel) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1243,16 +1196,14 @@ const Technographics = () => {
     if (!companyName || !ntpData || ntpData.length === 0) {
       return [];
     }
-    
-    // Normalize company name for comparison
+
     const normalizedCompanyName = String(companyName).trim().toLowerCase();
     
     let data = ntpData.filter(row => {
       const rowCompanyName = String(row.companyName || '').trim().toLowerCase();
       return rowCompanyName === normalizedCompanyName;
     });
-    
-    // Filter by selected category if one is chosen (category is an array)
+
     if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
       data = data.filter(row => {
         const rowCategory = String(row.category || '').trim().toLowerCase();
@@ -1263,7 +1214,6 @@ const Technographics = () => {
     return data;
   };
 
-  // Helper function to check if a row matches search term
   const rowMatchesSearch = (row) => {
     if (!searchTerm) return false;
     return Object.values(row).some(value =>
@@ -1271,7 +1221,6 @@ const Technographics = () => {
     );
   };
 
-  // Helper function to highlight matching text
   const highlightText = (text, search) => {
     if (!search || !text) return text;
     const textStr = String(text);
@@ -1296,36 +1245,28 @@ const Technographics = () => {
     );
   };
 
-  // Check if mandatory filters are selected
   const hasMandatoryFilters = filters.companyName.length > 0 && filters.category.length > 0;
 
   const filteredData = tableData
     .filter(row => {
-      // Apply company name filter if selected
+      
       if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
 
-      // Apply category filter if selected
       if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
 
-      // Apply region filter if selected
       if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
 
-      // Apply technology filter if selected
       if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
 
-      // Apply industry filter if selected
       if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
 
-      // Apply employee size filter if selected
       if (filters.employeeSize.length > 0 && !filters.employeeSize.some(range => isEmployeeSizeInRange(row.employeeSize, range))) return false;
 
-      // Apply revenue filter if selected (using ranges)
       if (filters.revenue.length > 0) {
         const matchesRevenue = filters.revenue.some(rangeLabel => isRevenueInRange(row.revenue, rangeLabel));
         if (!matchesRevenue) return false;
       }
 
-      // Apply search term if present
       const searchMatches = !searchTerm || Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -1333,7 +1274,7 @@ const Technographics = () => {
       return searchMatches;
     })
     .sort((a, b) => {
-      // Sort: matching rows first, then others
+      
       const aMatches = rowMatchesSearch(a);
       const bMatches = rowMatchesSearch(b);
 
@@ -1342,7 +1283,6 @@ const Technographics = () => {
       return 0;
     });
 
-  // Group rows by company and combine technologies with their dates
   const groupedData = filteredData.reduce((acc, row) => {
     const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
     
@@ -1374,10 +1314,9 @@ const Technographics = () => {
 
   const groupedDataArray = Object.values(groupedData);
 
-  // Update total grouped records whenever groupedDataArray changes
   useEffect(() => {
     setTotalGroupedRecords(groupedDataArray.length);
-    // Recalculate total pages based on grouped data
+    
     const calculatedPages = Math.ceil(groupedDataArray.length / rowsPerPage);
     setTotalPages(calculatedPages);
   }, [groupedDataArray.length]);
@@ -1394,7 +1333,7 @@ const Technographics = () => {
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        {/* Nexora Logo */}
+        {}
         <img 
           src={nexoraLogo} 
           alt="Nexora Logo" 
@@ -1406,17 +1345,12 @@ const Technographics = () => {
           }}
         />
 
-        {/* Loading Text */}
-        {/* <h3 style={{
-          margin: '0 0 10px 0',
-          color: '#1f2937',
-          fontSize: '18px',
-          fontWeight: '600'
-        }}>
-          Loading Technographics Data
-        </h3> */}
+        {}
+        {
 
-        {/* Subtext */}
+}
+
+        {}
         <p style={{
           margin: '0 0 30px 0',
           color: '#6b7280',
@@ -1427,7 +1361,7 @@ const Technographics = () => {
           Fetching and processing company technology data...
         </p>
 
-        {/* Progress Dots */}
+        {}
         <div style={{
           display: 'flex',
           gap: '8px',
@@ -1456,7 +1390,7 @@ const Technographics = () => {
           }} />
         </div>
 
-        {/* Styles for animations */}
+        {}
         <style>{`
           @keyframes bounce {
             0%, 80%, 100% {
@@ -1476,7 +1410,7 @@ const Technographics = () => {
   return (
     <>
     <div className="technographics-container">
-      {/* Error Banner */}
+      {}
       {error && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -1522,30 +1456,18 @@ const Technographics = () => {
       
       <div className="header-actions" style={{ marginBottom: '16px', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: '700', margin: '0' }}>Technographics</h2>
-        {/* <div className="search-bar">
-          <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <input
-            type="text"
-            placeholder="Search companies..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="10" cy="10" r="7"></circle>
-            <path d="m20 20-4.5-4.5"></path>
-          </svg>
-        </div> */}
+        {
+
+}
       </div>
 
       <div className="section-subtle-divider" />
       
-      {/* Filter UI - Similar to the reference image */}
+      {}
       <div style={{ marginBottom: '16px' }} ref={filterRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          {/* Filter Button with Dropdown Menu */}
+          {}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -1575,7 +1497,7 @@ const Technographics = () => {
               <span>+ Filter</span>
             </button>
 
-            {/* Filter Menu Dropdown */}
+            {}
             {showFilters && (
               <div
                 style={{
@@ -1628,7 +1550,7 @@ const Technographics = () => {
             )}
           </div>
 
-          {/* Company Name Filter - Always Visible (Mandatory) */}
+          {}
           {activeFilterMenu !== 'companyName' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -1661,7 +1583,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Category Filter - Always Visible (Mandatory) */}
+          {}
           {activeFilterMenu !== 'category' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -1694,7 +1616,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Filter Type Chip - Show selected filter type with dropdown */}
+          {}
           {activeFilterMenu === 'companyName' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1729,7 +1651,7 @@ const Technographics = () => {
                 </button>
               </div>
               
-              {/* Dropdown with search and checkboxes for company options */}
+              {}
               <div
                 data-filter-dropdown="companyName"
                 style={{
@@ -1747,7 +1669,7 @@ const Technographics = () => {
                   overflowY: 'auto'
                 }}
               >
-                {/* Search Box */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderBottom: '1px solid #e5e7eb',
@@ -1772,14 +1694,14 @@ const Technographics = () => {
                   />
                 </div>
 
-                {/* ALL Option */}
+                {}
                 <div
                   onClick={() => {
                     if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                      // If all are selected, deselect all
+                      
                       handleFilterChange('companyName', []);
                     } else {
-                      // Otherwise, select all
+                      
                       handleFilterChange('companyName', getUniqueOptions('companyName'));
                     }
                   }}
@@ -1800,10 +1722,10 @@ const Technographics = () => {
                     checked={filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
                     onChange={() => {
                       if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('companyName', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('companyName', getUniqueOptions('companyName'));
                       }
                     }}
@@ -1812,7 +1734,7 @@ const Technographics = () => {
                   All
                 </div>
 
-                {/* Company Options with Checkboxes */}
+                {}
                 {getUniqueOptions('companyName').length === 0 ? (
                   <div style={{
                     padding: '20px 12px',
@@ -1871,7 +1793,7 @@ const Technographics = () => {
                   </div>
                 )}
 
-                {/* Save Button */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -1908,7 +1830,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Display saved filter tags */}
+          {}
           {activeFilterMenu === 'region' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -1945,7 +1867,7 @@ const Technographics = () => {
                 </button>
               </div>
               
-              {/* Dropdown with all region options - only show when clicked */}
+              {}
               {openFilterDropdown === 'region' && (
                 <div
                   data-filter-dropdown="region"
@@ -1967,10 +1889,10 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.region.length === getUniqueOptions('region').length && filters.region.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('region', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('region', getUniqueOptions('region'));
                       }
                     }}
@@ -2047,7 +1969,7 @@ const Technographics = () => {
                     </div>
                   ))}
 
-                  {/* Save Button */}
+                  {}
                   <div style={{
                     padding: '12px',
                     borderTop: '1px solid #e5e7eb',
@@ -2085,7 +2007,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Display saved filter tag */}
+          {}
           {filters.region.length > 0 && activeFilterMenu !== 'region' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -2171,7 +2093,7 @@ const Technographics = () => {
                 <div
                   onClick={() => {
                     const allOptions = getUniqueOptions('category');
-                    // Toggle: if all selected, deselect all; otherwise select all
+                    
                     if (filters.category.length === allOptions.length) {
                       handleFilterChange('category', []);
                     } else {
@@ -2196,7 +2118,7 @@ const Technographics = () => {
                     checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
                     onChange={() => {
                       const allOptions = getUniqueOptions('category');
-                      // Toggle: if all selected, deselect all; otherwise select all
+                      
                       if (filters.category.length === allOptions.length) {
                         handleFilterChange('category', []);
                       } else {
@@ -2241,7 +2163,7 @@ const Technographics = () => {
                   </div>
                 ))}
 
-                {/* Save Button */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -2277,7 +2199,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Display saved filter tag */}
+          {}
           {activeFilterMenu === 'industry' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -2335,10 +2257,10 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('industry', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('industry', getUniqueOptions('industry'));
                       }
                     }}
@@ -2544,10 +2466,10 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('employeeSize', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('employeeSize', employeeSizeRanges.map(r => r.label));
                       }
                     }}
@@ -2753,10 +2675,10 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.revenue.length === revenueRanges.length && filters.revenue.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('revenue', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('revenue', revenueRanges.map(r => r.label));
                       }
                     }}
@@ -2938,7 +2860,7 @@ const Technographics = () => {
                 </button>
               </div>
               
-              {/* Dropdown with all technology options - only show when clicked */}
+              {}
               {openFilterDropdown === 'technology' && (
                 <div
                   data-filter-dropdown="technology"
@@ -2960,10 +2882,10 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0) {
-                        // If all are selected, deselect all
+                        
                         handleFilterChange('technology', []);
                       } else {
-                        // Otherwise, select all
+                        
                         handleFilterChange('technology', getUniqueOptions('technology'));
                       }
                     }}
@@ -3040,7 +2962,7 @@ const Technographics = () => {
                     </div>
                   ))}
 
-                  {/* Save Button */}
+                  {}
                   <div style={{
                     padding: '12px',
                     borderTop: '1px solid #e5e7eb',
@@ -3078,7 +3000,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Display saved filter tag */}
+          {}
           {filters.technology.length > 0 && activeFilterMenu !== 'technology' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -3115,14 +3037,14 @@ const Technographics = () => {
             </div>
           )}
 
-          {/* Applied Filters Display */}
+          {}
           {(filters.companyName.length > 0 || filters.region || filters.category || filters.technology) && !activeFilterMenu && (
             <>
             </>
           )}
           </div>
           
-          {/* Download CSV Button */}
+          {}
           <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0, marginLeft: 'auto' }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3175,7 +3097,7 @@ const Technographics = () => {
           <tbody>
             {groupedDataArray.length > 0 ? (
               (() => {
-                // Pagination: 10 rows per page
+                
                 const rowsPerPageConst = 10;
                 const pageNum = currentPage || 1;
                 const startIndex = (pageNum - 1) * rowsPerPageConst;
@@ -3187,8 +3109,7 @@ const Technographics = () => {
                     const actualIndex = startIndex + index;
                     const isHighlighted = rowMatchesSearch(row);
                     const rowKey = `${actualIndex}-${row.companyName}`;
-                    
-                    // Get or create refs for this row
+
                     if (!scrollRefsMap.current.has(rowKey)) {
                       scrollRefsMap.current.set(rowKey, {
                         tech: null,
@@ -3225,7 +3146,6 @@ const Technographics = () => {
                     });
                   };
 
-                  // Handle scroll sync
                   const handleTechScroll = (e) => {
                     if (refs.prevDate) {
                       refs.prevDate.scrollTop = e.target.scrollTop;
@@ -3408,12 +3328,9 @@ const Technographics = () => {
                       <td style={{ paddingLeft: '20px' }} onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
                         {highlightText(row.revenue, searchTerm)}
                       </td>
-                      {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
-                        <span style={{ display: 'flex', alignItems: 'center' }}>
-                          {renderTechLogo(row.category)}
-                          {highlightText(row.category, searchTerm)}
-                        </span>
-                      </td> */}
+                      {
+
+}
                       <td style={{ paddingLeft: '8px' }}>
                         <div 
                           ref={(el) => { if (el) refs.tech = el; }}
@@ -3505,7 +3422,7 @@ const Technographics = () => {
         </table>
       </div>
 
-      {/* Pagination Display */}
+      {}
       {groupedDataArray.length > 0 && (() => {
         const rowsPerPageConst = 10;
         const totalPages = Math.ceil(groupedDataArray.length / rowsPerPageConst);
@@ -3544,7 +3461,7 @@ const Technographics = () => {
               Page {currentPage} of {totalPages.toLocaleString()}
             </div>
 
-            {/* Pagination Buttons */}
+            {}
             <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -3554,7 +3471,7 @@ const Technographics = () => {
               {(() => {
                 return (
                   <>
-                    {/* First Page Button */}
+                    {}
                     <button
                       key="first"
                       onClick={() => setCurrentPage(1)}
@@ -3588,7 +3505,7 @@ const Technographics = () => {
                       ≪
                     </button>
 
-                    {/* Previous Page Button */}
+                    {}
                     <button
                       key="prev"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -3622,7 +3539,7 @@ const Technographics = () => {
                       ‹
                     </button>
 
-                    {/* Page Numbers */}
+                    {}
                     {startPage > 1 && (
                       <>
                         <button
@@ -3721,7 +3638,7 @@ const Technographics = () => {
                       </>
                     )}
 
-                    {/* Next Page Button */}
+                    {}
                     <button
                       key="next"
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -3755,7 +3672,7 @@ const Technographics = () => {
                       ›
                     </button>
 
-                    {/* Last Page Button */}
+                    {}
                     <button
                       key="last"
                       onClick={() => setCurrentPage(totalPages)}
@@ -3804,7 +3721,7 @@ const Technographics = () => {
         );
       })()}
 
-      {/* Custom Tooltip */}
+      {}
       {tooltip.show && (
         <div
           style={{
@@ -3850,9 +3767,9 @@ const Technographics = () => {
         </div>
       )}
 
-      {/* Side Panel for NTP Details */}
+      {}
       {selectedCompany && (() => {
-        // Check if any row with this company name is revealed
+        
         const isRevealed = Array.from(revealedRows).some(key => key.endsWith(`-${selectedCompany}`));
 
         return isRevealed ? (

@@ -78,7 +78,7 @@ useEffect(() => {
             setLoading(true);
             setError('');
             try {
-                // Pre-generate the org chart
+                
                 const generateResponse = await fetch('/api/buying-group/generate-org-chart', {
                     method: 'POST',
                     headers: {

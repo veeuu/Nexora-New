@@ -21,14 +21,11 @@ const authRouter = require('./routes/auth');
 app.use('/api', apiRouter);
 app.use('/api/auth', authRouter);
 
-
-// Connect to MongoDB and start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB first
-    await connectDB();
     
-    // Start the server after DB connection is established
+    await connectDB();
+
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✓ Backend server listening on http://0.0.0.0:${PORT}`);
       console.log(`✓ API available at http://localhost:${PORT}/api`);
@@ -40,7 +37,6 @@ const startServer = async () => {
   }
 };
 
-// Start the server
 startServer();
 
 app.listen(PORT, '0.0.0.0', () => {

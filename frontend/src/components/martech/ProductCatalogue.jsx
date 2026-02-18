@@ -256,7 +256,7 @@ const getProductCountBySubCategory = (subCategory) => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            âš
+            ï¿½
           </div>
           <div style={{
             fontSize: '14px',
