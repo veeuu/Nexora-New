@@ -183,8 +183,19 @@ const buildNtpCache = async () => {
   }
 };
 
-// Build cache on server start
-buildNtpCache();
+// Build cache on server start - wait for MongoDB connection
+setTimeout(() => {
+  if (mongoose.connection.readyState === 1) {
+    console.log('[NTP-CACHE] MongoDB ready, starting cache build');
+    buildNtpCache();
+  } else {
+    console.log('[NTP-CACHE] Waiting for MongoDB connection...');
+    mongoose.connection.once('open', () => {
+      console.log('[NTP-CACHE] MongoDB connected, starting cache build');
+      buildNtpCache();
+    });
+  }
+}, 3000); // Wait 3 seconds after module load
 
 // Rebuild cache every 10 minutes
 setInterval(() => {
@@ -388,8 +399,19 @@ const buildTechCache = async () => {
   }
 };
 
-// Build cache on server start
-buildTechCache();
+// Build cache on server start - wait for MongoDB connection
+setTimeout(() => {
+  if (mongoose.connection.readyState === 1) {
+    console.log('[TECH-CACHE] MongoDB ready, starting cache build');
+    buildTechCache();
+  } else {
+    console.log('[TECH-CACHE] Waiting for MongoDB connection...');
+    mongoose.connection.once('open', () => {
+      console.log('[TECH-CACHE] MongoDB connected, starting cache build');
+      buildTechCache();
+    });
+  }
+}, 3000); // Wait 3 seconds after module load
 
 // Rebuild cache every 10 minutes
 setInterval(() => {
