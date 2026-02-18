@@ -38,7 +38,13 @@ const sendOTPEmail = async (email, otp, fullName) => {
     };
 
 if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'demo@example.com') {
-
+      console.log('\n=================================');
+      console.log(' DEMO MODE - OTP Email');
+      console.log('=================================');
+      console.log(`To: ${email}`);
+      console.log(`Name: ${fullName}`);
+      console.log(`OTP: ${otp}`);
+      console.log('=================================\n');
 return { success: true, demo: true };
     }
 
