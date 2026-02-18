@@ -27,7 +27,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>â–¼</span>
+        <span style={{ fontSize: '12px' }}>▼</span>
       </button>
 
       {isOpen && (
@@ -321,7 +321,7 @@ useEffect(() => {
                   justifyContent: 'center'
                 }}
               >
-                âœ•
+                ✕
               </button>
             </div>
             <div className="summary-charts-grid">
@@ -375,7 +375,7 @@ useEffect(() => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            âš
+            ⚠
           </div>
           <div style={{
             fontSize: '14px',
@@ -397,7 +397,7 @@ useEffect(() => {
               lineHeight: '1'
             }}
           >
-            âœ•
+            ✕
           </button>
         </div>
       )}
@@ -559,7 +559,7 @@ useEffect(() => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ✕
                 </button>
               </div>
               <div style={{
@@ -713,7 +713,7 @@ useEffect(() => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ✕
                 </button>
               </div>
               <div style={{
@@ -875,7 +875,7 @@ useEffect(() => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ✕
               </button>
             </div>
           )}
@@ -921,7 +921,7 @@ useEffect(() => {
               color: '#d97706',
               flexShrink: 0
             }}>
-              â“˜
+              ⚠
             </div>
             <div style={{
               fontSize: '13px',
