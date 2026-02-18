@@ -1806,7 +1806,7 @@ if (aQtr.year !== bQtr.year) {
                                                                     <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                                         {row.domain && row.domain !== 'N/A' && (
                                                                             <a
-                                                                                href={`https:
+                                                                                href={`https://${row.domain}`}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                                 style={{
