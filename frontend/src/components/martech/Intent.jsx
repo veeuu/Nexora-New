@@ -102,7 +102,7 @@ const Intent = () => {
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
-  const [activeFilterMenu, setActiveFilterMenu] = useState('intentStatus');
+  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 9;
   const filterRef = useRef(null);
@@ -299,6 +299,24 @@ useEffect(() => {
         {}
         <Tooltip tooltip={tooltip} />
 
+      <style>{`
+          @keyframes bounce {
+            0%, 80%, 100% {
+              opacity: 0.3;
+              transform: translateY(0);
+            }
+            40% {
+              opacity: 1;
+              transform: translateY(-10px);
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  return (
+    <div className="intent-container">
       {showSummary && (
         <div className="modal-overlay" onClick={() => setShowSummary(false)}>
           <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -327,37 +345,20 @@ useEffect(() => {
             <div className="summary-charts-grid">
               <div className="chart-item">
                 <h3>Intent Distribution</h3>
-                {}
-                <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
+                <img src="/intent_distribution.png" alt="Intent Distribution" />
               </div>
               <div className="chart-item">
                 <h3>Intent Pie Chart</h3>
-                {}
-                <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
+                <img src="/intent_pie_chart.png" alt="Intent Pie Chart" />
+              </div>
+              <div className="chart-item">
+                <h3>Intent Nightingale Rose</h3>
+                <img src="/intent_nightingale_rose.png" alt="Intent Nightingale Rose" />
               </div>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`
-          @keyframes bounce {
-            0%, 80%, 100% {
-              opacity: 0.3;
-              transform: translateY(0);
-            }
-            40% {
-              opacity: 1;
-              transform: translateY(-10px);
-            }
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  return (
-    <div className="intent-container">
       {}
       {error && (
         <div style={{
@@ -405,10 +406,13 @@ useEffect(() => {
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
-          {
-
-}
-          {}
+          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
+            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            View Summary
+          </button>
         </div>
       </div>
 
@@ -1055,7 +1059,7 @@ useEffect(() => {
                               }}
                               title="First page"
                           >
-                              â‰ª
+                              «
                           </button>
 
                           {}
@@ -1089,7 +1093,7 @@ useEffect(() => {
                               }}
                               title="Previous page"
                           >
-                              â€¹
+                              ‹
                           </button>
 
                           {}
@@ -1222,7 +1226,7 @@ useEffect(() => {
                               }}
                               title="Next page"
                           >
-                              â€º
+                              ›
                           </button>
 
                           {}
@@ -1256,7 +1260,7 @@ useEffect(() => {
                               }}
                               title="Last page"
                           >
-                              â‰«
+                              »
                           </button>
                       </>
                   );
@@ -1276,7 +1280,7 @@ useEffect(() => {
 
       <Tooltip tooltip={tooltip} />
 
-      <style jsx>{`
+      <style>{`
         .filters {
           display: flex;
           gap: 15px;
@@ -1393,11 +1397,13 @@ useEffect(() => {
         .summary-modal-content {
           background: white;
           border-radius: 12px;
-          max-width: 900px;
-          width: 90%;
-          max-height: 80vh;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          max-width: 1200px;
+          width: 95%;
+          max-height: 90vh;
           overflow-y: auto;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
         }
 
         .summary-modal-header {
