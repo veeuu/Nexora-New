@@ -3,7 +3,6 @@ import { useIndustry } from '../../context/IndustryContext';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/scale.css';
 
-// --- Color Manipulation Utility ---
 const hexToHsl = (hex) => {
     let r = 0, g = 0, b = 0;
     if (hex.length === 4) {
@@ -46,25 +45,20 @@ const adjustColor = (hex, deltaL, deltaS) => {
     return `hsl(${h}, ${s}%, ${l}%)`;
 };
 
-// Removed fake data - using only real data from API
-
-// Function to generate Sankey data from real technographics data
 const getSankeyData = (technographicsData, selectedCategories = []) => {
     if (!technographicsData || technographicsData.length === 0) {
-        // Return empty structure if no data
+
         return { nodes: [], links: [], allCategories: [] };
     }
 
-    // Get all unique categories first
-    const allCategoriesSet = new Set();
+const allCategoriesSet = new Set();
     technographicsData.forEach(row => {
         const category = row.category || 'Other';
         allCategoriesSet.add(category);
     });
     const allCategories = Array.from(allCategoriesSet).sort();
 
-    // Filter data by selected categories if any are selected
-    let filteredData = technographicsData;
+let filteredData = technographicsData;
     if (selectedCategories.length > 0) {
         filteredData = technographicsData.filter(row => {
             const category = row.category || 'Other';
@@ -72,46 +66,38 @@ const getSankeyData = (technographicsData, selectedCategories = []) => {
         });
     }
 
-    // Aggregate data by category and technology
-    const categoryMap = {};
+const categoryMap = {};
     const technologyMap = {};
 
     filteredData.forEach(row => {
         const category = row.category || 'Other';
         const technology = row.technology || 'Unknown';
 
-        // Count categories
-        if (!categoryMap[category]) {
+if (!categoryMap[category]) {
             categoryMap[category] = 0;
         }
         categoryMap[category]++;
 
-        // Count technologies per category
-        const key = `${category}|${technology}`;
+const key = `${category}|${technology}`;
         if (!technologyMap[key]) {
             technologyMap[key] = 0;
         }
         technologyMap[key]++;
     });
 
-    // Calculate total technologies
-    const totalTechnologies = filteredData.length;
+const totalTechnologies = filteredData.length;
 
-    // Create nodes and links
-    const nodes = [];
+const nodes = [];
     const links = [];
 
-    // Add root node
-    nodes.push({ id: 'Technologies', value: totalTechnologies, color: '#1f2937' });
+nodes.push({ id: 'Technologies', value: totalTechnologies, color: '#1f2937' });
 
-    // Add category nodes and links from Technologies to Categories
-    Object.entries(categoryMap).forEach(([category, count]) => {
+Object.entries(categoryMap).forEach(([category, count]) => {
         nodes.push({ id: category, value: count, color: '#3b82f6' });
         links.push({ source: 'Technologies', target: category, value: count });
     });
 
-    // Add technology nodes and links from Categories to Technologies
-    Object.entries(technologyMap).forEach(([key, count]) => {
+Object.entries(technologyMap).forEach(([key, count]) => {
         const [category, technology] = key.split('|');
         nodes.push({ id: technology, value: count, color: '#3b82f6' });
         links.push({ source: category, target: technology, value: count });
@@ -119,8 +105,6 @@ const getSankeyData = (technographicsData, selectedCategories = []) => {
 
     return { nodes, links, allCategories };
 };
-
-// Removed unused aggregateWorldMapData function
 
 const CHART_HEIGHT = 280;
 const COLUMN_X = {
@@ -133,13 +117,11 @@ const NODE_VERTICAL_SPACING = 28;
 
 const LINK_STROKE_WIDTH = 2;
 
-// Generate Sankey-style path with proper curves
 const generateSankeyLinkPath = (x1, y1, x2, y2, width = 2) => {
     const midX = (x1 + x2) / 2;
     const halfWidth = width / 2;
 
-    // Create a path that represents the flow with variable width
-    const topPath = `M ${x1} ${y1 - halfWidth} C ${midX} ${y1 - halfWidth}, ${midX} ${y2 - halfWidth}, ${x2} ${y2 - halfWidth}`;
+const topPath = `M ${x1} ${y1 - halfWidth} C ${midX} ${y1 - halfWidth}, ${midX} ${y2 - halfWidth}, ${x2} ${y2 - halfWidth}`;
     const bottomPath = `L ${x2} ${y2 + halfWidth} C ${midX} ${y2 + halfWidth}, ${midX} ${y1 + halfWidth}, ${x1} ${y1 + halfWidth} Z`;
 
     return topPath + bottomPath;
@@ -152,16 +134,14 @@ const SankeyGraph = ({ data }) => {
 
     const rawNodeMap = useMemo(() => new Map(nodes.map(node => [node.id, node])), [nodes]);
 
-    // Dynamically identify categories: nodes that have Technologies as source
-    const categoryIds = useMemo(() => {
+const categoryIds = useMemo(() => {
         return new Set(links.filter(l => l.source === 'Technologies').map(l => l.target));
     }, [links]);
 
     const techNode = nodes.find(n => n.id === 'Technologies');
     const categories = nodes.filter(n => categoryIds.has(n.id));
 
-    // Products are nodes that are not Technologies and not categories
-    const products = nodes.filter(n => n.id !== 'Technologies' && !categoryIds.has(n.id));
+const products = nodes.filter(n => n.id !== 'Technologies' && !categoryIds.has(n.id));
 
     const totalTechnologies = techNode?.value || 1;
     const maxCategoryValue = Math.max(...categories.map(c => c.value), 1);
@@ -203,8 +183,7 @@ const SankeyGraph = ({ data }) => {
                 linkThickness: 20,
             });
 
-            // Add spacing between categories - more if no products, less if products exist
-            currentY += productCount > 0 ? NODE_VERTICAL_SPACING * 0.3 : NODE_VERTICAL_SPACING * 1.2;
+currentY += productCount > 0 ? NODE_VERTICAL_SPACING * 0.3 : NODE_VERTICAL_SPACING * 1.2;
         });
 
         const categoryNodes = categories.map(c => positions.get(c.id)).filter(n => n);
@@ -234,15 +213,13 @@ const SankeyGraph = ({ data }) => {
             ? COLUMN_X.Technologies + 50
             : COLUMN_X.Category + NODE_WIDTH;
 
-        // Check if target is a category (dynamically)
-        const targetX = categoryIds.has(link.target)
+const targetX = categoryIds.has(link.target)
             ? COLUMN_X.Category : COLUMN_X.Products;
 
         const sourceY = sourceNode.y;
         const targetY = targetNode.y;
 
-        // Calculate link width based on value (min 3, max 20)
-        const maxValue = Math.max(...links.map(l => l.value));
+const maxValue = Math.max(...links.map(l => l.value));
         const linkWidth = Math.max(3, Math.min(20, (link.value / maxValue) * 15));
 
         const color = targetNode.color;
@@ -398,29 +375,26 @@ const SankeyGraph = ({ data }) => {
         }),
     };
 
-
-    // Filter products and links based on expanded categories
-    const visibleProducts = products.filter(prod => {
+const visibleProducts = products.filter(prod => {
         const parentLink = links.find(l => l.target === prod.id && categoryIds.has(l.source));
         return parentLink && expandedCategories.has(parentLink.source);
     });
 
     const visibleLinks = links.filter(link => {
-        // Always show links from Technologies to Categories
+
         if (link.source === 'Technologies') return true;
-        // Only show links from Category to Products if category is expanded
+
         if (categoryIds.has(link.source)) {
             return expandedCategories.has(link.source);
         }
         return false;
     });
 
-    // Calculate dynamic height based on number of visible products
-    const baseHeight = 280;
-    // Calculate actual content height
+const baseHeight = 280;
+
     const extraHeight = visibleProducts.length > 0 ? visibleProducts.length * NODE_VERTICAL_SPACING : 0;
     const contentHeight = baseHeight + extraHeight;
-    // Set max height for scrolling
+
     const maxHeight = 400;
     const shouldScroll = contentHeight > maxHeight;
 
@@ -433,7 +407,7 @@ const SankeyGraph = ({ data }) => {
         >
             <svg style={{ ...sankeyStyles.svgOverlay, height: `${contentHeight}px` }}>
                 <defs>
-                    {/* Add subtle gradient for links */}
+                    {}
                     <linearGradient id="linkGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" style={{ stopColor: '#3b82f6', stopOpacity: 0.6 }} />
                         <stop offset="100%" style={{ stopColor: '#3b82f6', stopOpacity: 0.4 }} />
@@ -466,38 +440,31 @@ const chartStyle = {
     border: '1px solid #e5e7eb',
 };
 
-// Removed unused WorldMap component
-
-// Updated HeatMap Component
 const HeatMap = () => {
     const { technologyData, availableRegions } = useIndustry();
 
-    // Initialize state with India as default
-    const [country, setCountry] = useState('India');
+const [country, setCountry] = useState('India');
 
-    // Update country when regions become available, prefer India if available
-    React.useEffect(() => {
+React.useEffect(() => {
         if (availableRegions.length > 0 && !country) {
-            // Check if India is in the list, otherwise use first region
+
             const defaultRegion = availableRegions.includes('India') ? 'India' : availableRegions[0];
             setCountry(defaultRegion);
         }
     }, [availableRegions, country]);
 
-    // Function to return constant color
-    const getColor = (value) => {
-        // Use constant blue color for all values
+const getColor = (value) => {
+
         return 'rgb(59, 130, 246)';
     };
 
-    // Use only real data from Technographics
-    const countryData = technologyData[country] || null;
+const countryData = technologyData[country] || null;
     const regions = availableRegions;
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 w-full" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif' }}>
 
-            {/* Region Dropdown */}
+            {}
             <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <label htmlFor="country-select" style={{ fontSize: '14px', fontWeight: '500', color: '#374151', minWidth: 'fit-content' }}>
                     Select Region:
@@ -545,18 +512,17 @@ const HeatMap = () => {
                 </select>
             </div>
 
-            {/* Heatmap Display */}
+            {}
             {countryData ? (
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-3">
                         {Object.entries(countryData)
-                            .sort(([, valueA], [, valueB]) => valueB - valueA) // Sort by value descending (high to low)
+                            .sort(([, valueA], [, valueB]) => valueB - valueA)
                             .map(([tech, value]) => {
-                                // Constant blue color
+
                                 const color = getColor(value);
 
-                                // text color for percentage on right: keep dark to be readable
-                                const pctStyle = { fontWeight: 700, color: '#0f172a' };
+const pctStyle = { fontWeight: 700, color: '#0f172a' };
 
                                 return (
                                     <div key={tech} className="p-2 rounded-md transition-all duration-150" title={`${tech}: ${value}% adoption`}>
@@ -592,16 +558,13 @@ const HeatMap = () => {
     );
 };
 
-// --- Chart Constants ---
 const PIE_RADIUS = 95;
 const SVG_SIZE = 300;
 const PIE_CENTER = SVG_SIZE / 2;
 
-// NEW CONSTANTS FOR RADIAL LABELS
-const LABEL_LINE_LENGTH = 15; // Length of the short radial line
-const LABEL_TEXT_OFFSET = 5;  // Space between the line end and the text
+const LABEL_LINE_LENGTH = 15;
+const LABEL_TEXT_OFFSET = 5;
 
-// --- Component for the SVG Pie Annotations ---
 const PieAnnotations = React.memo(({ data, total, hoveredLabel }) => {
     let cumulativeAngle = 0;
 
@@ -614,41 +577,34 @@ const PieAnnotations = React.memo(({ data, total, hoveredLabel }) => {
                 const segmentAngle = (segment.value / total) * 360;
                 const midAngle = cumulativeAngle + segmentAngle / 2;
 
-                // Adjust angle so 0 is at 12 o'clock (top)
-                const midAngleRad = (midAngle - 90) * (Math.PI / 180);
+const midAngleRad = (midAngle - 90) * (Math.PI / 180);
 
-                // Start of the line (just outside the pie slice)
-                const startX = PIE_CENTER + Math.cos(midAngleRad) * PIE_RADIUS;
+const startX = PIE_CENTER + Math.cos(midAngleRad) * PIE_RADIUS;
                 const startY = PIE_CENTER + Math.sin(midAngleRad) * PIE_RADIUS;
 
-                // End of the line (radial distance out)
-                const endRadius = PIE_RADIUS + LABEL_LINE_LENGTH;
+const endRadius = PIE_RADIUS + LABEL_LINE_LENGTH;
                 const endX = PIE_CENTER + Math.cos(midAngleRad) * endRadius;
                 const endY = PIE_CENTER + Math.sin(midAngleRad) * endRadius;
 
-                // Position for the text label
-                const textRadius = endRadius + LABEL_TEXT_OFFSET;
+const textRadius = endRadius + LABEL_TEXT_OFFSET;
                 const textX = PIE_CENTER + Math.cos(midAngleRad) * textRadius;
                 const textY = PIE_CENTER + Math.sin(midAngleRad) * textRadius;
 
-
-                const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
+const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
 
                 cumulativeAngle += segmentAngle;
 
-                // Don't draw line for very small segments
-                if (segmentAngle < 3) return null;
+if (segmentAngle < 3) return null;
 
                 const isDimmed = hoveredLabel && hoveredLabel !== segment.label;
                 const lineColor = isDimmed ? '#d1d5db' : segment.color;
                 const textColor = isDimmed ? '#9ca3af' : '#1f2937';
 
-                // Determine text anchor based on angle for clean placement
-                let textAnchor = 'middle';
+let textAnchor = 'middle';
                 if (midAngle > 20 && midAngle < 160) {
-                    textAnchor = 'start'; // Right side
+                    textAnchor = 'start';
                 } else if (midAngle > 200 && midAngle < 340) {
-                    textAnchor = 'end'; // Left side
+                    textAnchor = 'end';
                 }
 
                 return (
@@ -661,7 +617,7 @@ const PieAnnotations = React.memo(({ data, total, hoveredLabel }) => {
                             opacity={isDimmed ? 0.8 : 1}
                             strokeLinecap="round"
                         />
-                        {/* Display the value (Count) near the slice */}
+                        {}
                         <text
                             x={textX}
                             y={textY}
@@ -691,8 +647,7 @@ const Summary = () => {
     const [showIndustryDropdown, setShowIndustryDropdown] = useState(false);
     const [intentCounts, setIntentCounts] = useState({ High: 0, 'High-Medium': 0, Medium: 0, Low: 0, 'Green Field Account': 0, Total: 0 });
 
-    // Fetch technographics data and update context
-    useEffect(() => {
+useEffect(() => {
         const fetchTechnographicsData = async () => {
             try {
                 setLoadingSankey(true);
@@ -703,24 +658,20 @@ const Summary = () => {
                 const data = await response.json();
                 setTechnographicsData(data);
 
-                // Calculate industry counts from the table data
-                const industryCounts = {};
+const industryCounts = {};
                 data.forEach(row => {
                     const industry = row.industry || 'Other';
                     industryCounts[industry] = (industryCounts[industry] || 0) + 1;
                 });
 
-                // Convert to array format for pie chart
-                const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
+const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
                     label,
                     value
                 }));
 
-                // Update the shared context with real industry data
-                setIndustryData(industryArray);
+setIndustryData(industryArray);
 
-                // Calculate technology adoption by region and category
-                const techByRegion = {};
+const techByRegion = {};
                 const regions = new Set();
 
                 data.forEach(row => {
@@ -740,8 +691,7 @@ const Summary = () => {
                     techByRegion[region][category]++;
                 });
 
-                // Calculate percentages for each region
-                const techDataWithPercentages = {};
+const techDataWithPercentages = {};
                 Object.keys(techByRegion).forEach(region => {
                     const total = Object.values(techByRegion[region]).reduce((sum, count) => sum + count, 0);
                     techDataWithPercentages[region] = {};
@@ -755,7 +705,7 @@ const Summary = () => {
                 setTechnologyData(techDataWithPercentages);
                 setAvailableRegions(Array.from(regions).sort());
             } catch (e) {
-                console.error("Failed to fetch Technographics data:", e);
+
             } finally {
                 setLoadingSankey(false);
             }
@@ -764,8 +714,7 @@ const Summary = () => {
         fetchTechnographicsData();
     }, [setIndustryData, setTechnologyData, setAvailableRegions]);
 
-    // Fetch intent data for the summary table
-    useEffect(() => {
+useEffect(() => {
         const fetchIntentData = async () => {
             try {
                 const response = await fetch('/api/intent');
@@ -774,8 +723,7 @@ const Summary = () => {
                 }
                 const data = await response.json();
 
-                // Calculate intent counts
-                const counts = { High: 0, 'High-Medium': 0, Medium: 0, Low: 0, 'Green Field Account': 0 };
+const counts = { High: 0, 'High-Medium': 0, Medium: 0, Low: 0, 'Green Field Account': 0 };
                 data.forEach(item => {
                     const status = item.intentStatus;
                     if (status === 'High') counts.High++;
@@ -787,7 +735,7 @@ const Summary = () => {
                 counts.Total = data.length;
                 setIntentCounts(counts);
             } catch (e) {
-                console.error("Failed to fetch Intent data for summary:", e);
+
             }
         };
         fetchIntentData();
@@ -797,8 +745,7 @@ const Summary = () => {
     const overallSankeyData = { nodes: sankeyDataResult.nodes, links: sankeyDataResult.links };
     const availableCategories = sankeyDataResult.allCategories || [];
 
-    // Set default categories when data is loaded
-    useEffect(() => {
+useEffect(() => {
         if (availableCategories.length > 0 && selectedCategories.length === 0) {
             const defaultCategories = ['AI/ML', 'Big Data', 'Blockchain'];
             const categoriesToSelect = defaultCategories.filter(cat => availableCategories.includes(cat));
@@ -811,8 +758,7 @@ const Summary = () => {
     const [hoveredPieData, setHoveredPieData] = useState(null);
     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
-    // Handle category selection (max 3)
-    const handleCategoryToggle = (category) => {
+const handleCategoryToggle = (category) => {
         setSelectedCategories(prev => {
             if (prev.includes(category)) {
                 return prev.filter(c => c !== category);
@@ -823,8 +769,7 @@ const Summary = () => {
         });
     };
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
+useEffect(() => {
         const handleClickOutside = (event) => {
             if (showCategoryDropdown && !event.target.closest('.category-dropdown-container')) {
                 setShowCategoryDropdown(false);
@@ -835,22 +780,20 @@ const Summary = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showCategoryDropdown]);
 
-    // Color palette for industries
-    const colorPalette = [
-        '#64B5F6', // Light Blue
-        '#1565C0', // Dark Blue
-        '#4CAF50', // Green
-        '#FF9800', // Orange
-        '#FDD835', // Yellow
-        '#00897B', // Teal
-        '#673AB7', // Purple
-        '#E91E63', // Pink
-        '#FF5722', // Deep Orange
-        '#9C27B0', // Deep Purple
+const colorPalette = [
+        '#64B5F6',
+        '#1565C0',
+        '#4CAF50',
+        '#FF9800',
+        '#FDD835',
+        '#00897B',
+        '#673AB7',
+        '#E91E63',
+        '#FF5722',
+        '#9C27B0',
     ];
 
-    // Get all available industries for the filter dropdown
-    const availableIndustries = useMemo(() => {
+const availableIndustries = useMemo(() => {
         if (industryData && industryData.length > 0) {
             const filteredData = industryData.filter(item =>
                 item.label !== 'N/A' &&
@@ -863,8 +806,7 @@ const Summary = () => {
         return [];
     }, [industryData]);
 
-    // Handle industry selection (max 10)
-    const handleIndustryToggle = (industry) => {
+const handleIndustryToggle = (industry) => {
         setSelectedIndustries(prev => {
             if (prev.includes(industry)) {
                 return prev.filter(i => i !== industry);
@@ -875,8 +817,7 @@ const Summary = () => {
         });
     };
 
-    // Close industry dropdown when clicking outside
-    useEffect(() => {
+useEffect(() => {
         const handleClickOutside = (event) => {
             if (showIndustryDropdown && !event.target.closest('.industry-dropdown-container')) {
                 setShowIndustryDropdown(false);
@@ -887,23 +828,19 @@ const Summary = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showIndustryDropdown]);
 
-    // Use only real data from Technographics - no fallback
-    // Filter by selected industries or show top 10
-    const overallIndustryPieData = useMemo(() => {
+const overallIndustryPieData = useMemo(() => {
         if (!industryData || industryData.length === 0) {
             return [];
         }
 
-        // Filter out N/A and Not found
-        const filteredData = industryData.filter(item =>
+const filteredData = industryData.filter(item =>
             item.label !== 'N/A' &&
             item.label !== 'Not found' &&
             item.label.toLowerCase() !== 'n/a' &&
             item.label.toLowerCase() !== 'not found'
         );
 
-        // If industries are selected, filter by them, otherwise show top 10
-        let dataToShow;
+let dataToShow;
         if (selectedIndustries.length > 0) {
             dataToShow = filteredData.filter(item => selectedIndustries.includes(item.label));
         } else {
@@ -919,19 +856,17 @@ const Summary = () => {
 
     const totalValue = overallIndustryPieData.reduce((sum, s) => sum + s.value, 0) || 1;
 
-    // Function to get the color for the pie segment or legend
-    // Updated logic: Initially all segments are dark, when hovering only the hovered segment is dark
-    const getSegmentColor = useCallback((item, isHovered) => {
+const getSegmentColor = useCallback((item, isHovered) => {
         if (hoveredPieData) {
-            // When any segment is hovered
+
             if (isHovered) {
-                return item.color; // Keep the hovered segment dark
+                return item.color;
             } else {
-                // Make non-hovered segments lighter
+
                 return adjustColor(item.color, 20, -20);
             }
         } else {
-            // No segment is hovered, so all segments are dark
+
             return item.color;
         }
     }, [hoveredPieData]);
@@ -1123,7 +1058,7 @@ const Summary = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
                         <div style={styles.panelTitle} className="m-0 border-0 pb-0">Technology Stack Breakdown</div>
 
-                        {/* Category Filter Dropdown */}
+                        {}
                         {availableCategories.length > 0 && (
                             <div className="category-dropdown-container" style={{ position: 'relative' }}>
                                 <button
@@ -1244,7 +1179,7 @@ const Summary = () => {
 
                     {loadingSankey ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '380px', color: '#6b7280' }}>
-                            
+
                         </div>
                     ) : overallSankeyData.nodes.length === 0 ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '380px', color: '#6b7280' }}>
@@ -1259,7 +1194,7 @@ const Summary = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #f3f4f6', paddingBottom: '10px' }}>
                         <div style={styles.panelTitle} className="m-0 border-0 pb-0">Industry Wise Distribution</div>
 
-                        {/* Industry Filter Dropdown */}
+                        {}
                         {availableIndustries.length > 0 && (
                             <div className="industry-dropdown-container" style={{ position: 'relative' }}>
                                 <button
@@ -1378,9 +1313,9 @@ const Summary = () => {
                         )}
                     </div>
                     <div style={styles.summaryPie}>
-                        {/* PIE CHART SECTION */}
+                        {}
                         <div style={styles.pieContainer}>
-                            {/* SVG for Annotations (Lines and Values) */}
+                            {}
                             <PieAnnotations data={overallIndustryPieData} total={totalValue} hoveredLabel={hoveredPieData?.label} />
 
                             <div
@@ -1388,17 +1323,15 @@ const Summary = () => {
                                 onMouseMove={handlePieMouseMove}
                                 onMouseLeave={handlePieMouseLeave}
                             >
-                                {/* Center circle removed - no total number displayed */}
+                                {}
                             </div>
                         </div>
 
-
-
-                        {/* TOOLTIP (Conditional rendering based on hoveredPieData) */}
+{}
                         {hoveredPieData && (
                             <div
                                 style={{
-                                    position: 'fixed', // Use fixed to ensure it appears over everything
+                                    position: 'fixed',
                                     top: hoverPosition.y + 15,
                                     left: hoverPosition.x + 15,
                                     padding: '8px 12px',
@@ -1420,7 +1353,7 @@ const Summary = () => {
 
                 <div style={styles.summaryPanel}>
                     <div style={styles.panelTitle}>Intent distribution</div>
-                    {/* Intent distribution table */}
+                    {}
                     <div style={{ padding: '15px' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', border: 'none' }}>
                             <thead>

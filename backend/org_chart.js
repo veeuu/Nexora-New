@@ -1,18 +1,9 @@
-/**
- * Organization Chart Generator - Node.js Version
- * Complete port of Python org_chart.py using Plotly
- */
-
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
 const archiver = require('archiver');
 const puppeteer = require('puppeteer');
 const XLSX = require('xlsx');
-
-// ================================
-// CONFIGURATION CONSTANTS
-// ================================
 
 const CONFIG = {
   BOX_WIDTH: 1.0,
@@ -32,43 +23,32 @@ const CONFIG = {
   MIN_VIEWPORT_SPAN: 0.9,
   AXIS_PADDING: 0.05,
 
-  // Colors
-  COLOR_DECISION_MAKER_FILL: '#0070C0',
+COLOR_DECISION_MAKER_FILL: '#0070C0',
   COLOR_INFLUENCER_FILL: '#00B0F0',
   COLOR_DIRECT_REPORTEE_FILL: '#CCECFF',
   COLOR_OTHER_NODE_FILL: '#000000',
   COLOR_LINES: '#355A9C',
   COLOR_BACKGROUND: '#FFFFFF',
 
-  // Fonts - Adjusted for better fit
-  FONT_COLOR_ON_LIGHT_BG: '#000000',
+FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
   NAME_TEXT_SIZE: 14,
   ROLE_TEXT_SIZE: 11,
 
-  // Canvas dimensions (will be adjusted based on org size)
-  CANVAS_WIDTH: 900,
+CANVAS_WIDTH: 900,
   CANVAS_HEIGHT: 500,
-  
-  // Dynamic scaling
-  MIN_CANVAS_WIDTH: 900,
+
+MIN_CANVAS_WIDTH: 900,
   MIN_CANVAS_HEIGHT: 500,
   EMPLOYEES_PER_WIDTH_UNIT: 3,
   EMPLOYEES_PER_HEIGHT_UNIT: 2
 };
 
-// ================================
-// CSV READING FUNCTION
-// ================================
-
-/**
- * Read CSV file and return data as array of objects
- */
 function readCSVFile(csvFilePath) {
   return new Promise((resolve, reject) => {
     const data = [];
-    
+
     if (!fs.existsSync(csvFilePath)) {
       reject(new Error(`CSV file not found: ${csvFilePath}`));
       return;
@@ -88,72 +68,60 @@ function readCSVFile(csvFilePath) {
   });
 }
 
-// ================================
-// UTILITY FUNCTIONS
-// ================================
-
-/**
- * Calculate optimal canvas dimensions based on organization size
- */
 function calculateCanvasDimensions(employees, roots) {
   const employeeCount = Object.keys(employees).length;
-  
-  // Calculate tree depth
-  let maxDepth = 0;
+
+let maxDepth = 0;
   const queue = roots.map(r => [r, 0]);
   let head = 0;
-  
+
   while (head < queue.length) {
     const [nodeName, depth] = queue[head];
     head++;
     maxDepth = Math.max(maxDepth, depth);
-    
+
     if (nodeName in employees) {
       for (const child of employees[nodeName].children) {
         queue.push([child, depth + 1]);
       }
     }
   }
-  
-  // Calculate width based on max children at any level
-  let maxChildrenAtLevel = 0;
+
+let maxChildrenAtLevel = 0;
   const levelCounts = {};
-  
+
   const levelQueue = roots.map(r => [r, 0]);
   let levelHead = 0;
-  
+
   while (levelHead < levelQueue.length) {
     const [nodeName, level] = levelQueue[levelHead];
     levelHead++;
-    
+
     levelCounts[level] = (levelCounts[level] || 0) + 1;
-    
+
     if (nodeName in employees) {
       for (const child of employees[nodeName].children) {
         levelQueue.push([child, level + 1]);
       }
     }
   }
-  
+
   maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
-  
-  // Calculate dimensions - keep boxes same size, scale canvas
-  let width = CONFIG.MIN_CANVAS_WIDTH;
+
+let width = CONFIG.MIN_CANVAS_WIDTH;
   let height = CONFIG.MIN_CANVAS_HEIGHT;
   let scaleFactor = 1;
-  
-  // Scale width based on max children at any level
-  if (maxChildrenAtLevel > 5) {
+
+if (maxChildrenAtLevel > 5) {
     scaleFactor = Math.max(scaleFactor, maxChildrenAtLevel / 5);
     width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 200);
   }
-  
-  // Scale height based on depth
-  if (maxDepth > 3) {
+
+if (maxDepth > 3) {
     scaleFactor = Math.max(scaleFactor, (maxDepth + 1) / 4);
     height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 1) * 150);
   }
-  
+
   return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor };
 }
 function wrapText(text, maxChars, maxLines = null) {
@@ -194,9 +162,6 @@ function wrapText(text, maxChars, maxLines = null) {
   return lines.join('<br>');
 }
 
-/**
- * Create SVG path for rounded rectangle
- */
 function createRoundedRectPath(xCenter, yCenter, width, height, radius) {
   const x0 = xCenter - width / 2;
   const y0 = yCenter - height / 2;
@@ -206,9 +171,6 @@ function createRoundedRectPath(xCenter, yCenter, width, height, radius) {
   return `M ${x0 + radius},${y1} L ${x1 - radius},${y1} Q ${x1},${y1} ${x1},${y1 - radius} L ${x1},${y0 + radius} Q ${x1},${y0} ${x1 - radius},${y0} L ${x0 + radius},${y0} Q ${x0},${y0} ${x0},${y0 + radius} L ${x0},${y1 - radius} Q ${x0},${y1} ${x0 + radius},${y1} Z`;
 }
 
-/**
- * Sanitize filename
- */
 function sanitizeFilename(name) {
   name = String(name);
   name = name.replace(/[^\w\s-]/g, '').trim();
@@ -216,13 +178,6 @@ function sanitizeFilename(name) {
   return name || 'untitled_chart';
 }
 
-// ================================
-// TREE BUILDING FUNCTIONS
-// ================================
-
-/**
- * Build tree structure from data
- */
 function buildTreeFromData(data) {
   const employees = {};
   const allNamesInInput = new Set(data.map(row => String(row.Name || '').trim()).filter(Boolean));
@@ -232,9 +187,8 @@ function buildTreeFromData(data) {
     const role = String(row.Role || 'N/A');
     const reportsTo = row['Reports To'];
     const hierarchy = String(row.hierarchy || 'Other').trim();
-    
-    // Extract person details from the row
-    const uniqueId = row['Unique ID'] || '';
+
+const uniqueId = row['Unique ID'] || '';
     const companyName = row['Company Name'] || '';
     const linkedin = row['Linkedin'] || '';
     const email = row['email'] || '';
@@ -258,7 +212,7 @@ function buildTreeFromData(data) {
       y: 0.0,
       x: 0.0,
       cached_width: 0.0,
-      // Person details for side panel
+
       uniqueId,
       companyName,
       linkedin,
@@ -290,9 +244,6 @@ function buildTreeFromData(data) {
   return { employees, roots, edges };
 }
 
-/**
- * Calculate levels and Y positions
- */
 function calculateLevelsAndY(employees, roots, boxHeight = CONFIG.BOX_HEIGHT) {
   if (!roots.length || !Object.keys(employees).length) {
     return 0;
@@ -335,9 +286,6 @@ function calculateLevelsAndY(employees, roots, boxHeight = CONFIG.BOX_HEIGHT) {
   return maxLevel;
 }
 
-/**
- * Get subtree width
- */
 function getSubtreeWidth(nodeName, employees, boxWidth = CONFIG.BOX_WIDTH) {
   const node = employees[nodeName];
   if (node.cached_width > 0) {
@@ -356,9 +304,6 @@ function getSubtreeWidth(nodeName, employees, boxWidth = CONFIG.BOX_WIDTH) {
   return node.cached_width;
 }
 
-/**
- * Assign X coordinates recursively
- */
 function assignXCoordinatesRecursive(nodeName, currentXSlotStart, employees, boxWidth = CONFIG.BOX_WIDTH) {
   const node = employees[nodeName];
   const children = node.children;
@@ -385,9 +330,6 @@ function assignXCoordinatesRecursive(nodeName, currentXSlotStart, employees, box
   }
 }
 
-/**
- * Calculate all X positions
- */
 function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
   if (!roots.length || !Object.keys(employees).length) {
     return;
@@ -421,27 +363,17 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
   }
 }
 
-// ================================
-// PLOTLY CHART GENERATION
-// ================================
-
-/**
- * Generate Plotly org chart
- */
 function generateOrgChartPlotly(data, companyName = 'Organization', location = '') {
   const { employees, roots, edges } = buildTreeFromData(data);
 
-  // Calculate optimal canvas dimensions
-  const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
-  
-  // Keep box dimensions fixed, scale fonts proportionally
-  const boxWidth = CONFIG.BOX_WIDTH;
+const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
+
+const boxWidth = CONFIG.BOX_WIDTH;
   const boxHeight = CONFIG.BOX_HEIGHT;
   const verticalGap = CONFIG.VERTICAL_GAP;
   const horizontalGap = CONFIG.HORIZONTAL_GAP;
-  
-  // Scale font sizes based on scale factor
-  const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
+
+const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
   const roleTextSize = Math.round(CONFIG.ROLE_TEXT_SIZE * scaleFactor);
 
   const titleText = location && String(location).trim() ?
@@ -455,8 +387,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`, canvasWidth, canvasHeight);
   }
 
-  // Calculate positions
-  calculateLevelsAndY(employees, roots, boxHeight);
+calculateLevelsAndY(employees, roots, boxHeight);
   calculateAllXPositions(employees, roots, boxWidth);
 
   const nodePositions = {};
@@ -470,8 +401,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     return createErrorPlotly(`${titleText} - No Visualizable Chart Data`, canvasWidth, canvasHeight);
   }
 
-  // Calculate chart bounds
-  let minX = Infinity, maxX = -Infinity;
+let minX = Infinity, maxX = -Infinity;
   let minY = Infinity, maxY = -Infinity;
 
   for (const [x, y] of Object.values(nodePositions)) {
@@ -484,8 +414,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
   let xRange = [minX - CONFIG.AXIS_PADDING, maxX + CONFIG.AXIS_PADDING];
   let yRange = [minY - CONFIG.AXIS_PADDING, maxY + CONFIG.AXIS_PADDING];
 
-  // Prevent over-zooming
-  let xSpan = xRange[1] - xRange[0];
+let xSpan = xRange[1] - xRange[0];
   let ySpan = yRange[1] - yRange[0];
 
   if (xSpan < CONFIG.MIN_VIEWPORT_SPAN) {
@@ -498,19 +427,16 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     yRange = [centerY - CONFIG.MIN_VIEWPORT_SPAN / 2, centerY + CONFIG.MIN_VIEWPORT_SPAN / 2];
   }
 
-  // Center chart horizontally
-  const centerXChart = (minX + maxX) / 2;
+const centerXChart = (minX + maxX) / 2;
   const centerXViewport = (xRange[0] + xRange[1]) / 2;
   const xShiftAmount = centerXChart - centerXViewport;
   xRange = [xRange[0] + xShiftAmount, xRange[1] + xShiftAmount];
 
-  // Build Plotly traces
-  const traces = [];
+const traces = [];
   const shapes = [];
   const annotations = [];
 
-  // Legend traces
-  traces.push({
+traces.push({
     x: [null],
     y: [null],
     mode: 'markers',
@@ -540,12 +466,10 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     hoverinfo: 'none'
   });
 
-  // Draw connection lines
-  const lineXs = [];
+const lineXs = [];
   const lineYs = [];
 
-  // Root connections
-  const validRootsInChart = roots.filter(r => r in nodePositions);
+const validRootsInChart = roots.filter(r => r in nodePositions);
   if (validRootsInChart.length > 1) {
     const rootPositions = {};
     for (const name of validRootsInChart) {
@@ -568,8 +492,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     }
   }
 
-  // Edge connections
-  for (const [parentName, childName] of edges) {
+for (const [parentName, childName] of edges) {
     if (parentName in nodePositions && childName in nodePositions) {
       const [x0, y0] = nodePositions[parentName];
       const [x1, y1] = nodePositions[childName];
@@ -582,8 +505,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     }
   }
 
-  // Add lines trace
-  if (lineXs.length > 0) {
+if (lineXs.length > 0) {
     traces.push({
       x: lineXs,
       y: lineYs,
@@ -594,8 +516,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     });
   }
 
-  // Add node boxes and text
-  for (const [nameKey, [x, y]] of Object.entries(nodePositions)) {
+for (const [nameKey, [x, y]] of Object.entries(nodePositions)) {
     const xShifted = x + xShiftAmount;
     const empData = employees[nameKey];
     const originalName = empData.name;
@@ -621,14 +542,12 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       nodeFontColor = CONFIG.FONT_COLOR_ON_DARK_BG;
     }
 
-    // Add box shape
-    const x0 = xShifted - boxWidth / 2;
+const x0 = xShifted - boxWidth / 2;
     const y0 = y - boxHeight / 2;
     const x1 = xShifted + boxWidth / 2;
     const y1 = y + boxHeight / 2;
 
-    // Parse multiple categories (comma-separated)
-    const categories = (empData.category || 'N/A')
+const categories = (empData.category || 'N/A')
       .split(',')
       .map(cat => cat.trim())
       .filter(cat => cat.length > 0);
@@ -647,8 +566,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
       categories: categories
     });
 
-    // Add text annotation using Plotly annotations
-    const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrappedRole}</span>`;
+const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrappedRole}</span>`;
 
     annotations.push({
       x: xShifted,
@@ -670,8 +588,7 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
     });
   }
 
-  // Create layout
-  const layout = {
+const layout = {
     title: {
       text: titleText,
       x: 0.5,
@@ -718,9 +635,6 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
   return { data: traces, layout, canvasWidth, canvasHeight };
 }
 
-/**
- * Create error Plotly chart
- */
 function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CONFIG.MIN_CANVAS_HEIGHT) {
   return {
     data: [{
@@ -743,62 +657,51 @@ function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CO
   };
 }
 
-/**
- * Convert HTML chart to PNG image using Puppeteer and capture position data
- */
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
   const htmlContent = generateOrgChartHTML(data, companyName, location);
   const plotlyData = generateOrgChartPlotly(data, companyName, location);
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
   const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
-  
+
   let browser;
   try {
-    browser = await puppeteer.launch({ 
-      headless: 'new', 
+    browser = await puppeteer.launch({
+      headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
     });
     const page = await browser.newPage();
-    
-    // Set viewport size to match calculated canvas
-    await page.setViewport({ width: canvasWidth, height: canvasHeight });
-    
-    // Load HTML content
-    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
-    
-    // Wait for Plotly to render
-    await page.waitForFunction(() => {
+
+await page.setViewport({ width: canvasWidth, height: canvasHeight });
+
+await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
+
+await page.waitForFunction(() => {
       const plotDiv = document.querySelector('#chart');
       return plotDiv && plotDiv.data && plotDiv.data.length > 0;
     }, { timeout: 5000 }).catch(() => {
       console.warn('⚠ Plotly rendering timeout, proceeding anyway');
     });
-    
-    // Additional wait for rendering
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Take screenshot
-    await page.screenshot({ path: outputPath, fullPage: false });
-    
+
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+await page.screenshot({ path: outputPath, fullPage: false });
+
     await browser.close();
-    console.log(`✓ PNG generated: ${outputPath}`);
+
     return true;
   } catch (error) {
-    console.error(`✗ Error generating PNG for ${companyName}: ${error.message}`);
+
     if (browser) await browser.close();
     return false;
   }
 }
 
-/**
- * Generate HTML with Plotly (static, no interactive features)
- */
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
   const plotlyData = generateOrgChartPlotly(data, companyName, location);
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
   const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
-  
+
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -811,14 +714,14 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: Calibri, Arial, sans-serif;
       background-color: white;
       height: 100vh;
       overflow: hidden;
     }
-    
+
     .container {
       width: 100%;
       height: 100%;
@@ -826,7 +729,7 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       flex-direction: column;
       overflow: hidden;
     }
-    
+
     .chart-wrapper {
       flex: 1;
       overflow: hidden;
@@ -835,11 +738,11 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       justify-content: center;
       align-items: center;
     }
-    
+
     #chart {
       background-color: white;
     }
-    
+
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
     .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -855,74 +758,60 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   <script>
     const data = ${JSON.stringify(plotlyData.data)};
     const layout = ${JSON.stringify(plotlyData.layout)};
-    const config = { 
-      responsive: false, 
+    const config = {
+      responsive: false,
       displayModeBar: false,
       staticPlot: true,
       scrollZoom: false
     };
-    
-    // Extract categories from shapes BEFORE Plotly renders
-    window.categoriesMap = {};
+
+window.categoriesMap = {};
     if (layout && layout.shapes) {
       layout.shapes.forEach((shape, index) => {
         if (shape.categories && Array.isArray(shape.categories)) {
           window.categoriesMap[index] = shape.categories;
-          console.log('Stored categories for shape', index, ':', shape.categories);
+
         }
       });
     }
-    console.log('Initial categories map:', window.categoriesMap);
-    
-    if (layout && layout.annotations) {
+
+if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
 
-    // Listen for messages from parent window
-    window.addEventListener('message', function(event) {
-      console.log('Message received in iframe:', event.data);
-      
-      if (event.data && event.data.type === 'highlightCategory') {
+window.addEventListener('message', function(event) {
+
+if (event.data && event.data.type === 'highlightCategory') {
         const category = event.data.category;
-        console.log('Highlighting category:', category);
-        
-        // Get the Plotly plot div
-        const plotDiv = document.querySelector('#chart');
-        console.log('Plot div found:', !!plotDiv);
-        
-        if (!plotDiv || !plotDiv.layout) {
-          console.log('Plot div or layout not found');
+
+const plotDiv = document.querySelector('#chart');
+
+if (!plotDiv || !plotDiv.layout) {
+
           return;
         }
 
-        // Access Plotly's internal layout
-        const plotLayout = plotDiv.layout;
+const plotLayout = plotDiv.layout;
         if (!plotLayout || !plotLayout.shapes) {
-          console.log('No shapes found in layout');
+
           return;
         }
 
-        console.log('Total shapes:', plotLayout.shapes.length);
-        console.log('Categories map:', window.categoriesMap);
-
-        // Create update object for Plotly
-        const updateObj = {};
+const updateObj = {};
         let shapesUpdated = 0;
-        
-        // Update shapes based on category
-        plotLayout.shapes.forEach((shape, index) => {
+
+plotLayout.shapes.forEach((shape, index) => {
           const shapeCategories = window.categoriesMap[index] || [];
-          console.log('Processing shape', index, '- stored categories:', shapeCategories, '- looking for:', category);
-          
-          if (category === 'All' || category === '') {
-            // Remove highlight
+
+if (category === 'All' || category === '') {
+
             updateObj[\`shapes[\${index}].line.width\`] = 0;
             updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
-            console.log('Removing highlight from shape', index);
+
           } else if (shapeCategories && shapeCategories.length > 0 && shapeCategories.includes(category)) {
-            // Highlight if category is in the person's categories array
+
             const categoryColors = {
               'IT': '#000000',
               'Generalized': '#000000',
@@ -935,21 +824,17 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
             };
             updateObj[\`shapes[\${index}].line.width\`] = 3;
             updateObj[\`shapes[\${index}].line.color\`] = categoryColors[category] || '#000';
-            console.log('Highlighting shape', index, 'with category:', category);
+
             shapesUpdated++;
           } else {
-            // No match, remove highlight
+
             updateObj[\`shapes[\${index}].line.width\`] = 0;
             updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
           }
         });
 
-        console.log('Update object:', updateObj);
-        console.log('Shapes updated:', shapesUpdated);
+Plotly.relayout(plotDiv, updateObj);
 
-        // Redraw the plot
-        Plotly.relayout(plotDiv, updateObj);
-        console.log('Plot redrawn');
       }
     });
   </script>
@@ -960,13 +845,6 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   return html;
 }
 
-// ================================
-// EXPORT FUNCTIONS FOR API
-// ================================
-
-/**
- * Generate org chart HTML for a specific company from CSV data
- */
 async function generateOrgChartForCompany(csvFilePath, companyName) {
   try {
     if (!fs.existsSync(csvFilePath)) {
@@ -975,13 +853,11 @@ async function generateOrgChartForCompany(csvFilePath, companyName) {
 
     const allData = await readCSVFile(csvFilePath);
 
-    // Ensure hierarchy column exists
-    allData.forEach(row => {
+allData.forEach(row => {
       row.hierarchy = row.hierarchy || 'Other';
     });
 
-    // Filter data for the specific company
-    const companyData = allData.filter(row => row['Company Name'] === companyName);
+const companyData = allData.filter(row => row['Company Name'] === companyName);
 
     if (!companyData.length) {
       throw new Error(`No data found for company: ${companyName}`);
@@ -996,14 +872,11 @@ async function generateOrgChartForCompany(csvFilePath, companyName) {
 
     return html;
   } catch (error) {
-    console.error(`Error generating org chart for ${companyName}:`, error.message);
+
     throw error;
   }
 }
 
-/**
- * Get list of all companies from CSV file
- */
 async function getCompaniesFromCSV(csvFilePath) {
   try {
     if (!fs.existsSync(csvFilePath)) {
@@ -1014,45 +887,37 @@ async function getCompaniesFromCSV(csvFilePath) {
     const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
     return uniqueCompanies;
   } catch (error) {
-    console.error('Error getting companies from CSV:', error.message);
+
     throw error;
   }
 }
-
-// ================================
-// MAIN EXECUTION
-// ================================
 
 async function main() {
   const csvFilePath = 'Nexora Buying groups 13_02_2026.csv';
   const OUTPUT_FOLDER = 'org_charts_output_js';
 
   try {
-    // Create output folder
+
     if (!fs.existsSync(OUTPUT_FOLDER)) {
       fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
-      console.log(`✓ Created directory: ${OUTPUT_FOLDER}`);
+
     } else {
-      // Check for existing HTML files to avoid regenerating
+
       const existingFiles = fs.readdirSync(OUTPUT_FOLDER);
       const existingHtmlFiles = existingFiles.filter(f => f.endsWith('.html'));
       if (existingHtmlFiles.length > 0) {
-        console.log(`✓ Found ${existingHtmlFiles.length} existing org chart(s). Will only generate new ones.`);
+
       }
     }
 
-    // Read CSV file
-    if (!fs.existsSync(csvFilePath)) {
-      console.error(`✗ File not found: ${csvFilePath}`);
+if (!fs.existsSync(csvFilePath)) {
+
       return;
     }
 
     const data = await readCSVFile(csvFilePath);
 
-    console.log(`✓ Loaded data from: ${csvFilePath}`);
-
-    // Handle missing columns
-    if (!data[0] || !('Company Name' in data[0])) {
+if (!data[0] || !('Company Name' in data[0])) {
       console.warn('⚠ "Company Name" column not found. Processing as "Overall_Organization".');
       data.forEach(row => row['Company Name'] = 'Overall_Organization');
     }
@@ -1067,26 +932,22 @@ async function main() {
       console.warn('⚠ "Location" column not found. Titles will not include location.');
     }
 
-    // Get unique companies
-    const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
+const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
 
     if (!uniqueCompanies.length) {
-      console.log('No valid company names found to process.');
+
       return;
     }
 
-    console.log(`Found companies: ${uniqueCompanies.join(', ')}`);
-
-    const generatedFiles = [];
+const generatedFiles = [];
     const chartMappingData = [];
     const allPersonDetails = [];
 
-    // Get existing HTML files to avoid regenerating
-    const existingFiles = fs.readdirSync(OUTPUT_FOLDER).filter(f => f.endsWith('.html'));
+const existingFiles = fs.readdirSync(OUTPUT_FOLDER).filter(f => f.endsWith('.html'));
     const existingCompanies = new Set();
-    
+
     for (const file of existingFiles) {
-      // Extract company name from filename (remove .html extension)
+
       const companyKey = file.replace('.html', '');
       existingCompanies.add(companyKey);
     }
@@ -1094,17 +955,16 @@ async function main() {
     let newChartsGenerated = 0;
     let chartsSkipped = 0;
 
-    // Generate charts for each company
-    for (const companyName of uniqueCompanies) {
+for (const companyName of uniqueCompanies) {
       const companyData = data.filter(row => row['Company Name'] === companyName);
 
       if (!companyData.length) {
-        console.log(`No data for company: ${companyName}. Skipping.`);
+
         continue;
       }
 
       if (!companyData[0]['Name'] || !companyData[0]['Role']) {
-        console.log(`Company ${companyName} missing 'Name' or 'Role' columns. Skipping.`);
+
         continue;
       }
 
@@ -1113,8 +973,7 @@ async function main() {
         companyLocation = String(companyData[0]['Location']).trim();
       }
 
-      // Create filename
-      const safeCompanyName = sanitizeFilename(companyName);
+const safeCompanyName = sanitizeFilename(companyName);
       let baseFilename = '';
 
       if (companyLocation) {
@@ -1124,37 +983,31 @@ async function main() {
         baseFilename = `${safeCompanyName}.html`;
       }
 
-      // Check if chart already exists
-      const fileKeyWithoutExtension = baseFilename.replace('.html', '');
+const fileKeyWithoutExtension = baseFilename.replace('.html', '');
       if (existingCompanies.has(fileKeyWithoutExtension)) {
-        console.log(`⊘ Chart already exists for: ${companyName}${companyLocation ? ` (${companyLocation})` : ''}`);
+
         chartsSkipped++;
-        
-        // Still add to mapping data
-        chartMappingData.push({
+
+chartMappingData.push({
           'Account Name': companyName,
           'Chart Name': baseFilename
         });
         continue;
       }
 
-      console.log(`\nGenerating HTML chart for company: ${companyName}...`);
+const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
 
-      const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
-
-      // Generate HTML file
-      try {
+try {
         const htmlContent = generateOrgChartHTML(companyData, companyName, companyLocation);
         fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
-        console.log(`✓ Chart for ${companyName} saved to ${outputFilePath}`);
+
         generatedFiles.push(outputFilePath);
         newChartsGenerated++;
       } catch (error) {
-        console.error(`✗ Error generating HTML for ${companyName}: ${error.message}`);
+
       }
 
-      // Collect person details from company data
-      for (const person of companyData) {
+for (const person of companyData) {
         if (person.Name && person.email) {
           allPersonDetails.push({
             'Unique ID': person['Unique ID'] || '',
@@ -1168,44 +1021,37 @@ async function main() {
         }
       }
 
-      // Add to mapping data
-      chartMappingData.push({
+chartMappingData.push({
         'Account Name': companyName,
         'Chart Name': baseFilename
       });
     }
 
-    console.log(`\n📈 Summary: ${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`);
+if (allPersonDetails.length > 0) {
 
-    // Create personDetails.csv from the Excel data
-    if (allPersonDetails.length > 0) {
-      console.log('\n📝 Creating personDetails.csv...');
       const csvPath = path.join(OUTPUT_FOLDER, 'personDetails.csv');
       const csvContent = convertToCSV(allPersonDetails);
       fs.writeFileSync(csvPath, csvContent, 'utf-8');
-      console.log(`✓ Person details saved to: ${csvPath}`);
+
       generatedFiles.push(csvPath);
     }
 
-    // Create mapping Excel file
-    if (chartMappingData.length > 0) {
-      console.log('\n📝 Creating company-to-chart mapping file...');
+if (chartMappingData.length > 0) {
+
       const mappingWorkbook = XLSX.utils.book_new();
       const mappingSheet = XLSX.utils.json_to_sheet(chartMappingData);
       XLSX.utils.book_append_sheet(mappingWorkbook, mappingSheet, 'Mapping');
 
       const mappingExcelPath = path.join(OUTPUT_FOLDER, 'chart_filename_mapping.xlsx');
       XLSX.writeFile(mappingWorkbook, mappingExcelPath);
-      console.log(`✓ Mapping file saved to: ${mappingExcelPath}`);
+
       generatedFiles.push(mappingExcelPath);
     }
 
-    // Create zip file
-    if (generatedFiles.length > 0) {
+if (generatedFiles.length > 0) {
       const zipFilePath = path.join(OUTPUT_FOLDER, 'organization_charts.zip');
-      console.log(`\nZipping generated files to: ${zipFilePath}...`);
 
-      const output = fs.createWriteStream(zipFilePath);
+const output = fs.createWriteStream(zipFilePath);
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       archive.pipe(output);
@@ -1216,48 +1062,37 @@ async function main() {
 
       await archive.finalize();
 
-      console.log(`✓ Successfully created zip file.`);
-      console.log(`\nFinal zip file location: ${zipFilePath}`);
-    } else {
-      console.log('\nNo charts were generated, so no zip file was created.');
+} else {
+
     }
 
   } catch (error) {
-    console.error(`✗ An error occurred: ${error.message}`);
-    console.error(error);
-  }
+
+}
 }
 
-/**
- * Convert array of objects to CSV string
- */
 function convertToCSV(data) {
   if (!data || data.length === 0) return '';
-  
+
   const headers = Object.keys(data[0]);
   const csvHeaders = headers.join(',');
-  
+
   const csvRows = data.map(row => {
     return headers.map(header => {
       const value = row[header];
-      // Escape quotes and wrap in quotes if contains comma
+
       if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
         return `"${value.replace(/"/g, '""')}"`;
       }
       return value;
     }).join(',');
   });
-  
+
   return [csvHeaders, ...csvRows].join('\n');
 }
 
-// Run main function
-// DISABLED: main() is now called on-demand via API routes
-// main().catch(console.error);
-
 module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
 
-// Uncomment to run directly
 if (require.main === module) {
   main().catch(console.error);
 }

@@ -3,10 +3,9 @@ import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
-// import PerformanceMetrics from '../PerformanceMetrics';
+
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
-// Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -95,7 +94,6 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
-// Custom Dropdown Component with Icons for Products
 const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -205,20 +203,19 @@ const RenewalIntelligence = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [revealedRows, setRevealedRows] = useState(new Set()); // Track which rows are revealed
-    const [selectedRows, setSelectedRows] = useState(new Set()); // Track selected rows for checkbox
+    const [revealedRows, setRevealedRows] = useState(new Set());
+    const [selectedRows, setSelectedRows] = useState(new Set());
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [measurements, setMeasurements] = useState({});
     const rowsPerPage = 9;
     const filterRef = useRef(null);
 
-    // Render logo/icon for category
-    const renderCategoryLogo = (categoryName) => {
+const renderCategoryLogo = (categoryName) => {
       if (!categoryName) return null;
-      
+
       const logoPath = getLogoPath(categoryName);
-      
+
       if (logoPath) {
         return (
           <img
@@ -239,7 +236,7 @@ const RenewalIntelligence = () => {
           />
         );
       }
-      
+
       const iconData = getTechIcon(categoryName);
       if (iconData) {
         const { component: IconComponent, color } = iconData;
@@ -258,26 +255,23 @@ const RenewalIntelligence = () => {
           />
         );
       }
-      
+
       return null;
     };
 
-    // Icon mapping for products
-    const getProductIcon = (productName) => {
+const getProductIcon = (productName) => {
         if (!productName) return null;
-        
+
         const productLower = productName.toLowerCase();
-        
-        // Check for SAP or VMware anywhere in the name (priority check)
-        if (productLower.includes('sap')) {
+
+if (productLower.includes('sap')) {
             return 'SiSap';
         }
         if (productLower.includes('vmware')) {
             return 'SiVmware';
         }
-        
-        // Map product names to react-icons component names
-        const iconMap = {
+
+const iconMap = {
             'aws': 'SiAmazonaws',
             'amazon': 'SiAmazonaws',
             'azure': 'SiMicrosoftazure',
@@ -331,18 +325,16 @@ const RenewalIntelligence = () => {
             'oracle erp': 'SiOracle',
             'oracle cloud applications': 'SiOracle'
         };
-        
+
         const iconName = iconMap[productLower];
         return iconName;
     };
 
-    // Render icon component
-    const renderProductIcon = (productName) => {
+const renderProductIcon = (productName) => {
         if (!productName) return null;
-        
-        // First try to get logo image
-        const logoPath = getLogoPath(productName);
-        
+
+const logoPath = getLogoPath(productName);
+
         if (logoPath) {
             return (
                 <img
@@ -363,9 +355,8 @@ const RenewalIntelligence = () => {
                 />
             );
         }
-        
-        // Try to get colored icon (includes robot icon for AI/ML)
-        const iconData = getTechIcon(productName);
+
+const iconData = getTechIcon(productName);
         if (iconData) {
             const { component: IconComponent, color } = iconData;
             return (
@@ -383,14 +374,13 @@ const RenewalIntelligence = () => {
                 />
             );
         }
-        
-        // Fallback to SI icon if no logo or tech icon found
-        const iconName = getProductIcon(productName);
+
+const iconName = getProductIcon(productName);
         if (!iconName) return null;
-        
+
         const IconComponent = SiIcons[iconName];
         if (!IconComponent) return null;
-        
+
         return (
             <IconComponent
                 size={16}
@@ -404,18 +394,16 @@ const RenewalIntelligence = () => {
         );
     };
 
-    // Fetch renewal data once on component mount
-    useEffect(() => {
+useEffect(() => {
         setLoading(true);
         performanceMonitor.reset();
         performanceMonitor.start('total-load');
-        
+
         const fetchRenewalData = async () => {
             try {
                 setLoading(true);
-                
-                // Fetch metadata and first page in parallel
-                performanceMonitor.start('api-fetch');
+
+performanceMonitor.start('api-fetch');
                 const [renewalResponse, companyDetailsResponse, metadataResponse] = await Promise.all([
                     fetch('/api/renewal-intelligence?page=1&limit=500'),
                     fetch('/api/company-details'),
@@ -430,18 +418,16 @@ const RenewalIntelligence = () => {
                 performanceMonitor.end('parse-json');
 
                 performanceMonitor.start('process-data');
-                // Use data from response (first page only)
+
                 const data = renewalData.data || renewalData;
-                
-                // Use metadata for categories and products
-                const uniqueCategories = metadata.categories || [];
+
+const uniqueCategories = metadata.categories || [];
                 const uniqueProducts = metadata.products || [];
-                
+
                 setCategories(uniqueCategories);
                 setProducts(uniqueProducts);
 
-                // Add category, domain, and linkedinUrl to renewal data
-                const dataWithDetails = data.map(row => {
+const dataWithDetails = data.map(row => {
                     const companyDetails = companyDetailsMap[row.companyName] || {};
                     return {
                         ...row,
@@ -454,12 +440,12 @@ const RenewalIntelligence = () => {
                 performanceMonitor.start('state-update');
                 setTableData(dataWithDetails);
                 performanceMonitor.end('state-update');
-                
+
                 performanceMonitor.end('total-load');
                 setMeasurements(performanceMonitor.getAllMeasurements());
                 performanceMonitor.logSummary();
             } catch (error) {
-                console.error('Error fetching renewal data:', error);
+
                 setTableData([]);
             } finally {
                 setLoading(false);
@@ -468,8 +454,7 @@ const RenewalIntelligence = () => {
         fetchRenewalData();
     }, []);
 
-    // Handle click outside to close dropdowns
-    useEffect(() => {
+useEffect(() => {
         const handleClickOutside = (event) => {
             if (filterRef.current && !filterRef.current.contains(event.target)) {
                 setActiveFilterMenu(null);
@@ -497,8 +482,7 @@ const RenewalIntelligence = () => {
             return;
         }
 
-        // Create CSV header
-        const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
+const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
         const csvContent = [
             headers.join(','),
             ...dataToDownload.map(row =>
@@ -508,8 +492,7 @@ const RenewalIntelligence = () => {
             )
         ].join('\n');
 
-        // Create blob and download
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
@@ -544,8 +527,7 @@ const RenewalIntelligence = () => {
         return [...new Set(allCategories)].sort();
     };
 
-    // Get products for a specific category
-    const getProductsByCategory = (category) => {
+const getProductsByCategory = (category) => {
         if (!tableData) return [];
         const products = tableData
             .filter(item => item.category === category)
@@ -553,8 +535,7 @@ const RenewalIntelligence = () => {
         return [...new Set(products)].sort();
     };
 
-    // Helper function to count accounts by category
-    const getAccountCountByCategory = (category) => {
+const getAccountCountByCategory = (category) => {
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -565,8 +546,7 @@ const RenewalIntelligence = () => {
         return uniqueAccounts.size;
     };
 
-    // Helper function to count accounts by product
-    const getAccountCountByProduct = (product) => {
+const getAccountCountByProduct = (product) => {
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -577,8 +557,7 @@ const RenewalIntelligence = () => {
         return uniqueAccounts.size;
     };
 
-    // Helper function to count accounts by renewal timeline (qtr)
-    const getAccountCountByQtr = (qtr) => {
+const getAccountCountByQtr = (qtr) => {
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -589,11 +568,10 @@ const RenewalIntelligence = () => {
         return uniqueAccounts.size;
     };
 
-    // Check if mandatory filters are selected
-    const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 0;
+const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 0;
 
     const filteredData = tableData.filter(row => {
-        // Mandatory filters - must have category and qtr
+
         if (!hasMandatoryFilters) return false;
 
         const companyMatch = filters.companyName.length === 0 || filters.companyName.includes(row.companyName);
@@ -603,8 +581,7 @@ const RenewalIntelligence = () => {
         return companyMatch && categoryMatch && productMatch && qtrMatch;
     });
 
-    // Calculate chart data from filtered data
-    const getChartData = () => {
+const getChartData = () => {
         const qtrCounts = {};
         const colors = {
             'Q1 2025': '#06b6d4',
@@ -626,9 +603,7 @@ const RenewalIntelligence = () => {
             color: colors[qtr] || '#9ca3af'
         }));
 
-        // Sort quarters from future to past (2026 first, then 2025, etc.)
-        // Within each year, sort Q1, Q2, Q3, Q4
-        chartArray.sort((a, b) => {
+chartArray.sort((a, b) => {
             const parseQtr = (qtrStr) => {
                 const match = qtrStr.match(/Q(\d+)\s(\d{4})/);
                 if (!match) return { year: 0, quarter: 0 };
@@ -638,8 +613,7 @@ const RenewalIntelligence = () => {
             const aQtr = parseQtr(a.label);
             const bQtr = parseQtr(b.label);
 
-            // Sort by year descending (future first), then by quarter ascending (Q1, Q2, Q3, Q4)
-            if (aQtr.year !== bQtr.year) {
+if (aQtr.year !== bQtr.year) {
                 return bQtr.year - aQtr.year;
             }
             return aQtr.quarter - bQtr.quarter;
@@ -663,20 +637,20 @@ const RenewalIntelligence = () => {
           borderRadius: '8px',
           padding: '40px 20px'
         }}>
-          {/* Nexora Logo */}
+          {}
           <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
 
-          {/* Loading Text */}
+          {}
           <h3 style={{
             margin: '0 0 10px 0',
             color: '#1f2937',
             fontSize: '18px',
             fontWeight: '600'
           }}>
-            
+
           </h3>
 
-          {/* Subtext */}
+          {}
           <p style={{
             margin: '0 0 30px 0',
             color: '#6b7280',
@@ -687,7 +661,7 @@ const RenewalIntelligence = () => {
             Fetching and processing renewal data...
           </p>
 
-          {/* Progress Dots */}
+          {}
           <div style={{
             display: 'flex',
             gap: '8px',
@@ -716,7 +690,7 @@ const RenewalIntelligence = () => {
             }} />
           </div>
 
-          {/* Styles for animations */}
+          {}
           <style>{`
             @keyframes bounce {
               0%, 80%, 100% {
@@ -739,21 +713,7 @@ const RenewalIntelligence = () => {
             <div className="header-actions">
                 <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
-                  {/* <div className="search-bar">
-                    <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <input 
-                      type="text" 
-                      placeholder="Search accounts..." 
-                      value={filters.companyName}
-                      onChange={(e) => handleFilterChange('companyName', e.target.value)}
-                    />
-                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="10" cy="10" r="7"></circle>
-                      <path d="m20 20-4.5-4.5"></path>
-                    </svg>
-                  </div> */}
+                  {}
                 </div>
             </div>
 
@@ -762,7 +722,7 @@ const RenewalIntelligence = () => {
             <div style={{ marginBottom: '20px' }} ref={filterRef}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                {/* Filter Button - Always visible */}
+                {}
                 <div style={{ position: 'relative' }}>
                   <button
                     onClick={() => setShowFilters(!showFilters)}
@@ -792,7 +752,7 @@ const RenewalIntelligence = () => {
                     <span>+ Filter</span>
                   </button>
 
-                {/* Filter Menu Dropdown */}
+                {}
                 {showFilters && (
                   <div
                     style={{
@@ -842,7 +802,7 @@ const RenewalIntelligence = () => {
                 )}
               </div>
 
-              {/* Category Filter - Show only when not selected */}
+              {}
               {activeFilterMenu !== 'category' && filters.category.length === 0 && (
                 <div style={{ position: 'relative' }}>
                   <button
@@ -875,7 +835,7 @@ const RenewalIntelligence = () => {
                 </div>
               )}
 
-              {/* Renewal Timeline Filter - Always Visible (Mandatory) */}
+              {}
               {activeFilterMenu !== 'qtr' && (
                 <div style={{ position: 'relative' }}>
                   <button
@@ -908,7 +868,7 @@ const RenewalIntelligence = () => {
                 </div>
               )}
 
-                {/* Company Name Filter Chip */}
+                {}
                 {activeFilterMenu === 'companyName' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
@@ -958,10 +918,10 @@ const RenewalIntelligence = () => {
                       <div
                         onClick={() => {
                           if (filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0) {
-                            // If all are selected, deselect all
+
                             handleFilterChange('companyName', []);
                           } else {
-                            // Otherwise select all
+
                             handleFilterChange('companyName', getUniqueCompanies());
                           }
                         }}
@@ -1026,7 +986,7 @@ const RenewalIntelligence = () => {
                         </div>
                       ))}
 
-                      {/* Save Button */}
+                      {}
                       <div style={{
                         padding: '12px',
                         borderTop: '1px solid #e5e7eb',
@@ -1062,7 +1022,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Category Filter Chip */}
+                {}
                 {activeFilterMenu === 'category' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
@@ -1185,7 +1145,7 @@ const RenewalIntelligence = () => {
                         </div>
                       ))}
 
-                      {/* Save Button */}
+                      {}
                       <div style={{
                         padding: '12px',
                         borderTop: '1px solid #e5e7eb',
@@ -1221,7 +1181,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Product Filter Chip */}
+                {}
                 {activeFilterMenu === 'product' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
@@ -1301,8 +1261,8 @@ const RenewalIntelligence = () => {
                         />
                         All
                       </div>
-                      
-                      {/* Products flat list */}
+
+                      {}
                       {getUniqueProducts().map((option, idx) => (
                         <div
                           key={idx}
@@ -1346,7 +1306,7 @@ const RenewalIntelligence = () => {
                         </div>
                       ))}
 
-                      {/* Save Button */}
+                      {}
                       <div style={{
                         padding: '12px',
                         borderTop: '1px solid #e5e7eb',
@@ -1382,7 +1342,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Renewal Timeline Filter Chip */}
+                {}
                 {activeFilterMenu === 'qtr' && (
                   <div style={{ position: 'relative' }}>
                     <div style={{
@@ -1432,10 +1392,10 @@ const RenewalIntelligence = () => {
                       <div
                         onClick={() => {
                           if (filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0) {
-                            // If all are selected, deselect all
+
                             handleFilterChange('qtr', []);
                           } else {
-                            // Otherwise select all
+
                             handleFilterChange('qtr', getUniqueQtrs());
                           }
                         }}
@@ -1506,7 +1466,7 @@ const RenewalIntelligence = () => {
                         </div>
                       ))}
 
-                      {/* Save Button */}
+                      {}
                       <div style={{
                         padding: '12px',
                         borderTop: '1px solid #e5e7eb',
@@ -1542,7 +1502,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Display saved filter tags */}
+                {}
                 {filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
@@ -1581,7 +1541,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Display saved category filter tag */}
+                {}
                 {filters.category.length > 0 && activeFilterMenu !== 'category' && (
                   <div style={{
                     backgroundColor: '#dbeafe',
@@ -1620,7 +1580,7 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
 
-                {/* Display saved product filter tag */}
+                {}
                 {filters.product.length > 0 && activeFilterMenu !== 'product' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
@@ -1659,8 +1619,8 @@ const RenewalIntelligence = () => {
                   </div>
                 )}
                 </div>
-                
-                {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+
+                {}
                 {filters.category.length > 0 && filters.qtr.length > 0 && (
                   <button
                     onClick={() => downloadCSV(filteredData)}
@@ -1680,9 +1640,9 @@ const RenewalIntelligence = () => {
               </div>
             </div>
 
-            {/* Main Content Container */}
+            {}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', minWidth: 0 }}>
-                {/* Table Section - Left */}
+                {}
                 <div style={{ minWidth: 0 }}>
                     {loading ? (
                         <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1923,7 +1883,7 @@ const RenewalIntelligence = () => {
                         </div>
                     )}
 
-                    {/* Pagination Controls - All in One Row */}
+                    {}
                     {hasMandatoryFilters && filteredData.length > rowsPerPage && (
                     <div style={{
                         display: 'flex',
@@ -1942,7 +1902,7 @@ const RenewalIntelligence = () => {
                             Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
                         </div>
 
-                        {/* Pagination Buttons */}
+                        {}
                         <div style={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -1967,7 +1927,7 @@ const RenewalIntelligence = () => {
 
                                 return (
                                     <>
-                                        {/* First Page Button */}
+                                        {}
                                         <button
                                             key="first"
                                             onClick={() => setCurrentPage(1)}
@@ -2001,7 +1961,7 @@ const RenewalIntelligence = () => {
                                             ≪
                                         </button>
 
-                                        {/* Previous Page Button */}
+                                        {}
                                         <button
                                             key="prev"
                                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -2035,7 +1995,7 @@ const RenewalIntelligence = () => {
                                             ‹
                                         </button>
 
-                                        {/* Page Numbers */}
+                                        {}
                                         {startPage > 1 && (
                                             <>
                                                 <button
@@ -2134,7 +2094,7 @@ const RenewalIntelligence = () => {
                                             </>
                                         )}
 
-                                        {/* Next Page Button */}
+                                        {}
                                         <button
                                             key="next"
                                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -2168,7 +2128,7 @@ const RenewalIntelligence = () => {
                                             ›
                                         </button>
 
-                                        {/* Last Page Button */}
+                                        {}
                                         <button
                                             key="last"
                                             onClick={() => setCurrentPage(totalPages)}
@@ -2217,100 +2177,11 @@ const RenewalIntelligence = () => {
                     )}
                 </div>
 
-                {/* Bar Chart Section - Right */}
-                {/* <div style={{
-                    backgroundColor: 'white',
-                    borderRadius: '8px',
-                    padding: '15px',
-                    border: '1px solid #d1d5db',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: 0,
-                    flexShrink: 0,
-                    height: '400px'
-                }}>
-                    <h2 style={{ fontSize: '0.9rem', fontWeight: '600', color: '#374151', marginBottom: '15px', margin: 0 }}>
-                        Renewal Distribution
-                    </h2>
-                    {filteredData.length === 0 ? (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flex: 1,
-                            color: '#9ca3af',
-                            fontSize: '12px'
-                        }}>
-                            Select filters
-                        </div>
-                    ) : chartData.length === 0 ? (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flex: 1,
-                            color: '#9ca3af',
-                            fontSize: '12px'
-                        }}>
-                            No data
-                        </div>
-                    ) : (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'flex-end',
-                            justifyContent: 'space-between',
-                            flex: 1,
-                            gap: '4px',
-                            minWidth: 0
-                        }}>
-                            {chartData.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 0 }}>
-                                    <div style={{
-                                        fontSize: '10px',
-                                        fontWeight: '600',
-                                        color: '#1f2937',
-                                        marginBottom: '4px',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        {item.value}
-                                    </div>
-                                    <div style={{
-                                        width: '100%',
-                                        maxWidth: '30px',
-                                        height: maxChartValue > 0 ? `${(item.value / maxChartValue) * 250}px` : '0px',
-                                        backgroundColor: item.color,
-                                        borderRadius: '2px 2px 0 0',
-                                        transition: 'all 0.3s ease',
-                                        cursor: 'pointer'
-                                    }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.opacity = '0.8';
-                                            e.target.style.transform = 'scaleY(1.05)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.opacity = '1';
-                                            e.target.style.transform = 'scaleY(1)';
-                                        }}
-                                    ></div>
-                                    <div style={{
-                                        fontSize: '8px',
-                                        color: '#6b7280',
-                                        marginTop: '4px',
-                                        textAlign: 'center',
-                                        maxWidth: '50px',
-                                        wordWrap: 'break-word',
-                                        lineHeight: '1.1'
-                                    }}>
-                                        {item.label}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div> */}
+                {}
+                {}
             </div>
 
-            {/* Custom Tooltip */}
+            {}
             {tooltip.show && (
                 <div
                     style={{
@@ -2381,8 +2252,7 @@ const RenewalIntelligence = () => {
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
 
-                /* keep THs non-sticky individually to avoid width/offset misalignment */
-                .sticky-header th {
+.sticky-header th {
                     position: sticky;
                     top: 0;
                 }
@@ -2407,15 +2277,13 @@ const RenewalIntelligence = () => {
                     box-sizing: border-box;
                 }
 
-                /* Explicitly enforce column width constraints so Renewal Intelligence is visible */
-                td:nth-child(1), th:nth-child(1) { width: 50px !important; } /* Checkbox */
-                td:nth-child(2), th:nth-child(2) { width: 120px !important; } /* Reveal */
-                td:nth-child(3), th:nth-child(3) { width: 200px !important; } /* Company Name */
-                td:nth-child(4), th:nth-child(4) { width: 200px !important; } /* Product */
-                td:nth-child(5), th:nth-child(5) { width: 200px !important; } /* Renewal Intelligence */
+td:nth-child(1), th:nth-child(1) { width: 50px !important; }
+                td:nth-child(2), th:nth-child(2) { width: 120px !important; }
+                td:nth-child(3), th:nth-child(3) { width: 200px !important; }
+                td:nth-child(4), th:nth-child(4) { width: 200px !important; }
+                td:nth-child(5), th:nth-child(5) { width: 200px !important; }
 
-                /* Add padding to Reveal column for spacing */
-                td:nth-child(2), th:nth-child(2) { 
+td:nth-child(2), th:nth-child(2) {
                   padding-right: 30px !important;
                 }
 
@@ -2436,7 +2304,7 @@ const RenewalIntelligence = () => {
                     background-color: #f5f5f5;
                 }
             `}</style>
-            {/* <PerformanceMetrics measurements={measurements} isVisible={true} /> */}
+            {}
         </div>
         </>
     );

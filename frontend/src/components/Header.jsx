@@ -29,7 +29,7 @@ const Header = ({ username, onLogout }) => {
   return (
     <header className="header">
       <div className="profile-dropdown" ref={profileRef}>
-        <button 
+        <button
           className="profile-avatar-btn"
           onClick={() => setShowProfileMenu(!showProfileMenu)}
           title="Profile"
@@ -38,13 +38,13 @@ const Header = ({ username, onLogout }) => {
             {getInitials(username)}
           </div>
         </button>
-        
+
         {showProfileMenu && (
           <div className="profile-menu">
             <div className="profile-menu-header">
               <p className="profile-menu-name">{username}</p>
             </div>
-            <button 
+            <button
               className="logout-btn"
               onClick={() => {
                 onLogout && onLogout();

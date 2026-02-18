@@ -16,78 +16,70 @@ const BuyingGroup = () => {
     const [zoomLevel, setZoomLevel] = useState(50);
     const iframeRef = useRef(null);
 
-    // Fetch list of companies on component mount
-    useEffect(() => {
+useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/org-chart/companies');
+                const response = await fetch('/api/buying-group/companies');
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
                     setSelectedCompany(data.companies[0]);
                 }
             } catch (err) {
-                console.error('Error fetching companies:', err);
+
                 setError('Failed to load companies');
             }
         };
         fetchCompanies();
     }, []);
 
-    // Fetch categories on component mount
-    useEffect(() => {
+useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/org-chart/categories');
+                const response = await fetch('/api/buying-group/categories');
                 const data = await response.json();
                 let fetchedCategories = data.categories || [];
-                
-                // Transform "AI" to "AI/ML"
-                fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
-                
-                // Define the desired order of categories - always show all
-                const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud', 'Other'];
-                
-                // Always set all categories in the desired order
-                setCategories(desiredOrder);
+
+fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
+
+const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud', 'Other'];
+
+setCategories(desiredOrder);
             } catch (err) {
-                console.error('Error fetching categories:', err);
-                // Even on error, show all categories
-                setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
+
+setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
             }
         };
         fetchCategories();
     }, []);
 
-    // Fetch person details from Excel file on component mount (no category filter)
-    useEffect(() => {
+useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/org-chart/person-details');
+                const response = await fetch('/api/buying-group/person-details');
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Person details data received:', data);
+
                     setPersonDetailsData(data);
                 } else {
-                    console.error('Failed to fetch person details, status:', response.status);
+
                 }
             } catch (err) {
-                console.error('Error loading person details:', err);
+
             }
         };
         fetchPersonDetails();
     }, []);
 
-    // Fetch org chart when company changes
-    useEffect(() => {
+useEffect(() => {
         if (!selectedCompany) return;
 
         const fetchOrgChart = async () => {
             setLoading(true);
             setError('');
             try {
-                // First, request to generate the org chart for this specific company
-                const generateResponse = await fetch('http://localhost:5000/api/org-chart/generate-selected', {
+                // Pre-generate the org chart
+                const generateResponse = await fetch('/api/buying-group/generate-org-chart', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -99,17 +91,16 @@ const BuyingGroup = () => {
                     console.warn('Could not pre-generate chart, will fetch on-demand');
                 }
 
-                // Set the iframe URL directly to the backend endpoint
-                const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const chartUrl = `http://localhost:5000/api/org-chart/${encodedCompanyName}`;
+const encodedCompanyName = encodeURIComponent(selectedCompany);
+                const chartUrl = `/api/buying-group/org-chart/${encodedCompanyName}`;
                 setOrgChartUrl(chartUrl);
-                setOrgChartHtml(''); // Clear HTML since we're using URL now
+                setOrgChartHtml('');
             } catch (err) {
-                console.error('Error fetching org chart:', err);
+
                 setError('Failed to generate org chart. Please try again.');
                 setOrgChartUrl('');
             } finally {
-                // Add 2-second delay before hiding loading screen
+
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000);
@@ -119,54 +110,48 @@ const BuyingGroup = () => {
         fetchOrgChart();
     }, [selectedCompany]);
 
-    // Apply zoom to chart content inside iframe
-    useEffect(() => {
+useEffect(() => {
         if (!iframeRef.current || !orgChartUrl) return;
 
         const iframe = iframeRef.current;
-        
-        // Listen for optimal zoom from iframe
-        const handleMessage = (event) => {
+
+const handleMessage = (event) => {
             if (event.data && event.data.type === 'optimalZoomCalculated') {
                 setZoomLevel(event.data.zoomLevel);
             }
         };
-        
+
         window.addEventListener('message', handleMessage);
-        
+
         return () => {
             window.removeEventListener('message', handleMessage);
         };
     }, [orgChartUrl]);
 
-    // Apply zoom to chart content inside iframe when zoom level changes
-    useEffect(() => {
+useEffect(() => {
         if (!iframeRef.current || !orgChartUrl) return;
 
         const iframe = iframeRef.current;
-        
-        // Wait for iframe to load
-        const applyZoom = () => {
+
+const applyZoom = () => {
             try {
                 iframe.contentWindow.postMessage({
                     type: 'setZoom',
                     zoomLevel: zoomLevel
                 }, '*');
             } catch (err) {
-                console.log('Cannot send zoom message to iframe:', err);
+
             }
         };
 
-        // Apply zoom after iframe loads
-        setTimeout(applyZoom, 500);
+setTimeout(applyZoom, 500);
     }, [zoomLevel, orgChartUrl]);
 
-    // Send category highlighting to iframe when selectedCategory changes
-    useEffect(() => {
+useEffect(() => {
         if (!iframeRef.current || !orgChartUrl) return;
 
         const iframe = iframeRef.current;
-        
+
         const highlightCategory = () => {
             try {
                 iframe.contentWindow.postMessage({
@@ -174,12 +159,11 @@ const BuyingGroup = () => {
                     category: selectedCategory || 'All'
                 }, '*');
             } catch (err) {
-                console.log('Cannot send highlight message to iframe:', err);
+
             }
         };
 
-        // Send highlight message after a longer delay to ensure iframe is fully loaded
-        const timer = setTimeout(highlightCategory, 1000);
+const timer = setTimeout(highlightCategory, 1000);
         return () => clearTimeout(timer);
     }, [selectedCategory, orgChartUrl]);
 
@@ -206,32 +190,29 @@ const BuyingGroup = () => {
     };
 
     const handleResetZoom = () => {
-        // Reset to optimal zoom (will be calculated by iframe)
+
         setZoomLevel(100);
     };
 
-    // Get persons for selected company, filtered by category if one is selected
-    const getCompanyPersons = () => {
+const getCompanyPersons = () => {
         if (!selectedCompany || !personDetailsData[selectedCompany]) {
             return [];
         }
-        
+
         let persons = personDetailsData[selectedCompany];
-        
-        // If a specific category is selected (not "All"), filter by that category
-        if (selectedCategory && selectedCategory !== '') {
+
+if (selectedCategory && selectedCategory !== '') {
             persons = persons.filter(person => {
-                // Parse the categories from the person's category field
+
                 const personCategories = (person.category || '')
                     .split(',')
                     .map(cat => cat.trim())
                     .filter(cat => cat.length > 0);
-                
-                // Check if the selected category is in the person's categories
-                return personCategories.includes(selectedCategory);
+
+return personCategories.includes(selectedCategory);
             });
         }
-        
+
         return persons;
     };
 
@@ -249,20 +230,20 @@ const BuyingGroup = () => {
           borderRadius: '8px',
           padding: '40px 20px'
         }}>
-          {/* Nexora Logo */}
+          {}
           <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
 
-          {/* Loading Text */}
+          {}
           <h3 style={{
             margin: '0 0 10px 0',
             color: '#1f2937',
             fontSize: '18px',
             fontWeight: '600'
           }}>
-            
+
           </h3>
 
-          {/* Subtext */}
+          {}
           <p style={{
             margin: '0 0 30px 0',
             color: '#6b7280',
@@ -273,7 +254,7 @@ const BuyingGroup = () => {
             Fetching and processing organizational structure...
           </p>
 
-          {/* Progress Dots */}
+          {}
           <div style={{
             display: 'flex',
             gap: '8px',
@@ -302,7 +283,7 @@ const BuyingGroup = () => {
             }} />
           </div>
 
-          {/* Styles for animations */}
+          {}
           <style>{`
             @keyframes bounce {
               0%, 80%, 100% {
@@ -325,7 +306,7 @@ const BuyingGroup = () => {
                 Buying Group
             </h1>
 
-            {/* Filter Section */}
+            {}
             <div className="filters" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px' }}>
                 <div className="filter-group">
                     <label>Company Name</label>
@@ -343,7 +324,7 @@ const BuyingGroup = () => {
                     </select>
                 </div>
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-                    {/* <label style={{ textAlign: 'center' }}>Category</label> */}
+                    {}
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                         <button
                             onClick={() => setSelectedCategory('')}
@@ -408,7 +389,7 @@ const BuyingGroup = () => {
                 </div>
             </div>
 
-            {/* Zoom Controls */}
+            {}
             <div style={{
                 display: 'flex',
                 gap: '10px',
@@ -538,7 +519,7 @@ const BuyingGroup = () => {
                 </button>
             </div>
 
-            {/* Org Chart Container */}
+            {}
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '8px',
@@ -553,13 +534,13 @@ const BuyingGroup = () => {
                         <p>Generating org chart...</p>
                     </div>
                 )}
-                
+
                 {error && (
                     <div style={{ textAlign: 'center', color: '#dc2626', padding: '40px 20px' }}>
                         <p>{error}</p>
                     </div>
                 )}
-                
+
                 {!loading && !error && orgChartUrl && (
                     <iframe
                         ref={iframeRef}
@@ -573,7 +554,7 @@ const BuyingGroup = () => {
                         title={`Org Chart for ${selectedCompany}`}
                     />
                 )}
-                
+
                 {!loading && !error && !orgChartUrl && (
                     <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '16px', padding: '40px 20px' }}>
                         <p>Select a company to view org chart</p>
@@ -581,10 +562,10 @@ const BuyingGroup = () => {
                 )}
             </div>
 
-            {/* Side Panel */}
+            {}
             {showPanel && (
                 <>
-                    {/* Overlay */}
+                    {}
                     <div
                         onClick={handleClosePanel}
                         style={{
@@ -599,7 +580,7 @@ const BuyingGroup = () => {
                         }}
                     />
 
-                    {/* Panel */}
+                    {}
                     <div
                         style={{
                             position: 'fixed',
@@ -615,7 +596,7 @@ const BuyingGroup = () => {
                             animation: 'slideIn 0.3s ease-in-out'
                         }}
                     >
-                        {/* Panel Header */}
+                        {}
                         <div style={{
                             padding: '32px 28px',
                             background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
@@ -672,15 +653,15 @@ const BuyingGroup = () => {
                             </button>
                         </div>
 
-                        {/* Panel Content */}
+                        {}
                         <div style={{
                             flex: 1,
                             overflowY: 'auto',
                             padding: '28px',
                             backgroundColor: '#ffffff'
                         }}>
-                            {/* Company Name Section */}
-                            <div style={{ 
+                            {}
+                            <div style={{
                                 marginBottom: '28px',
                                 padding: '16px',
                                 backgroundColor: '#f8f9fa',
@@ -709,14 +690,14 @@ const BuyingGroup = () => {
                                 </p>
                             </div>
 
-                            {/* Divider */}
+                            {}
                             <div style={{
                                 height: '1px',
                                 backgroundColor: '#e8e8e8',
                                 marginBottom: '28px'
                             }} />
 
-                            {/* Team Members */}
+                            {}
                             <div>
                                 <h3 style={{
                                     margin: '0 0 20px 0',
@@ -735,11 +716,11 @@ const BuyingGroup = () => {
                                     gap: '14px'
                                 }}>
                                     {companyPersons.map((person, index) => {
-                                        // Clean LinkedIn URL - remove quotes and ensure proper format
+
                                         let linkedinUrl = person.linkedin || '';
                                         linkedinUrl = linkedinUrl.replace(/^["']|["']$/g, '').trim();
                                         if (linkedinUrl && !linkedinUrl.startsWith('http')) {
-                                            linkedinUrl = 'https://' + linkedinUrl;
+                                            linkedinUrl = `https://linkedin.com/in/${linkedinUrl}`;
                                         }
 
                                         return (
