@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import nexoraLogo from '../../assets/nexora-logo.png';
+import loadingGif from '../../assets/Loading GIF REF.gif';
 import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
@@ -527,87 +527,128 @@ const NTP = () => {
   if (loading) {
     return (
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '800px',
+        position: 'relative',
+        minHeight: '100vh',
         backgroundColor: '#ffffffff',
-        borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        {}
-        <img 
-          src={nexoraLogo} 
-          alt="Nexora" 
-          style={{
-            width: '250px',
-            height: 'auto',
-            marginBottom: '30px',
-            opacity: 0.9
-          }}
-        />
-
-        {}
-        <h3 style={{
-          margin: '0 0 10px 0',
-          color: '#1f2937',
-          fontSize: '18px',
-          fontWeight: '600'
-        }}>
-         
-        </h3>
-
-        {}
-        <p style={{
-          margin: '0 0 30px 0',
-          color: '#6b7280',
-          fontSize: '14px',
-          textAlign: 'center',
-          maxWidth: '300px'
-        }}>
-          Fetching and processing technology purchase predictions...
-        </p>
-
-        {}
+        {/* Background Full Page Skeleton (blurred) */}
         <div style={{
-          display: 'flex',
-          gap: '8px',
-          alignItems: 'center'
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          padding: '40px 20px',
+          filter: 'blur(4px)',
+          opacity: 0.6,
+          pointerEvents: 'none',
+          overflow: 'hidden'
         }}>
+          {/* Title Skeleton */}
           <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#3b82f6',
-            animation: 'bounce 1.4s infinite'
+            height: '32px',
+            backgroundColor: '#e5e7eb',
+            borderRadius: '4px',
+            marginBottom: '24px',
+            width: '200px'
           }} />
+
+          {/* Filter Bar Skeleton */}
           <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#3b82f6',
-            animation: 'bounce 1.4s infinite 0.2s'
-          }} />
+            display: 'flex',
+            gap: '12px',
+            marginBottom: '20px',
+            flexWrap: 'wrap'
+          }}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={`filter-${i}`} style={{
+                height: '36px',
+                backgroundColor: '#f3f4f6',
+                borderRadius: '6px',
+                width: '120px'
+              }} />
+            ))}
+          </div>
+
+          {/* Divider */}
           <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#3b82f6',
-            animation: 'bounce 1.4s infinite 0.4s'
+            height: '1px',
+            backgroundColor: '#e5e7eb',
+            marginBottom: '20px'
           }} />
+
+          {/* Table Header Skeleton */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(8, 1fr)',
+            gap: '12px',
+            marginBottom: '16px',
+            padding: '16px',
+            backgroundColor: '#f9fafb',
+            borderRadius: '6px'
+          }}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+              <div key={`header-${i}`} style={{
+                height: '18px',
+                backgroundColor: '#e5e7eb',
+                borderRadius: '4px'
+              }} />
+            ))}
+          </div>
+
+          {/* Table Rows Skeleton */}
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(row => (
+            <div key={`row-${row}`} style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(8, 1fr)',
+              gap: '12px',
+              padding: '16px',
+              borderBottom: '1px solid #e5e7eb',
+              backgroundColor: row % 2 === 0 ? '#ffffff' : '#f9fafb'
+            }}>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(col => (
+                <div key={`cell-${row}-${col}`} style={{
+                  height: '14px',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '4px'
+                }} />
+              ))}
+            </div>
+          ))}
         </div>
 
-        {}
+        {/* Centered Loading GIF */}
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10
+        }}>
+          <img 
+            src={loadingGif} 
+            alt="Loading" 
+            style={{
+              width: '600px',
+              height: '600px',
+              objectFit: 'contain'
+            }}
+          />
+        </div>
+
         <style>{`
-          @keyframes bounce {
-            0%, 80%, 100% {
-              opacity: 0.3;
-              transform: translateY(0);
-            }
-            40% {
+          @keyframes pulse {
+            0%, 100% {
               opacity: 1;
-              transform: translateY(-10px);
+            }
+            50% {
+              opacity: 0.5;
             }
           }
         `}</style>
