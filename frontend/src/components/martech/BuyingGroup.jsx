@@ -19,7 +19,7 @@ const BuyingGroup = () => {
 useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('/api/buying-group/companies');
+                const response = await fetch('/api/org-chart/companies');
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
@@ -36,7 +36,7 @@ useEffect(() => {
 useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/buying-group/categories');
+                const response = await fetch('/api/org-chart/categories');
                 const data = await response.json();
                 let fetchedCategories = data.categories || [];
 
@@ -56,7 +56,7 @@ setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
 useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
-                const response = await fetch('/api/buying-group/person-details');
+                const response = await fetch('/api/org-chart/person-details');
                 if (response.ok) {
                     const data = await response.json();
 
@@ -79,7 +79,7 @@ useEffect(() => {
             setError('');
             try {
                 
-                const generateResponse = await fetch('/api/buying-group/generate-org-chart', {
+                const generateResponse = await fetch('/api/org-chart/generate-selected', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ useEffect(() => {
                 }
 
 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const chartUrl = `/api/buying-group/org-chart/${encodedCompanyName}`;
+                const chartUrl = `/api/org-chart/${encodedCompanyName}`;
                 setOrgChartUrl(chartUrl);
                 setOrgChartHtml('');
             } catch (err) {
