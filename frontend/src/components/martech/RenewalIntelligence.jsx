@@ -3,7 +3,7 @@ import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
-import PerformanceMetrics from '../PerformanceMetrics';
+// import PerformanceMetrics from '../PerformanceMetrics';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
 // Generic Custom Dropdown Component (without icons)
@@ -2436,7 +2436,7 @@ const RenewalIntelligence = () => {
                     background-color: #f5f5f5;
                 }
             `}</style>
-            <PerformanceMetrics measurements={measurements} isVisible={true} />
+            {/* <PerformanceMetrics measurements={measurements} isVisible={true} /> */}
         </div>
         </>
     );

@@ -289,10 +289,10 @@
 }
 
 
-/* Grid Layout - 3 columns */
+/* Grid Layout - 4 columns */
 .data-items-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -315,11 +315,11 @@
 }
 
 .data-card.standard {
-  border-top: 4px solid #10b981;
+  border-top: none;
 }
 
 .data-card.special {
-  border-top: 4px solid #f59e0b;
+  border-top: none;
 }
 
 .card-header {
@@ -395,16 +395,24 @@
   margin: 0;
 }
 
-/* Responsive - 2 columns on tablet */
+/* Responsive - 3 columns on tablet */
 @media (max-width: 1200px) {
   .data-items-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 14px;
   }
 }
 
-/* Responsive - 1 column on mobile */
+/* Responsive - 2 columns on smaller screens */
 @media (max-width: 768px) {
+  .data-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Responsive - 1 column on mobile */
+@media (max-width: 480px) {
   .data-items-grid {
     grid-template-columns: 1fr;
     gap: 12px;

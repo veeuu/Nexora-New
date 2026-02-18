@@ -24,22 +24,15 @@ const DataDictionary = () => {
       'Data Attribute': 'First discovered',
       'Definition': 'Date when technology usage was first discovered',
       'Standard / Special': 'Standard',
-      'Example': '2023-01-15',
+      'Example': 'Q2 2025',
       'Use Case': 'Track when a company started using a technology'
     },
     {
       'Data Attribute': 'Last discovered',
       'Definition': 'Last date the technology usage was discovered',
       'Standard / Special': 'Standard',
-      'Example': '2024-02-10',
+      'Example': 'Q4 2025',
       'Use Case': 'Determine if technology is still actively used'
-    },
-    {
-      'Data Attribute': 'Vendor',
-      'Definition': 'Company that makes the product',
-      'Standard / Special': 'Standard',
-      'Example': 'Salesforce Inc., Microsoft Corp',
-      'Use Case': 'Identify technology vendors for outreach'
     },
     {
       'Data Attribute': 'Category',
@@ -50,10 +43,10 @@ const DataDictionary = () => {
     },
     {
       'Data Attribute': 'SubCategory',
-      'Definition': 'Sub-classification of the product',
+      'Definition': 'Sub-classification of the product within its Category',
       'Standard / Special': 'Standard',
-      'Example': 'Sales Automation, Email Marketing',
-      'Use Case': 'Narrow down specific technology types'
+      'Example': 'Email Marketing, Infrastructure, Platform',
+      'Use Case': 'Narrow down specific technology types within broader categories'
     },
     {
       'Data Attribute': 'Description',
@@ -61,6 +54,13 @@ const DataDictionary = () => {
       'Standard / Special': 'Standard',
       'Example': 'Cloud-based CRM platform for sales teams',
       'Use Case': 'Understand what a technology does'
+    },
+    {
+      'Data Attribute': 'Vendor',
+      'Definition': 'Company that makes the product',
+      'Standard / Special': 'Standard',
+      'Example': 'Salesforce Inc., Microsoft Corp',
+      'Use Case': 'Identify technology vendors for outreach'
     },
     {
       'Data Attribute': 'Renewal Intelligence',
