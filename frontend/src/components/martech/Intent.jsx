@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
-// import intentDistribution from '../Intent_chart/intent_distribution.png';
-// import intentPieChart from '../Intent_chart/intent_pie_chart.png';
 
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -329,12 +327,12 @@ useEffect(() => {
             <div className="summary-charts-grid">
               <div className="chart-item">
                 <h3>Intent Distribution</h3>
-                {/* <img src={intentDistribution} alt="Intent Distribution" /> */}
+                {}
                 <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
               </div>
               <div className="chart-item">
                 <h3>Intent Pie Chart</h3>
-                {/* <img src={intentPieChart} alt="Intent Pie Chart" /> */}
+                {}
                 <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
               </div>
             </div>
@@ -407,15 +405,9 @@ useEffect(() => {
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
-          {/* Temporarily disabled - chart images not available
-          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
-            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            View Summary
-          </button>
-          */}
+          {
+
+}
           {}
         </div>
       </div>
