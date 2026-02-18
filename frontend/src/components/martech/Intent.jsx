@@ -103,7 +103,7 @@ const Intent = () => {
   });
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
-  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
+  const [activeFilterMenu, setActiveFilterMenu] = useState('intentStatus');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 9;
   const filterRef = useRef(null);
@@ -374,7 +374,7 @@ useEffect(() => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            �
+            �
           </div>
           <div style={{
             fontSize: '14px',
@@ -910,28 +910,28 @@ useEffect(() => {
           justifyContent: 'space-between'
         }}>
           <div style={{
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fcd34d',
+            backgroundColor: '#dbeafe',
+            border: '2px solid #3b82f6',
             borderRadius: '8px',
-            padding: '12px 16px',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             maxWidth: 'fit-content'
           }}>
             <div style={{
-              fontSize: '18px',
-              color: '#d97706',
+              fontSize: '24px',
+              color: '#1e40af',
               flexShrink: 0
             }}>
-              ⓘ
+              👆
             </div>
             <div style={{
-              fontSize: '13px',
-              color: '#92400e',
-              fontWeight: '500'
+              fontSize: '14px',
+              color: '#1e40af',
+              fontWeight: '600'
             }}>
-              Please select an Intent Status to view data
+              Please select an Intent Status above to view data (High, Medium, or Low)
             </div>
           </div>
           <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
