@@ -19,7 +19,7 @@ const BuyingGroup = () => {
 useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('http:
+                const response = await fetch('/api/buying-group/companies');
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
@@ -36,7 +36,7 @@ useEffect(() => {
 useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http:
+                const response = await fetch('/api/buying-group/categories');
                 const data = await response.json();
                 let fetchedCategories = data.categories || [];
 
@@ -56,7 +56,7 @@ setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
 useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
-                const response = await fetch('http:
+                const response = await fetch('/api/buying-group/person-details');
                 if (response.ok) {
                     const data = await response.json();
 
@@ -78,8 +78,8 @@ useEffect(() => {
             setLoading(true);
             setError('');
             try {
-
-                const generateResponse = await fetch('http:
+                // Pre-generate the org chart
+                const generateResponse = await fetch('/api/buying-group/generate-org-chart', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ useEffect(() => {
                 }
 
 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const chartUrl = `http:
+                const chartUrl = `/api/buying-group/org-chart/${encodedCompanyName}`;
                 setOrgChartUrl(chartUrl);
                 setOrgChartHtml('');
             } catch (err) {
@@ -720,7 +720,7 @@ return personCategories.includes(selectedCategory);
                                         let linkedinUrl = person.linkedin || '';
                                         linkedinUrl = linkedinUrl.replace(/^["']|["']$/g, '').trim();
                                         if (linkedinUrl && !linkedinUrl.startsWith('http')) {
-                                            linkedinUrl = 'https:
+                                            linkedinUrl = `https://linkedin.com/in/${linkedinUrl}`;
                                         }
 
                                         return (
