@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
@@ -7,9 +7,18 @@ import ChatBot from './components/ChatBot';
 import './styles.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
   const [dashboardNav, setDashboardNav] = useState(null);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(() => {
+    return localStorage.getItem('username') || '';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('isAuthenticated', isAuthenticated);
+    localStorage.setItem('username', username);
+  }, [isAuthenticated, username]);
 
   const handleLogin = (user) => {
     setUsername(user);
@@ -19,6 +28,8 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUsername('');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('username');
   };
 
   const handleChatbotNavigate = (page) => {
