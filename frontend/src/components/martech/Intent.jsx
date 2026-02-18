@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
-import intentDistribution from '../Intent_chart/intent_distribution.png';
-import intentPieChart from '../Intent_chart/intent_pie_chart.png';
+// import intentDistribution from '../Intent_chart/intent_distribution.png';
+// import intentPieChart from '../Intent_chart/intent_pie_chart.png';
 
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +29,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>▼</span>
+        <span style={{ fontSize: '12px' }}>â–¼</span>
       </button>
 
       {isOpen && (
@@ -103,6 +103,7 @@ const Intent = () => {
   });
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState('intentStatus');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 9;
@@ -322,17 +323,19 @@ useEffect(() => {
                   justifyContent: 'center'
                 }}
               >
-                ✕
+                âœ•
               </button>
             </div>
             <div className="summary-charts-grid">
               <div className="chart-item">
                 <h3>Intent Distribution</h3>
-                <img src={intentDistribution} alt="Intent Distribution" />
+                {/* <img src={intentDistribution} alt="Intent Distribution" /> */}
+                <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
               </div>
               <div className="chart-item">
                 <h3>Intent Pie Chart</h3>
-                <img src={intentPieChart} alt="Intent Pie Chart" />
+                {/* <img src={intentPieChart} alt="Intent Pie Chart" /> */}
+                <p style={{color: '#666', padding: '20px'}}>Chart not available</p>
               </div>
             </div>
           </div>
@@ -374,7 +377,7 @@ useEffect(() => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            �
+            âš
           </div>
           <div style={{
             fontSize: '14px',
@@ -396,7 +399,7 @@ useEffect(() => {
               lineHeight: '1'
             }}
           >
-            ✕
+            âœ•
           </button>
         </div>
       )}
@@ -404,6 +407,7 @@ useEffect(() => {
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
+          {/* Temporarily disabled - chart images not available
           <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -411,6 +415,7 @@ useEffect(() => {
             </svg>
             View Summary
           </button>
+          */}
           {}
         </div>
       </div>
@@ -562,7 +567,7 @@ useEffect(() => {
                     lineHeight: '1'
                   }}
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
               <div style={{
@@ -716,7 +721,7 @@ useEffect(() => {
                     lineHeight: '1'
                   }}
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
               <div style={{
@@ -878,7 +883,7 @@ useEffect(() => {
                   lineHeight: '1'
                 }}
               >
-                ✕
+                âœ•
               </button>
             </div>
           )}
@@ -910,28 +915,28 @@ useEffect(() => {
           justifyContent: 'space-between'
         }}>
           <div style={{
-            backgroundColor: '#dbeafe',
-            border: '2px solid #3b82f6',
+            backgroundColor: '#fef3c7',
+            border: '1px solid #fcd34d',
             borderRadius: '8px',
-            padding: '16px 20px',
+            padding: '12px 16px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             maxWidth: 'fit-content'
           }}>
             <div style={{
-              fontSize: '24px',
-              color: '#1e40af',
+              fontSize: '18px',
+              color: '#d97706',
               flexShrink: 0
             }}>
-              👆
+              â“˜
             </div>
             <div style={{
-              fontSize: '14px',
-              color: '#1e40af',
-              fontWeight: '600'
+              fontSize: '13px',
+              color: '#92400e',
+              fontWeight: '500'
             }}>
-              Please select an Intent Status above to view data (High, Medium, or Low)
+              Please select an Intent Status to view data
             </div>
           </div>
           <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
@@ -1058,7 +1063,7 @@ useEffect(() => {
                               }}
                               title="First page"
                           >
-                              ≪
+                              â‰ª
                           </button>
 
                           {}
@@ -1092,7 +1097,7 @@ useEffect(() => {
                               }}
                               title="Previous page"
                           >
-                              ‹
+                              â€¹
                           </button>
 
                           {}
@@ -1225,7 +1230,7 @@ useEffect(() => {
                               }}
                               title="Next page"
                           >
-                              ›
+                              â€º
                           </button>
 
                           {}
@@ -1259,7 +1264,7 @@ useEffect(() => {
                               }}
                               title="Last page"
                           >
-                              ≫
+                              â‰«
                           </button>
                       </>
                   );
