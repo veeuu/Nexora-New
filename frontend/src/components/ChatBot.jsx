@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-//import { chatbotKnowledge } from '../utils/chatbotKnowledge';
 
 const ChatBot = ({ isAuthenticated, onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +23,7 @@ const ChatBot = ({ isAuthenticated, onNavigate }) => {
 
     chatbotKnowledge.forEach(page => {
       let score = 0;
-      
+
       page.keywords.forEach(keyword => {
         if (queryLower.includes(keyword)) {
           score += 2;
@@ -52,15 +51,15 @@ const ChatBot = ({ isAuthenticated, onNavigate }) => {
   const callGeminiAPI = async (userMessage) => {
     try {
       const response = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCp6NxWgP296VMmO90xb1UbKyKatXorZ3Q',
+        'https:
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `You are a helpful assistant for a business intelligence platform. A user is asking: "${userMessage}". 
-                
+                text: `You are a helpful assistant for a business intelligence platform. A user is asking: "${userMessage}".
+
 Based on this question, provide a brief, friendly response (1-2 sentences) about what data they might be looking for. Be conversational and helpful.`
               }]
             }]
@@ -71,7 +70,7 @@ Based on this question, provide a brief, friendly response (1-2 sentences) about
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || 'I can help you find that information.';
     } catch (error) {
-      console.error('Gemini API error:', error);
+
       return 'I can help you find that information.';
     }
   };
@@ -101,7 +100,7 @@ Based on this question, provide a brief, friendly response (1-2 sentences) about
 
       setMessages(prev => [...prev, { type: 'bot', text: botMessage, pages: relevantPages }]);
     } catch (error) {
-      console.error('Error:', error);
+
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
     } finally {
       setLoading(false);

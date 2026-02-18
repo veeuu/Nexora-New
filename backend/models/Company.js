@@ -14,14 +14,14 @@ const FirmographicsSchema = new mongoose.Schema({
     'Company Name': String,
     Domain: String,
     Industry: String,
-    'Full Time employees': String, // Changed from Number to String to match actual data
+    'Full Time employees': String,
     NAICS: String,
     linkedinUrl: String
   },
   Location: {
     Address: String,
     City: String,
-    State: String, // Added missing State field
+    State: String,
     Country: String,
     Contact: String
   }
@@ -36,8 +36,8 @@ const FinancialDataSchema = new mongoose.Schema({
     'Current Price': String,
     'Market Cap': String,
     'Total Revenue': String,
-    'Revenue Growth': String, // Moved back to Finance to match DB
-    'Profit Growth': String   // Moved back to Finance to match DB
+    'Revenue Growth': String,
+    'Profit Growth': String
   },
   Dividend: {
     'Dividend Rate': String,
@@ -76,14 +76,13 @@ const StockPerformanceSchema = new mongoose.Schema({
 
 const CompanySchema = new mongoose.Schema({
   'Company Name': String,
-  Firmographics: FirmographicsSchema, // Changed from array to object
+  Firmographics: FirmographicsSchema,
   Technographics: [TechnographicsSchema],
   NTP: [NTPSchema],
   Financial_Data: FinancialDataSchema,
   Stock_Performance: StockPerformanceSchema
 }, { strict: false, collection: 'data' });
 
-// Add indexes for performance
 CompanySchema.index({ 'Company Name': 1 });
 CompanySchema.index({ 'Technographics.Keyword': 1 });
 
