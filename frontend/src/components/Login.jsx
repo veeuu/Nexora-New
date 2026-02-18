@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import logo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
+
 import nexoraLogo from '../assets/nexora-logo.png';
 import heroImage from '../assets/Login page left 25x18.svg';
 import '../styles/login.css';
@@ -49,7 +49,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -141,7 +141,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -171,7 +171,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -182,8 +182,7 @@ const Login = ({ onLogin }) => {
     setError('');
     setSuccessMessage('');
 
-    // Validate passwords match
-    if (newPassword !== confirmPassword) {
+if (newPassword !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
@@ -216,7 +215,7 @@ const Login = ({ onLogin }) => {
       }
     } catch (err) {
       setError('Error connecting to server');
-      console.error(err);
+
     } finally {
       setLoading(false);
     }
@@ -238,7 +237,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="login-container">
-      {/* Left Section - Hero Image */}
+      {}
       <div className="login-left">
         <div className="hero-content">
           <div className="hero-illustration">
@@ -247,15 +246,15 @@ const Login = ({ onLogin }) => {
         </div>
       </div>
 
-      {/* Right Section - Login Form */}
+      {}
       <div className="login-right">
         <div className="login-form-wrapper">
           <div className="login-logo-vertical">
-            
+
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
           </div>
 
-          {/* OTP Verification Screen */}
+          {}
           {showOTPVerification ? (
             <form onSubmit={handleSubmit} className="login-form">
               <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#333' }}>Verify Your Email</h2>
@@ -727,7 +726,7 @@ const Login = ({ onLogin }) => {
                 Connect with Us
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                {/* Gmail Icon */}
+                {}
                 <a
                   href="mailto:info@proplusdata.co"
                   target="_blank"
@@ -758,7 +757,7 @@ const Login = ({ onLogin }) => {
                   </svg>
                 </a>
 
-                {/* LinkedIn Icon */}
+                {}
                 <a
                   href="https://www.linkedin.com/company/proplus-data/"
                   target="_blank"
@@ -788,7 +787,7 @@ const Login = ({ onLogin }) => {
                   </svg>
                 </a>
 
-                {/* Instagram Icon */}
+                {}
                 <a
                   href="https://www.instagram.com/proplusdata/"
                   target="_blank"
@@ -822,9 +821,7 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            {/* <p className="form-signup">
-              Don't have an account? <a href="#signup">Sign up</a>
-            </p> */}
+            {}
           </form>
           )}
 

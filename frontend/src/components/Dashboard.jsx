@@ -16,8 +16,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('Home');
 
-  // Map routes to section names
-  const routeToSection = {
+const routeToSection = {
     '/dashboard': 'Home',
     '/dashboard/home': 'Home',
     '/dashboard/technographics': 'Technographics',
@@ -28,8 +27,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
     '/dashboard/product-catalogue': 'Product Catalogue'
   };
 
-  // Update active section based on current route
-  useEffect(() => {
+useEffect(() => {
     const currentPath = location.pathname;
     const section = routeToSection[currentPath] || 'Home';
     setActiveSection(section);
@@ -37,9 +35,8 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
 
   const handleMenuClick = (section) => {
     setActiveSection(section);
-    
-    // Map section names to routes
-    const sectionToRoute = {
+
+const sectionToRoute = {
       'Home': '/dashboard/home',
       'Technographics': '/dashboard/technographics',
       'Renewal Intelligence': '/dashboard/renewal-intelligence',
@@ -48,14 +45,14 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
       'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue'
     };
-    
+
     const route = sectionToRoute[section] || '/dashboard/home';
     navigate(route);
   };
 
   const handleChatbotNavigation = (page) => {
     if (!page) return;
-    
+
     const sectionMap = {
       'Intent': 'Intent',
       'Technographics': 'Technographics',

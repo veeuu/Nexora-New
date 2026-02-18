@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import nexoraLogo from '../../assets/nexora-logo.png';
+import intentDistribution from '../Intent_chart/intent_distribution.png';
+import intentPieChart from '../Intent_chart/intent_pie_chart.png';
 
-// Generic Custom Dropdown Component (without icons)
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -91,7 +92,6 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
-
 const Intent = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -121,8 +121,8 @@ const Intent = () => {
         setTableData(data);
       } catch (e) {
         setError(e.message);
-        console.error("Failed to fetch Intent data:", e);
-        setTableData([]); // Set empty data on error
+
+        setTableData([]);
       } finally {
         setLoading(false);
       }
@@ -137,10 +137,10 @@ const Intent = () => {
     setFilters(prev => {
       const currentValues = prev[filterName];
       if (currentValues.includes(value)) {
-        // Remove if already selected
+
         return { ...prev, [filterName]: currentValues.filter(v => v !== value) };
       } else {
-        // Add if not selected
+
         return { ...prev, [filterName]: [...currentValues, value] };
       }
     });
@@ -153,8 +153,7 @@ const Intent = () => {
     return [...new Set(allValues)].filter(v => v && v.trim()).sort();
   };
 
-  // Helper function to count accounts by intent status
-  const getAccountCountByIntentStatus = (intentStatus) => {
+const getAccountCountByIntentStatus = (intentStatus) => {
     if (!tableData) return 0;
     const uniqueAccounts = new Set();
     tableData.forEach(row => {
@@ -169,23 +168,20 @@ const Intent = () => {
 
   const filteredData = tableData
     .filter(row => {
-      // Intent Status is mandatory
+
       if (filters.intentStatus.length === 0) {
         return false;
       }
 
-      // Check if Intent Status matches any selected status
-      if (!filters.intentStatus.some(status => String(row.intentStatus).toLowerCase() === String(status).toLowerCase())) {
+if (!filters.intentStatus.some(status => String(row.intentStatus).toLowerCase() === String(status).toLowerCase())) {
         return false;
       }
 
-      // Apply optional Account Name filter (if any selected, must match one)
-      if (filters.accountName.length > 0 && !filters.accountName.some(name => String(row.companyName).toLowerCase() === String(name).toLowerCase())) {
+if (filters.accountName.length > 0 && !filters.accountName.some(name => String(row.companyName).toLowerCase() === String(name).toLowerCase())) {
         return false;
       }
 
-      // Apply search term
-      const searchMatches = !searchTerm || Object.values(row).some(value =>
+const searchMatches = !searchTerm || Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
 
@@ -200,7 +196,7 @@ const Intent = () => {
     });
 
   useEffect(() => {
-    // Cleanup if needed
+
   }, []);
 
   const handleDownloadCSV = () => {
@@ -222,8 +218,7 @@ const Intent = () => {
     document.body.removeChild(link);
   };
 
-  // Handle click outside to close filter dropdowns
-  useEffect(() => {
+useEffect(() => {
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setActiveFilterMenu(null);
@@ -249,20 +244,20 @@ const Intent = () => {
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        {/* Nexora Logo */}
+        {}
         <img src={nexoraLogo} alt="Nexora Logo" style={{width: '250px', height: 'auto', marginBottom: '30px', objectFit: 'contain'}} />
 
-        {/* Loading Text */}
+        {}
         <h3 style={{
           margin: '0 0 10px 0',
           color: '#1f2937',
           fontSize: '18px',
           fontWeight: '600'
         }}>
-          
+
         </h3>
 
-        {/* Subtext */}
+        {}
         <p style={{
           margin: '0 0 30px 0',
           color: '#6b7280',
@@ -273,7 +268,7 @@ const Intent = () => {
           Fetching and processing company intent signals...
         </p>
 
-        {/* Progress Dots */}
+        {}
         <div style={{
           display: 'flex',
           gap: '8px',
@@ -302,8 +297,49 @@ const Intent = () => {
           }} />
         </div>
 
-        {/* Styles for animations */}
-        <style>{`
+        {}
+        <Tooltip tooltip={tooltip} />
+
+      {showSummary && (
+        <div className="modal-overlay" onClick={() => setShowSummary(false)}>
+          <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="summary-modal-header">
+              <h2>Intent Data Summary - Analytics Overview</h2>
+              <button
+                className="close-button"
+                onClick={() => setShowSummary(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '0',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="summary-charts-grid">
+              <div className="chart-item">
+                <h3>Intent Distribution</h3>
+                <img src={intentDistribution} alt="Intent Distribution" />
+              </div>
+              <div className="chart-item">
+                <h3>Intent Pie Chart</h3>
+                <img src={intentPieChart} alt="Intent Pie Chart" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
           @keyframes bounce {
             0%, 80%, 100% {
               opacity: 0.3;
@@ -321,7 +357,7 @@ const Intent = () => {
 
   return (
     <div className="intent-container">
-      {/* Error Banner */}
+      {}
       {error && (
         <div style={{
           backgroundColor: '#fee2e2',
@@ -338,7 +374,7 @@ const Intent = () => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            ⚠
+            �
           </div>
           <div style={{
             fontSize: '14px',
@@ -364,25 +400,18 @@ const Intent = () => {
           </button>
         </div>
       )}
-      
+
       <div className="header-actions">
         <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
-          {/* <div className="search-bar">
-            <svg className="search-folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
+            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
-            <input
-              type="text"
-              placeholder="Search by Company Name"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="10" cy="10" r="7"></circle>
-              <path d="m20 20-4.5-4.5"></path>
-            </svg>
-          </div> */}
+            View Summary
+          </button>
+          {}
         </div>
       </div>
 
@@ -391,7 +420,7 @@ const Intent = () => {
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          {/* Filter Button */}
+          {}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -421,7 +450,7 @@ const Intent = () => {
               <span>+ Filter</span>
             </button>
 
-            {/* Filter Menu Dropdown */}
+            {}
             {showFilters && (
               <div
                 style={{
@@ -470,7 +499,7 @@ const Intent = () => {
             )}
           </div>
 
-          {/* Intent Status Filter - Always Visible (Mandatory) */}
+          {}
           {activeFilterMenu !== 'intentStatus' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -503,7 +532,7 @@ const Intent = () => {
             </div>
           )}
 
-          {/* Account Name Filter Chip */}
+          {}
           {activeFilterMenu === 'accountName' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -553,10 +582,10 @@ const Intent = () => {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
-                      // If all are selected, deselect all
+
                       setFilters(prev => ({ ...prev, accountName: [] }));
                     } else {
-                      // Otherwise select all
+
                       setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
                     }
                   }}
@@ -621,7 +650,7 @@ const Intent = () => {
                   );
                 })}
 
-                {/* Save Button */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -657,7 +686,7 @@ const Intent = () => {
             </div>
           )}
 
-          {/* Intent Status Filter Chip */}
+          {}
           {activeFilterMenu === 'intentStatus' && (
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -707,10 +736,10 @@ const Intent = () => {
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
-                      // If all are selected, deselect all
+
                       setFilters(prev => ({ ...prev, intentStatus: [] }));
                     } else {
-                      // Otherwise select all
+
                       setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
                     }
                   }}
@@ -781,7 +810,7 @@ const Intent = () => {
                   );
                 })}
 
-                {/* Save Button */}
+                {}
                 <div style={{
                   padding: '12px',
                   borderTop: '1px solid #e5e7eb',
@@ -817,7 +846,7 @@ const Intent = () => {
             </div>
           )}
 
-          {/* Display saved filter tags */}
+          {}
           {filters.accountName.length > 0 && activeFilterMenu !== 'accountName' && (
             <div style={{
               backgroundColor: '#f0f9ff',
@@ -854,7 +883,7 @@ const Intent = () => {
             </div>
           )}
 
-          {/* Download CSV Button - Show in filter row only when warning message is hidden */}
+          {}
           {filters.intentStatus.length > 0 && (
             <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
               <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -870,7 +899,7 @@ const Intent = () => {
         </div>
       </div>
 
-      {/* Message for mandatory filter */}
+      {}
       {filters.intentStatus.length === 0 && (
         <div style={{
           display: 'flex',
@@ -918,17 +947,8 @@ const Intent = () => {
         </div>
       )}
 
-      {/* Dropdown filter commented out */}
-      {/* <div className="filters">
-        <div className="filter-group">
-          <label>Intent Status (Dropdown)</label>
-          <CustomDropdown
-            value={selectedStatus}
-            onChange={(value) => setSelectedStatus(value)}
-            options={getUniqueIntentStatuses()}
-          />
-        </div>
-      </div> */}
+      {}
+      {}
 
       <div className="table-container" style={{ backgroundColor: '#ffffff', marginTop: '24px' }}>
         <table>
@@ -963,7 +983,7 @@ const Intent = () => {
         </table>
       </div>
 
-      {/* Pagination Controls - All in One Row */}
+      {}
       {hasMandatoryFilters && filteredData.length > rowsPerPage && (
       <div style={{
           display: 'flex',
@@ -982,7 +1002,7 @@ const Intent = () => {
               Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
           </div>
 
-          {/* Pagination Buttons */}
+          {}
           <div style={{
               display: 'flex',
               justifyContent: 'center',
@@ -1007,7 +1027,7 @@ const Intent = () => {
 
                   return (
                       <>
-                          {/* First Page Button */}
+                          {}
                           <button
                               key="first"
                               onClick={() => setCurrentPage(1)}
@@ -1041,7 +1061,7 @@ const Intent = () => {
                               ≪
                           </button>
 
-                          {/* Previous Page Button */}
+                          {}
                           <button
                               key="prev"
                               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -1075,7 +1095,7 @@ const Intent = () => {
                               ‹
                           </button>
 
-                          {/* Page Numbers */}
+                          {}
                           {startPage > 1 && (
                               <>
                                   <button
@@ -1174,7 +1194,7 @@ const Intent = () => {
                               </>
                           )}
 
-                          {/* Next Page Button */}
+                          {}
                           <button
                               key="next"
                               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -1208,7 +1228,7 @@ const Intent = () => {
                               ›
                           </button>
 
-                          {/* Last Page Button */}
+                          {}
                           <button
                               key="last"
                               onClick={() => setCurrentPage(totalPages)}
@@ -1334,6 +1354,119 @@ const Intent = () => {
         th { font-weight: 600; background-color: #e8eef7 !important; }
 
         tbody tr:hover { background-color: #f5f5f5; }
+
+        .view-summary-button {
+          padding: 8px 16px;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.2s;
+        }
+
+        .view-summary-button:hover {
+          background-color: #2563eb;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .summary-icon {
+          width: 18px;
+          height: 18px;
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .summary-modal-content {
+          background: white;
+          border-radius: 12px;
+          max-width: 900px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #e5e7eb;
+          position: sticky;
+          top: 0;
+          background: white;
+        }
+
+        .summary-modal-header h2 {
+          margin: 0;
+          font-size: 20px;
+          color: #1f2937;
+        }
+
+        .summary-charts-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          gap: 20px;
+          padding: 20px;
+        }
+
+        .chart-item {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .chart-item h3 {
+          margin: 0;
+          font-size: 16px;
+          color: #1f2937;
+          font-weight: 600;
+        }
+
+        .chart-item img {
+          width: 100%;
+          height: auto;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+        }
+
+        @media (max-width: 768px) {
+          .summary-modal-content {
+            width: 95%;
+            max-height: 90vh;
+          }
+
+          .summary-charts-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 16px;
+          }
+
+          .summary-modal-header {
+            padding: 16px;
+          }
+
+          .summary-modal-header h2 {
+            font-size: 18px;
+          }
+        }
       `}</style>
     </div>
   );
