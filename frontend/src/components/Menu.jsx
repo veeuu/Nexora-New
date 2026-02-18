@@ -1,11 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import nexoraLogo from '../assets/nexora-white.png';
+import { CreditsContext } from '../context/CreditsContext';
 
-const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => {
+const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, userId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [freeCredits, setFreeCredits] = useState(0);
+  const [creditsLoading, setCreditsLoading] = useState(true);
   const profileRef = useRef(null);
+  const creditsContext = useContext(CreditsContext);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -19,6 +23,50 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!userId) {
+        console.log('[MENU] No userId provided');
+        setCreditsLoading(false);
+        return;
+      }
+
+      console.log('[MENU] Fetching credits for userId:', userId);
+      try {
+        const response = await fetch(`/api/user/credits?userId=${userId}`);
+        console.log('[MENU] Credits response status:', response.status);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('[MENU] Credits data:', data);
+          setFreeCredits(data.freeCredits || 0);
+          if (creditsContext) {
+            creditsContext.setCreditsValue(data.freeCredits || 0);
+          }
+        } else {
+          console.error('[MENU] Failed to fetch credits:', response.statusText);
+        }
+      } catch (error) {
+        console.error('[MENU] Error fetching credits:', error);
+      } finally {
+        setCreditsLoading(false);
+      }
+    };
+
+    fetchCredits();
+    
+    // Refresh credits every 5 seconds
+    const interval = setInterval(fetchCredits, 5000);
+    return () => clearInterval(interval);
+  }, [userId, creditsContext]);
+
+  // Listen to context changes
+  useEffect(() => {
+    if (creditsContext && creditsContext.credits > 0) {
+      console.log('[MENU] Credits updated from context:', creditsContext.credits);
+      setFreeCredits(creditsContext.credits);
+    }
+  }, [creditsContext?.creditsUpdated]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,6 +92,25 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
   const toggleMenu = () => {
     if (isMobile) {
       setIsOpen(!isOpen);
+    }
+  };
+
+  const updateCredits = async (companyName) => {
+    if (!userId) return;
+    
+    try {
+      const response = await fetch('/api/user/reveal-company', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, companyName })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setFreeCredits(data.freeCredits);
+      }
+    } catch (error) {
+      console.error('Error updating credits:', error);
     }
   };
 
@@ -78,10 +145,10 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
       <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">
-          <span className="menu-credits-count">4 of 500</span>
+          <span className="menu-credits-count">{creditsLoading ? '...' : `${freeCredits} of 500`}</span>
         </div>
         <div className="menu-credits-bar">
-          <div className="menu-credits-fill" style={{ width: '8%' }}></div>
+          <div className="menu-credits-fill" style={{ width: `${(freeCredits / 500) * 100}%` }}></div>
         </div>
       </div>
       <div className="menu-profile-section" ref={profileRef}>
@@ -120,3 +187,4 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
 };
 
 export default Menu;
+export { Menu };

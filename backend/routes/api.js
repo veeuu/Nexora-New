@@ -1130,5 +1130,82 @@ setCachedStats(stats);
   }
 });
 
+// Credit management endpoints
+router.get('/user/credits', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const userId = req.query.userId;
+    
+    console.log('[API] GET /user/credits - userId:', userId, 'type:', typeof userId);
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    // Try to find user by ID (handle both string and ObjectId)
+    let user;
+    try {
+      user = await User.findById(userId).select('freeCredits');
+    } catch (e) {
+      console.log('[API] findById failed, trying findOne with string match');
+      user = await User.findOne({ _id: userId }).select('freeCredits');
+    }
+    
+    console.log('[API] User found:', user ? 'yes' : 'no', 'credits:', user?.freeCredits);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ freeCredits: user.freeCredits || 0 });
+  } catch (error) {
+    console.error('[CREDITS-API] Error fetching credits:', error);
+    res.status(500).json({ error: 'Failed to fetch credits' });
+  }
+});
+
+router.post('/user/reveal-company', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const { userId, companyName } = req.body;
+    
+    console.log('[API] POST /user/reveal-company - userId:', userId, 'type:', typeof userId, 'companyName:', companyName);
+    
+    if (!userId || !companyName) {
+      return res.status(400).json({ error: 'userId and companyName are required' });
+    }
+
+    // Try to find user by ID (handle both string and ObjectId)
+    let user;
+    try {
+      user = await User.findById(userId);
+    } catch (e) {
+      console.log('[API] findById failed, trying findOne with string match');
+      user = await User.findOne({ _id: userId });
+    }
+    
+    console.log('[API] User found:', user ? 'yes' : 'no');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Increment credits by 1
+    user.freeCredits = (user.freeCredits || 0) + 1;
+    await user.save();
+
+    console.log('[API] Credits updated to:', user.freeCredits);
+
+    res.json({ 
+      success: true, 
+      freeCredits: user.freeCredits,
+      message: `+1 credit for revealing ${companyName}`
+    });
+  } catch (error) {
+    console.error('[CREDITS-API] Error updating credits:', error);
+    res.status(500).json({ error: 'Failed to update credits' });
+  }
+});
+
 module.exports = router;
 module.exports.generateSelectedOrgCharts = generateSelectedOrgCharts;

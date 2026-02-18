@@ -14,22 +14,29 @@ function App() {
   const [username, setUsername] = useState(() => {
     return localStorage.getItem('username') || '';
   });
+  const [userId, setUserId] = useState(() => {
+    return localStorage.getItem('userId') || '';
+  });
 
   useEffect(() => {
     localStorage.setItem('isAuthenticated', isAuthenticated);
     localStorage.setItem('username', username);
-  }, [isAuthenticated, username]);
+    localStorage.setItem('userId', userId);
+  }, [isAuthenticated, username, userId]);
 
   const handleLogin = (user) => {
-    setUsername(user);
+    setUsername(user.email);
+    setUserId(user.id);
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUsername('');
+    setUserId('');
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
   };
 
   const handleChatbotNavigate = (page) => {
@@ -47,7 +54,7 @@ function App() {
         />
         <Route 
           path="/dashboard/*" 
-          element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} userId={userId} /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/" 

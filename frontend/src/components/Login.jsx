@@ -38,7 +38,8 @@ const Login = ({ onLogin }) => {
       const data = await response.json();
 
       if (response.ok) {
-        onLogin(email);
+        console.log('[LOGIN] User data:', data.user);
+        onLogin(data.user);
       } else {
         if (data.requiresVerification) {
           setShowOTPVerification(true);

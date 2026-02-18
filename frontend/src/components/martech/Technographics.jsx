@@ -1,5 +1,6 @@
-﻿import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef, useContext } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
+import { CreditsContext } from '../../context/CreditsContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
@@ -701,11 +702,12 @@ const Speedometer = ({ value }) => {
   );
 };
 
-const Technographics = () => {
+const Technographics = ({ userId }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { setIndustryData, setTechnologyData, setAvailableRegions } = useIndustry();
+  const creditsContext = useContext(CreditsContext);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [filters, setFilters] = useState({
     companyName: [],
@@ -3204,6 +3206,30 @@ const Technographics = () => {
                               newSet.add(rowKey);
                               return newSet;
                             });
+                            
+                            // Call API to update credits
+                            if (userId) {
+                              console.log('[REVEAL] Calling API with userId:', userId, 'companyName:', row.companyName);
+                              fetch('/api/user/reveal-company', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ userId, companyName: row.companyName })
+                              })
+                              .then(res => {
+                                console.log('[REVEAL] Response status:', res.status);
+                                return res.json();
+                              })
+                              .then(data => {
+                                console.log('[REVEAL] Response data:', data);
+                                if (data.success && creditsContext) {
+                                  creditsContext.incrementCredits();
+                                  console.log('[REVEAL] Credits incremented in context');
+                                }
+                              })
+                              .catch(error => console.error('[REVEAL] Error updating credits:', error));
+                            } else {
+                              console.warn('[REVEAL] No userId provided');
+                            }
                           }}
                           disabled={revealedRows.has(`${actualIndex}-${row.companyName}`)}
                           style={{

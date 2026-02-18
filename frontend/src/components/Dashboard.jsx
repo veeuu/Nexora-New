@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { IndustryProvider } from '../context/IndustryContext';
+import { CreditsProvider } from '../context/CreditsContext';
 import Menu from './Menu';
 import Home from './martech/Home';
 import MartechSummary from './martech/Summary';
@@ -11,7 +12,7 @@ import RenewalIntelligence from './martech/RenewalIntelligence';
 import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
 
-const Dashboard = ({ onLogout, onNavRef, username }) => {
+const Dashboard = ({ onLogout, onNavRef, username, userId }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('Home');
@@ -88,7 +89,7 @@ const sectionToRoute = {
       case 'Intent':
         return <Martechintent />;
       case 'Technographics':
-        return <MartechTechnographics />;
+        return <MartechTechnographics userId={userId} />;
       case 'Renewal Intelligence':
         return <RenewalIntelligence />;
       case 'Buying Group':
@@ -102,19 +103,21 @@ const sectionToRoute = {
 
   return (
     <IndustryProvider>
-      <div className="dashboard">
+      <CreditsProvider>
+        <div className="dashboard">
         <div className="dashboard-content">
           <Menu
             activeSection={activeSection}
             onMenuClick={handleMenuClick}
             menuItems={getMenuItems()}
             username={username}
+            userId={userId}
             onLogout={onLogout}
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             <Routes>
               <Route path="/home" element={<Home />} />
-              <Route path="/technographics" element={<MartechTechnographics />} />
+              <Route path="/technographics" element={<MartechTechnographics userId={userId} />} />
               <Route path="/renewal-intelligence" element={<RenewalIntelligence />} />
               <Route path="/intent" element={<Martechintent />} />
               <Route path="/buying-group" element={<MartechBuyingGroup />} />
@@ -125,6 +128,7 @@ const sectionToRoute = {
           </main>
         </div>
       </div>
+      </CreditsProvider>
     </IndustryProvider>
   );
 };
