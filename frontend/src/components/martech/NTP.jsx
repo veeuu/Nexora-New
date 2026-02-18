@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import nexoraLogo from '../../assets/nexora-logo.png';
@@ -259,30 +259,25 @@ const NTP = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [measurements, setMeasurements] = useState({});
   const [filters, setFilters] = useState({
     companyName: [],
     technology: [],
     purchasePrediction: [],
     category: []
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [modalContent, setModalContent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageCache, setPageCache] = useState({});
-  const rowsPerPage = 500; // Server-side pagination
   const filterRef = useRef(null);
-  const scrollRefsMap = useRef(new Map());
   const techScrollRef = useRef(null);
   const propensityScrollRef = useRef(null);
   const analysisScrollRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [revealedRows, setRevealedRows] = useState(new Set());
+  const rowsPerPage = 10;
 
   // Sync scroll across all three columns
   const handleTechScroll = (e) => {
@@ -355,43 +350,6 @@ const NTP = () => {
     return null;
   };
 
-  // Fetch a specific page
-  const fetchPage = async (pageNum) => {
-    if (pageCache[pageNum]) {
-      return pageCache[pageNum];
-    }
-
-    try {
-      const response = await fetch(`/api/ntp?page=${pageNum}&limit=500`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setPageCache(prev => ({ ...prev, [pageNum]: data }));
-      return data;
-    } catch (err) {
-      console.error(`Failed to fetch page ${pageNum}:`, err);
-      return null;
-    }
-  };
-
-  // Prefetch adjacent pages
-  const prefetchAdjacentPages = async (pageNum) => {
-    const pagesToPrefetch = [];
-    
-    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); // Previous page
-    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); // Next page
-    
-    // Prefetch in background without blocking
-    pagesToPrefetch.forEach(page => {
-      if (!pageCache[page]) {
-        fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
-      }
-    });
-  };
-
   const handleFilterChange = (filterName, value) => {
     // For all filters, toggle the value in the array
     setFilters(prev => {
@@ -401,7 +359,7 @@ const NTP = () => {
         : [...currentValues, value];
       return { ...prev, [filterName]: newValues };
     });
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   const handleDownloadCSV = (dataToDownload) => {
@@ -440,31 +398,31 @@ const NTP = () => {
         
         performanceMonitor.start('api-fetch');
         
-        // Fetch metadata and first page with retry logic
+        // Fetch metadata and all data with retry logic
         const metadataResponse = await fetch('/api/ntp/metadata');
-        const metadata = await metadataResponse.json();
+        await metadataResponse.json();
         
-        // Fetch page 1 with retry logic for 503
-        let page1Data = null;
+        // Fetch ALL data with retry logic for 503
+        let allData = null;
         let retries = 10;
         
-        while (!page1Data && retries > 0) {
-          const page1Response = await fetch('/api/ntp?page=1&limit=500');
+        while (!allData && retries > 0) {
+          const allDataResponse = await fetch('/api/ntp/all');
           
-          if (page1Response.status === 503) {
+          if (allDataResponse.status === 503) {
             // Cache building in progress, retry with exponential backoff
             const delay = Math.min(500 * Math.pow(1.5, 10 - retries), 5000);
             await new Promise(resolve => setTimeout(resolve, delay));
             retries--;
-          } else if (page1Response.ok) {
-            page1Data = await page1Response.json();
+          } else if (allDataResponse.ok) {
+            allData = await allDataResponse.json();
           } else {
-            throw new Error(`HTTP error! status: ${page1Response.status}`);
+            throw new Error(`HTTP error! status: ${allDataResponse.status}`);
           }
         }
         
-        if (!page1Data) {
-          throw new Error('Failed to fetch page 1 after retries');
+        if (!allData) {
+          throw new Error('Failed to fetch all data after retries');
         }
         
         performanceMonitor.end('api-fetch');
@@ -474,18 +432,10 @@ const NTP = () => {
         performanceMonitor.end('parse-json');
 
         performanceMonitor.start('state-update');
-        setTableData(page1Data.data || []);
-        setPageCache(prev => ({ ...prev, 1: page1Data }));
-        setTotalPages(page1Data.pages || 1);
-        
-        // Prefetch page 2 in background (non-blocking)
-        if (page1Data.pages > 1) {
-          fetchPage(2).catch(err => console.error('Prefetch page 2 failed:', err));
-        }
+        setTableData(allData.data || []);
         
         performanceMonitor.end('state-update');
         performanceMonitor.end('total-load');
-        setMeasurements(performanceMonitor.getAllMeasurements());
         performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
@@ -498,33 +448,6 @@ const NTP = () => {
 
     fetchData();
   }, []);
-
-  // Handle page changes with prefetching
-  useEffect(() => {
-    const handlePageChange = async () => {
-      if (currentPage === 1) return; // Already loaded on init
-      
-      try {
-        const pageData = pageCache[currentPage];
-        if (pageData) {
-          setTableData(pageData.data || []);
-          // Prefetch adjacent pages in background
-          prefetchAdjacentPages(currentPage);
-        } else {
-          // Fetch the page if not cached
-          const data = await fetchPage(currentPage);
-          if (data) {
-            setTableData(data.data || []);
-            prefetchAdjacentPages(currentPage);
-          }
-        }
-      } catch (err) {
-        console.error(`Failed to load page ${currentPage}:`, err);
-      }
-    };
-
-    handlePageChange();
-  }, [currentPage, pageCache]);
 
   // Handle click outside to close filter dropdowns
   useEffect(() => {
@@ -585,7 +508,7 @@ const NTP = () => {
 
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
-  const filteredData = (() => {
+  const filteredData = useMemo(() => {
     // Check if mandatory filters are applied (both Category and Purchase Prediction)
     const hasCategoryFilter = Array.isArray(filters.category) && filters.category.length > 0;
     const hasPurchasePredictionFilter = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0;
@@ -606,20 +529,9 @@ const NTP = () => {
           return selectedValues.some(val => String(val).toLowerCase() === rowValue);
         });
 
-        const searchMatches = !searchTerm || Object.values(row).some(value =>
-          String(value).toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        return filterMatches && searchMatches;
-      })
-      .sort((a, b) => {
-        const aMatches = rowMatchesSearch(a, searchTerm);
-        const bMatches = rowMatchesSearch(b, searchTerm);
-        if (aMatches && !bMatches) return -1;
-        if (!aMatches && bMatches) return 1;
-        return 0;
+        return filterMatches;
       });
-  })();
+  }, [tableData, filters]);
 
   const handleAnalysisClick = (analysis) => {
     setModalContent(analysis);
@@ -1789,7 +1701,7 @@ const NTP = () => {
                 });
               });
 
-              // Flatten to get all companies
+              // Flatten to get all companies - WITH PAGINATION
               const allCompanies = [];
               Object.values(groupedData).forEach(group => {
                 Array.from(group.companies.values()).forEach(company => {
@@ -1797,13 +1709,16 @@ const NTP = () => {
                 });
               });
 
-              // Apply pagination to companies (7 per page)
-              const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
+              // Calculate pagination
+              const totalCompanies = allCompanies.length;
+              const totalPages = Math.ceil(totalCompanies / rowsPerPage);
               const startIndex = (currentPage - 1) * rowsPerPage;
-              const endIndex = startIndex + rowsPerPage;
+              const endIndex = Math.min(startIndex + rowsPerPage, totalCompanies);
               const paginatedCompanies = allCompanies.slice(startIndex, endIndex);
 
+              // Show paginated companies
               return paginatedCompanies.map((company, companyIndex) => {
+                const actualIndex = startIndex + companyIndex;
                 const companyRowSpan = company.technologies.length > 3 ? 1 : company.technologies.length;
 
                 return company.technologies.map((tech, techIndex) => {
@@ -1814,20 +1729,20 @@ const NTP = () => {
                   }
 
                   return (
-                    <tr key={`${companyIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
+                    <tr key={`${actualIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
                       {/* Checkbox - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '50px', padding: '12px 8px' }}>
                           <input
                             type="checkbox"
-                            checked={selectedRows.has(startIndex + companyIndex)}
+                            checked={selectedRows.has(actualIndex)}
                             onChange={(e) => {
                               e.stopPropagation();
                               const newSelected = new Set(selectedRows);
                               if (e.target.checked) {
-                                newSelected.add(startIndex + companyIndex);
+                                newSelected.add(actualIndex);
                               } else {
-                                newSelected.delete(startIndex + companyIndex);
+                                newSelected.delete(actualIndex);
                               }
                               setSelectedRows(newSelected);
                             }}
@@ -1841,45 +1756,45 @@ const NTP = () => {
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '70px', padding: '12px 8px' }}>
                           <button
                             onClick={() => {
-                              const rowKey = `${startIndex + companyIndex}-${company.companyName}`;
+                              const rowKey = `${actualIndex}-${company.companyName}`;
                               setRevealedRows(prev => {
                                 const newSet = new Set(prev);
                                 newSet.add(rowKey);
                                 return newSet;
                               });
                             }}
-                            disabled={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)}
+                            disabled={revealedRows.has(`${actualIndex}-${company.companyName}`)}
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '6px',
                               padding: '6px 12px',
-                              backgroundColor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
-                              border: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                              backgroundColor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
+                              border: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
                               borderRadius: '6px',
-                              cursor: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
+                              cursor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
                               fontSize: '13px',
                               fontWeight: '500',
-                              color: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
+                              color: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
                               transition: 'all 0.2s',
                               whiteSpace: 'nowrap',
-                              opacity: revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 0.6 : 1
+                              opacity: revealedRows.has(`${companyIndex}-${company.companyName}`) ? 0.6 : 1
                             }}
                             onMouseEnter={(e) => {
-                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                              if (!revealedRows.has(`${companyIndex}-${company.companyName}`)) {
                                 e.currentTarget.style.backgroundColor = '#a7f3d0';
                                 e.currentTarget.style.borderColor = '#6ee7b7';
                               }
                             }}
                             onMouseLeave={(e) => {
-                              if (!revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`)) {
+                              if (!revealedRows.has(`${actualIndex}-${company.companyName}`)) {
                                 e.currentTarget.style.backgroundColor = '#d1fae5';
                                 e.currentTarget.style.borderColor = '#a7f3d0';
                               }
                             }}
-                            title={revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
+                            title={revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                           >
-                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
                               <FaEye size={16} />
                             ) : (
                               <FaEyeSlash size={16} />
@@ -1892,10 +1807,10 @@ const NTP = () => {
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {revealedRows.has(`${startIndex + companyIndex}-${company.companyName}`) ? (
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
                               <>
                                 <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                                  {highlightText(company.companyName, searchTerm)}
+                                  {company.companyName}
                                 </div>
                                 <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   {company.domain && (
@@ -1964,7 +1879,7 @@ const NTP = () => {
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '110px', padding: '12px 8px' }}>
                           <span style={{ display: 'flex', alignItems: 'center' }}>
                             {renderTechLogo(company.category)}
-                            {highlightText(company.category, searchTerm)}
+                            {company.category}
                           </span>
                         </td>
                       )}
@@ -1972,7 +1887,7 @@ const NTP = () => {
                       {/* Purchase Prediction - shown only on first technology row */}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
-                          {highlightText(company.purchasePrediction, searchTerm)}
+                          {company.purchasePrediction}
                         </td>
                       )}
 
@@ -1998,14 +1913,14 @@ const NTP = () => {
                             {company.technologies.map((t, idx) => (
                               <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                                 {renderTechLogo(t.technology)}
-                                {highlightText(t.technology, searchTerm)}
+                                {t.technology}
                               </span>
                             ))}
                           </div>
                         ) : (
                           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                             {renderTechLogo(tech.technology)}
-                            {highlightText(tech.technology, searchTerm)}
+                            {tech.technology}
                           </span>
                         )}
                       </td>
@@ -2032,12 +1947,12 @@ const NTP = () => {
                           >
                             {company.technologies.map((t, idx) => (
                               <span key={idx} style={{ whiteSpace: 'nowrap' }}>
-                                {highlightText(t.purchaseProbability, searchTerm)}
+                                {t.purchaseProbability}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          highlightText(tech.purchaseProbability, searchTerm)
+                          tech.purchaseProbability
                         )}
                       </td>
 
@@ -2069,12 +1984,12 @@ const NTP = () => {
                                 style={{ whiteSpace: 'nowrap', cursor: 'pointer', textDecoration: 'underline', color: '#010810ff' }}
                                 onClick={() => handleAnalysisClick(t.ntpAnalysis)}
                               >
-                                {t.ntpAnalysis ? highlightText(`${t.ntpAnalysis.substring(0, 30)}...`, searchTerm) : 'N/A'}
+                                {t.ntpAnalysis ? `${t.ntpAnalysis.substring(0, 30)}...` : 'N/A'}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          tech.ntpAnalysis ? highlightText(`${tech.ntpAnalysis.substring(0, 30)}...`, searchTerm) : 'N/A'
+                          tech.ntpAnalysis ? `${tech.ntpAnalysis.substring(0, 30)}...` : 'N/A'
                         )}
                       </td>
                     </tr>
@@ -2087,74 +2002,47 @@ const NTP = () => {
       </div>
 
       {/* Pagination Controls */}
-      {(() => {
-        // Calculate total pages based on companies (not individual rows)
+      {filteredData.length > 0 && (() => {
         const groupedData = {};
         filteredData.forEach(row => {
           const key = `${row.category}|${row.purchasePrediction}`;
           if (!groupedData[key]) {
-            groupedData[key] = {
-              category: row.category,
-              purchasePrediction: row.purchasePrediction,
-              companies: new Map()
-            };
+            groupedData[key] = { companies: new Map() };
           }
-          
           if (!groupedData[key].companies.has(row.companyName)) {
-            groupedData[key].companies.set(row.companyName, {
-              companyName: row.companyName,
-              domain: row.domain,
-              linkedinUrl: row.linkedinUrl,
-              technologies: []
-            });
+            groupedData[key].companies.set(row.companyName, true);
           }
-          
-          groupedData[key].companies.get(row.companyName).technologies.push({
-            technology: row.technology,
-            purchaseProbability: row.purchaseProbability,
-            ntpAnalysis: row.ntpAnalysis
-          });
         });
-
-        const allCompanies = [];
-        Object.values(groupedData).forEach(group => {
-          Array.from(group.companies.values()).forEach(company => {
-            allCompanies.push(company);
-          });
-        });
-
-        const totalPages = Math.ceil(allCompanies.length / rowsPerPage);
+        const totalCompanies = Object.values(groupedData).reduce((sum, g) => sum + g.companies.size, 0);
+        const totalPages = Math.ceil(totalCompanies / rowsPerPage);
         const startIndex = (currentPage - 1) * rowsPerPage + 1;
-        const endIndex = Math.min(currentPage * rowsPerPage, allCompanies.length);
-        const totalResults = allCompanies.length;
+        const endIndex = Math.min(currentPage * rowsPerPage, totalCompanies);
 
         return totalPages > 1 ? (
-          <>
-            {/* Pagination Controls - All in One Row */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '20px',
+            marginBottom: '20px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #e5e7eb'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: '#1f2937',
+              fontWeight: '600'
+            }}>
+              Page {currentPage} of {totalPages.toLocaleString()}
+            </div>
+
+            {/* Pagination Buttons */}
             <div style={{
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
-              marginTop: '20px',
-              marginBottom: '20px',
-              paddingBottom: '15px',
-              borderBottom: '1px solid #e5e7eb'
+              gap: '8px'
             }}>
-              <div style={{
-                fontSize: '14px',
-                color: '#1f2937',
-                fontWeight: '600'
-              }}>
-                Page {currentPage} of {totalPages.toLocaleString()}
-              </div>
-
-              {/* Pagination Buttons */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
               {(() => {
                 const maxPagesToShow = 5;
                 let startPage = 1;
@@ -2409,17 +2297,16 @@ const NTP = () => {
                   </>
                 );
               })()}
-              </div>
-
-              <div style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                fontWeight: '500'
-              }}>
-                Showing {startIndex}-{endIndex} of {totalResults.toLocaleString()} results
-              </div>
             </div>
-          </>
+
+            <div style={{
+              fontSize: '14px',
+              color: '#6b7280',
+              fontWeight: '500'
+            }}>
+              Showing {startIndex}-{endIndex} of {totalCompanies.toLocaleString()} results
+            </div>
+          </div>
         ) : null;
       })()}
 
