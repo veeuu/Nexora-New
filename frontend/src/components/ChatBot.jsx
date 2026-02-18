@@ -51,7 +51,7 @@ const ChatBot = ({ isAuthenticated, onNavigate }) => {
   const callGeminiAPI = async (userMessage) => {
     try {
       const response = await fetch(
-        'https:
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_API_KEY_HERE',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
