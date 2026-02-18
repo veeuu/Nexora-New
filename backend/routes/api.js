@@ -139,9 +139,8 @@ const buildNtpCache = async () => {
     console.log('[NTP-CACHE] Building NTP cache...');
     
     const fetchStart = Date.now();
-    // Fetch all companies in one query (indexes should make this faster now)
+    // Fetch all companies - don't use select() since the schema has strict: false
     const companies = await Company.find({})
-      .select('Company Name NTP Firmographics')
       .lean()
       .hint({ '_id': 1 }); // Use index hint for faster query
     
@@ -210,7 +209,7 @@ router.get('/ntp/metadata', async (req, res) => {
       return res.json(ntpMetadataCache);
     }
 
-    const allCompanies = await Company.find({}).select('Company Name NTP Firmographics');
+    const allCompanies = await Company.find({});
 
     const metadata = {
       categories: new Set(),
@@ -307,27 +306,58 @@ const buildTechCache = async () => {
     console.log('[CACHE] Building technographics cache...');
     
     const fetchStart = Date.now();
-    // Fetch all companies in one query (indexes should make this faster now)
+    // Fetch all companies - don't use select() since the schema has strict: false
     const companies = await Company.find({})
-      .select('Company Name Firmographics Technographics Financial_Data')
       .lean()
       .hint({ '_id': 1 }); // Use index hint for faster query
     
     const fetchTime = Date.now() - fetchStart;
     console.log(`[CACHE] Fetched ${companies.length} companies in ${fetchTime}ms`);
+    
+    // Debug: Check first company structure
+    if (companies.length > 0) {
+      const firstCompany = companies[0];
+      console.log('[CACHE] First company structure:', {
+        hasCompanyName: !!firstCompany['Company Name'],
+        companyNameValue: firstCompany['Company Name'],
+        hasFirmographics: !!firstCompany.Firmographics,
+        hasTechnographics: !!firstCompany.Technographics,
+        techLength: (firstCompany.Technographics || []).length,
+        keys: Object.keys(firstCompany).slice(0, 15)
+      });
+    }
 
     const processStart = Date.now();
     let technographicsData = [];
+    let skippedCount = 0;
+    let companiesWithTech = 0;
+    let companiesWithoutTech = 0;
     
     companies.forEach((company, idx) => {
       const firmographics = company.Firmographics || {};
       const about = firmographics.About || {};
       const location = firmographics.Location || {};
       const finance = company.Financial_Data?.Finance || {};
+      const companyName = company['Company Name'];
 
-      (company.Technographics || []).forEach(techItem => {
+      // Skip companies without a name
+      if (!companyName || companyName.trim() === '') {
+        skippedCount++;
+        return;
+      }
+
+      // Check if company has technographics data
+      const techArray = company.Technographics || [];
+      if (techArray.length === 0) {
+        companiesWithoutTech++;
+        return;
+      }
+      
+      companiesWithTech++;
+
+      techArray.forEach(techItem => {
         technographicsData.push({
-          companyName: company['Company Name'],
+          companyName: companyName,
           region: location.Country || 'N/A',
           industry: about.Industry || 'N/A',
           employeeSize: about['Full Time employees'] || about['Full time employees'] || about.Employees || 'N/A',
@@ -345,6 +375,7 @@ const buildTechCache = async () => {
     
     const processTime = Date.now() - processStart;
     console.log(`[CACHE] Processed ${technographicsData.length} records in ${processTime}ms`);
+    console.log(`[CACHE] Companies with names: ${companies.length - skippedCount}, with tech data: ${companiesWithTech}, without tech data: ${companiesWithoutTech}`);
 
     techCache = technographicsData;
     techCacheTime = Date.now();
@@ -383,7 +414,7 @@ router.get('/technographics/metadata', async (req, res) => {
       return res.json(techMetadataCache);
     }
 
-    const allCompanies = await Company.find({}).select('Firmographics Technographics');
+    const allCompanies = await Company.find({});
 
     const metadata = {
       regions: new Set(),
@@ -447,7 +478,16 @@ router.get('/technographics', async (req, res) => {
     // If cache is ready, return immediately
     if (techCache && techCache.length > 0) {
       const paginatedData = techCache.slice(skip, skip + limit);
-      console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
+      
+      // Log sample data for debugging
+      if (page === 1 && paginatedData.length > 0) {
+        console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
+        console.log('[TECH] Sample records:', paginatedData.slice(0, 3).map(r => ({
+          companyName: r.companyName,
+          technology: r.technology,
+          region: r.region
+        })));
+      }
       
       return res.json({
         data: paginatedData,
