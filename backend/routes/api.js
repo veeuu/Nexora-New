@@ -1,22 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const mongoose = require('mongoose'); // Import mongoose
+const mongoose = require('mongoose');
 const path = require('path');
-// Assuming this file is in your 'routes' folder
 
 const Company = require('../models/Company');
 const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 
-// Enable CORS for all routes in this router
-// This will add the necessary headers to your API responses
-// to allow requests from your frontend.
 router.use(cors());
 
-// Cache management for dashboard stats
 let statsCache = null;
 let statsCacheTime = 0;
-const STATS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const STATS_CACHE_DURATION = 5 * 60 * 1000;
 
 const getCachedStats = () => {
   const now = Date.now();
@@ -31,7 +26,6 @@ const setCachedStats = (stats) => {
   statsCacheTime = Date.now();
 };
 
-// Helper function to inject scrollable CSS into org chart HTML
 function injectScrollableCSS(html) {
   const scrollableCSS = `.container {
     width: 100%;
@@ -54,53 +48,44 @@ function injectScrollableCSS(html) {
     transition: transform 0.2s ease;
   }`;
 
-  // Replace the existing .container CSS
-  const containerRegex = /\.container\s*\{[^}]*\}/;
+const containerRegex = /\.container\s*\{[^}]*\}/;
   if (containerRegex.test(html)) {
     html = html.replace(containerRegex, '.container { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: auto; }');
   }
 
-  // Replace the existing .chart-wrapper CSS
-  const chartWrapperRegex = /\.chart-wrapper\s*\{[^}]*\}/;
+const chartWrapperRegex = /\.chart-wrapper\s*\{[^}]*\}/;
   if (chartWrapperRegex.test(html)) {
     html = html.replace(chartWrapperRegex, '.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }');
   } else {
-    // If .chart-wrapper doesn't exist, inject it into the style tag
+
     html = html.replace(/<\/style>/, `.chart-wrapper { flex: 1; overflow: auto; background-color: white; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }</style>`);
   }
 
-  // Add zoom capability to #chart element
-  html = html.replace(/<\/style>/, `#chart { transform-origin: top center; transition: transform 0.2s ease; }</style>`);
+html = html.replace(/<\/style>/, `#chart { transform-origin: top center; transition: transform 0.2s ease; }</style>`);
 
-  // Add script to handle zoom from parent window and auto-detect optimal zoom
-  const zoomScript = `<script>
+const zoomScript = `<script>
     window.currentZoom = 100;
     window.optimalZoom = 100;
 
-    // Calculate optimal zoom on page load
-    window.addEventListener('load', function() {
+window.addEventListener('load', function() {
       const chartElement = document.getElementById('chart');
       if (chartElement && chartElement.getBoundingClientRect) {
         const chartRect = chartElement.getBoundingClientRect();
-        const containerWidth = window.innerWidth - 40; // Account for padding
-        const containerHeight = 520; // Container height from React component
+        const containerWidth = window.innerWidth - 40;
+        const containerHeight = 520;
 
-        // Calculate zoom to fit width
-        const widthZoom = (containerWidth / chartRect.width) * 100;
-        // Calculate zoom to fit height
+const widthZoom = (containerWidth / chartRect.width) * 100;
+
         const heightZoom = (containerHeight / chartRect.height) * 100;
 
-        // Use the smaller zoom to fit both dimensions
-        window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
-        window.optimalZoom = Math.max(window.optimalZoom, 30); // Min 30%
-        window.optimalZoom = Math.round(window.optimalZoom / 10) * 10; // Round to nearest 10
+window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+        window.optimalZoom = Math.max(window.optimalZoom, 30);
+        window.optimalZoom = Math.round(window.optimalZoom / 10) * 10;
 
-        // Apply optimal zoom
-        chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
         window.currentZoom = window.optimalZoom;
 
-        // Send optimal zoom back to parent
-        window.parent.postMessage({
+window.parent.postMessage({
           type: 'optimalZoomCalculated',
           zoomLevel: window.optimalZoom
         }, '*');
@@ -123,36 +108,32 @@ function injectScrollableCSS(html) {
   return html;
 }
 
-// Cache for NTP data
 let ntpCache = null;
 let ntpCacheTime = 0;
 let ntpCacheBuilding = false;
-const NTP_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const NTP_CACHE_DURATION = 10 * 60 * 1000;
 
-// Build NTP cache in background (optimized with indexes)
 const buildNtpCache = async () => {
   if (ntpCacheBuilding) return;
-  
+
   try {
     ntpCacheBuilding = true;
     const startTime = Date.now();
-    console.log('[NTP-CACHE] Building NTP cache...');
-    
+
     const fetchStart = Date.now();
-    // Fetch all companies - don't use select() since the schema has strict: false
+
     const companies = await Company.find({})
       .lean()
-      .hint({ '_id': 1 }); // Use index hint for faster query
-    
+      .hint({ '_id': 1 });
+
     const fetchTime = Date.now() - fetchStart;
-    console.log(`[NTP-CACHE] Fetched ${companies.length} companies in ${fetchTime}ms`);
 
     const processStart = Date.now();
     let ntpData = [];
-    
+
     companies.forEach(company => {
       const about = (company.Firmographics || {}).About || {};
-      
+
       (company.NTP || []).forEach(ntpItem => {
         ntpData.push({
           companyName: company['Company Name'],
@@ -168,21 +149,19 @@ const buildNtpCache = async () => {
         });
       });
     });
-    
+
     const processTime = Date.now() - processStart;
-    console.log(`[NTP-CACHE] Processed ${ntpData.length} records in ${processTime}ms`);
 
     ntpCache = ntpData;
     ntpCacheTime = Date.now();
     const totalTime = Date.now() - startTime;
-    console.log(`[NTP-CACHE] ✓ NTP cache built: ${ntpData.length} records in ${totalTime}ms`);
   } catch (err) {
-    console.error('[NTP-CACHE] Error building NTP cache:', err);
   } finally {
     ntpCacheBuilding = false;
   }
 };
 
+<<<<<<< HEAD
 // Build cache on server start - wait for MongoDB connection
 setTimeout(() => {
   if (mongoose.connection.readyState === 1) {
@@ -196,27 +175,24 @@ setTimeout(() => {
     });
   }
 }, 3000); // Wait 3 seconds after module load
+=======
+buildNtpCache();
+>>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
 
-// Rebuild cache every 10 minutes
 setInterval(() => {
   if (Date.now() - ntpCacheTime > NTP_CACHE_DURATION) {
     buildNtpCache();
   }
-}, 5 * 60 * 1000); // Check every 5 minutes
+}, 5 * 60 * 1000);
 
-// Cache for NTP metadata
 let ntpMetadataCache = null;
 let ntpMetadataCacheTime = 0;
 
-// @route   GET /api/ntp/metadata
-// @desc    Get filter options for NTP (lightweight)
-// @access  Public
 router.get('/ntp/metadata', async (req, res) => {
   try {
     const now = Date.now();
-    
-    // Return cached metadata if still valid
-    if (ntpMetadataCache && (now - ntpMetadataCacheTime) < NTP_CACHE_DURATION) {
+
+if (ntpMetadataCache && (now - ntpMetadataCacheTime) < NTP_CACHE_DURATION) {
       return res.json(ntpMetadataCache);
     }
 
@@ -232,7 +208,7 @@ router.get('/ntp/metadata', async (req, res) => {
 
     allCompanies.forEach(company => {
       if (company['Company Name']) metadata.companies.add(company['Company Name']);
-      
+
       (company.NTP || []).forEach(ntpItem => {
         if (ntpItem.Category) metadata.categories.add(ntpItem.Category);
         if (ntpItem.Technology) metadata.technologies.add(ntpItem.Technology);
@@ -251,28 +227,22 @@ router.get('/ntp/metadata', async (req, res) => {
 
     ntpMetadataCache = result;
     ntpMetadataCacheTime = now;
-    
+
     res.json(result);
   } catch (err) {
-    console.error('[NTP-METADATA] Error:', err.message);
     res.status(500).json({ error: 'Server Error' });
   }
 });
 
-// @route   GET /api/ntp
-// @desc    Get NTP data with server-side pagination (from cache)
-// @access  Public
 router.get('/ntp', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 500;
     const skip = (page - 1) * limit;
 
-    // If cache is ready, return immediately
-    if (ntpCache && ntpCache.length > 0) {
+if (ntpCache && ntpCache.length > 0) {
       const paginatedData = ntpCache.slice(skip, skip + limit);
-      console.log(`[NTP] ✓ Page ${page}: ${paginatedData.length} records from cache`);
-      
+
       return res.json({
         data: paginatedData,
         total: ntpCache.length,
@@ -282,68 +252,46 @@ router.get('/ntp', async (req, res) => {
       });
     }
 
-    // If cache is not ready, start building it (non-blocking)
-    if (!ntpCacheBuilding) {
-      console.log('[NTP] Cache not ready, starting build in background...');
-      buildNtpCache(); // Start building but don't wait
+if (!ntpCacheBuilding) {
+      buildNtpCache();
     }
 
-    // Return 503 immediately - frontend will retry
-    console.log(`[NTP] Cache not ready for page ${page}, returning 503`);
-    return res.status(503).json({ 
-      error: 'Cache building in progress', 
+return res.status(503).json({
+      error: 'Cache building in progress',
       data: [],
-      retryAfter: 1000 // Suggest retry after 1 second
+      retryAfter: 1000
     });
   } catch (err) {
-    console.error('[NTP] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
-// Cache for technographics data
 let techCache = null;
 let techCacheTime = 0;
 let techCacheBuilding = false;
-const TECH_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const TECH_CACHE_DURATION = 10 * 60 * 1000;
 
-// Build technographics cache in background (optimized with indexes)
 const buildTechCache = async () => {
   if (techCacheBuilding) return;
-  
+
   try {
     techCacheBuilding = true;
     const startTime = Date.now();
-    console.log('[CACHE] Building technographics cache...');
-    
+
     const fetchStart = Date.now();
-    // Fetch all companies - don't use select() since the schema has strict: false
+
     const companies = await Company.find({})
       .lean()
-      .hint({ '_id': 1 }); // Use index hint for faster query
-    
+      .hint({ '_id': 1 });
+
     const fetchTime = Date.now() - fetchStart;
-    console.log(`[CACHE] Fetched ${companies.length} companies in ${fetchTime}ms`);
-    
-    // Debug: Check first company structure
-    if (companies.length > 0) {
-      const firstCompany = companies[0];
-      console.log('[CACHE] First company structure:', {
-        hasCompanyName: !!firstCompany['Company Name'],
-        companyNameValue: firstCompany['Company Name'],
-        hasFirmographics: !!firstCompany.Firmographics,
-        hasTechnographics: !!firstCompany.Technographics,
-        techLength: (firstCompany.Technographics || []).length,
-        keys: Object.keys(firstCompany).slice(0, 15)
-      });
-    }
 
     const processStart = Date.now();
     let technographicsData = [];
     let skippedCount = 0;
     let companiesWithTech = 0;
     let companiesWithoutTech = 0;
-    
+
     companies.forEach((company, idx) => {
       const firmographics = company.Firmographics || {};
       const about = firmographics.About || {};
@@ -351,19 +299,17 @@ const buildTechCache = async () => {
       const finance = company.Financial_Data?.Finance || {};
       const companyName = company['Company Name'];
 
-      // Skip companies without a name
-      if (!companyName || companyName.trim() === '') {
+if (!companyName || companyName.trim() === '') {
         skippedCount++;
         return;
       }
 
-      // Check if company has technographics data
-      const techArray = company.Technographics || [];
+const techArray = company.Technographics || [];
       if (techArray.length === 0) {
         companiesWithoutTech++;
         return;
       }
-      
+
       companiesWithTech++;
 
       techArray.forEach(techItem => {
@@ -383,22 +329,19 @@ const buildTechCache = async () => {
         });
       });
     });
-    
+
     const processTime = Date.now() - processStart;
-    console.log(`[CACHE] Processed ${technographicsData.length} records in ${processTime}ms`);
-    console.log(`[CACHE] Companies with names: ${companies.length - skippedCount}, with tech data: ${companiesWithTech}, without tech data: ${companiesWithoutTech}`);
 
     techCache = technographicsData;
     techCacheTime = Date.now();
     const totalTime = Date.now() - startTime;
-    console.log(`[CACHE] ✓ Technographics cache built: ${technographicsData.length} records in ${totalTime}ms`);
   } catch (err) {
-    console.error('[CACHE] Error building technographics cache:', err);
   } finally {
     techCacheBuilding = false;
   }
 };
 
+<<<<<<< HEAD
 // Build cache on server start - wait for MongoDB connection
 setTimeout(() => {
   if (mongoose.connection.readyState === 1) {
@@ -412,27 +355,24 @@ setTimeout(() => {
     });
   }
 }, 3000); // Wait 3 seconds after module load
+=======
+buildTechCache();
+>>>>>>> 07faee509ca89d23abcb9b7db2f92e977716e19f
 
-// Rebuild cache every 10 minutes
 setInterval(() => {
   if (Date.now() - techCacheTime > TECH_CACHE_DURATION) {
     buildTechCache();
   }
-}, 5 * 60 * 1000); // Check every 5 minutes
+}, 5 * 60 * 1000);
 
-// Cache for technographics metadata (filters, counts)
 let techMetadataCache = null;
 let techMetadataCacheTime = 0;
 
-// @route   GET /api/technographics/metadata
-// @desc    Get filter options and counts for technographics (lightweight)
-// @access  Public
 router.get('/technographics/metadata', async (req, res) => {
   try {
     const now = Date.now();
-    
-    // Return cached metadata if still valid
-    if (techMetadataCache && (now - techMetadataCacheTime) < TECH_CACHE_DURATION) {
+
+if (techMetadataCache && (now - techMetadataCacheTime) < TECH_CACHE_DURATION) {
       return res.json(techMetadataCache);
     }
 
@@ -477,40 +417,23 @@ router.get('/technographics/metadata', async (req, res) => {
 
     techMetadataCache = result;
     techMetadataCacheTime = now;
-    
+
     res.json(result);
   } catch (err) {
-    console.error(err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/technographics
-// @desc    Get Technographics data with server-side pagination (from cache)
-// @access  Public
-// @route   GET /api/technographics
-// @desc    Get Technographics data with server-side pagination (from cache)
-// @access  Public
 router.get('/technographics', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const skip = (page - 1) * limit;
 
-    // If cache is ready, return immediately
-    if (techCache && techCache.length > 0) {
+if (techCache && techCache.length > 0) {
       const paginatedData = techCache.slice(skip, skip + limit);
-      
-      // Log sample data for debugging
-      if (page === 1 && paginatedData.length > 0) {
-        console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
-        console.log('[TECH] Sample records:', paginatedData.slice(0, 3).map(r => ({
-          companyName: r.companyName,
-          technology: r.technology,
-          region: r.region
-        })));
-      }
-      
+
       return res.json({
         data: paginatedData,
         total: techCache.length,
@@ -520,44 +443,33 @@ router.get('/technographics', async (req, res) => {
       });
     }
 
-    // If cache is not ready, start building it (non-blocking)
-    if (!techCacheBuilding) {
-      console.log('[TECH] Cache not ready, starting build in background...');
-      buildTechCache(); // Start building but don't wait
+if (!techCacheBuilding) {
+      buildTechCache();
     }
 
-    // Return 503 immediately - frontend will retry
-    console.log(`[TECH] Cache not ready for page ${page}, returning 503`);
-    return res.status(503).json({ 
-      error: 'Cache building in progress', 
+return res.status(503).json({
+      error: 'Cache building in progress',
       data: [],
-      retryAfter: 1000 // Suggest retry after 1 second
+      retryAfter: 1000
     });
   } catch (err) {
-    console.error('[TECH] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
-// Cache for company details
 let companyDetailsCache = null;
 let companyDetailsCacheTime = 0;
-const COMPANY_DETAILS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const COMPANY_DETAILS_CACHE_DURATION = 10 * 60 * 1000;
 
-// @route   GET /api/company-details
-// @desc    Get lightweight company details (domain, linkedin) for all companies
-// @access  Public
 router.get('/company-details', async (req, res) => {
   try {
     const now = Date.now();
-    
-    // Return cached data if still valid
-    if (companyDetailsCache && (now - companyDetailsCacheTime) < COMPANY_DETAILS_CACHE_DURATION) {
+
+if (companyDetailsCache && (now - companyDetailsCacheTime) < COMPANY_DETAILS_CACHE_DURATION) {
       return res.json(companyDetailsCache);
     }
 
-    // Fetch only the fields we need
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
+const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
 
     const companyDetails = {};
     companies.forEach(company => {
@@ -567,34 +479,28 @@ router.get('/company-details', async (req, res) => {
         linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || ''
       };
     });
-    
-    // Cache the results
-    companyDetailsCache = companyDetails;
+
+companyDetailsCache = companyDetails;
     companyDetailsCacheTime = now;
-    
+
     res.json(companyDetails);
   } catch (err) {
-    console.error(err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// Cache for renewal intelligence data
 let renewalCache = null;
 let renewalCacheTime = 0;
-const RENEWAL_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const RENEWAL_CACHE_DURATION = 10 * 60 * 1000;
 
-// Cache for renewal metadata
 let renewalMetadataCache = null;
 let renewalMetadataCacheTime = 0;
 
-// @route   GET /api/renewal-intelligence/metadata
-// @desc    Get filter options for renewal intelligence
-// @access  Public
 router.get('/renewal-intelligence/metadata', async (req, res) => {
   try {
     const now = Date.now();
-    
+
     if (renewalMetadataCache && (now - renewalMetadataCacheTime) < RENEWAL_CACHE_DURATION) {
       return res.json(renewalMetadataCache);
     }
@@ -627,17 +533,14 @@ router.get('/renewal-intelligence/metadata', async (req, res) => {
 
     renewalMetadataCache = result;
     renewalMetadataCacheTime = now;
-    
+
     res.json(result);
   } catch (err) {
-    console.error('Error fetching renewal metadata:', err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/renewal-intelligence
-// @desc    Get Renewal Intelligence data with pagination
-// @access  Public
 router.get('/renewal-intelligence', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -645,14 +548,13 @@ router.get('/renewal-intelligence', async (req, res) => {
     const skip = (page - 1) * limit;
     const { companyName } = req.query;
 
-    // Return cached data for first page if available
-    if (page === 1 && !companyName && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
+if (page === 1 && !companyName && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
       return res.json(renewalCache);
     }
 
     const renewalCollection = mongoose.connection.db.collection('renewal_intel');
     const query = companyName ? { 'Company Name': companyName } : {};
-    
+
     const renewalDocs = await renewalCollection.find(query).toArray();
 
     const renewalData = renewalDocs.map(item => ({
@@ -663,15 +565,13 @@ router.get('/renewal-intelligence', async (req, res) => {
       qtr: item['Renewal Date']
     }));
 
-    // Apply pagination
-    const paginatedData = renewalData.slice(skip, skip + limit);
-    
-    // Cache first page of full dataset
-    if (page === 1 && !companyName) {
+const paginatedData = renewalData.slice(skip, skip + limit);
+
+if (page === 1 && !companyName) {
       renewalCache = paginatedData;
       renewalCacheTime = Date.now();
     }
-    
+
     res.json({
       data: paginatedData,
       total: renewalData.length,
@@ -680,17 +580,14 @@ router.get('/renewal-intelligence', async (req, res) => {
       pages: Math.ceil(renewalData.length / limit)
     });
   } catch (err) {
-    console.error('Error fetching renewal intelligence data:', err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/buyergroups
-// @desc    Get Buyer Group data for all companies
-// @access  Public
 router.get('/buyergroups', async (req, res) => {
   try {
-    // Fetch all companies without pagination
+
     const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 });
 
     const buyerGroupData = companies.flatMap(company => {
@@ -699,7 +596,7 @@ router.get('/buyergroups', async (req, res) => {
 
       return company.Buyers_Group?.map(item => ({
         id: company.Financial_Data?.Finance?.ID || 'N/A',
-        uniqueId: `BG-${Math.floor(Math.random() * 100000)}`, // Placeholder
+        uniqueId: `BG-${Math.floor(Math.random() * 100000)}`,
         companyName: company['Company Name'],
         domain: about.Domain || 'N/A',
         industry: about.Industry || 'N/A',
@@ -714,58 +611,47 @@ router.get('/buyergroups', async (req, res) => {
 
     res.json(buyerGroupData);
   } catch (err) {
-    console.error(err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// Cache for intent data
 let intentCache = null;
 let intentCacheTime = 0;
-const INTENT_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const INTENT_CACHE_DURATION = 10 * 60 * 1000;
 
-// @route   GET /api/intent
-// @desc    Get Intent data for all companies (with caching)
-// @access  Public
 router.get('/intent', async (req, res) => {
   try {
     const now = Date.now();
-    
-    // Return cached data if still valid
-    if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
+
+if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
       return res.json(intentCache);
     }
 
-    // Directly query the 'intent_data' collection
-    const intentCollection = mongoose.connection.db.collection('intent_data');
+const intentCollection = mongoose.connection.db.collection('intent_data');
     const intentDocs = await intentCollection.find({}).toArray();
 
-    // Map the documents to the format expected by the frontend
-    const intentData = intentDocs.map(item => ({
-      // Use the correct field names from your 'intent_data' collection
-      companyName: item['Company Name'], // Corrected field name
+const intentData = intentDocs.map(item => ({
+
+      companyName: item['Company Name'],
       intentStatus: item['Intent Status']
     }));
 
-    // Cache the results
-    intentCache = intentData;
+intentCache = intentData;
     intentCacheTime = now;
 
     res.json(intentData);
   } catch (err) {
-    console.error(err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/product-catalogue
-// @desc    Get Product Catalogue data by year
-// @access  Public
 router.get('/product-catalogue', async (req, res) => {
   try {
     const { year } = req.query;
     const collectionName = year === '2026' ? 'product_catlog_2026' : 'product_catlog_2025';
-    
+
     const productCatalogueCollection = mongoose.connection.db.collection(collectionName);
     const productDocs = await productCatalogueCollection.find({}).toArray();
 
@@ -778,21 +664,17 @@ router.get('/product-catalogue', async (req, res) => {
 
     res.json(productData);
   } catch (err) {
-    console.error('Error fetching product catalogue data:', err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/data-dictionary
-// @desc    Get Tech Data Dictionary definitions
-// @access  Public
 router.get('/data-dictionary', async (req, res) => {
   try {
     const dataDictionaryCollection = mongoose.connection.db.collection('tech_data_dictionary');
     const dataDictionary = await dataDictionaryCollection.find({}).toArray();
 
-    // Sort by Data Attribute name for better organization
-    const sortedData = dataDictionary.sort((a, b) => {
+const sortedData = dataDictionary.sort((a, b) => {
       const attrA = a['Data Attribute'] || '';
       const attrB = b['Data Attribute'] || '';
       return attrA.localeCompare(attrB);
@@ -800,114 +682,97 @@ router.get('/data-dictionary', async (req, res) => {
 
     res.json(sortedData);
   } catch (err) {
-    console.error('Error fetching data dictionary:', err.message);
+
     res.status(500).send('Server Error');
   }
 });
 
-// @route   GET /api/org-chart/companies
-// @desc    Get list of all companies with org chart data
-// @access  Public
 router.get('/org-chart/companies', async (req, res) => {
   try {
     const fs = require('fs');
-    
-    // Use the CSV file
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-    
-    // Fallback to old Excel file if CSV doesn't exist
-    if (!fs.existsSync(csvPath)) {
+
+let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
+
+if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
-    
+
     const companies = await getCompaniesFromCSV(csvPath);
     res.json({ companies });
   } catch (err) {
-    console.error('Error fetching companies:', err.message);
+
     res.status(500).json({ error: 'Failed to fetch companies' });
   }
 });
 
-// @route   GET /api/org-chart/categories
-// @desc    Get unique categories from CSV file
-// @access  Public
 router.get('/org-chart/categories', async (req, res) => {
   try {
     const fs = require('fs');
     const csv = require('csv-parser');
-    
-    // Use the CSV file
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-    
-    // Fallback to old Excel file if CSV doesn't exist
-    if (!fs.existsSync(csvPath)) {
+
+let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
+
+if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
-    
+
     if (!fs.existsSync(csvPath)) {
       return res.status(404).json({ error: 'CSV file not found' });
     }
-    
-    // Read CSV file
-    const data = [];
+
+const data = [];
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', (row) => {
         data.push(row);
       })
       .on('end', () => {
-        // Extract unique categories
+
         const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
         res.json({ categories });
       })
       .on('error', (error) => {
-        console.error('Error reading CSV:', error.message);
+
         res.status(500).json({ error: 'Failed to read CSV file' });
       });
   } catch (err) {
-    console.error('Error fetching categories:', err.message);
+
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
 
-// @route   GET /api/org-chart/person-details
-// @desc    Get person details from CSV file for buying group side panel
-// @access  Public
 router.get('/org-chart/person-details', async (req, res) => {
   try {
     const fs = require('fs');
     const csv = require('csv-parser');
-    
-    // Use the CSV file
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-    
-    // Fallback to old Excel file if CSV doesn't exist
-    if (!fs.existsSync(csvPath)) {
+
+let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
+
+if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
-    
+
     if (!fs.existsSync(csvPath)) {
       return res.status(404).json({ error: 'CSV file not found' });
     }
-    
-    // Read CSV file
-    const data = [];
+
+const data = [];
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', (row) => {
         data.push(row);
       })
       .on('end', () => {
-        // Group data by company
+
         const companiesMap = {};
-        
+
         data.forEach((row) => {
           const companyName = row['Company Name'] || 'Unknown';
-          
+
           if (!companiesMap[companyName]) {
             companiesMap[companyName] = [];
           }
-          
+
           companiesMap[companyName].push({
             id: row['Unique ID'] || '',
             name: row.Name || 'N/A',
@@ -918,42 +783,35 @@ router.get('/org-chart/person-details', async (req, res) => {
             category: row.Category || 'N/A'
           });
         });
-        
-        // Send as JSON directly
-        res.json(companiesMap);
+
+res.json(companiesMap);
       })
       .on('error', (error) => {
-        console.error('Error reading CSV:', error.message);
+
         res.status(500).json({ error: 'Failed to read CSV file' });
       });
   } catch (err) {
-    console.error('Error fetching person details:', err.message);
+
     res.status(500).json({ error: 'Failed to fetch person details' });
   }
 });
 
-// @route   GET /api/org-chart/:companyName
-// @desc    Get org chart HTML for a specific company
-// @access  Public
 router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     const fs = require('fs');
     const csv = require('csv-parser');
-    
-    // Use the CSV file
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-    
-    // Fallback to old Excel file if CSV doesn't exist
-    if (!fs.existsSync(csvPath)) {
+
+let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
+
+if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
-    
+
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
-    
-    // Read CSV to get location for proper filename
-    const data = [];
+
+const data = [];
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', (row) => {
@@ -962,138 +820,120 @@ router.get('/org-chart/:companyName', async (req, res) => {
       .on('end', async () => {
         const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
         const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-        
-        // Sanitize filename
-        const sanitizeFilename = (name) => {
+
+const sanitizeFilename = (name) => {
           name = String(name);
           name = name.replace(/[^\w\s-]/g, '').trim();
           name = name.replace(/[-\s]+/g, '_');
           return name || 'untitled_chart';
         };
-        
+
         let safeFileName = sanitizeFilename(decodedCompanyName);
         if (location) {
           safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
         }
-        
+
         const htmlFileName = `${safeFileName}.html`;
         const htmlFilePath = path.join(outputFolder, htmlFileName);
-        
-        // Check if file exists
-        if (fs.existsSync(htmlFilePath)) {
+
+if (fs.existsSync(htmlFilePath)) {
           let html = fs.readFileSync(htmlFilePath, 'utf-8');
           html = injectScrollableCSS(html);
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.send(html);
         } else {
-          // If file doesn't exist, generate it on-demand
-          console.log(`⏳ Generating org chart on-demand for: ${decodedCompanyName}`);
-          let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+
+let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
           html = injectScrollableCSS(html);
-          
-          // Save to disk
-          fs.writeFileSync(htmlFilePath, html, 'utf-8');
-          console.log(`✓ Org chart saved: ${htmlFileName}`);
-          
-          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
+fs.writeFileSync(htmlFilePath, html, 'utf-8');
+
+res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.send(html);
         }
       })
       .on('error', (error) => {
-        console.error('Error reading CSV:', error.message);
+
         res.status(500).json({ error: 'Failed to read CSV file' });
       });
   } catch (err) {
-    console.error('Error fetching org chart:', err.message);
+
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
   }
 });
 
-
-
-// Generate org charts only for selected companies (called on-demand)
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
     const fs = require('fs');
     const XLSX = require('xlsx');
-    
-    // Try to read from the new buying group Excel file first
-    let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
-    
-    // Fallback to old file if new one doesn't exist
-    if (!fs.existsSync(excelPath)) {
+
+let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+
+if (!fs.existsSync(excelPath)) {
       excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
     }
-    
+
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
-    
+
     if (!selectedCompanies || selectedCompanies.length === 0) {
       return { success: false, message: 'No companies selected' };
     }
-    
-    // Ensure output folder exists
-    if (!fs.existsSync(outputFolder)) {
+
+if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true });
     }
-    
-    // Get existing HTML files
-    const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
+
+const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
     const existingCompanies = new Set(existingFiles.map(f => f.replace('.html', '')));
-    
-    // Read Excel to get company data with locations
-    const workbook = XLSX.readFile(excelPath);
+
+const workbook = XLSX.readFile(excelPath);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(worksheet);
-    
-    // Sanitize filename helper
-    const sanitizeFilename = (name) => {
+
+const sanitizeFilename = (name) => {
       name = String(name);
       name = name.replace(/[^\w\s-]/g, '').trim();
       name = name.replace(/[-\s]+/g, '_');
       return name || 'untitled_chart';
     };
-    
+
     let newChartsGenerated = 0;
     let chartsSkipped = 0;
-    
+
     for (const company of selectedCompanies) {
       const companyData = data.filter(row => row['Company Name'] === company);
-      
+
       if (!companyData.length) {
-        console.log(`⚠ No data found for company: ${company}`);
+
         continue;
       }
-      
+
       const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-      
+
       let safeFileName = sanitizeFilename(company);
       if (location) {
         safeFileName = `${sanitizeFilename(company)}_${sanitizeFilename(location)}`;
       }
-      
-      // Check if chart already exists
-      if (existingCompanies.has(safeFileName)) {
-        console.log(`⊘ Chart already exists for: ${company}${location ? ` (${location})` : ''}`);
+
+if (existingCompanies.has(safeFileName)) {
+
         chartsSkipped++;
         continue;
       }
-      
-      // Generate new chart
-      console.log(`⏳ Generating org chart for: ${company}${location ? ` (${location})` : ''}`);
-      
-      try {
+
+try {
         const html = await generateOrgChartForCompany(excelPath, company);
         const htmlFileName = `${safeFileName}.html`;
         const htmlFilePath = path.join(outputFolder, htmlFileName);
-        
+
         fs.writeFileSync(htmlFilePath, html, 'utf-8');
-        console.log(`✓ Org chart saved: ${htmlFileName}`);
+
         newChartsGenerated++;
       } catch (err) {
-        console.error(`✗ Error generating chart for ${company}: ${err.message}`);
+
       }
     }
-    
+
     return {
       success: true,
       newChartsGenerated,
@@ -1101,48 +941,41 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
       message: `${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`
     };
   } catch (err) {
-    console.error('Error generating org charts:', err.message);
+
     return { success: false, message: err.message };
   }
 }
 
-// @route   POST /api/org-chart/generate-selected
-// @desc    Generate org charts only for selected companies (on-demand)
-// @access  Public
 router.post('/org-chart/generate-selected', async (req, res) => {
   try {
     const { companies } = req.body;
-    
+
     if (!companies || !Array.isArray(companies) || companies.length === 0) {
       return res.status(400).json({ error: 'Please provide an array of company names' });
     }
-    
+
     const result = await generateSelectedOrgCharts(companies);
-    
+
     if (result.success) {
       res.json(result);
     } else {
       res.status(500).json(result);
     }
   } catch (err) {
-    console.error('Error generating selected org charts:', err.message);
+
     res.status(500).json({ error: 'Failed to generate org charts' });
   }
 });
 
-// @route   GET /api/dashboard-stats
-// @desc    Get aggregated stats for dashboard (optimized with caching)
-// @access  Public
 router.get('/dashboard-stats', async (req, res) => {
   try {
-    // Check cache first
+
     const cached = getCachedStats();
     if (cached) {
       return res.json(cached);
     }
 
-    // Use MongoDB aggregation pipeline for efficient counting
-    const statsResult = await Company.aggregate([
+const statsResult = await Company.aggregate([
       {
         $facet: {
           companies: [
@@ -1162,8 +995,7 @@ router.get('/dashboard-stats', async (req, res) => {
     const companyCount = statsResult[0].companies[0]?.count || 0;
     const techCount = statsResult[0].technologies[0]?.count || 0;
 
-    // Get product stats from product collection
-    const productCatalogueCollection = mongoose.connection.db.collection('product_catlog_2025');
+const productCatalogueCollection = mongoose.connection.db.collection('product_catlog_2025');
     const productStats = await productCatalogueCollection.aggregate([
       {
         $facet: {
@@ -1191,15 +1023,13 @@ router.get('/dashboard-stats', async (req, res) => {
       totalCategories: categoryCount
     };
 
-    // Cache the results
-    setCachedStats(stats);
+setCachedStats(stats);
     res.json(stats);
   } catch (err) {
-    console.error('Error fetching dashboard stats:', err.message);
+
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
-// Export initialization function
 module.exports = router;
 module.exports.generateSelectedOrgCharts = generateSelectedOrgCharts;

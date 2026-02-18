@@ -66,8 +66,8 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
       </div>
       <ul className={`menu-items ${isOpen ? 'open' : ''}`}>
         {menuItems.map((item) => (
-          <li 
-            key={item} 
+          <li
+            key={item}
             className={activeSection === item ? 'active' : ''}
             onClick={() => handleMenuItemClick(item)}
           >
@@ -85,7 +85,7 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
         </div>
       </div>
       <div className="menu-profile-section" ref={profileRef}>
-        <button 
+        <button
           className="menu-profile-btn"
           onClick={() => setShowProfileMenu(!showProfileMenu)}
           title="Profile"
@@ -95,10 +95,10 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
           </div>
           <span className="menu-profile-name">{username}</span>
         </button>
-        
+
         {showProfileMenu && (
           <div className="menu-profile-dropdown">
-            <button 
+            <button
               className="menu-logout-btn"
               onClick={() => {
                 onLogout && onLogout();

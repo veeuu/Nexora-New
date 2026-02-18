@@ -24,14 +24,13 @@ const Home = () => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        
-        // Fetch aggregated stats from single optimized endpoint
-        const response = await fetch('/api/dashboard-stats');
+
+const response = await fetch('/api/dashboard-stats');
         const data = await response.json();
 
         setStats(data);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+
       } finally {
         setLoading(false);
       }
@@ -63,9 +62,9 @@ const Home = () => {
         borderRadius: '8px',
         padding: '40px 20px'
       }}>
-        <img 
-          src={nexoraLogo} 
-          alt="Nexora" 
+        <img
+          src={nexoraLogo}
+          alt="Nexora"
           style={{
             width: '250px',
             height: 'auto',
@@ -106,11 +105,11 @@ const Home = () => {
   return (
     <>
       <div className="home-container">
-      {/* Header */}
+      {}
       <div className="home-header">
         <div>
           {(showProductCatalogue || showDataDictionary) && (
-            <button 
+            <button
               className="home-back-btn"
               onClick={() => {
                 setShowProductCatalogue(false);
@@ -132,10 +131,10 @@ const Home = () => {
             </>
           )}
         </div>
-        
-        {/* Dropdown in top right */}
+
+        {}
         <div className="home-header-dropdown" ref={dropdownRef}>
-          <button 
+          <button
             className="home-dropdown-btn"
             onClick={() => setShowDropdown(!showDropdown)}
           >
@@ -143,7 +142,7 @@ const Home = () => {
           </button>
           {showDropdown && (
             <div className="home-dropdown-menu">
-              <button 
+              <button
                 className="home-dropdown-item"
                 onClick={() => {
                   setShowProductCatalogue(true);
@@ -153,7 +152,7 @@ const Home = () => {
               >
                 Product Catalogue
               </button>
-              <button 
+              <button
                 className="home-dropdown-item"
                 onClick={() => {
                   setShowDataDictionary(true);
@@ -168,14 +167,14 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Show Product Catalogue, Data Dictionary or Home Content */}
+      {}
       {showProductCatalogue ? (
         <ProductCatalogue />
       ) : showDataDictionary ? (
         <DataDictionary />
       ) : (
         <>
-          {/* Stats Grid */}
+          {}
           <div className="home-stats-grid">
             <AnimatedStatCard
               number="100K+"
@@ -232,7 +231,7 @@ const Home = () => {
             />
           </div>
 
-          {/* Quick Links */}
+          {}
           <div className="home-quick-links-section">
             <h2 className="home-quick-links-title">
               Quick Links
@@ -245,8 +244,8 @@ const Home = () => {
                 { name: 'Next Tech Purchase®', desc: 'Analyzend  purchase propensity', route: '/dashboard/ntp' },
                 { name: 'Buying Group', desc: 'Identify decision makers', route: '/dashboard/buying-group' }
               ].map((link, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="home-quick-link-card"
                   onClick={() => navigate(link.route)}
                   style={{ cursor: 'pointer' }}
