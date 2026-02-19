@@ -134,7 +134,8 @@ const buildNtpCache = async () => {
     companies.forEach(company => {
       const about = (company.Firmographics || {}).About || {};
 
-      (company.NTP || []).forEach(ntpItem => {
+      const ntpArray = Array.isArray(company.NTP) ? company.NTP : [];
+      ntpArray.forEach(ntpItem => {
         ntpData.push({
           companyName: company['Company Name'],
           domain: about.Domain || 'N/A',
@@ -205,7 +206,8 @@ if (ntpMetadataCache && (now - ntpMetadataCacheTime) < NTP_CACHE_DURATION) {
     allCompanies.forEach(company => {
       if (company['Company Name']) metadata.companies.add(company['Company Name']);
 
-      (company.NTP || []).forEach(ntpItem => {
+      const ntpArray = Array.isArray(company.NTP) ? company.NTP : [];
+      ntpArray.forEach(ntpItem => {
         if (ntpItem.Category) metadata.categories.add(ntpItem.Category);
         if (ntpItem.Technology) metadata.technologies.add(ntpItem.Technology);
         if (ntpItem['Purchase Prediction']) metadata.predictions.add(ntpItem['Purchase Prediction']);
@@ -345,7 +347,7 @@ if (!companyName || companyName.trim() === '') {
         return;
       }
 
-const techArray = company.Technographics || [];
+const techArray = Array.isArray(company.Technographics) ? company.Technographics : [];
       if (techArray.length === 0) {
         companiesWithoutTech++;
         return;
@@ -437,7 +439,8 @@ if (techMetadataCache && (now - techMetadataCacheTime) < TECH_CACHE_DURATION) {
       }
       if (finance['Total Revenue']) metadata.revenues.add(finance['Total Revenue']);
 
-      (company.Technographics || []).forEach(tech => {
+      const techArray = Array.isArray(company.Technographics) ? company.Technographics : [];
+      techArray.forEach(tech => {
         if (tech.Category) metadata.categories.add(tech.Category);
         metadata.totalRecords++;
       });

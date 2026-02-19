@@ -64,7 +64,7 @@ const countryCodeMap = {
 
 const extractCountryCode = (region) => {
   if (!region) return '';
-  const trimmed = region.trim();
+  const trimmed = String(region).trim();
 
   if (countryCodeMap[trimmed]) {
     return countryCodeMap[trimmed];
@@ -581,12 +581,13 @@ const revenueRanges = [
 const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
 
-  if (value.includes('+') || value.includes('–') || value.includes('-') || value.includes(',')) {
-    return value;
+  const strValue = String(value);
+  if (strValue.includes('+') || strValue.includes('–') || strValue.includes('-') || strValue.includes(',')) {
+    return strValue;
   }
   
-  const num = parseInt(value);
-  if (isNaN(num)) return value;
+  const num = parseInt(strValue);
+  if (isNaN(num)) return strValue;
   
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
