@@ -94,6 +94,83 @@ const CustomDropdown = ({ value, onChange, options }) => {
   );
 };
 
+const RenewalMeter = ({ renewalDate }) => {
+  const calculateProximity = () => {
+    if (!renewalDate) return 0;
+    
+    // Parse the renewal date (format: "Q4 2025", "Q1 2026", etc.)
+    const match = renewalDate.match(/Q(\d+)\s(\d{4})/);
+    if (!match) return 0;
+    
+    const quarter = parseInt(match[1]);
+    const year = parseInt(match[2]);
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentQuarter = Math.ceil(currentMonth / 3);
+    
+    // Calculate quarters difference
+    const yearDiff = year - currentYear;
+    const quarterDiff = (yearDiff * 4) + (quarter - currentQuarter);
+    
+    // If past or current quarter, return 100 (darkest/leftmost)
+    if (quarterDiff <= 0) return 100;
+    
+    // Map quarters to proximity (0-100)
+    // 0 quarters = 100% (darkest/left), 8+ quarters = 0% (lightest/right)
+    const maxQuarters = 8;
+    return Math.min(100, Math.max(0, 100 - (quarterDiff / maxQuarters) * 100));
+  };
+
+  const proximity = calculateProximity();
+  
+  // Calculate arrow rotation based on proximity
+  // 100% = -90 (left/dark), 0% = 90 (right/light)
+  const rotation = 90 - (proximity * 1.8);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+      <div style={{ position: 'relative', width: '50px', height: '28px' }}>
+        <svg width="50" height="28" viewBox="0 0 100 55" style={{ position: 'absolute', top: 0, left: 0 }}>
+          <defs>
+            {/* Gradient from dark blue (left) to light blue (right) */}
+            <linearGradient id="renewalGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0c4a6e" />
+              <stop offset="25%" stopColor="#0369a1" />
+              <stop offset="50%" stopColor="#0284c7" />
+              <stop offset="75%" stopColor="#0ea5e9" />
+              <stop offset="100%" stopColor="#e0f2fe" />
+            </linearGradient>
+          </defs>
+          
+          {/* Arc with gradient from dark to light */}
+          <path
+            d="M 8 50 A 45 45 0 0 1 92 50"
+            fill="none"
+            stroke="url(#renewalGaugeGradient)"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          
+          {/* Arrow needle that rotates based on proximity */}
+          <g style={{ transform: `rotate(${rotation}deg)`, transformOrigin: '50px 50px', transition: 'transform 0.3s ease' }}>
+            <line x1="50" y1="50" x2="50" y2="20" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="50" cy="50" r="2" fill="#000000" />
+          </g>
+          
+          {/* Center circle */}
+          <circle cx="50" cy="50" r="3.5" fill="#ffffff" stroke="#000000" strokeWidth="1.5" />
+        </svg>
+      </div>
+      
+      <div style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>
+        {Math.round(proximity)}%
+      </div>
+    </div>
+  );
+};
+
 const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -1723,6 +1800,7 @@ if (aQtr.year !== bQtr.year) {
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Proximity</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -1752,12 +1830,13 @@ if (aQtr.year !== bQtr.year) {
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Proximity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredData.length === 0 ? (
                                         <tr>
-                                            <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
+                                            <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
                                                 No data available for the selected filters
                                             </td>
                                         </tr>
@@ -1922,6 +2001,9 @@ if (aQtr.year !== bQtr.year) {
                                                             });
                                                         }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
                                                             {row.qtr}
+                                                        </td>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>
+                                                            <RenewalMeter renewalDate={row.qtr} />
                                                         </td>
                                                     </tr>
                                                 );
