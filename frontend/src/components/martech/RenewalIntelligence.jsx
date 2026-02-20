@@ -279,7 +279,8 @@ const RenewalIntelligence = () => {
         companyName: [],
         category: [],
         product: [],
-        qtr: []
+        qtr: [],
+        renewalProximity: []
     });
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -605,6 +606,10 @@ const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         return [...new Set(allQtrs)].sort();
     };
 
+    const getUniqueRenewalProximity = () => {
+        return ['Approaching Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+    };
+
     const getUniqueCategories = () => {
         if (!tableData) return [];
         const allCategories = tableData.map(item => item.category);
@@ -691,7 +696,16 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         const categoryMatch = filters.category.includes(row.category);
         const productMatch = filters.product.length === 0 || filters.product.includes(row.product);
         const qtrMatch = filters.qtr.includes(row.qtr);
-        return companyMatch && categoryMatch && productMatch && qtrMatch;
+        
+        let renewalProximityMatch = true;
+        if (filters.renewalProximity.length > 0) {
+            const proximity = getProximityValue(row.qtr);
+            const status = getRenewalStatus(proximity);
+            const statusLabels = ['Approaching Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+            renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
+        }
+        
+        return companyMatch && categoryMatch && productMatch && qtrMatch && renewalProximityMatch;
     }).sort((a, b) => {
         const proximityA = getProximityValue(a.qtr);
         const proximityB = getProximityValue(b.qtr);
@@ -888,25 +902,6 @@ if (aQtr.year !== bQtr.year) {
         <div className="renewal-intelligence-container">
             <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Renewal Intelligence</h2>
-                <div style={{
-                  position: 'absolute',
-                  right: '0',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: '#f0f9ff',
-                  border: '1px solid #bfdbfe',
-                  borderRadius: '6px',
-                  padding: '8px 12px',
-                  fontSize: '11px',
-                  color: '#1e40af',
-                  lineHeight: '1.4',
-                  textAlign: 'center'
-                }}>
-                  <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
-                  <div>• Approaching (&lt;1 year)</div>
-                  <div>• Mid-Term (1–2 years)</div>
-                  <div>• Long-Term (2+ years)</div>
-                </div>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {}
                 </div>
@@ -965,7 +960,8 @@ if (aQtr.year !== bQtr.year) {
                   >
                     {[
                       { label: 'Company Name', key: 'companyName', mandatory: false },
-                      { label: 'Product', key: 'product', mandatory: false }
+                      { label: 'Product', key: 'product', mandatory: false },
+                      { label: 'Renewal Proximity', key: 'renewalProximity', mandatory: false }
                     ].map((filterOption) => (
                       <div
                         key={filterOption.key}
@@ -1698,6 +1694,170 @@ if (aQtr.year !== bQtr.year) {
                 )}
 
                 {}
+                {activeFilterMenu === 'renewalProximity' && (
+                  <div style={{ position: 'relative' }}>
+                    <div style={{
+                      backgroundColor: '#dbeafe',
+                      border: '1px solid #93c5fd',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#1e40af'
+                    }}>
+                      <span>Renewal Proximity ({filters.renewalProximity.length})</span>
+                      <button
+                        onClick={() => {
+                          setActiveFilterMenu(null);
+                          setFilters(prev => ({ ...prev, renewalProximity: [] }));
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '16px',
+                          padding: '0',
+                          color: '#1e40af',
+                          lineHeight: '1'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      backgroundColor: 'white',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      zIndex: 1000,
+                      minWidth: '250px',
+                      maxHeight: '300px',
+                      overflowY: 'auto'
+                    }}>
+                      <div style={{
+                        padding: '10px 12px',
+                        fontSize: '11px',
+                        color: '#6b7280',
+                        borderBottom: '1px solid #e5e7eb',
+                        backgroundColor: '#f9fafb'
+                      }}>
+                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
+                        <div>• Approaching (&lt;1 year)</div>
+                        <div>• Mid-Term (1–2 years)</div>
+                        <div>• Long-Term (2+ years)</div>
+                      </div>
+                      <div
+                        onClick={() => {
+                          if (filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0) {
+                            handleFilterChange('renewalProximity', []);
+                          } else {
+                            handleFilterChange('renewalProximity', getUniqueRenewalProximity());
+                          }
+                        }}
+                        style={{
+                          padding: '10px 12px',
+                          cursor: 'pointer',
+                          backgroundColor: filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0 ? '#f3f4f6' : 'white',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0 ? '#f3f4f6' : 'white'}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0}
+                          onChange={() => {}}
+                          style={{
+                            cursor: 'pointer',
+                            width: '16px',
+                            height: '16px'
+                          }}
+                        />
+                        All
+                      </div>
+                      {getUniqueRenewalProximity().map((option, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            const newProximity = filters.renewalProximity.includes(option)
+                              ? filters.renewalProximity.filter(p => p !== option)
+                              : [...filters.renewalProximity, option];
+                            handleFilterChange('renewalProximity', newProximity);
+                          }}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            backgroundColor: filters.renewalProximity.includes(option) ? '#dbeafe' : 'white',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.renewalProximity.includes(option) ? '#dbeafe' : 'white'}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={filters.renewalProximity.includes(option)}
+                            onChange={() => {}}
+                            style={{
+                              cursor: 'pointer',
+                              width: '16px',
+                              height: '16px'
+                            }}
+                          />
+                          {option}
+                        </div>
+                      ))}
+
+                      {}
+                      <div style={{
+                        padding: '12px',
+                        borderTop: '1px solid #e5e7eb',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '8px',
+                        backgroundColor: '#f9fafb',
+                        position: 'sticky',
+                        bottom: 0
+                      }}>
+                        <button
+                          onClick={() => {
+                            setActiveFilterMenu(null);
+                          }}
+                          style={{
+                            padding: '6px 16px',
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {}
                 {filters.companyName.length > 0 && activeFilterMenu !== 'companyName' && (
                   <div style={{
                     backgroundColor: '#fef3c7',
@@ -1806,6 +1966,45 @@ if (aQtr.year !== bQtr.year) {
                         fontSize: '16px',
                         padding: '0',
                         color: '#92400e',
+                        lineHeight: '1'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
+                {}
+                {filters.renewalProximity.length > 0 && activeFilterMenu !== 'renewalProximity' && (
+                  <div style={{
+                    backgroundColor: '#dbeafe',
+                    border: '1px solid #93c5fd',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#1e40af',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setActiveFilterMenu('renewalProximity')}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Renewal Proximity ({filters.renewalProximity.length})
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFilters(prev => ({ ...prev, renewalProximity: [] }));
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        padding: '0',
+                        color: '#1e40af',
                         lineHeight: '1'
                       }}
                     >
