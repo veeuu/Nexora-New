@@ -2,7 +2,7 @@
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import loadingGif from '../../assets/Loading 880x300.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 

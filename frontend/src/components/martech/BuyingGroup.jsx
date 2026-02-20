@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
-import loadingGif from '../../assets/Loading GIF REF.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);

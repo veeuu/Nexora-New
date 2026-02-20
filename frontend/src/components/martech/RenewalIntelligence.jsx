@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import loadingGif from '../../assets/Loading GIF REF.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';

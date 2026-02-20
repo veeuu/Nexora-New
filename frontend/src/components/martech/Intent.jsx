@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
-import loadingGif from '../../assets/Loading GIF REF.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import IntentPieChart from './IntentPieChart';
 
 const CustomDropdown = ({ value, onChange, options }) => {
