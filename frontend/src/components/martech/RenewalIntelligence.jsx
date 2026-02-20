@@ -124,9 +124,9 @@ const RenewalMeter = ({ renewalDate }) => {
   };
 
   const getStatusLabel = (proximity) => {
-    if (proximity <= 45) return 'Upcoming';
-    if (proximity <= 89) return 'Moderate';
-    return 'Stable';
+    if (proximity >= 86) return 'Approaching Renewal';
+    if (proximity >= 46) return 'Mid-Term Renewal';
+    return 'Long-Term Renewal';
   };
 
   const proximity = calculateProximity();
@@ -171,7 +171,7 @@ const RenewalMeter = ({ renewalDate }) => {
         </svg>
       </div>
       
-      <div style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>
+      <div style={{ fontSize: '11px', fontWeight: '700', color: '#1f2937', textAlign: 'center' }}>
         {statusLabel}
       </div>
     </div>
@@ -654,6 +654,35 @@ const getAccountCountByQtr = (qtr) => {
 
 const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 0;
 
+    const getProximityValue = (renewalDate) => {
+        if (!renewalDate) return 0;
+        
+        const match = renewalDate.match(/Q(\d+)\s(\d{4})/);
+        if (!match) return 0;
+        
+        const quarter = parseInt(match[1]);
+        const year = parseInt(match[2]);
+        
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+        const currentQuarter = Math.ceil(currentMonth / 3);
+        
+        const yearDiff = year - currentYear;
+        const quarterDiff = (yearDiff * 4) + (quarter - currentQuarter);
+        
+        if (quarterDiff <= 0) return 100;
+        
+        const maxQuarters = 8;
+        return Math.min(100, Math.max(0, 100 - (quarterDiff / maxQuarters) * 100));
+    };
+
+    const getRenewalStatus = (proximity) => {
+        if (proximity >= 86) return 0; // Approaching (highest priority)
+        if (proximity >= 46) return 1; // Mid-Term
+        return 2; // Long-Term (lowest priority)
+    };
+
     const filteredData = tableData.filter(row => {
 
         if (!hasMandatoryFilters) return false;
@@ -663,6 +692,19 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         const productMatch = filters.product.length === 0 || filters.product.includes(row.product);
         const qtrMatch = filters.qtr.includes(row.qtr);
         return companyMatch && categoryMatch && productMatch && qtrMatch;
+    }).sort((a, b) => {
+        const proximityA = getProximityValue(a.qtr);
+        const proximityB = getProximityValue(b.qtr);
+        const statusA = getRenewalStatus(proximityA);
+        const statusB = getRenewalStatus(proximityB);
+        
+        // Sort by status first (Approaching first, then Midterm, then Long-term)
+        if (statusA !== statusB) {
+            return statusA - statusB;
+        }
+        
+        // If same status, sort by proximity (descending - higher proximity first)
+        return proximityB - proximityA;
     });
 
 const getChartData = () => {
@@ -844,9 +886,28 @@ if (aQtr.year !== bQtr.year) {
     return (
         <>
         <div className="renewal-intelligence-container">
-            <div className="header-actions">
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Renewal Intelligence</h2>
-                <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+                <div style={{
+                  position: 'absolute',
+                  right: '0',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: '#f0f9ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '6px',
+                  padding: '8px 12px',
+                  fontSize: '11px',
+                  color: '#1e40af',
+                  lineHeight: '1.4',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
+                  <div>• Approaching (&lt;1 year)</div>
+                  <div>• Mid-Term (1–2 years)</div>
+                  <div>• Long-Term (2+ years)</div>
+                </div>
+                <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {}
                 </div>
             </div>
