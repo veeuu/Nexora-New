@@ -7,6 +7,7 @@ const BuyingGroup = () => {
     const [selectedCompany, setSelectedCompany] = useState('');
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategories, setSelectedCategories] = useState(new Set());
     const [orgChartHtml, setOrgChartHtml] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -42,12 +43,12 @@ useEffect(() => {
 
 fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
 
-const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud', 'Other'];
+const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud'];
 
 setCategories(desiredOrder);
             } catch (err) {
 
-setCategories(['AI/ML', 'CRM', 'Database', 'Cloud', 'Other']);
+setCategories(['AI/ML', 'CRM', 'Database', 'Cloud']);
             }
         };
         fetchCategories();
@@ -201,7 +202,7 @@ const getCompanyPersons = () => {
 
         let persons = personDetailsData[selectedCompany];
 
-if (selectedCategory && selectedCategory !== '') {
+if (selectedCategories.size > 0) {
             persons = persons.filter(person => {
 
                 const personCategories = (person.category || '')
@@ -209,7 +210,7 @@ if (selectedCategory && selectedCategory !== '') {
                     .map(cat => cat.trim())
                     .filter(cat => cat.length > 0);
 
-return personCategories.includes(selectedCategory);
+return personCategories.some(cat => selectedCategories.has(cat));
             });
         }
 
@@ -377,26 +378,34 @@ return personCategories.includes(selectedCategory);
                     {}
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                         <button
-                            onClick={() => setSelectedCategory('')}
+                            onClick={() => {
+                                if (selectedCategories.size === categories.length) {
+                                    setSelectedCategories(new Set());
+                                    setSelectedCategory('');
+                                } else {
+                                    setSelectedCategories(new Set(categories));
+                                    setSelectedCategory('');
+                                }
+                            }}
                             style={{
                                 padding: '10px 16px',
-                                border: selectedCategory === '' ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                                border: selectedCategories.size === categories.length && categories.length > 0 ? '2px solid #3b82f6' : '1px solid #d1d5db',
                                 borderRadius: '6px',
                                 fontSize: '14px',
-                                fontWeight: selectedCategory === '' ? '600' : '500',
-                                backgroundColor: selectedCategory === '' ? '#3b82f6' : 'white',
-                                color: selectedCategory === '' ? 'white' : '#374151',
+                                fontWeight: selectedCategories.size === categories.length && categories.length > 0 ? '600' : '500',
+                                backgroundColor: selectedCategories.size === categories.length && categories.length > 0 ? '#3b82f6' : 'white',
+                                color: selectedCategories.size === categories.length && categories.length > 0 ? 'white' : '#374151',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s',
                             }}
                             onMouseEnter={(e) => {
-                                if (selectedCategory !== '') {
+                                if (selectedCategories.size !== categories.length || categories.length === 0) {
                                     e.target.style.borderColor = '#9ca3af';
                                     e.target.style.backgroundColor = '#f9fafb';
                                 }
                             }}
                             onMouseLeave={(e) => {
-                                if (selectedCategory !== '') {
+                                if (selectedCategories.size !== categories.length || categories.length === 0) {
                                     e.target.style.borderColor = '#d1d5db';
                                     e.target.style.backgroundColor = 'white';
                                 }
@@ -407,26 +416,35 @@ return personCategories.includes(selectedCategory);
                         {categories.map((category, index) => (
                             <button
                                 key={index}
-                                onClick={() => setSelectedCategory(selectedCategory === category ? '' : category)}
+                                onClick={() => {
+                                    const newSelected = new Set(selectedCategories);
+                                    if (newSelected.has(category)) {
+                                        newSelected.delete(category);
+                                    } else {
+                                        newSelected.add(category);
+                                    }
+                                    setSelectedCategories(newSelected);
+                                    setSelectedCategory('');
+                                }}
                                 style={{
                                     padding: '10px 16px',
-                                    border: selectedCategory === category ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                                    border: selectedCategories.has(category) ? '2px solid #3b82f6' : '1px solid #d1d5db',
                                     borderRadius: '6px',
                                     fontSize: '14px',
-                                    fontWeight: selectedCategory === category ? '600' : '500',
-                                    backgroundColor: selectedCategory === category ? '#3b82f6' : 'white',
-                                    color: selectedCategory === category ? 'white' : '#374151',
+                                    fontWeight: selectedCategories.has(category) ? '600' : '500',
+                                    backgroundColor: selectedCategories.has(category) ? '#3b82f6' : 'white',
+                                    color: selectedCategories.has(category) ? 'white' : '#374151',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                 }}
                                 onMouseEnter={(e) => {
-                                    if (selectedCategory !== category) {
+                                    if (!selectedCategories.has(category)) {
                                         e.target.style.borderColor = '#9ca3af';
                                         e.target.style.backgroundColor = '#f9fafb';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    if (selectedCategory !== category) {
+                                    if (!selectedCategories.has(category)) {
                                         e.target.style.borderColor = '#d1d5db';
                                         e.target.style.backgroundColor = 'white';
                                     }
@@ -757,7 +775,7 @@ return personCategories.includes(selectedCategory);
                                     textTransform: 'uppercase',
                                     letterSpacing: '1px'
                                 }}>
-                                    Team Members {selectedCategory ? `(${selectedCategory})` : ''} ({companyPersons.length})
+                                    Team Members {selectedCategories.size > 0 ? `(${Array.from(selectedCategories).join(', ')})` : ''} ({companyPersons.length})
                                 </h3>
 
                                 <div style={{

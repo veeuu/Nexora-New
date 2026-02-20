@@ -187,7 +187,7 @@ body {
 .menu-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #1a252f;
   margin-bottom: 1.5rem;
@@ -200,11 +200,11 @@ body {
 }
 
 .menu-solutions-image {
-  width: 100%;
-  max-width: 150px;
+  max-width: 100px;
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
+  margin: 0 auto;
 }
 
 .profile-avatar {
