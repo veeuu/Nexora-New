@@ -123,7 +123,14 @@ const RenewalMeter = ({ renewalDate }) => {
     return Math.min(100, Math.max(0, 100 - (quarterDiff / maxQuarters) * 100));
   };
 
+  const getStatusLabel = (proximity) => {
+    if (proximity <= 45) return 'Upcoming';
+    if (proximity <= 89) return 'Moderate';
+    return 'Stable';
+  };
+
   const proximity = calculateProximity();
+  const statusLabel = getStatusLabel(proximity);
   
   // Calculate arrow rotation based on proximity
   // 100% = -90 (left/dark), 0% = 90 (right/light)
@@ -165,7 +172,7 @@ const RenewalMeter = ({ renewalDate }) => {
       </div>
       
       <div style={{ fontSize: '12px', fontWeight: '700', color: '#1f2937' }}>
-        {Math.round(proximity)}%
+        {statusLabel}
       </div>
     </div>
   );
