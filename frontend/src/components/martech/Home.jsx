@@ -234,7 +234,7 @@ const response = await fetch('/api/dashboard-stats');
           {}
           <div className="home-quick-links-section">
             <h2 className="home-quick-links-title">
-              Quick Links
+              Quick Demo
             </h2>
             <div className="home-quick-links-grid">
               {[

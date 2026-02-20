@@ -845,7 +845,7 @@ if (aQtr.year !== bQtr.year) {
         <>
         <div className="renewal-intelligence-container">
             <div className="header-actions">
-                <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Renewal Intelligence</h2>
+                <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
                   {}
                 </div>

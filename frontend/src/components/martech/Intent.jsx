@@ -466,7 +466,7 @@ useEffect(() => {
       )}
 
       <div className="header-actions">
-        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Intent Data</h2>
+        <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Intent Data</h2>
         <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
           <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

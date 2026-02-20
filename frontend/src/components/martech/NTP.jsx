@@ -5,7 +5,7 @@ import loadingGif from '../../assets/Loading GIF REF.gif';
 import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
-import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
@@ -297,6 +297,28 @@ const NTP = () => {
 
   const renderTechLogo = (techName) => {
     if (!techName) return null;
+    
+    // Check if it's an AI-related term
+    const aiTerms = ['rag', 'taradata', 'large language model', 'machine learning', 'artificial intelligence', 'llm', 'generative ai', 'ai', 'deep learning', 'neural network'];
+    const techNameLower = techName.toLowerCase();
+    const isAITerm = aiTerms.some(term => techNameLower.includes(term));
+    
+    if (isAITerm) {
+      return (
+        <FaRobot
+          size={16}
+          style={{
+            marginRight: '6px',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            color: '#8b5cf6',
+            opacity: 0.85,
+            filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
+          }}
+          title={techName}
+        />
+      );
+    }
     
     const logoPath = getLogoPath(techName);
 
@@ -703,7 +725,7 @@ const NTP = () => {
       )}
       
       <div className="header-actions">
-        <h2 style={{ fontSize: '32px', fontWeight: '700' }}>Next Tech Purchase®</h2>
+        <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Next Tech Purchase®</h2>
         <div className="actions-right" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
           {
 
