@@ -394,6 +394,9 @@
   color: #8c8c8c;
   font-weight: 500;
   letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Right Section - Login Form */

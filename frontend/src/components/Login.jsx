@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import nexoraLogo from '../assets/nexora-logo.png';
 import heroImage from '../assets/Nexora Login Page Left.svg';
+import proplusDataLogo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
@@ -827,7 +828,18 @@ if (newPassword !== confirmPassword) {
 
           <p className="copyright"></p>
         </div>
-        <div className="powered-by">Powered by ProPlus Data</div>
+        <div className="powered-by">
+          <span>Powered by</span>
+          <img 
+            src={proplusDataLogo} 
+            alt="ProPlus Data" 
+            style={{
+              height: '24px',
+              marginLeft: '8px',
+              objectFit: 'contain'
+            }}
+          />
+        </div>
       </div>
     </div>
   );
