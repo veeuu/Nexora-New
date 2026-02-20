@@ -276,7 +276,7 @@ const RenewalIntelligence = () => {
     });
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
+    const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0, isRevealed: true });
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -1924,9 +1924,10 @@ if (aQtr.year !== bQtr.year) {
                                                                 show: true,
                                                                 text: row.companyName,
                                                                 x: rect.right - 20,
-                                                                y: rect.bottom + 20
+                                                                y: rect.bottom + 20,
+                                                                isRevealed: isRevealed
                                                             });
-                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0, isRevealed: true })}>
                                                             {isRevealed ? (
                                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                                     <div style={{ fontWeight: '600', color: '#1f2937' }}>
@@ -2333,7 +2334,8 @@ if (aQtr.year !== bQtr.year) {
                         maxWidth: '300px',
                         wordWrap: 'break-word',
                         whiteSpace: 'normal',
-                        lineHeight: '1.4'
+                        lineHeight: '1.4',
+                        filter: !tooltip.isRevealed ? 'blur(8px)' : 'none'
                     }}
                 >
                     {tooltip.text}
