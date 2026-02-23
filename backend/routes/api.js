@@ -1070,69 +1070,7 @@ router.post('/org-chart/generate-selected', async (req, res) => {
   }
 });
 
-router.get('/dashboard-stats', async (req, res) => {
-  try {
 
-    const cached = getCachedStats();
-    if (cached) {
-      return res.json(cached);
-    }
-
-const statsResult = await Company.aggregate([
-      {
-        $facet: {
-          companies: [
-            { $group: { _id: '$Company Name' } },
-            { $count: 'count' }
-          ],
-          technologies: [
-            { $unwind: '$Technographics' },
-            { $match: { 'Technographics.Keyword': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Technographics.Keyword' } },
-            { $count: 'count' }
-          ]
-        }
-      }
-    ]);
-
-    const companyCount = statsResult[0].companies[0]?.count || 0;
-    const techCount = statsResult[0].technologies[0]?.count || 0;
-
-const productCatalogueCollection = mongoose.connection.db.collection('product_catlog_2025');
-    const productStats = await productCatalogueCollection.aggregate([
-      {
-        $facet: {
-          products: [
-            { $match: { 'Product Name': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Product Name' } },
-            { $count: 'count' }
-          ],
-          categories: [
-            { $match: { 'Category': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Category' } },
-            { $count: 'count' }
-          ]
-        }
-      }
-    ]).toArray();
-
-    const productCount = productStats[0].products[0]?.count || 0;
-    const categoryCount = productStats[0].categories[0]?.count || 0;
-
-    const stats = {
-      totalCompanies: companyCount,
-      totalTechnologies: techCount,
-      totalProducts: productCount,
-      totalCategories: categoryCount
-    };
-
-setCachedStats(stats);
-    res.json(stats);
-  } catch (err) {
-
-    res.status(500).json({ error: 'Failed to fetch stats' });
-  }
-});
 
 router.get('/keywords', async (req, res) => {
   try {

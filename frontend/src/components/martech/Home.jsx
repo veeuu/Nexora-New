@@ -21,22 +21,7 @@ const Home = () => {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-
-const response = await fetch('/api/dashboard-stats');
-        const data = await response.json();
-
-        setStats(data);
-      } catch (error) {
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
+    setLoading(false);
   }, []);
 
   useEffect(() => {
