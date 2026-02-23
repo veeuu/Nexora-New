@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import IntentPieChart from './IntentPieChart';
+import '../../styles/intent.css';
 
 const IntentStatusVisualizer = ({ status }) => {
   const getStatusConfig = (status) => {
@@ -57,28 +58,19 @@ const IntentStatusVisualizer = ({ status }) => {
 
   return (
     <div
+      className="status-visualizer"
       style={{
-        display: 'inline-flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        gap: '2px',
-        padding: '6px 10px',
-        backgroundColor: config.bgColor,
-        borderRadius: '6px',
-        minWidth: '60px',
-        height: '40px'
+        backgroundColor: config.bgColor
       }}
       title={config.label}
     >
       {[1, 2, 3, 4, 5].map((bar) => (
         <div
           key={bar}
+          className="status-bar"
           style={{
-            width: '4px',
             height: bar <= config.bars ? `${6 + bar * 4}px` : '4px',
             backgroundColor: bar <= config.bars ? config.color : '#e5e7eb',
-            borderRadius: '2px',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             boxShadow: bar <= config.bars ? `0 2px 4px ${config.color}40` : 'none'
           }}
         />
@@ -351,132 +343,46 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div style={{
-        position: 'relative',
-        minHeight: '100vh',
-        backgroundColor: '#ffffffff',
-        padding: '40px 20px'
-      }}>
+      <div className="loading-container">
         {/* Background Full Page Skeleton (blurred) */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-          padding: '40px 20px',
-          filter: 'blur(4px)',
-          opacity: 0.6,
-          pointerEvents: 'none',
-          overflow: 'hidden'
-        }}>
+        <div className="loading-skeleton-bg">
           {/* Title Skeleton */}
-          <div style={{
-            height: '32px',
-            backgroundColor: '#e5e7eb',
-            borderRadius: '4px',
-            marginBottom: '24px',
-            width: '200px'
-          }} />
+          <div className="skeleton-title" />
 
           {/* Filter Bar Skeleton */}
-          <div style={{
-            display: 'flex',
-            gap: '12px',
-            marginBottom: '20px',
-            flexWrap: 'wrap'
-          }}>
+          <div className="skeleton-filter-bar">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={`filter-${i}`} style={{
-                height: '36px',
-                backgroundColor: '#f3f4f6',
-                borderRadius: '6px',
-                width: '120px'
-              }} />
+              <div key={`filter-${i}`} className="skeleton-filter-item" />
             ))}
           </div>
 
           {/* Divider */}
-          <div style={{
-            height: '1px',
-            backgroundColor: '#e5e7eb',
-            marginBottom: '20px'
-          }} />
+          <div className="skeleton-divider" />
 
           {/* Table Header Skeleton */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(8, 1fr)',
-            gap: '12px',
-            marginBottom: '16px',
-            padding: '16px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '6px'
-          }}>
+          <div className="skeleton-table-header">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={`header-${i}`} style={{
-                height: '18px',
-                backgroundColor: '#e5e7eb',
-                borderRadius: '4px'
-              }} />
+              <div key={`header-${i}`} className="skeleton-header-cell" />
             ))}
           </div>
 
           {/* Table Rows Skeleton */}
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(row => (
-            <div key={`row-${row}`} style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(8, 1fr)',
-              gap: '12px',
-              padding: '16px',
-              borderBottom: '1px solid #e5e7eb',
-              backgroundColor: row % 2 === 0 ? '#ffffff' : '#f9fafb'
-            }}>
+            <div key={`row-${row}`} className={`skeleton-table-row ${row % 2 === 0 ? 'even' : 'odd'}`}>
               {[1, 2, 3, 4, 5, 6, 7, 8].map(col => (
-                <div key={`cell-${row}-${col}`} style={{
-                  height: '14px',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '4px'
-                }} />
+                <div key={`cell-${row}-${col}`} className="skeleton-cell" />
               ))}
             </div>
           ))}
         </div>
 
         {/* Centered Loading GIF */}
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10
-        }}>
+        <div className="loading-gif-container">
           <img 
             src={loadingGif} 
             alt="Loading" 
-            style={{
-              width: '600px',
-              height: '600px',
-              objectFit: 'contain'
-            }}
           />
         </div>
-
-        <style>{`
-          @keyframes pulse {
-            0%, 100% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0.5;
-            }
-          }
-        `}</style>
       </div>
     );
   }
@@ -491,19 +397,6 @@ useEffect(() => {
               <button
                 className="close-button"
                 onClick={() => setShowSummary(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  padding: '0',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
               >
                 ✕
               </button>
@@ -519,42 +412,14 @@ useEffect(() => {
       )}
       {}
       {error && (
-        <div style={{
-          backgroundColor: '#fee2e2',
-          border: '1px solid #fca5a5',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <div style={{
-            fontSize: '18px',
-            color: '#dc2626',
-            flexShrink: 0
-          }}>
-            ⚠
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: '#991b1b',
-            fontWeight: '500'
-          }}>
+        <div className="error-message">
+          <div className="error-icon">⚠</div>
+          <div className="error-text">
             Error fetching data: {error}. Showing UI with no data.
           </div>
           <button
             onClick={() => setError(null)}
-            style={{
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '18px',
-              color: '#991b1b',
-              padding: '0',
-              lineHeight: '1'
-            }}
+            className="error-close-btn"
           >
             ✕
           </button>
@@ -562,8 +427,8 @@ useEffect(() => {
       )}
 
       <div className="header-actions">
-        <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Intent Data</h2>
-        <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: 'auto' }}>
+        <h2>Intent Data</h2>
+        <div className="actions-right">
           <button className="view-summary-button" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -583,48 +448,14 @@ useEffect(() => {
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              style={{
-                padding: '8px 14px',
-                backgroundColor: 'white',
-                color: '#3b82f6',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-                e.target.style.borderColor = '#3b82f6';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white';
-                e.target.style.borderColor = '#d1d5db';
-              }}
+              className="filter-button"
             >
               <span>+ Filter</span>
             </button>
 
             {}
             {showFilters && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  marginTop: '8px',
-                  backgroundColor: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  zIndex: 1000,
-                  minWidth: '200px'
-                }}
-              >
+              <div className="filter-menu">
                 {[
                   { label: 'Company Name', key: 'accountName', mandatory: false }
                 ].map((filterOption) => (
@@ -634,23 +465,11 @@ useEffect(() => {
                       setActiveFilterMenu(filterOption.key);
                       setShowFilters(false);
                     }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                    className="filter-menu-item"
                   >
                     {filterOption.label}
                     {filterOption.mandatory && (
-                      <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '16px' }}>*</span>
+                      <span className="filter-menu-item mandatory-indicator">*</span>
                     )}
                   </div>
                 ))}
@@ -663,28 +482,7 @@ useEffect(() => {
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setActiveFilterMenu('intentStatus')}
-                style={{
-                  padding: '8px 14px',
-                  backgroundColor: 'white',
-                  color: '#3b82f6',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f3f4f6';
-                  e.target.style.borderColor = '#3b82f6';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
+                className="filter-button"
               >
                 <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
@@ -693,51 +491,20 @@ useEffect(() => {
 
           {}
           {activeFilterMenu === 'accountName' && (
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                backgroundColor: '#f0f9ff',
-                border: '1px solid #bfdbfe',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#1e40af'
-              }}>
+            <div className="filter-dropdown-wrapper">
+              <div className="filter-dropdown-label">
                 <span>Company Name {Array.isArray(filters.accountName) && filters.accountName.length > 0 && `(${filters.accountName.length})`}</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
                     setFilters(prev => ({ ...prev, accountName: [] }));
                   }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    padding: '0',
-                    color: '#1e40af',
-                    lineHeight: '1'
-                  }}
+                  className="filter-close-button"
                 >
                   ✕
                 </button>
               </div>
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                marginTop: '8px',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                zIndex: 1000,
-                minWidth: '250px',
-                maxHeight: '300px',
-                overflowY: 'auto'
-              }}>
+              <div className="filter-dropdown-content">
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
@@ -748,29 +515,13 @@ useEffect(() => {
                       setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
                     }
                   }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  className="filter-option"
                 >
                   <input
                     type="checkbox"
                     checked={Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
                     onChange={() => {}}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
-                    }}
+                    className="filter-option-checkbox"
                   />
                   All
                 </div>
@@ -780,29 +531,13 @@ useEffect(() => {
                     <div
                       key={idx}
                       onClick={() => handleFilterChange('accountName', option)}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? '#dbeafe' : 'white',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                      className={`filter-option ${isSelected ? 'selected' : ''}`}
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: 'pointer',
-                          accentColor: '#3b82f6'
-                        }}
+                        className="filter-option-checkbox"
                       />
                       {option}
                     </div>
@@ -810,33 +545,12 @@ useEffect(() => {
                 })}
 
                 {}
-                <div style={{
-                  padding: '12px',
-                  borderTop: '1px solid #e5e7eb',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                  backgroundColor: '#f9fafb',
-                  position: 'sticky',
-                  bottom: 0
-                }}>
+                <div className="filter-dropdown-footer">
                   <button
                     onClick={() => {
                       setActiveFilterMenu(null);
                     }}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    className="filter-save-button"
                   >
                     Save
                   </button>
@@ -847,51 +561,20 @@ useEffect(() => {
 
           {}
           {activeFilterMenu === 'intentStatus' && (
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                backgroundColor: '#dbeafe',
-                border: '1px solid #93c5fd',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#1e40af'
-              }}>
+            <div className="filter-dropdown-wrapper">
+              <div className="filter-dropdown-label active">
                 <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
                     setFilters(prev => ({ ...prev, intentStatus: [] }));
                   }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    padding: '0',
-                    color: '#1e40af',
-                    lineHeight: '1'
-                  }}
+                  className="filter-close-button"
                 >
                   ✕
                 </button>
               </div>
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                marginTop: '8px',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                zIndex: 1000,
-                minWidth: '250px',
-                maxHeight: '300px',
-                overflowY: 'auto'
-              }}>
+              <div className="filter-dropdown-content">
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
@@ -902,29 +585,13 @@ useEffect(() => {
                       setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
                     }
                   }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  className="filter-option"
                 >
                   <input
                     type="checkbox"
                     checked={Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0}
                     onChange={() => {}}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
-                    }}
+                    className="filter-option-checkbox"
                   />
                   All
                 </div>
@@ -934,35 +601,19 @@ useEffect(() => {
                     <div
                       key={idx}
                       onClick={() => handleFilterChange('intentStatus', option)}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? '#dbeafe' : 'white',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        justifyContent: 'space-between'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                      className={`filter-option ${isSelected ? 'selected' : ''}`}
+                      style={{ justifyContent: 'space-between' }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => {}}
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            cursor: 'pointer',
-                            accentColor: '#3b82f6'
-                          }}
+                          className="filter-option-checkbox"
                         />
                         {option}
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      <span className="filter-option-count">
                         {getAccountCountByIntentStatus(option)}
                       </span>
                     </div>
@@ -970,33 +621,12 @@ useEffect(() => {
                 })}
 
                 {}
-                <div style={{
-                  padding: '12px',
-                  borderTop: '1px solid #e5e7eb',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                  backgroundColor: '#f9fafb',
-                  position: 'sticky',
-                  bottom: 0
-                }}>
+                <div className="filter-dropdown-footer">
                   <button
                     onClick={() => {
                       setActiveFilterMenu(null);
                     }}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    className="filter-save-button"
                   >
                     Save
                   </button>
@@ -1007,35 +637,14 @@ useEffect(() => {
 
           {}
           {filters.accountName.length > 0 && activeFilterMenu !== 'accountName' && (
-            <div style={{
-              backgroundColor: '#f0f9ff',
-              border: '1px solid #bfdbfe',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#1e40af',
-              cursor: 'pointer'
-            }}
-            onClick={() => setActiveFilterMenu('accountName')}
-            >
+            <div className="filter-badge" onClick={() => setActiveFilterMenu('accountName')}>
               <span>Company Name: {filters.accountName.length} selected</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setFilters(prev => ({ ...prev, accountName: [] }));
                 }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  padding: '0',
-                  color: '#1e40af',
-                  lineHeight: '1'
-                }}
+                className="filter-close-button"
               >
                 ✕
               </button>
@@ -1060,36 +669,10 @@ useEffect(() => {
 
       {}
       {filters.intentStatus.length === 0 && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginBottom: '20px',
-          marginTop: '24px',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fcd34d',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            maxWidth: 'fit-content'
-          }}>
-            <div style={{
-              fontSize: '18px',
-              color: '#d97706',
-              flexShrink: 0
-            }}>
-              ⚠
-            </div>
-            <div style={{
-              fontSize: '13px',
-              color: '#92400e',
-              fontWeight: '500'
-            }}>
+        <div className="warning-message">
+          <div className="warning-box">
+            <div className="warning-icon">⚠</div>
+            <div className="warning-text">
               Please select an Intent Status to view data
             </div>
           </div>
@@ -1109,7 +692,7 @@ useEffect(() => {
       {}
       {}
 
-      <div className="table-container" style={{ backgroundColor: '#ffffff', marginTop: '24px' }}>
+      <div className="table-container">
         <table>
           <thead className="sticky-header">
             <tr>
@@ -1128,14 +711,14 @@ useEffect(() => {
               return paginatedData.map((row, idx) => {
                 const isHighlighted = rowMatchesSearch(row, searchTerm);
                 return (
-                  <tr key={idx} style={{ backgroundColor: isHighlighted ? '#fefce8' : '#ffffff' }}>
+                  <tr key={idx} className={isHighlighted ? 'table-row-highlighted' : 'table-row-normal'}>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.companyName, searchTerm)}
                     </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.intentStatus)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.intentStatus, searchTerm)}
                     </td>
-                    <td style={{ textAlign: 'center' }}>
+                    <td className="table-cell-center">
                       <IntentStatusVisualizer status={row.intentStatus} />
                     </td>
                   </tr>
@@ -1148,30 +731,13 @@ useEffect(() => {
 
       {}
       {hasMandatoryFilters && filteredData.length > rowsPerPage && (
-      <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '20px',
-          marginBottom: '20px',
-          paddingBottom: '15px',
-          borderBottom: '1px solid #e5e7eb'
-      }}>
-          <div style={{
-              fontSize: '14px',
-              color: '#1f2937',
-              fontWeight: '600'
-          }}>
+      <div className="pagination-container">
+          <div className="pagination-info">
               Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
           </div>
 
           {}
-          <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '8px'
-          }}>
+          <div className="pagination-controls">
               {(() => {
                   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
                   const maxPagesToShow = 5;
@@ -1195,30 +761,7 @@ useEffect(() => {
                               key="first"
                               onClick={() => setCurrentPage(1)}
                               disabled={currentPage === 1}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === 1 ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="First page"
                           >
                               «
@@ -1229,30 +772,7 @@ useEffect(() => {
                               key="prev"
                               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                               disabled={currentPage === 1}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === 1 ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="Previous page"
                           >
                               ‹
@@ -1264,30 +784,11 @@ useEffect(() => {
                                   <button
                                       key={1}
                                       onClick={() => setCurrentPage(1)}
-                                      style={{
-                                          padding: '8px 12px',
-                                          border: '1px solid #d1d5db',
-                                          borderRadius: '6px',
-                                          backgroundColor: 'white',
-                                          cursor: 'pointer',
-                                          fontSize: '14px',
-                                          color: '#6b7280',
-                                          fontWeight: '500',
-                                          minWidth: '40px',
-                                          transition: 'all 0.2s'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }}
+                                      className="pagination-button"
                                   >
                                       1
                                   </button>
-                                  {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                                  {startPage > 2 && <span className="pagination-ellipsis">...</span>}
                               </>
                           )}
 
@@ -1295,31 +796,7 @@ useEffect(() => {
                               <button
                                   key={i}
                                   onClick={() => setCurrentPage(i)}
-                                  style={{
-                                      padding: '8px 12px',
-                                      border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
-                                      borderRadius: '6px',
-                                      backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: i === currentPage ? '#1e40af' : '#6b7280',
-                                      fontWeight: i === currentPage ? '600' : '500',
-                                      minWidth: '40px',
-                                      transition: 'all 0.2s',
-                                      boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                      if (i !== currentPage) {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }
-                                  }}
-                                  onMouseLeave={(e) => {
-                                      if (i !== currentPage) {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }
-                                  }}
+                                  className={`pagination-button ${i === currentPage ? 'active' : ''}`}
                               >
                                   {i}
                               </button>
@@ -1327,30 +804,11 @@ useEffect(() => {
 
                           {endPage < totalPages && (
                               <>
-                                  {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                                  {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
                                   <button
                                       key={totalPages}
                                       onClick={() => setCurrentPage(totalPages)}
-                                      style={{
-                                          padding: '8px 12px',
-                                          border: '1px solid #d1d5db',
-                                          borderRadius: '6px',
-                                          backgroundColor: 'white',
-                                          cursor: 'pointer',
-                                          fontSize: '14px',
-                                          color: '#6b7280',
-                                          fontWeight: '500',
-                                          minWidth: '40px',
-                                          transition: 'all 0.2s'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }}
+                                      className="pagination-button"
                                   >
                                       {totalPages}
                                   </button>
@@ -1362,30 +820,7 @@ useEffect(() => {
                               key="next"
                               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                               disabled={currentPage === totalPages}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === totalPages ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Next page"
                           >
                               ›
@@ -1396,30 +831,7 @@ useEffect(() => {
                               key="last"
                               onClick={() => setCurrentPage(totalPages)}
                               disabled={currentPage === totalPages}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === totalPages ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Last page"
                           >
                               »
@@ -1429,11 +841,7 @@ useEffect(() => {
               })()}
           </div>
 
-          <div style={{
-              fontSize: '14px',
-              color: '#6b7280',
-              fontWeight: '500'
-          }}>
+          <div className="pagination-results">
               Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length.toLocaleString()} results
           </div>
       </div>
@@ -1442,201 +850,6 @@ useEffect(() => {
 
       <Tooltip tooltip={tooltip} />
 
-      <style>{`
-        .filters {
-          display: flex;
-          gap: 15px;
-          flex-wrap: wrap;
-          margin-bottom: 20px;
-        }
-
-        .filter-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          min-width: 150px;
-          max-width: 250px;
-        }
-
-        .filter-group label {
-          font-size: 14px;
-          font-weight: 500;
-          color: #374151;
-        }
-
-        .table-container {
-          max-height: 490px;
-          overflow-x: auto;
-          overflow-y: auto;
-          position: relative;
-          display: flex;
-          justify-content: center;
-        }
-
-        .sticky-header {
-          position: sticky;
-          top: 0;
-          background-color: #fff;
-          z-index: 10;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          table-layout: auto;
-        }
-
-        th, td {
-          padding: 12px 15px;
-          border-bottom: 1px solid #ddd;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          cursor: default;
-          background-color: #f8f9fa;
-        }
-
-        th {
-          text-align: left;
-          background-color: #f8f9fa;
-        }
-
-        td {
-          text-align: left;
-          overflow: hidden;
-        }
-
-        th:nth-child(1), td:nth-child(1) { width: 50%; }
-        th:nth-child(2), td:nth-child(2) { width: 50%; }
-        th:nth-child(3), td:nth-child(3) { padding-left: 40px; }
-
-        td { position: relative; }
-
-        td:hover { background-color: #f9fafb; }
-
-        th { font-weight: 600; background-color: #e8eef7 !important; }
-
-        tbody tr:hover { background-color: #f5f5f5; }
-
-        .view-summary-button {
-          padding: 8px 16px;
-          background-color: #3b82f6;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.2s;
-        }
-
-        .view-summary-button:hover {
-          background-color: #2563eb;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .summary-icon {
-          width: 18px;
-          height: 18px;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-
-        .summary-modal-content {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          max-width: 1100px;
-          width: 92%;
-          max-height: 85vh;
-          overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .summary-modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px;
-          border-bottom: 1px solid #e5e7eb;
-          position: sticky;
-          top: 0;
-          background: white;
-        }
-
-        .summary-modal-header h2 {
-          margin: 0;
-          font-size: 20px;
-          color: #1f2937;
-        }
-
-        .summary-charts-grid {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 20px;
-          padding: 40px 20px;
-          flex: 1;
-        }
-
-        .chart-item {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          width: 100%;
-        }
-
-        .chart-item h3 {
-          margin: 0;
-          font-size: 16px;
-          color: #1f2937;
-          font-weight: 600;
-        }
-
-        .chart-item img {
-          width: 100%;
-          height: auto;
-          border-radius: 8px;
-          border: 1px solid #e5e7eb;
-        }
-
-        @media (max-width: 768px) {
-          .summary-modal-content {
-            width: 95%;
-            max-height: 90vh;
-          }
-
-          .summary-charts-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-            padding: 16px;
-          }
-
-          .summary-modal-header {
-            padding: 16px;
-          }
-
-          .summary-modal-header h2 {
-            font-size: 18px;
-          }
-        }
-      `}</style>
     </div>
   );
 };
