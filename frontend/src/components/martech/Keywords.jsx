@@ -3,7 +3,7 @@ import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import '../../styles/keywords.css';
 
 const Keywords = () => {
-  const [filters, setFilters] = useState({ company: '', product: '' });
+  const [filters, setFilters] = useState({ company: [], product: [] });
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -49,8 +49,8 @@ const Keywords = () => {
   };
 
   const filteredData = tableData.filter(row => {
-    const companyMatch = !filters.company || row.Company === filters.company;
-    const productMatch = !filters.product || row['Products / Services'] === filters.product;
+    const companyMatch = filters.company.length === 0 || filters.company.includes(row.Company);
+    const productMatch = filters.product.length === 0 || filters.product.includes(row['Products / Services']);
     return companyMatch && productMatch;
   });
 
@@ -74,8 +74,8 @@ const Keywords = () => {
 
   if (loading) {
     return (
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
-        <img src={loadingGif} alt="Loading" style={{ width: '600px', height: '600px', objectFit: 'contain' }} />
+      <div className="loading-overlay">
+        <img src={loadingGif} alt="Loading" />
       </div>
     );
   }
@@ -86,236 +86,187 @@ const Keywords = () => {
 
   return (
     <div className="keywords-container">
-      <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-        <h2 style={{ fontSize: '25px', fontWeight: '700', margin: 0 }}>Keywords</h2>
+      <div className="keywords-header">
+        <h2>Keywords</h2>
       </div>
 
       <div className="section-subtle-divider" />
 
-      <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              style={{
-                padding: '8px 14px',
-                backgroundColor: 'white',
-                color: '#3b82f6',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500'
-              }}
-            >
-              + Filter
-            </button>
+      <div className="filter-section" ref={filterRef}>
+        <div className="filter-wrapper">
+          <div className="filter-group">
+            <div className="filter-button-container">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="filter-button"
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+              >
+                <span>+ Filter</span>
+              </button>
 
-            {showFilters && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                marginTop: '8px',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                zIndex: 1000,
-                minWidth: '200px'
-              }}>
-                {[
-                  { label: 'Company Name', key: 'company' },
-                  { label: 'Products / Services', key: 'product' }
-                ].map((opt) => (
-                  <div
-                    key={opt.key}
-                    onClick={() => { setActiveFilterMenu(opt.key); setShowFilters(false); }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                  >
-                    {opt.label}
-                  </div>
-                ))}
-              </div>
-            )}
+              {showFilters && (
+                <div className="filter-dropdown">
+                  {[
+                    { label: 'Company Name', key: 'company' },
+                    { label: 'Products / Services', key: 'product' }
+                  ].map((opt) => (
+                    <div
+                      key={opt.key}
+                      onClick={() => { setActiveFilterMenu(opt.key); setShowFilters(false); }}
+                      className="filter-dropdown-item"
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                    >
+                      {opt.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {activeFilterMenu === 'company' && (
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  backgroundColor: '#dbeafe',
-                  border: '1px solid #93c5fd',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: '#1e40af'
-                }}>
-                  <span>Company</span>
-                  <button onClick={() => { setActiveFilterMenu(null); setFilters(prev => ({ ...prev, company: '' })); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e40af' }}>✕</button>
+              <div className="filter-menu">
+                <div className="filter-menu-header">
+                  <span>Company {filters.company.length > 0 && `(${filters.company.length})`}</span>
+                  <button onClick={() => { setActiveFilterMenu(null); setFilters(prev => ({ ...prev, company: [] })); }} className="filter-menu-close-btn">✕</button>
                 </div>
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  marginTop: '8px',
-                  backgroundColor: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  zIndex: 1000,
-                  minWidth: '250px',
-                  maxHeight: '300px',
-                  overflowY: 'auto'
-                }}>
-                  <div onClick={() => { setFilters(prev => ({ ...prev, company: '' })); setActiveFilterMenu(null); }} style={{ padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #e5e7eb', fontSize: '14px' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}>All</div>
+                <div className="filter-menu-dropdown">
+                  <div onClick={() => { setFilters(prev => { const allCompanies = getUniqueCompanies(); return { ...prev, company: prev.company.length === allCompanies.length ? [] : allCompanies }; }); }} className={`filter-menu-option ${filters.company.length === getUniqueCompanies().length && filters.company.length > 0 ? 'selected' : ''}`} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.company.length === getUniqueCompanies().length && filters.company.length > 0 ? '#f3f4f6' : 'white'}>
+                    <input type="checkbox" checked={filters.company.length === getUniqueCompanies().length && filters.company.length > 0} onChange={() => {}} />
+                    All
+                  </div>
                   {getUniqueCompanies().map((opt, idx) => (
-                    <div key={idx} onClick={() => { setFilters(prev => ({ ...prev, company: opt })); setActiveFilterMenu(null); }} style={{ padding: '10px 12px', cursor: 'pointer', backgroundColor: filters.company === opt ? '#dbeafe' : 'white', borderBottom: '1px solid #e5e7eb', fontSize: '14px' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.company === opt ? '#dbeafe' : 'white'}>{opt}</div>
+                    <div key={idx} onClick={() => { setFilters(prev => { const updated = prev.company.includes(opt) ? prev.company.filter(c => c !== opt) : [...prev.company, opt]; return { ...prev, company: updated }; }); }} className={`filter-menu-option ${filters.company.includes(opt) ? 'selected' : ''}`} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.company.includes(opt) ? '#dbeafe' : 'white'}>
+                      <input type="checkbox" checked={filters.company.includes(opt)} onChange={() => {}} />
+                      {opt}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
             {activeFilterMenu === 'product' && (
-              <div style={{ position: 'relative' }}>
-                <div style={{
-                  backgroundColor: '#dbeafe',
-                  border: '1px solid #93c5fd',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: '#1e40af'
-                }}>
-                  <span>Product</span>
-                  <button onClick={() => { setActiveFilterMenu(null); setFilters(prev => ({ ...prev, product: '' })); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1e40af' }}>✕</button>
+              <div className="filter-menu">
+                <div className="filter-menu-header">
+                  <span>Product {filters.product.length > 0 && `(${filters.product.length})`}</span>
+                  <button onClick={() => { setActiveFilterMenu(null); setFilters(prev => ({ ...prev, product: [] })); }} className="filter-menu-close-btn">✕</button>
                 </div>
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  marginTop: '8px',
-                  backgroundColor: 'white',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  zIndex: 1000,
-                  minWidth: '250px',
-                  maxHeight: '300px',
-                  overflowY: 'auto'
-                }}>
-                  <div onClick={() => { setFilters(prev => ({ ...prev, product: '' })); setActiveFilterMenu(null); }} style={{ padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #e5e7eb', fontSize: '14px' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}>All</div>
+                <div className="filter-menu-dropdown">
+                  <div onClick={() => { setFilters(prev => { const allProducts = getUniqueProducts(); return { ...prev, product: prev.product.length === allProducts.length ? [] : allProducts }; }); }} className={`filter-menu-option ${filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? 'selected' : ''}`} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white'}>
+                    <input type="checkbox" checked={filters.product.length === getUniqueProducts().length && filters.product.length > 0} onChange={() => {}} />
+                    All
+                  </div>
                   {getUniqueProducts().map((opt, idx) => (
-                    <div key={idx} onClick={() => { setFilters(prev => ({ ...prev, product: opt })); setActiveFilterMenu(null); }} style={{ padding: '10px 12px', cursor: 'pointer', backgroundColor: filters.product === opt ? '#dbeafe' : 'white', borderBottom: '1px solid #e5e7eb', fontSize: '14px' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.product === opt ? '#dbeafe' : 'white'}>{opt}</div>
+                    <div key={idx} onClick={() => { setFilters(prev => { const updated = prev.product.includes(opt) ? prev.product.filter(p => p !== opt) : [...prev.product, opt]; return { ...prev, product: updated }; }); }} className={`filter-menu-option ${filters.product.includes(opt) ? 'selected' : ''}`} onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.includes(opt) ? '#dbeafe' : 'white'}>
+                      <input type="checkbox" checked={filters.product.includes(opt)} onChange={() => {}} />
+                      {opt}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {filters.company && activeFilterMenu !== 'company' && (
-              <div style={{ backgroundColor: '#fef3c7', border: '1px solid #fcd34d', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#92400e' }}>
-                <span>Company: {filters.company}</span>
-                <button onClick={() => setFilters(prev => ({ ...prev, company: '' }))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#92400e' }}>✕</button>
+            {filters.company.length > 0 && activeFilterMenu !== 'company' && (
+              <div className="filter-tag">
+                <span>Company: {filters.company.length} selected</span>
+                <button onClick={() => setFilters(prev => ({ ...prev, company: [] }))} className="filter-tag-close-btn">✕</button>
               </div>
             )}
 
-            {filters.product && activeFilterMenu !== 'product' && (
-              <div style={{ backgroundColor: '#fef3c7', border: '1px solid #fcd34d', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#92400e' }}>
-                <span>Product: {filters.product}</span>
-                <button onClick={() => setFilters(prev => ({ ...prev, product: '' }))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#92400e' }}>✕</button>
+            {filters.product.length > 0 && activeFilterMenu !== 'product' && (
+              <div className="filter-tag">
+                <span>Product: {filters.product.length} selected</span>
+                <button onClick={() => setFilters(prev => ({ ...prev, product: [] }))} className="filter-tag-close-btn">✕</button>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', minWidth: 0 }}>
-        <div style={{ minWidth: 0 }}>
+      <div className="table-grid">
+        <div className="table-grid-item">
           <div className="table-container">
             <table>
               <thead className="sticky-header">
                 <tr>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Products / Services</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Primary Category</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Secondary Category</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>First Detected</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Expansion Phase</th>
-                  <th style={{ textAlign: 'left', padding: '12px 8px' }}>Current Stage</th>
+                  <th className="table-cell-header">Company</th>
+                  <th className="table-cell-header">Products / Services</th>
+                  <th className="table-cell-header">Primary Category</th>
+                  <th className="table-cell-header">Secondary Category</th>
+                  <th className="table-cell-header">First Detected</th>
+                  <th className="table-cell-header">Expansion Phase</th>
+                  <th className="table-cell-header">Current Stage</th>
                 </tr>
               </thead>
               <tbody>
                 {tableData.length === 0 ? (
-                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>No data loaded</td></tr>
+                  <tr><td colSpan="7" className="no-data-message">No data loaded</td></tr>
                 ) : groupedDataArray.length === 0 ? (
-                  <tr><td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>No data matches filters</td></tr>
+                  <tr><td colSpan="7" className="no-data-message">No data matches filters</td></tr>
                 ) : (
                   paginatedData.map((groupedRow, groupIdx) => {
                     const items = groupedRow.items || [groupedRow];
                     return (
-                      <tr key={groupIdx} style={{ borderBottom: '2px solid #e5e7eb' }}>
-                        <td style={{ padding: '12px 8px', fontWeight: '600', backgroundColor: 'white', verticalAlign: 'top' }}>
+                      <tr key={groupIdx} className="table-row-grouped">
+                        <td className="table-cell-company">
                           {groupedRow.Company}
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['Products / Services']}
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['Primary Category (Products/Services Keywords)']}
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['Secondary Category Keywords ']}
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['First Detected (Timeline Start)'] || 'N/A'}
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['Expansion Phase']}
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td style={{ padding: '12px 8px' }}>
-                          <div style={{ maxHeight: '96px', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <td className="table-cell">
+                          <div className="table-cell-content">
                             {items.map((row, idx) => (
-                              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', marginBottom: idx < items.length - 1 ? '4px' : '0' }}>
+                              <div key={idx} className="table-cell-item">
                                 {row['Current Stage']}
                               </div>
                             ))}
@@ -330,44 +281,16 @@ const Keywords = () => {
           </div>
 
           {groupedDataArray.length > 0 && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: '20px',
-              marginBottom: '20px',
-              paddingBottom: '15px',
-              borderBottom: '1px solid #e5e7eb'
-            }}>
-              <div style={{
-                fontSize: '14px',
-                color: '#1f2937',
-                fontWeight: '600'
-              }}>
+            <div className="pagination-container">
+              <div className="pagination-info">
                 Page {currentPage} of {totalPages}
               </div>
 
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
+              <div className="pagination-buttons">
                 <button
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                    fontSize: '16px',
-                    color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                    fontWeight: '600',
-                    transition: 'all 0.2s',
-                    opacity: currentPage === 1 ? 0.5 : 1
-                  }}
+                  className="pagination-btn"
                   onMouseEnter={(e) => {
                     if (currentPage > 1) {
                       e.target.style.backgroundColor = '#f9fafb';
@@ -388,18 +311,7 @@ const Keywords = () => {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                    fontSize: '16px',
-                    color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                    fontWeight: '600',
-                    transition: 'all 0.2s',
-                    opacity: currentPage === 1 ? 0.5 : 1
-                  }}
+                  className="pagination-btn"
                   onMouseEnter={(e) => {
                     if (currentPage > 1) {
                       e.target.style.backgroundColor = '#f9fafb';
@@ -421,19 +333,7 @@ const Keywords = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i)}
-                    style={{
-                      padding: '8px 12px',
-                      border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      color: i === currentPage ? '#1e40af' : '#6b7280',
-                      fontWeight: i === currentPage ? '600' : '500',
-                      minWidth: '40px',
-                      transition: 'all 0.2s',
-                      boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                    }}
+                    className={`pagination-btn-number ${i === currentPage ? 'active' : ''}`}
                     onMouseEnter={(e) => {
                       if (i !== currentPage) {
                         e.target.style.backgroundColor = '#f9fafb';
@@ -454,18 +354,7 @@ const Keywords = () => {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                    fontSize: '16px',
-                    color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                    fontWeight: '600',
-                    transition: 'all 0.2s',
-                    opacity: currentPage === totalPages ? 0.5 : 1
-                  }}
+                  className="pagination-btn"
                   onMouseEnter={(e) => {
                     if (currentPage < totalPages) {
                       e.target.style.backgroundColor = '#f9fafb';
@@ -486,18 +375,7 @@ const Keywords = () => {
                 <button
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                    fontSize: '16px',
-                    color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                    fontWeight: '600',
-                    transition: 'all 0.2s',
-                    opacity: currentPage === totalPages ? 0.5 : 1
-                  }}
+                  className="pagination-btn"
                   onMouseEnter={(e) => {
                     if (currentPage < totalPages) {
                       e.target.style.backgroundColor = '#f9fafb';
