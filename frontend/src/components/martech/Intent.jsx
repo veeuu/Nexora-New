@@ -209,6 +209,18 @@ const searchMatches = !searchTerm || Object.values(row).some(value =>
       return searchMatches;
     })
     .sort((a, b) => {
+      // First priority: Sort by Intent Status (High > Medium > Low)
+      const intentStatusOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+      const aStatus = String(a.intentStatus || '').toLowerCase();
+      const bStatus = String(b.intentStatus || '').toLowerCase();
+      const aOrder = intentStatusOrder[aStatus] !== undefined ? intentStatusOrder[aStatus] : 3;
+      const bOrder = intentStatusOrder[bStatus] !== undefined ? intentStatusOrder[bStatus] : 3;
+      
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+
+      // Secondary priority: Search term matches
       const aMatches = rowMatchesSearch(a, searchTerm);
       const bMatches = rowMatchesSearch(b, searchTerm);
       if (aMatches && !bMatches) return -1;

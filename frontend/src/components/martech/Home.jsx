@@ -177,7 +177,7 @@ const response = await fetch('/api/dashboard-stats');
           {}
           <div className="home-stats-grid">
             <AnimatedStatCard
-              number="100K+"
+              number="535M+"
               label="Total Companies"
               cardClass="home-stat-card-teal"
               numberClass="home-stat-number-teal"
@@ -186,7 +186,7 @@ const response = await fetch('/api/dashboard-stats');
             />
 
             <AnimatedStatCard
-              number="45K+"
+              number="510M+"
               label="Technographics"
               cardClass="home-stat-card-orange"
               numberClass="home-stat-number-orange"
@@ -195,7 +195,7 @@ const response = await fetch('/api/dashboard-stats');
             />
 
             <AnimatedStatCard
-              number="20K+"
+              number="450M+"
               label="Renewal Intelligence"
               cardClass="home-stat-card-pink"
               numberClass="home-stat-number-pink"
@@ -204,7 +204,7 @@ const response = await fetch('/api/dashboard-stats');
             />
 
             <AnimatedStatCard
-              number="20K+"
+              number="420M+"
               label="Intent"
               cardClass="home-stat-card-purple"
               numberClass="home-stat-number-purple"
@@ -213,7 +213,7 @@ const response = await fetch('/api/dashboard-stats');
             />
 
             <AnimatedStatCard
-              number="20K+"
+              number="370M+"
               label="Buying Group"
               cardClass="home-stat-card-yellow"
               numberClass="home-stat-number-yellow"
@@ -222,7 +222,7 @@ const response = await fetch('/api/dashboard-stats');
             />
 
             <AnimatedStatCard
-              number="22K+"
+              number="480M+"
               label="Next Tech Purchase®"
               cardClass="home-stat-card-blue"
               numberClass="home-stat-number-blue"
