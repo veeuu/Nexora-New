@@ -1134,5 +1134,40 @@ setCachedStats(stats);
   }
 });
 
+router.get('/keywords', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const csv = require('csv-parser');
+    const csvPath = require('path').join(__dirname, '../Keywords.csv');
+
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'Keywords CSV file not found', path: csvPath });
+    }
+
+    const keywordsData = [];
+    let errorOccurred = false;
+
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        keywordsData.push(row);
+      })
+      .on('end', () => {
+        if (!errorOccurred) {
+          res.json({
+            data: keywordsData,
+            total: keywordsData.length
+          });
+        }
+      })
+      .on('error', (err) => {
+        errorOccurred = true;
+        res.status(500).json({ error: 'Failed to parse CSV file', details: err.message });
+      });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch keywords data', details: err.message });
+  }
+});
+
 module.exports = router;
 module.exports.generateSelectedOrgCharts = generateSelectedOrgCharts;
