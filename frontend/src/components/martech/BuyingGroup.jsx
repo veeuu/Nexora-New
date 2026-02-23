@@ -14,7 +14,7 @@ const BuyingGroup = () => {
     const [showPanel, setShowPanel] = useState(false);
     const [personDetailsData, setPersonDetailsData] = useState({});
     const [orgChartUrl, setOrgChartUrl] = useState('');
-    const [zoomLevel, setZoomLevel] = useState(50);
+    const [zoomLevel, setZoomLevel] = useState(80);
     const iframeRef = useRef(null);
 
 useEffect(() => {
@@ -116,10 +116,11 @@ useEffect(() => {
 
         const iframe = iframeRef.current;
 
-const handleMessage = (event) => {
-            if (event.data && event.data.type === 'optimalZoomCalculated') {
-                setZoomLevel(event.data.zoomLevel);
-            }
+        const handleMessage = (event) => {
+            // Disabled auto-zoom calculation to respect user's default 80% zoom
+            // if (event.data && event.data.type === 'optimalZoomCalculated') {
+            //     setZoomLevel(event.data.zoomLevel);
+            // }
         };
 
         window.addEventListener('message', handleMessage);

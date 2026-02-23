@@ -67,28 +67,29 @@ const zoomScript = `<script>
     window.currentZoom = 100;
     window.optimalZoom = 100;
 
-window.addEventListener('load', function() {
+    window.addEventListener('load', function() {
       const chartElement = document.getElementById('chart');
       if (chartElement && chartElement.getBoundingClientRect) {
         const chartRect = chartElement.getBoundingClientRect();
         const containerWidth = window.innerWidth - 40;
         const containerHeight = 520;
 
-const widthZoom = (containerWidth / chartRect.width) * 100;
-
+        const widthZoom = (containerWidth / chartRect.width) * 100;
         const heightZoom = (containerHeight / chartRect.height) * 100;
 
-window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+        window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
         window.optimalZoom = Math.max(window.optimalZoom, 30);
         window.optimalZoom = Math.round(window.optimalZoom / 10) * 10;
 
-chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
-        window.currentZoom = window.optimalZoom;
+        // Disabled: Don't auto-scale on load - let parent component control zoom
+        // chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+        // window.currentZoom = window.optimalZoom;
 
-window.parent.postMessage({
-          type: 'optimalZoomCalculated',
-          zoomLevel: window.optimalZoom
-        }, '*');
+        // Disabled: Don't send optimal zoom to parent - respect user's default zoom setting
+        // window.parent.postMessage({
+        //   type: 'optimalZoomCalculated',
+        //   zoomLevel: window.optimalZoom
+        // }, '*');
       }
     });
 
