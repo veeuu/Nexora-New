@@ -1,9 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { FaSearch, FaTimes } from 'react-icons/fa';
+import '../styles/chatbot.css';
 
-const ChatBot = ({ isAuthenticated, onNavigate }) => {
+const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [messages, setMessages] = useState([
-    { type: 'bot', text: 'Hi! I can help you find data across our platform. What are you looking for?' }
+    { type: 'bot', text: 'Hi! I can help you find NTP analysis for specific companies. Just ask me about any company\'s Next Tech Purchase analysis.' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,62 +20,65 @@ const ChatBot = ({ isAuthenticated, onNavigate }) => {
     scrollToBottom();
   }, [messages]);
 
-  const findRelevantPages = (query) => {
+  // Show tooltip every 60 seconds
+  useEffect(() => {
+    if (!isOpen) {
+      const interval = setInterval(() => {
+        setShowTooltip(true);
+        const timer = setTimeout(() => setShowTooltip(false), 5000); // Hide after 5 seconds
+        return () => clearTimeout(timer);
+      }, 60000); // Every 60 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [isOpen]);
+
+  const findNTPAnalysis = (query, data, revealed) => {
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    // Extract company names from revealed rows (format: "index-companyName")
+    let revealedCompanies = new Set();
+    if (revealed && revealed.size > 0) {
+      revealed.forEach(revealedRow => {
+        const parts = revealedRow.split('-');
+        if (parts.length > 1) {
+          const companyName = parts.slice(1).join('-'); // Handle company names with hyphens
+          revealedCompanies.add(companyName.toLowerCase());
+        }
+      });
+    }
+
     const queryLower = query.toLowerCase();
-    const results = [];
+    const resultsMap = new Map();
 
-    chatbotKnowledge.forEach(page => {
-      let score = 0;
-
-      page.keywords.forEach(keyword => {
-        if (queryLower.includes(keyword)) {
-          score += 2;
+    data.forEach(row => {
+      const companyName = String(row.companyName || '').toLowerCase();
+      
+      // If revealed rows exist, only include companies that are revealed
+      if (revealed && revealed.size > 0) {
+        if (!revealedCompanies.has(companyName)) {
+          return;
         }
-      });
-
-      page.dataFields.forEach(field => {
-        if (queryLower.includes(field.toLowerCase())) {
-          score += 1;
-        }
-      });
-
-      if (queryLower.includes(page.page.toLowerCase())) {
-        score += 3;
       }
-
-      if (score > 0) {
-        results.push({ ...page, score });
+      
+      if (companyName.includes(queryLower) || queryLower.includes(companyName)) {
+        if (!resultsMap.has(companyName)) {
+          resultsMap.set(companyName, {
+            companyName: row.companyName,
+            technology: row.technology,
+            category: row.category,
+            purchasePrediction: row.purchasePrediction,
+            purchaseProbability: row.purchaseProbability,
+            ntpAnalysis: row.ntpAnalysis,
+            domain: row.domain
+          });
+        }
       }
     });
 
-    return results.sort((a, b) => b.score - a.score).slice(0, 3);
-  };
-
-  const callGeminiAPI = async (userMessage) => {
-    try {
-      const response = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_API_KEY_HERE',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `You are a helpful assistant for a business intelligence platform. A user is asking: "${userMessage}".
-
-Based on this question, provide a brief, friendly response (1-2 sentences) about what data they might be looking for. Be conversational and helpful.`
-              }]
-            }]
-          })
-        }
-      );
-
-      const data = await response.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || 'I can help you find that information.';
-    } catch (error) {
-
-      return 'I can help you find that information.';
-    }
+    return Array.from(resultsMap.values());
   };
 
   const handleSendMessage = async () => {
@@ -84,220 +90,193 @@ Based on this question, provide a brief, friendly response (1-2 sentences) about
     setLoading(true);
 
     try {
-      const relevantPages = findRelevantPages(userMessage);
-      const aiResponse = await callGeminiAPI(userMessage);
-
-      let botMessage = aiResponse;
-
-      if (relevantPages.length > 0) {
-        botMessage += '\n\nYou might find this on:';
-        relevantPages.forEach(page => {
-          botMessage += `\n• ${page.page}: ${page.description}`;
-        });
-      } else {
-        botMessage += '\n\nI couldn\'t find a specific page for that. Try asking about Intent, Technographics, NTP, Buying Groups, Renewal Intelligence, or Product Catalogue.';
+      // Fetch NTP data if not provided
+      let data = ntpData || tableData;
+      if (!data) {
+        const response = await fetch('/api/ntp/all');
+        const result = await response.json();
+        data = result.data || [];
       }
 
-      setMessages(prev => [...prev, { type: 'bot', text: botMessage, pages: relevantPages }]);
-    } catch (error) {
+      const analysisResults = findNTPAnalysis(userMessage, data, revealedRows);
 
-      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
+      if (analysisResults.length > 0) {
+        const botMessage = analysisResults.map((result, idx) => {
+          let content = '';
+          content += `${idx + 1}. ${result.companyName}\n`;
+          content += `━━━━━━━━━━━━\n\n`;
+          content += `Domain: ${result.domain || 'N/A'}\n`;
+          content += `Technology: ${result.technology || 'N/A'}\n`;
+          content += `Category: ${result.category || 'N/A'}\n`;
+          content += `Purchase Prediction: ${result.purchasePrediction || 'N/A'}\n`;
+          content += `Purchase Probability: ${result.purchaseProbability || 'N/A'}\n`;
+          
+          if (result.ntpAnalysis) {
+            content += `\n📊 Analysis:\n`;
+            content += `${result.ntpAnalysis}\n`;
+          }
+          
+          if (idx < analysisResults.length - 1) {
+            content += '\n\n';
+          }
+          
+          return content;
+        }).join('');
+        
+        setMessages(prev => [...prev, { type: 'bot', text: botMessage, isFormatted: true, content: botMessage }]);
+      } else {
+        let botMessage = '';
+        if (revealedRows && revealedRows.size > 0) {
+          botMessage = `I couldn't find any NTP analysis for "${userMessage}" in the revealed companies. Please reveal more companies or try a different search.`;
+        } else {
+          botMessage = `Please reveal companies in the table first to view their NTP analysis. Click the eye icon on a company row to reveal it.`;
+        }
+        setMessages(prev => [...prev, { type: 'bot', text: botMessage }]);
+      }
+    } catch (error) {
+      console.error('Error fetching NTP data:', error);
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP analysis. Please try again.' }]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleNavigate = (page) => {
-    if (onNavigate) {
-      onNavigate(page);
-      setIsOpen(false);
     }
   };
 
   if (!isAuthenticated) return null;
 
   return (
-    <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="chatbot-container">
       {isOpen ? (
-        <div style={{
-          width: '350px',
-          height: '500px',
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 5px 40px rgba(0, 0, 0, 0.16)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            padding: '16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>Data Assistant</h3>
+        <div className="chatbot-window">
+          <div className="chatbot-header">
+            <h3>🔍 NTP Analysis</h3>
             <button
               onClick={() => setIsOpen(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'white',
-                fontSize: '20px',
-                cursor: 'pointer',
-                padding: 0
-              }}
+              className="chatbot-close-btn"
             >
-              ✕
+              <FaTimes size={18} />
             </button>
           </div>
 
-          <div style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px'
-          }}>
+          <div className="chatbot-messages">
             {messages.map((msg, idx) => (
-              <div key={idx} style={{
-                display: 'flex',
-                justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start'
-              }}>
-                <div style={{
-                  maxWidth: '80%',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: msg.type === 'user' ? '#3b82f6' : '#f3f4f6',
-                  color: msg.type === 'user' ? 'white' : '#1f2937',
-                  fontSize: '14px',
-                  lineHeight: '1.4',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word'
-                }}>
-                  {msg.text}
-                  {msg.pages && msg.pages.length > 0 && (
-                    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {msg.pages.map((page, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleNavigate(page)}
-                          style={{
-                            padding: '6px 10px',
-                            backgroundColor: msg.type === 'user' ? 'rgba(255,255,255,0.2)' : '#dbeafe',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            color: msg.type === 'user' ? 'white' : '#1e40af',
-                            textAlign: 'left',
-                            fontWeight: '500',
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = msg.type === 'user' ? 'rgba(255,255,255,0.3)' : '#bfdbfe';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = msg.type === 'user' ? 'rgba(255,255,255,0.2)' : '#dbeafe';
-                          }}
-                        >
-                          → {page.page}
-                        </button>
-                      ))}
+              <div key={idx} className={`chatbot-message-wrapper ${msg.type}`}>
+                <div className={`chatbot-message ${msg.type}`}>
+                  {msg.type === 'bot' && msg.isFormatted ? (
+                    <div className="chatbot-message-content">
+                      {msg.content}
                     </div>
+                  ) : (
+                    msg.text
                   )}
                 </div>
               </div>
             ))}
             {loading && (
-              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: '#f3f4f6',
-                  color: '#6b7280'
-                }}>
-                  Thinking...
+              <div className="chatbot-loading">
+                <div className="chatbot-loading-text">
+                  Searching NTP analysis...
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} className="chatbot-messages-end" />
           </div>
 
-          <div style={{
-            padding: '12px',
-            borderTop: '1px solid #e5e7eb',
-            display: 'flex',
-            gap: '8px'
-          }}>
+          <div className="chatbot-input-area">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Ask me anything..."
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                fontSize: '14px',
-                outline: 'none',
-                fontFamily: 'inherit'
-              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+              placeholder="Search company name..."
+              className="chatbot-input"
               disabled={loading}
             />
             <button
               onClick={handleSendMessage}
               disabled={loading || !input.trim()}
-              style={{
-                padding: '8px 12px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                opacity: loading || !input.trim() ? 0.6 : 1
-              }}
+              className="chatbot-send-btn"
             >
               Send
             </button>
           </div>
         </div>
       ) : (
-        <button
-          onClick={() => setIsOpen(true)}
-          style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            fontSize: '24px',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-            hover: { transform: 'scale(1.1)' }
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.1)';
-            e.target.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.5)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1)';
-            e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
-          }}
-        >
-          💬
-        </button>
+        <div style={{ position: 'relative' }}>
+          {showTooltip && (
+            <div style={{
+              position: 'absolute',
+              bottom: '75px',
+              right: '10px',
+              backgroundColor: 'white',
+              color: '#8b5cf6',
+              padding: '14px 18px',
+              borderRadius: '12px',
+              fontSize: '14px',
+              fontWeight: '600',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 8px 24px rgba(139, 92, 246, 0.25)',
+              animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              zIndex: 9998,
+              border: '2px solid #8b5cf6',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '18px' }}>✨</span>
+              Unlock NTP Insights
+              <span style={{ fontSize: '18px' }}>🔍</span>
+            </div>
+          )}
+          <button
+            onClick={() => {
+              setIsOpen(true);
+              setShowTooltip(false);
+            }}
+            className="chatbot-toggle-btn"
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.15)';
+              e.target.style.boxShadow = '0 8px 24px rgba(139, 92, 246, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
+            }}
+            title="Open NTP Analysis Assistant"
+            style={{
+              position: 'relative',
+              overflow: 'visible'
+            }}
+          >
+            <span style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '4px',
+              fontSize: '24px'
+            }}>
+              📊
+            </span>
+            <span style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              width: '24px',
+              height: '24px',
+              backgroundColor: '#ec4899',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: 'white',
+              animation: 'pulse 2s infinite',
+              boxShadow: '0 0 12px rgba(236, 72, 153, 0.6)'
+            }}>
+              ⚡
+            </span>
+          </button>
+        </div>
       )}
     </div>
   );

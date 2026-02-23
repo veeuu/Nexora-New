@@ -6,6 +6,7 @@ import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
+import ChatBot from '../ChatBot';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
@@ -383,7 +384,7 @@ const NTP = () => {
 
     const headers = [
       'companyName', 'domain', 'category', 'technology',
-      'purchaseProbability', 'purchasePrediction', 'ntpAnalysis'
+      'purchaseProbability', 'purchasePrediction'
     ];
 
     const csvContent = [
@@ -539,6 +540,12 @@ const NTP = () => {
         });
 
         return filterMatches;
+      })
+      .sort((a, b) => {
+        // Sort by purchase probability in descending order (highest first)
+        const probA = parseFloat(String(a.purchaseProbability || '0').replace('%', '')) || 0;
+        const probB = parseFloat(String(b.purchaseProbability || '0').replace('%', '')) || 0;
+        return probB - probA;
       });
   }, [tableData, filters]);
 
@@ -1701,7 +1708,6 @@ const NTP = () => {
               <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Prediction</th>
               <th style={{ width: '120px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Technology</th>
               <th style={{ width: '130px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Propensity (%)</th>
-              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>NTP Analysis</th>
             </tr>
           </thead>
           <tbody>
@@ -1983,43 +1989,6 @@ const NTP = () => {
                           </div>
                         ) : (
                           tech.purchaseProbability
-                        )}
-                      </td>
-
-                      {}
-                      <td 
-                        onClick={() => company.technologies.length <= 3 && handleAnalysisClick(tech.ntpAnalysis)}
-                        style={{ cursor: company.technologies.length <= 3 ? 'pointer' : 'default', color: '#010810ff', textDecoration: company.technologies.length <= 3 ? 'underline' : 'none', width: '130px', padding: '12px 8px' }}
-                      >
-                        {company.technologies.length > 3 ? (
-                          <div 
-                            ref={analysisScrollRef}
-                            style={{ 
-                              display: 'flex', 
-                              flexDirection: 'column', 
-                              gap: '8px',
-                              maxHeight: '96px',
-                              overflowY: 'auto',
-                              paddingRight: '4px',
-                              width: '100%',
-                              scrollbarWidth: 'none',
-                              msOverflowStyle: 'none'
-                            }}
-                            className="tech-scroll-container"
-                            onScroll={handleAnalysisScroll}
-                          >
-                            {company.technologies.map((t, idx) => (
-                              <span 
-                                key={idx} 
-                                style={{ whiteSpace: 'nowrap', cursor: 'pointer', textDecoration: 'underline', color: '#010810ff' }}
-                                onClick={() => handleAnalysisClick(t.ntpAnalysis)}
-                              >
-                                {t.ntpAnalysis ? `${t.ntpAnalysis.substring(0, 30)}...` : 'N/A'}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          tech.ntpAnalysis ? `${tech.ntpAnalysis.substring(0, 30)}...` : 'N/A'
                         )}
                       </td>
                     </tr>
@@ -2396,7 +2365,7 @@ const NTP = () => {
       )}
       <style>{`
         .table-container {
-          max-height: 550px;
+          max-height: 500px;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
@@ -2438,7 +2407,6 @@ const NTP = () => {
         th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; } /* Purchase Prediction */
         th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; } /* Technology */
         th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; } /* Purchase Propensity */
-        th:nth-child(8), td:nth-child(8) { width: 140px !important; white-space: nowrap; } /* NTP Analysis */
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
@@ -2622,7 +2590,7 @@ const NTP = () => {
           th:nth-child(6), td:nth-child(6) { width: 16.66%; }
         }
       `}</style>
-      {}
+      <ChatBot isAuthenticated={true} revealedRows={revealedRows} tableData={tableData} />
     </div>
   );
 };

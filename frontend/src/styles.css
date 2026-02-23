@@ -672,7 +672,7 @@ body {
   width: calc(100% - 3rem);
   max-width: calc(100% - 3rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: 730px;
 }
 .summary-container,
 .financial-section-container {
