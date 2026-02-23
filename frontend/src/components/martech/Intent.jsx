@@ -3,6 +3,90 @@ import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from 
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import IntentPieChart from './IntentPieChart';
 
+const IntentStatusVisualizer = ({ status }) => {
+  const getStatusConfig = (status) => {
+    const statusLower = String(status || '').toLowerCase().trim();
+    
+    // 5-level status mapping
+    if (statusLower === 'greenfield') {
+      return {
+        bars: 5,
+        color: '#059669',
+        bgColor: '#ecfdf5',
+        label: 'Greenfield'
+      };
+    } else if (statusLower === 'high') {
+      return {
+        bars: 4,
+        color: '#10b981',
+        bgColor: '#ecfdf5',
+        label: 'High'
+      };
+    } else if (statusLower === 'high-medium') {
+      return {
+        bars: 3,
+        color: '#34d399',
+        bgColor: '#ecfdf5',
+        label: 'High-Medium'
+      };
+    } else if (statusLower === 'medium') {
+      return {
+        bars: 2,
+        color: '#fbbf24',
+        bgColor: '#fffbeb',
+        label: 'Medium'
+      };
+    } else if (statusLower === 'low') {
+      return {
+        bars: 1,
+        color: '#f87171',
+        bgColor: '#fef2f2',
+        label: 'Low'
+      };
+    }
+    
+    return {
+      bars: 0,
+      color: '#d1d5db',
+      bgColor: '#f9fafb',
+      label: 'Unknown'
+    };
+  };
+
+  const config = getStatusConfig(status);
+
+  return (
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: '2px',
+        padding: '6px 10px',
+        backgroundColor: config.bgColor,
+        borderRadius: '6px',
+        minWidth: '60px',
+        height: '40px'
+      }}
+      title={config.label}
+    >
+      {[1, 2, 3, 4, 5].map((bar) => (
+        <div
+          key={bar}
+          style={{
+            width: '4px',
+            height: bar <= config.bars ? `${6 + bar * 4}px` : '4px',
+            backgroundColor: bar <= config.bars ? config.color : '#e5e7eb',
+            borderRadius: '2px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            boxShadow: bar <= config.bars ? `0 2px 4px ${config.color}40` : 'none'
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -1031,6 +1115,7 @@ useEffect(() => {
             <tr>
               <th>Company Name</th>
               <th>Intent Status</th>
+              <th>Intent Level</th>
             </tr>
           </thead>
           <tbody>
@@ -1049,6 +1134,9 @@ useEffect(() => {
                     </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.intentStatus)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.intentStatus, searchTerm)}
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <IntentStatusVisualizer status={row.intentStatus} />
                     </td>
                   </tr>
                 );
@@ -1377,7 +1465,7 @@ useEffect(() => {
         }
 
         .table-container {
-          max-height: 550px;
+          max-height: 490px;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
@@ -1421,6 +1509,7 @@ useEffect(() => {
 
         th:nth-child(1), td:nth-child(1) { width: 50%; }
         th:nth-child(2), td:nth-child(2) { width: 50%; }
+        th:nth-child(3), td:nth-child(3) { padding-left: 40px; }
 
         td { position: relative; }
 

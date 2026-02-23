@@ -725,7 +725,7 @@ body {
   width: calc(100% - 4.5rem);
   max-width: calc(100% - 4.5rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: 750px;
 }
 .buying-group-container {
   background: #ffffff;
