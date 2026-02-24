@@ -832,11 +832,20 @@ const Technographics = () => {
   };
 
   const handleDownloadCSV = () => {
-    const dataToDownload = selectedRows.size > 0 
+    let dataToDownload = selectedRows.size > 0 
       ? groupedDataArray.filter((_, index) => selectedRows.has(index))
       : groupedDataArray;
 
-    if (dataToDownload.length === 0) return;
+    // Filter to only include revealed companies
+    dataToDownload = dataToDownload.filter((row, index) => {
+      const rowKey = `${index}-${row.companyName}`;
+      return revealedRows.has(rowKey);
+    });
+
+    if (dataToDownload.length === 0) {
+      alert('No revealed companies to download. Please reveal company details first.');
+      return;
+    }
 
     const headers = ['companyName', 'domain', 'industry', 'region', 'employeeSize', 'revenue', 'technologies'];
     const csvContent = [

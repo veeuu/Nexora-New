@@ -562,22 +562,28 @@ useEffect(() => {
     };
 
     const downloadCSV = (dataToDownload) => {
-        if (dataToDownload.length === 0) {
-            alert('No data to download');
+        // Filter to only include revealed companies
+        const revealedData = dataToDownload.filter(row => {
+            const rowKey = `${dataToDownload.indexOf(row)}-${row.companyName}`;
+            return revealedRows.has(rowKey);
+        });
+
+        if (revealedData.length === 0) {
+            alert('No revealed companies to download. Please reveal company details first.');
             return;
         }
 
-const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
+        const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
         const csvContent = [
             headers.join(','),
-            ...dataToDownload.map(row =>
+            ...revealedData.map(row =>
                 [row.companyName, row.product, row.qtr]
                     .map(field => `"${field}"`)
                     .join(',')
             )
         ].join('\n');
 
-const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);

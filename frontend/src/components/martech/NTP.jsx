@@ -380,7 +380,16 @@ const NTP = () => {
   };
 
   const handleDownloadCSV = (dataToDownload) => {
-    if (dataToDownload.length === 0) return;
+    // Filter to only include revealed companies
+    const revealedData = dataToDownload.filter((row, index) => {
+      const rowKey = `${index}-${row.companyName}`;
+      return revealedRows.has(rowKey);
+    });
+
+    if (revealedData.length === 0) {
+      alert('No revealed companies to download. Please reveal company details first.');
+      return;
+    }
 
     const headers = [
       'companyName', 'domain', 'category', 'technology',
@@ -389,7 +398,7 @@ const NTP = () => {
 
     const csvContent = [
       headers.join(','),
-      ...dataToDownload.map(row =>
+      ...revealedData.map(row =>
         headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
       )
     ].join('\n');
