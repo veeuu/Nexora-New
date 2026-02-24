@@ -1101,21 +1101,32 @@ const getProductCountBySubCategory = (subCategory) => {
           cursor: default;
         }
 
-        th:nth-child(1), td:nth-child(1) { width: 25%; }
-        th:nth-child(2), td:nth-child(2) { width: 25%; }
-        th:nth-child(3), td:nth-child(3) { width: 25%; }
-        th:nth-child(4), td:nth-child(4) { width: 25%; }
-
-        td { position: relative; }
-        td:hover { background-color: #f9fafb; }
-
-        th {
-          background-color: #f8f9fa;
-          font-weight: 600;
+        .product-catalogue-container .table-container {
+          max-height: 390px !important;
+          overflow-x: auto !important;
+          overflow-y: auto !important;
+          position: relative !important;
         }
 
-        tr:hover {
-          background-color: #f5f5f5;
+        .product-catalogue-container th:nth-child(1), .product-catalogue-container td:nth-child(1) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
+        .product-catalogue-container th:nth-child(2), .product-catalogue-container td:nth-child(2) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
+        .product-catalogue-container th:nth-child(3), .product-catalogue-container td:nth-child(3) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
+        .product-catalogue-container th:nth-child(4), .product-catalogue-container td:nth-child(4) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
+
+        .product-catalogue-container td { position: relative !important; }
+        .product-catalogue-container td:hover { background-color: #f9fafb !important; }
+
+        .product-catalogue-container th {
+          background-color: #f8f9fa !important;
+          font-weight: 600 !important;
+          vertical-align: middle !important;
+          text-align: left !important;
+          padding: 12px 8px !important;
+          box-sizing: border-box !important;
+        }
+
+        .product-catalogue-container tr:hover {
+          background-color: #f5f5f5 !important;
         }
 
         .modal-overlay {

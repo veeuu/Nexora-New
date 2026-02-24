@@ -832,11 +832,20 @@ const Technographics = () => {
   };
 
   const handleDownloadCSV = () => {
-    const dataToDownload = selectedRows.size > 0 
+    let dataToDownload = selectedRows.size > 0 
       ? groupedDataArray.filter((_, index) => selectedRows.has(index))
       : groupedDataArray;
 
-    if (dataToDownload.length === 0) return;
+    // Filter to only include revealed companies
+    dataToDownload = dataToDownload.filter((row, index) => {
+      const rowKey = `${index}-${row.companyName}`;
+      return revealedRows.has(rowKey);
+    });
+
+    if (dataToDownload.length === 0) {
+      alert('No revealed companies to download. Please reveal company details first.');
+      return;
+    }
 
     const headers = ['companyName', 'domain', 'industry', 'region', 'employeeSize', 'revenue', 'technologies'];
     const csvContent = [
@@ -1783,12 +1792,13 @@ const Technographics = () => {
                 <div
                   onClick={() => {
                     if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                      
-                      handleFilterChange('companyName', []);
+                      setFilters(prev => ({ ...prev, companyName: [] }));
                     } else {
-                      
-                      handleFilterChange('companyName', getUniqueOptions('companyName'));
+                      setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
                     }
+                    setCurrentPage(1);
+                    setPageCache({});
+                    setTotalRecords(0);
                   }}
                   style={{
                     padding: '10px 12px',
@@ -1807,12 +1817,13 @@ const Technographics = () => {
                     checked={filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
                     onChange={() => {
                       if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                        
-                        handleFilterChange('companyName', []);
+                        setFilters(prev => ({ ...prev, companyName: [] }));
                       } else {
-                        
-                        handleFilterChange('companyName', getUniqueOptions('companyName'));
+                        setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{ cursor: 'pointer' }}
                   />
@@ -1974,12 +1985,13 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.region.length === getUniqueOptions('region').length && filters.region.length > 0) {
-                        
-                        handleFilterChange('region', []);
+                        setFilters(prev => ({ ...prev, region: [] }));
                       } else {
-                        
-                        handleFilterChange('region', getUniqueOptions('region'));
+                        setFilters(prev => ({ ...prev, region: getUniqueOptions('region') }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{
                       padding: '12px 16px',
@@ -2013,10 +2025,7 @@ const Technographics = () => {
                     <div
                       key={region}
                       onClick={() => {
-                        const newRegions = filters.region.includes(region)
-                          ? filters.region.filter(r => r !== region)
-                          : [...filters.region, region];
-                        handleFilterChange('region', newRegions);
+                        handleFilterChange('region', region);
                       }}
                       style={{
                         padding: '12px 16px',
@@ -2112,7 +2121,10 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('region', []);
+                  setFilters(prev => ({ ...prev, region: [] }));
+                  setCurrentPage(1);
+                  setPageCache({});
+                  setTotalRecords(0);
                 }}
                 style={{
                   background: 'none',
@@ -2355,12 +2367,13 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0) {
-                        
-                        handleFilterChange('industry', []);
+                        setFilters(prev => ({ ...prev, industry: [] }));
                       } else {
-                        
-                        handleFilterChange('industry', getUniqueOptions('industry'));
+                        setFilters(prev => ({ ...prev, industry: getUniqueOptions('industry') }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{
                       padding: '12px 16px',
@@ -2394,10 +2407,7 @@ const Technographics = () => {
                     <div
                       key={industry}
                       onClick={() => {
-                        const newIndustries = filters.industry.includes(industry)
-                          ? filters.industry.filter(i => i !== industry)
-                          : [...filters.industry, industry];
-                        handleFilterChange('industry', newIndustries);
+                        handleFilterChange('industry', industry);
                       }}
                       style={{
                         padding: '12px 16px',
@@ -2490,7 +2500,10 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('industry', []);
+                  setFilters(prev => ({ ...prev, industry: [] }));
+                  setCurrentPage(1);
+                  setPageCache({});
+                  setTotalRecords(0);
                 }}
                 style={{
                   background: 'none',
@@ -2564,12 +2577,13 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0) {
-                        
-                        handleFilterChange('employeeSize', []);
+                        setFilters(prev => ({ ...prev, employeeSize: [] }));
                       } else {
-                        
-                        handleFilterChange('employeeSize', employeeSizeRanges.map(r => r.label));
+                        setFilters(prev => ({ ...prev, employeeSize: employeeSizeRanges.map(r => r.label) }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{
                       padding: '12px 16px',
@@ -2603,10 +2617,7 @@ const Technographics = () => {
                     <div
                       key={range.label}
                       onClick={() => {
-                        const newSizes = filters.employeeSize.includes(range.label)
-                          ? filters.employeeSize.filter(s => s !== range.label)
-                          : [...filters.employeeSize, range.label];
-                        handleFilterChange('employeeSize', newSizes);
+                        handleFilterChange('employeeSize', range.label);
                       }}
                       style={{
                         padding: '12px 16px',
@@ -2699,7 +2710,10 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('employeeSize', []);
+                  setFilters(prev => ({ ...prev, employeeSize: [] }));
+                  setCurrentPage(1);
+                  setPageCache({});
+                  setTotalRecords(0);
                 }}
                 style={{
                   background: 'none',
@@ -2773,12 +2787,13 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.revenue.length === revenueRanges.length && filters.revenue.length > 0) {
-                        
-                        handleFilterChange('revenue', []);
+                        setFilters(prev => ({ ...prev, revenue: [] }));
                       } else {
-                        
-                        handleFilterChange('revenue', revenueRanges.map(r => r.label));
+                        setFilters(prev => ({ ...prev, revenue: revenueRanges.map(r => r.label) }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{
                       padding: '12px 16px',
@@ -2812,10 +2827,7 @@ const Technographics = () => {
                     <div
                       key={range.label}
                       onClick={() => {
-                        const newRevenues = filters.revenue.includes(range.label)
-                          ? filters.revenue.filter(r => r !== range.label)
-                          : [...filters.revenue, range.label];
-                        handleFilterChange('revenue', newRevenues);
+                        handleFilterChange('revenue', range.label);
                       }}
                       style={{
                         padding: '12px 16px',
@@ -2905,7 +2917,10 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('revenue', []);
+                  setFilters(prev => ({ ...prev, revenue: [] }));
+                  setCurrentPage(1);
+                  setPageCache({});
+                  setTotalRecords(0);
                 }}
                 style={{
                   background: 'none',
@@ -2980,12 +2995,13 @@ const Technographics = () => {
                   <div
                     onClick={() => {
                       if (filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0) {
-                        
-                        handleFilterChange('technology', []);
+                        setFilters(prev => ({ ...prev, technology: [] }));
                       } else {
-                        
-                        handleFilterChange('technology', getUniqueOptions('technology'));
+                        setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{
                       padding: '12px 16px',
@@ -3019,10 +3035,7 @@ const Technographics = () => {
                     <div
                       key={tech}
                       onClick={() => {
-                        const newTechs = filters.technology.includes(tech)
-                          ? filters.technology.filter(t => t !== tech)
-                          : [...filters.technology, tech];
-                        handleFilterChange('technology', newTechs);
+                        handleFilterChange('technology', tech);
                       }}
                       style={{
                         padding: '12px 16px',
@@ -3118,7 +3131,10 @@ const Technographics = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleFilterChange('technology', []);
+                  setFilters(prev => ({ ...prev, technology: [] }));
+                  setCurrentPage(1);
+                  setPageCache({});
+                  setTotalRecords(0);
                 }}
                 style={{
                   background: 'none',
@@ -3335,9 +3351,9 @@ const Technographics = () => {
                           title={revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                         >
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
-                            <FaEye size={16} />
+                            'Hidden'
                           ) : (
-                            <FaEyeSlash size={16} />
+                            'Unhide'
                           )}
                         </button>
                       </td>

@@ -710,7 +710,7 @@ body {
   width: calc(100% - 2.5rem);
   max-width: calc(100% - 2.5rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: 400px;
 }
 
 .intent-container
@@ -759,29 +759,47 @@ h2 {
   color: #0f172a;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
+/* Scope header-actions to specific components */
+.intent-container .header-actions,
+.renewal-intelligence-container .header-actions,
+.ntp-container .header-actions,
+.technographics-container .header-actions,
+.buying-group-container .header-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  width: 100% !important;
 }
 
-.header-actions h2 {
-  margin: 0;
-  flex-shrink: 0;
+.intent-container .header-actions h2,
+.renewal-intelligence-container .header-actions h2,
+.ntp-container .header-actions h2,
+.technographics-container .header-actions h2,
+.buying-group-container .header-actions h2 {
+  margin: 0 !important;
+  flex-shrink: 0 !important;
 }
 
-.header-actions .search-bar {
-  flex: 0 0 auto;
-  width: 200px;
-  margin-left: auto;
+.intent-container .header-actions .search-bar,
+.renewal-intelligence-container .header-actions .search-bar,
+.ntp-container .header-actions .search-bar,
+.technographics-container .header-actions .search-bar,
+.buying-group-container .header-actions .search-bar {
+  flex: 0 0 auto !important;
+  width: 200px !important;
+  margin-left: auto !important;
 }
 
-.section-subtle-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
-  margin: 0.75rem 0 1.25rem;
+/* Scope section-subtle-divider to specific components */
+.intent-container .section-subtle-divider,
+.renewal-intelligence-container .section-subtle-divider,
+.ntp-container .section-subtle-divider,
+.technographics-container .section-subtle-divider,
+.buying-group-container .section-subtle-divider {
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, #e5e7eb, transparent) !important;
+  margin: 0.75rem 0 1.25rem !important;
 }
 
 .empty-component {
@@ -802,9 +820,31 @@ h2 {
   margin-bottom: 1rem;
 }
 
+/* Scope filters to specific components */
+.intent-container .filters,
+.renewal-intelligence-container .filters,
+.ntp-container .filters,
+.technographics-container .filters,
+.buying-group-container .filters {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
 .filter-group {
   flex: 1;
   min-width: 200px;
+}
+
+/* Scope filter-group to specific components */
+.intent-container .filter-group,
+.renewal-intelligence-container .filter-group,
+.ntp-container .filter-group,
+.technographics-container .filter-group,
+.buying-group-container .filter-group {
+  flex: 1 !important;
+  min-width: 200px !important;
 }
 
 .filter-group label {
@@ -849,7 +889,25 @@ h2 {
   background-color: #fff;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  max-height: 500px;
+  max-height: 530px;
+}
+
+/* Scope table-container to specific components */
+.intent-container .table-container,
+.renewal-intelligence-container .table-container,
+.ntp-container .table-container,
+.technographics-container .table-container,
+.buying-group-container .table-container {
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  max-height: 530px !important;
 }
 
 .table-container::-webkit-scrollbar {
@@ -871,15 +929,24 @@ h2 {
   table-layout: fixed;
 }
 
-th,
-td {
-  padding: 14px 16px;
-  text-align: left;
-  border: none;
-  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
-  vertical-align: middle;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+/* Scope th and td to specific components */
+.intent-container th,
+.intent-container td,
+.renewal-intelligence-container th,
+.renewal-intelligence-container td,
+.ntp-container th,
+.ntp-container td,
+.technographics-container th,
+.technographics-container td,
+.buying-group-container th,
+.buying-group-container td {
+  padding: 14px 16px !important;
+  text-align: left !important;
+  border: none !important;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem) !important;
+  vertical-align: middle !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 th {
@@ -888,13 +955,17 @@ th {
   overflow-wrap: break-word;
 }
 
-th {
-  background-color: #f3f4f6;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  border: none;
+.intent-container th,
+.renewal-intelligence-container th,
+.ntp-container th,
+.technographics-container th,
+.buying-group-container th {
+  background-color: #f3f4f6 !important;
+  font-weight: 600 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  border: none !important;
 }
 
 .table-container table {
@@ -927,17 +998,30 @@ th {
   border-bottom: 1px solid #e5e7eb;
 }
 
-tr:hover {
-  background-color: #fafafa;
+/* Scope tr:hover to specific components */
+.intent-container tr:hover,
+.renewal-intelligence-container tr:hover,
+.ntp-container tr:hover,
+.technographics-container tr:hover,
+.buying-group-container tr:hover {
+  background-color: #fafafa !important;
 }
 
-/* ========== ACTION ITEMS & SEARCH ========== */
-.action-items,
-.actions-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
+/* Scope action-items and actions-right to specific components */
+.intent-container .action-items,
+.intent-container .actions-right,
+.renewal-intelligence-container .action-items,
+.renewal-intelligence-container .actions-right,
+.ntp-container .action-items,
+.ntp-container .actions-right,
+.technographics-container .action-items,
+.technographics-container .actions-right,
+.buying-group-container .action-items,
+.buying-group-container .actions-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  flex-wrap: wrap !important;
 }
 
 .search-bar {
@@ -987,32 +1071,57 @@ tr:hover {
   color: #4CAF50;
 }
 
-.download-csv-btn,
-.download-csv-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s, box-shadow 0.2s;
-  white-space: nowrap;
+/* Scope download button styles to specific components */
+.intent-container .download-csv-btn,
+.intent-container .download-csv-button,
+.renewal-intelligence-container .download-csv-btn,
+.renewal-intelligence-container .download-csv-button,
+.ntp-container .download-csv-btn,
+.ntp-container .download-csv-button,
+.technographics-container .download-csv-btn,
+.technographics-container .download-csv-button,
+.buying-group-container .download-csv-btn,
+.buying-group-container .download-csv-button {
+  background-color: #4CAF50 !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background-color 0.2s, box-shadow 0.2s !important;
+  white-space: nowrap !important;
 }
 
-.download-csv-btn:hover,
-.download-csv-button:hover {
-  background-color: #45a049;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.intent-container .download-csv-btn:hover,
+.intent-container .download-csv-button:hover,
+.renewal-intelligence-container .download-csv-btn:hover,
+.renewal-intelligence-container .download-csv-button:hover,
+.ntp-container .download-csv-btn:hover,
+.ntp-container .download-csv-button:hover,
+.technographics-container .download-csv-btn:hover,
+.technographics-container .download-csv-button:hover,
+.buying-group-container .download-csv-btn:hover,
+.buying-group-container .download-csv-button:hover {
+  background-color: #45a049 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.download-csv-btn:active,
-.download-csv-button:active {
-  background-color: #3d8b40;
+.intent-container .download-csv-btn:active,
+.intent-container .download-csv-button:active,
+.renewal-intelligence-container .download-csv-btn:active,
+.renewal-intelligence-container .download-csv-button:active,
+.ntp-container .download-csv-btn:active,
+.ntp-container .download-csv-button:active,
+.technographics-container .download-csv-btn:active,
+.technographics-container .download-csv-button:active,
+.buying-group-container .download-csv-btn:active,
+.buying-group-container .download-csv-button:active {
+  background-color: #3d8b40 !important;
 }
 
 .csv-icon {
@@ -1020,29 +1129,42 @@ tr:hover {
   height: 18px;
 }
 
-.view-summary-button {
-  background-color: #3b82f6;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s, box-shadow 0.2s;
-  white-space: nowrap;
+/* Scope view-summary-button styles to specific components */
+.intent-container .view-summary-button,
+.renewal-intelligence-container .view-summary-button,
+.ntp-container .view-summary-button,
+.technographics-container .view-summary-button,
+.buying-group-container .view-summary-button {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background-color 0.2s, box-shadow 0.2s !important;
+  white-space: nowrap !important;
 }
 
-.view-summary-button:hover {
-  background-color: #2563eb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.intent-container .view-summary-button:hover,
+.renewal-intelligence-container .view-summary-button:hover,
+.ntp-container .view-summary-button:hover,
+.technographics-container .view-summary-button:hover,
+.buying-group-container .view-summary-button:hover {
+  background-color: #2563eb !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.view-summary-button:active {
-  background-color: #1d4ed8;
+.intent-container .view-summary-button:active,
+.renewal-intelligence-container .view-summary-button:active,
+.ntp-container .view-summary-button:active,
+.technographics-container .view-summary-button:active,
+.buying-group-container .view-summary-button:active {
+  background-color: #1d4ed8 !important;
 }
 
 .summary-icon {

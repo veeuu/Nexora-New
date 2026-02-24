@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaLinkedin, FaTimes, FaInfoCircle } from 'react-icons/fa';
+import { FaLinkedin, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 
 const BuyingGroup = () => {
@@ -15,7 +15,9 @@ const BuyingGroup = () => {
     const [personDetailsData, setPersonDetailsData] = useState({});
     const [orgChartUrl, setOrgChartUrl] = useState('');
     const [zoomLevel, setZoomLevel] = useState(80);
+    const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
     const iframeRef = useRef(null);
+    const dropdownRef = useRef(null);
 
 useEffect(() => {
         const fetchCompanies = async () => {
@@ -174,6 +176,19 @@ const timer = setTimeout(highlightCategory, 1000);
         setSelectedCompany(companyName);
         setShowPanel(false);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsCompanyDropdownOpen(false);
+            }
+        };
+
+        if (isCompanyDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isCompanyDropdownOpen]);
 
     const handleImageClick = () => {
         setShowPanel(true);
@@ -364,18 +379,90 @@ return personCategories.some(cat => selectedCategories.has(cat));
             <div className="filters" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px' }}>
                 <div className="filter-group">
                     <label>Company Name</label>
-                    <select
-                        value={selectedCompany}
-                        onChange={handleCompanyChange}
-                        disabled={companies.length === 0}
-                    >
-                        <option value="">Select a company...</option>
-                        {companies.map((company, index) => (
-                            <option key={index} value={company}>
-                                {company}
-                            </option>
-                        ))}
-                    </select>
+                    <div ref={dropdownRef} style={{ position: 'relative' }}>
+                        <button
+                            onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
+                            disabled={companies.length === 0}
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontFamily: 'inherit',
+                                backgroundColor: 'white',
+                                cursor: companies.length === 0 ? 'not-allowed' : 'pointer',
+                                textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                            }}
+                        >
+                            <span>{selectedCompany || 'Select a company...'}</span>
+                            <span style={{ fontSize: '12px' }}>▼</span>
+                        </button>
+                        
+                        {isCompanyDropdownOpen && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    right: 0,
+                                    backgroundColor: 'white',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    marginTop: '4px',
+                                    maxHeight: '300px',
+                                    overflowY: 'auto',
+                                    zIndex: 1000,
+                                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                }}
+                            >
+                                <div
+                                    onClick={() => {
+                                        setSelectedCompany('');
+                                        setIsCompanyDropdownOpen(false);
+                                    }}
+                                    style={{
+                                        padding: '10px 12px',
+                                        cursor: 'pointer',
+                                        backgroundColor: selectedCompany === '' ? '#f3f4f6' : 'white',
+                                        borderBottom: '1px solid #e5e7eb',
+                                        fontSize: '14px'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                                    onMouseLeave={(e) => e.target.style.backgroundColor = selectedCompany === '' ? '#f3f4f6' : 'white'}
+                                >
+                                    Select a company...
+                                </div>
+                                {companies.map((company, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => {
+                                            setSelectedCompany(company);
+                                            setIsCompanyDropdownOpen(false);
+                                        }}
+                                        style={{
+                                            padding: '10px 12px',
+                                            cursor: 'pointer',
+                                            backgroundColor: selectedCompany === company ? '#dbeafe' : 'white',
+                                            borderBottom: '1px solid #e5e7eb',
+                                            fontSize: '14px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}
+                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                                        onMouseLeave={(e) => e.target.style.backgroundColor = selectedCompany === company ? '#dbeafe' : 'white'}
+                                    >
+                                        <span>{company}</span>
+                                        <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
                     {}
