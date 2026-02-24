@@ -2,7 +2,7 @@
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import loadingGif from '../../assets/Loading 880x300.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
@@ -809,7 +809,23 @@ const Technographics = () => {
   };
 
   const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({ ...prev, [filterName]: value }));
+    setFilters(prev => {
+      const currentFilter = prev[filterName];
+      
+      // For multi-select filters (category, technology, region, etc.)
+      if (Array.isArray(currentFilter)) {
+        if (currentFilter.includes(value)) {
+          // Remove if already selected
+          return { ...prev, [filterName]: currentFilter.filter(item => item !== value) };
+        } else {
+          // Add if not selected
+          return { ...prev, [filterName]: [...currentFilter, value] };
+        }
+      }
+      
+      // For single-select filters
+      return { ...prev, [filterName]: value };
+    });
     setCurrentPage(1); 
     setPageCache({}); 
     setTotalRecords(0); 
@@ -2160,14 +2176,18 @@ const Technographics = () => {
                 overflowY: 'auto'
               }}>
                 <div
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     const allOptions = getUniqueOptions('category');
                     
                     if (filters.category.length === allOptions.length) {
-                      handleFilterChange('category', []);
+                      setFilters(prev => ({ ...prev, category: [] }));
                     } else {
-                      handleFilterChange('category', allOptions);
+                      setFilters(prev => ({ ...prev, category: allOptions }));
                     }
+                    setCurrentPage(1);
+                    setPageCache({});
+                    setTotalRecords(0);
                   }}
                   style={{
                     padding: '10px 12px',
@@ -2189,10 +2209,13 @@ const Technographics = () => {
                       const allOptions = getUniqueOptions('category');
                       
                       if (filters.category.length === allOptions.length) {
-                        handleFilterChange('category', []);
+                        setFilters(prev => ({ ...prev, category: [] }));
                       } else {
-                        handleFilterChange('category', allOptions);
+                        setFilters(prev => ({ ...prev, category: allOptions }));
                       }
+                      setCurrentPage(1);
+                      setPageCache({});
+                      setTotalRecords(0);
                     }}
                     style={{ cursor: 'pointer' }}
                   />
@@ -2201,7 +2224,10 @@ const Technographics = () => {
                 {getUniqueOptions('category').map((option, idx) => (
                   <div
                     key={idx}
-                    onClick={() => handleFilterChange('category', option)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFilterChange('category', option);
+                    }}
                     style={{
                       padding: '10px 12px',
                       cursor: 'pointer',
@@ -2220,7 +2246,10 @@ const Technographics = () => {
                       <input
                         type="checkbox"
                         checked={filters.category.includes(option)}
-                        onChange={() => handleFilterChange('category', option)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleFilterChange('category', option);
+                        }}
                         style={{ cursor: 'pointer' }}
                       />
                       {renderTechLogo(option)}

@@ -469,28 +469,9 @@ traces.push({
 const lineXs = [];
   const lineYs = [];
 
-const validRootsInChart = roots.filter(r => r in nodePositions);
-  if (validRootsInChart.length > 1) {
-    const rootPositions = {};
-    for (const name of validRootsInChart) {
-      const [x, y] = nodePositions[name];
-      rootPositions[name] = [x + xShiftAmount, y];
-    }
-
-    const rootY = Object.values(rootPositions)[0][1];
-    const topLineY = rootY + boxHeight / 2 + (verticalGap / 3);
-    const rootXCoords = Object.values(rootPositions).map(pos => pos[0]);
-    const xMin = Math.min(...rootXCoords);
-    const xMax = Math.max(...rootXCoords);
-
-    lineXs.push(xMin, xMax, null);
-    lineYs.push(topLineY, topLineY, null);
-
-    for (const [name, [x, y]] of Object.entries(rootPositions)) {
-      lineXs.push(x, x, null);
-      lineYs.push(topLineY, y + boxHeight / 2, null);
-    }
-  }
+// Don't draw lines above root nodes - they are independent decision makers
+  // const validRootsInChart = roots.filter(r => r in nodePositions);
+  // Multiple roots should not have connecting lines above them
 
 for (const [parentName, childName] of edges) {
     if (parentName in nodePositions && childName in nodePositions) {
@@ -595,7 +576,7 @@ const layout = {
       y: 0.98,
       xanchor: 'center',
       yanchor: 'top',
-      font: { family: 'Calibri, Arial', size: 20, color: CONFIG.FONT_COLOR_ON_LIGHT_BG }
+      font: { family: 'Calibri, Arial', size: 28, color: CONFIG.FONT_COLOR_ON_LIGHT_BG }
     },
     showlegend: true,
     hovermode: 'closest',

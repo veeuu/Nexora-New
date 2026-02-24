@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils.jsx';
-import loadingGif from '../../assets/Loading GIF REF.gif';
+import loadingGif from '../../assets/Loading GIF - Clients.gif';
 
 const ProductCatalogue = () => {
   const [tableData, setTableData] = useState([]);

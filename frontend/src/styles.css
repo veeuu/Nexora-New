@@ -187,7 +187,7 @@ body {
 .menu-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #1a252f;
   margin-bottom: 1.5rem;
@@ -200,11 +200,11 @@ body {
 }
 
 .menu-solutions-image {
-  width: 100%;
-  max-width: 150px;
+  max-width: 100px;
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
+  margin: 0 auto;
 }
 
 .profile-avatar {
@@ -672,7 +672,7 @@ body {
   width: calc(100% - 3rem);
   max-width: calc(100% - 3rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: 730px;
 }
 .summary-container,
 .financial-section-container {
@@ -725,7 +725,7 @@ body {
   width: calc(100% - 4.5rem);
   max-width: calc(100% - 4.5rem);
   overflow-x: hidden;
-  min-height: 800px;
+  min-height: 750px;
 }
 .buying-group-container {
   background: #ffffff;
@@ -1081,6 +1081,43 @@ tr:hover {
   background-color: #1e90ff;
   color: white;
   border-color: #1e90ff;
+}
+
+/* ========== BUYING GROUP FILTERS ========== */
+.buying-group-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  align-items: center;
+  padding: 0;
+  margin-left: -140px;
+}
+
+.buying-group-filters button {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.buying-group-filters button:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.buying-group-filters button.active {
+  border: 2px solid #3b82f6;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
 }
 
 /* ========== COMPANY SUMMARY & STOCK CHART ========== */

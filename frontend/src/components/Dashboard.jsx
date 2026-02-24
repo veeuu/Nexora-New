@@ -10,6 +10,7 @@ import MartechTechnographics from './martech/Technographics';
 import RenewalIntelligence from './martech/RenewalIntelligence';
 import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
+import Keywords from './martech/Keywords';
 
 const Dashboard = ({ onLogout, onNavRef, username }) => {
   const navigate = useNavigate();
@@ -24,7 +25,8 @@ const routeToSection = {
     '/dashboard/intent': 'Intent',
     '/dashboard/buying-group': 'Buying Group',
     '/dashboard/ntp': 'Next Tech Purchase®',
-    '/dashboard/product-catalogue': 'Product Catalogue'
+    '/dashboard/product-catalogue': 'Product Catalogue',
+    '/dashboard/keywords': 'Keywords'
   };
 
 useEffect(() => {
@@ -43,7 +45,8 @@ const sectionToRoute = {
       'Intent': '/dashboard/intent',
       'Buying Group': '/dashboard/buying-group',
       'Next Tech Purchase®': '/dashboard/ntp',
-      'Product Catalogue': '/dashboard/product-catalogue'
+      'Product Catalogue': '/dashboard/product-catalogue',
+      'Keywords': '/dashboard/keywords'
     };
 
     const route = sectionToRoute[section] || '/dashboard/home';
@@ -73,7 +76,7 @@ const sectionToRoute = {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords'];
   };
 
   const renderActiveSection = () => {
@@ -95,6 +98,8 @@ const sectionToRoute = {
         return <MartechBuyingGroup />;
       case 'Product Catalogue':
         return <ProductCatalogue />;
+      case 'Keywords':
+        return <Keywords />;
       default:
         return <Home />;
     }
@@ -120,6 +125,7 @@ const sectionToRoute = {
               <Route path="/buying-group" element={<MartechBuyingGroup />} />
               <Route path="/ntp" element={<MartechNTP />} />
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
+              <Route path="/keywords" element={<Keywords />} />
               <Route path="/" element={<Home />} />
             </Routes>
           </main>

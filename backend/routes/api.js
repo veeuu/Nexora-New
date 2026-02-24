@@ -67,28 +67,29 @@ const zoomScript = `<script>
     window.currentZoom = 100;
     window.optimalZoom = 100;
 
-window.addEventListener('load', function() {
+    window.addEventListener('load', function() {
       const chartElement = document.getElementById('chart');
       if (chartElement && chartElement.getBoundingClientRect) {
         const chartRect = chartElement.getBoundingClientRect();
         const containerWidth = window.innerWidth - 40;
         const containerHeight = 520;
 
-const widthZoom = (containerWidth / chartRect.width) * 100;
-
+        const widthZoom = (containerWidth / chartRect.width) * 100;
         const heightZoom = (containerHeight / chartRect.height) * 100;
 
-window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
+        window.optimalZoom = Math.min(widthZoom, heightZoom, 100);
         window.optimalZoom = Math.max(window.optimalZoom, 30);
         window.optimalZoom = Math.round(window.optimalZoom / 10) * 10;
 
-chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
-        window.currentZoom = window.optimalZoom;
+        // Disabled: Don't auto-scale on load - let parent component control zoom
+        // chartElement.style.transform = 'scale(' + (window.optimalZoom / 100) + ')';
+        // window.currentZoom = window.optimalZoom;
 
-window.parent.postMessage({
-          type: 'optimalZoomCalculated',
-          zoomLevel: window.optimalZoom
-        }, '*');
+        // Disabled: Don't send optimal zoom to parent - respect user's default zoom setting
+        // window.parent.postMessage({
+        //   type: 'optimalZoomCalculated',
+        //   zoomLevel: window.optimalZoom
+        // }, '*');
       }
     });
 
@@ -989,12 +990,12 @@ res.setHeader('Content-Type', 'text/html; charset=utf-8');
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
 
-let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
@@ -1003,18 +1004,14 @@ if (!fs.existsSync(excelPath)) {
       return { success: false, message: 'No companies selected' };
     }
 
-if (!fs.existsSync(outputFolder)) {
+    if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true });
     }
 
-const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
+    const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
     const existingCompanies = new Set(existingFiles.map(f => f.replace('.html', '')));
 
-const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-
-const sanitizeFilename = (name) => {
+    const sanitizeFilename = (name) => {
       name = String(name);
       name = name.replace(/[^\w\s-]/g, '').trim();
       name = name.replace(/[-\s]+/g, '_');
@@ -1025,28 +1022,15 @@ const sanitizeFilename = (name) => {
     let chartsSkipped = 0;
 
     for (const company of selectedCompanies) {
-      const companyData = data.filter(row => row['Company Name'] === company);
-
-      if (!companyData.length) {
-
-        continue;
-      }
-
-      const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-
       let safeFileName = sanitizeFilename(company);
-      if (location) {
-        safeFileName = `${sanitizeFilename(company)}_${sanitizeFilename(location)}`;
-      }
 
-if (existingCompanies.has(safeFileName)) {
-
+      if (existingCompanies.has(safeFileName)) {
         chartsSkipped++;
         continue;
       }
 
-try {
-        const html = await generateOrgChartForCompany(excelPath, company);
+      try {
+        const html = await generateOrgChartForCompany(csvPath, company);
         const htmlFileName = `${safeFileName}.html`;
         const htmlFilePath = path.join(outputFolder, htmlFileName);
 
@@ -1054,7 +1038,7 @@ try {
 
         newChartsGenerated++;
       } catch (err) {
-
+        console.error(`Error generating chart for ${company}:`, err.message);
       }
     }
 
@@ -1065,7 +1049,7 @@ try {
       message: `${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`
     };
   } catch (err) {
-
+    console.error('Error in generateSelectedOrgCharts:', err.message);
     return { success: false, message: err.message };
   }
 }
@@ -1091,67 +1075,40 @@ router.post('/org-chart/generate-selected', async (req, res) => {
   }
 });
 
-router.get('/dashboard-stats', async (req, res) => {
-  try {
 
-    const cached = getCachedStats();
-    if (cached) {
-      return res.json(cached);
+
+router.get('/keywords', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const csv = require('csv-parser');
+    const csvPath = require('path').join(__dirname, '../Keywords.csv');
+
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'Keywords CSV file not found', path: csvPath });
     }
 
-const statsResult = await Company.aggregate([
-      {
-        $facet: {
-          companies: [
-            { $group: { _id: '$Company Name' } },
-            { $count: 'count' }
-          ],
-          technologies: [
-            { $unwind: '$Technographics' },
-            { $match: { 'Technographics.Keyword': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Technographics.Keyword' } },
-            { $count: 'count' }
-          ]
+    const keywordsData = [];
+    let errorOccurred = false;
+
+    fs.createReadStream(csvPath)
+      .pipe(csv())
+      .on('data', (row) => {
+        keywordsData.push(row);
+      })
+      .on('end', () => {
+        if (!errorOccurred) {
+          res.json({
+            data: keywordsData,
+            total: keywordsData.length
+          });
         }
-      }
-    ]);
-
-    const companyCount = statsResult[0].companies[0]?.count || 0;
-    const techCount = statsResult[0].technologies[0]?.count || 0;
-
-const productCatalogueCollection = mongoose.connection.db.collection('product_catlog_2025');
-    const productStats = await productCatalogueCollection.aggregate([
-      {
-        $facet: {
-          products: [
-            { $match: { 'Product Name': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Product Name' } },
-            { $count: 'count' }
-          ],
-          categories: [
-            { $match: { 'Category': { $exists: true, $ne: null } } },
-            { $group: { _id: '$Category' } },
-            { $count: 'count' }
-          ]
-        }
-      }
-    ]).toArray();
-
-    const productCount = productStats[0].products[0]?.count || 0;
-    const categoryCount = productStats[0].categories[0]?.count || 0;
-
-    const stats = {
-      totalCompanies: companyCount,
-      totalTechnologies: techCount,
-      totalProducts: productCount,
-      totalCategories: categoryCount
-    };
-
-setCachedStats(stats);
-    res.json(stats);
+      })
+      .on('error', (err) => {
+        errorOccurred = true;
+        res.status(500).json({ error: 'Failed to parse CSV file', details: err.message });
+      });
   } catch (err) {
-
-    res.status(500).json({ error: 'Failed to fetch stats' });
+    res.status(500).json({ error: 'Failed to fetch keywords data', details: err.message });
   }
 });
 
