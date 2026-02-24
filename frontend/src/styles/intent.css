@@ -53,7 +53,7 @@
 
 /* Table Styles */
 .table-container {
-  max-height: 490px;
+  max-height: 480px;
   overflow-x: auto;
   overflow-y: auto;
   position: relative;

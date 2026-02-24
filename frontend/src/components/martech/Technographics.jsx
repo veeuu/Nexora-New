@@ -3335,9 +3335,9 @@ const Technographics = () => {
                           title={revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                         >
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
-                            <FaEye size={16} />
+                            'Hidden'
                           ) : (
-                            <FaEyeSlash size={16} />
+                            'Unhide'
                           )}
                         </button>
                       </td>

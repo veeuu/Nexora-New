@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaEye, FaEyeSlash, FaGlobe, FaLinkedin } from 'react-icons/fa';
+import { FaGlobe, FaLinkedin } from 'react-icons/fa';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
@@ -2178,23 +2178,22 @@ if (aQtr.year !== bQtr.year) {
                                                                 }}
                                                                 title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
                                                             >
-                                                                {isRevealed ? (
-                                                                    <FaEye size={16} />
-                                                                ) : (
-                                                                    <FaEyeSlash size={16} />
-                                                                )}
+                                                                {isRevealed ? 'Hide' : 'Unhide'}
                                                             </button>
                                                         </td>
-                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
-                                                            const rect = e.target.getBoundingClientRect();
-                                                            setTooltip({
-                                                                show: true,
-                                                                text: row.companyName,
-                                                                x: rect.right - 20,
-                                                                y: rect.bottom + 20,
-                                                                isRevealed: isRevealed
-                                                            });
-                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0, isRevealed: true })}>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}
+                                                            // onMouseEnter={(e) => {
+                                                            //     const rect = e.target.getBoundingClientRect();
+                                                            //     setTooltip({
+                                                            //         show: true,
+                                                            //         text: row.companyName,
+                                                            //         x: rect.right - 20,
+                                                            //         y: rect.bottom + 20,
+                                                            //         isRevealed: isRevealed
+                                                            //     });
+                                                            // }} 
+                                                            // onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0, isRevealed: true })}
+                                                        >
                                                             {isRevealed ? (
                                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                                     <div style={{ fontWeight: '600', color: '#1f2937' }}>
@@ -2245,29 +2244,13 @@ if (aQtr.year !== bQtr.year) {
                                                                 </div>
                                                             )}
                                                         </td>
-                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
-                                                            const rect = e.target.getBoundingClientRect();
-                                                            setTooltip({
-                                                                show: true,
-                                                                text: row.product,
-                                                                x: rect.right - 20,
-                                                                y: rect.bottom + 20
-                                                            });
-                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
                                                             <span style={{ display: 'flex', alignItems: 'center' }}>
                                                                 {renderProductIcon(row.product)}
                                                                 {row.product}
                                                             </span>
                                                         </td>
-                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }} onMouseEnter={(e) => {
-                                                            const rect = e.target.getBoundingClientRect();
-                                                            setTooltip({
-                                                                show: true,
-                                                                text: row.qtr,
-                                                                x: rect.right - 20,
-                                                                y: rect.bottom + 20
-                                                            });
-                                                        }} onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
                                                             {row.qtr}
                                                         </td>
                                                         <td style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>

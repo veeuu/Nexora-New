@@ -5,7 +5,7 @@ import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
-import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaRobot } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
@@ -1638,47 +1638,30 @@ const NTP = () => {
       {}
       {((!Array.isArray(filters.purchasePrediction) || filters.purchasePrediction.length === 0) || (!Array.isArray(filters.category) || filters.category.length === 0)) && (
         <div style={{
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fcd34d',
+          borderRadius: '8px',
+          padding: '12px 16px',
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          marginBottom: '20px',
-          justifyContent: 'space-between'
+          maxWidth: 'fit-content',
+          marginBottom: '20px'
         }}>
           <div style={{
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fcd34d',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            maxWidth: 'fit-content'
+            fontSize: '18px',
+            color: '#d97706',
+            flexShrink: 0
           }}>
-            <div style={{
-              fontSize: '18px',
-              color: '#d97706',
-              flexShrink: 0
-            }}>
-              ⓘ
-            </div>
-            <div style={{
-              fontSize: '13px',
-              color: '#92400e',
-              fontWeight: '500'
-            }}>
-              Please select both Category and Purchase Prediction to view data
-            </div>
+            ⓘ
           </div>
-          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
-            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="12" y1="13" x2="12" y2="17"></line>
-              <line x1="8" y1="13" x2="8" y2="17"></line>
-              <line x1="16" y1="13" x2="16" y2="17"></line>
-            </svg>
-            Download CSV
-          </button>
+          <div style={{
+            fontSize: '13px',
+            color: '#92400e',
+            fontWeight: '500'
+          }}>
+            Please select both Category and Purchase Prediction to view data
+          </div>
         </div>
       )}
       
@@ -1830,11 +1813,7 @@ const NTP = () => {
                             }}
                             title={revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                           >
-                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
-                              <FaEye size={16} />
-                            ) : (
-                              <FaEyeSlash size={16} />
-                            )}
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Hide' : 'Unhide'}
                           </button>
                         </td>
                       )}

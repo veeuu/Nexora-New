@@ -360,8 +360,8 @@ export const getLogoPath = (techName) => {
     // Generic/Fallback
     "on prem": "database.png",
     "on-prem": "database.png",
-    "not detected": "database.png",
-    "not detectedNot detected": "database.png",
+    "not detected": null,
+    "not detectedNot detected": null,
     "database": "database.png",
     "cloud": "cloud.png",
     "cloud computing": "cloud_computing.png",

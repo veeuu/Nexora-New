@@ -849,7 +849,7 @@ h2 {
   background-color: #fff;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  max-height: 500px;
+  max-height: 480px;
 }
 
 .table-container::-webkit-scrollbar {
