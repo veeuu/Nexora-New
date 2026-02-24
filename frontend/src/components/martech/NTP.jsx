@@ -2344,7 +2344,7 @@ const NTP = () => {
       )}
       <style>{`
         .table-container {
-          max-height: 500px;
+          max-height: 500px !important;
           overflow-x: auto;
           overflow-y: auto;
           position: relative;
