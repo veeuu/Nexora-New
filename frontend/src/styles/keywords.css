@@ -19,23 +19,27 @@
   margin: 12px 0 16px 0;
 }
 
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background-color: #ffffff;
-  margin-bottom: 16px;
+.keywords-container .table-container {
+  width: 100% !important;
+  overflow-x: auto !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  background-color: #ffffff !important;
+  margin-bottom: 16px !important;
   max-height: 530px !important;
+  height: auto !important;
+  display: block !important;
+  position: relative !important;
 }
 
 .table-container table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  color: #1f2937;
-  min-width: 900px;
-  table-layout: fixed;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 14px !important;
+  color: #1f2937 !important;
+  min-width: 900px !important;
+  table-layout: fixed !important;
+  box-sizing: border-box !important;
 }
 
 .table-container thead {
@@ -44,36 +48,43 @@
 }
 
 .table-container th {
-  padding: 12px 8px;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  background-color: #eef2ff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 12px 8px !important;
+  text-align: left !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  background-color: #eef2ff !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
 }
 
-.table-container td {
-  padding: 12px 8px;
-  word-break: break-word;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}.table-container td:last-child {
-  border-right: none;
+.keywords-container .table-container td {
+  padding: 12px 8px !important;
+  word-break: break-word !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  vertical-align: top !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
 }
 
-.table-container tbody tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s;
+.keywords-container .table-container td:last-child {
+  border-right: none !important;
 }
 
-.table-container tbody tr:hover {
-  background-color: #f9fafb;
+.keywords-container .table-container tbody tr {
+  border-bottom: 1px solid #e5e7eb !important;
+  transition: background-color 0.2s !important;
 }
 
-.table-container tbody tr:last-child {
-  border-bottom: none;
+.keywords-container .table-container tbody tr:hover {
+  background-color: #f9fafb !important;
+}
+
+.keywords-container .table-container tbody tr:last-child {
+  border-bottom: none !important;
 }
 
 .sticky-header {
@@ -120,44 +131,45 @@
 /* Keywords table column widths */
 .keywords-container .table-container table th:nth-child(1),
 .keywords-container .table-container table td:nth-child(1) {
-  width: 15%;
-  min-width: 120px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 .keywords-container .table-container table th:nth-child(2),
 .keywords-container .table-container table td:nth-child(2) {
-  width: 15%;
-  min-width: 120px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 .keywords-container .table-container table th:nth-child(3),
 .keywords-container .table-container table td:nth-child(3) {
-  width: 18%;
-  min-width: 140px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 .keywords-container .table-container table th:nth-child(4),
 .keywords-container .table-container table td:nth-child(4) {
-  width: 18%;
-  min-width: 140px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 .keywords-container .table-container table th:nth-child(5),
 .keywords-container .table-container table td:nth-child(5) {
-  width: 12%;
-  min-width: 100px;
+  width: 14.28% !important;
+  min-width: 100px !important;
+  padding-left: 30px !important;
 }
 
 .keywords-container .table-container table th:nth-child(6),
 .keywords-container .table-container table td:nth-child(6) {
-  width: 12%;
-  min-width: 100px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 .keywords-container .table-container table th:nth-child(7),
 .keywords-container .table-container table td:nth-child(7) {
-  width: 10%;
-  min-width: 80px;
+  width: 14.28% !important;
+  min-width: 100px !important;
 }
 
 /* Loading overlay */
@@ -209,8 +221,8 @@
 }
 
 .table-cell-header {
-  text-align: left;
-  padding: 12px 8px;
+  text-align: left !important;
+  padding: 12px 8px !important;
 }
 
 .table-cell-company {
