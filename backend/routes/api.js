@@ -108,165 +108,169 @@ window.parent.postMessage({
   return html;
 }
 
-let ntpCache = null;
-let ntpCacheTime = 0;
-let ntpCacheBuilding = false;
-const NTP_CACHE_DURATION = 10 * 60 * 1000;
-
-const buildNtpCache = async () => {
-  if (ntpCacheBuilding) return;
-
-  try {
-    ntpCacheBuilding = true;
-    const startTime = Date.now();
-
-    const fetchStart = Date.now();
-
-    const companies = await Company.find({})
-      .lean()
-      .hint({ '_id': 1 });
-
-    const fetchTime = Date.now() - fetchStart;
-
-    const processStart = Date.now();
-    let ntpData = [];
-
-    companies.forEach(company => {
-      const about = (company.Firmographics || {}).About || {};
-
-      const ntpArray = Array.isArray(company.NTP) ? company.NTP : [];
-      ntpArray.forEach(ntpItem => {
-        ntpData.push({
-          companyName: company['Company Name'],
-          domain: about.Domain || 'N/A',
-          linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
-          category: ntpItem.Category,
-          technology: ntpItem.Technology,
-          purchaseProbability: ntpItem['Purchase Probability (%)'],
-          purchasePrediction: ntpItem['Purchase Prediction'],
-          ntpAnalysis: ntpItem['NTP Analysis'],
-          latestDetectedDate: ntpItem['Latest Date'] || 'N/A',
-          previousDetectedDate: ntpItem['Previous Date'] || 'N/A'
-        });
-      });
-    });
-
-    const processTime = Date.now() - processStart;
-
-    ntpCache = ntpData;
-    ntpCacheTime = Date.now();
-    const totalTime = Date.now() - startTime;
-  } catch (err) {
-    console.error('[NTP-CACHE] Error building NTP cache:', err.message);
-  } finally {
-    ntpCacheBuilding = false;
+// Helper to get data collection
+const getDataCollection = () => {
+  if (mongoose.connection.readyState !== 1) {
+    console.error('[DB] MongoDB connection state:', mongoose.connection.readyState);
+    throw new Error('MongoDB not connected');
   }
+  if (!mongoose.connection.db) {
+    console.error('[DB] MongoDB connection exists but db is null');
+    throw new Error('MongoDB database not available');
+  }
+  return mongoose.connection.db.collection('data');
 };
 
-setTimeout(() => {
-  if (mongoose.connection.readyState === 1) {
-    console.log('[NTP-CACHE] MongoDB ready, starting cache build');
-    buildNtpCache();
-  } else {
-    console.log('[NTP-CACHE] Waiting for MongoDB connection...');
-    mongoose.connection.once('open', () => {
-      console.log('[NTP-CACHE] MongoDB connected, starting cache build');
-      buildNtpCache();
-    });
-  }
-}, 3000); 
+// Query-level caching for repeated requests (5-minute TTL)
+const queryCache = new Map();
+const QUERY_CACHE_DURATION = 5 * 60 * 1000;
 
-setInterval(() => {
-  if (Date.now() - ntpCacheTime > NTP_CACHE_DURATION) {
-    buildNtpCache();
+function getCachedQuery(key) {
+  const cached = queryCache.get(key);
+  if (cached && (Date.now() - cached.timestamp) < QUERY_CACHE_DURATION) {
+    return cached.data;
   }
-}, 5 * 60 * 1000); 
+  return null;
+}
 
-let ntpMetadataCache = null;
-let ntpMetadataCacheTime = 0;
+function setCachedQuery(key, data) {
+  queryCache.set(key, { data, timestamp: Date.now() });
+}
+
+// ============================================
+// NTP ROUTES - Query data collection directly
+// ============================================
 
 router.get('/ntp/metadata', async (req, res) => {
   try {
-    const now = Date.now();
-
-if (ntpMetadataCache && (now - ntpMetadataCacheTime) < NTP_CACHE_DURATION) {
-      return res.json(ntpMetadataCache);
+    console.log('[NTP-METADATA] Fetching using aggregation...');
+    const startTime = Date.now();
+    
+    const cacheKey = 'ntp-metadata';
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[NTP-METADATA] ✓ Returned from cache`);
+      return res.json(cached);
     }
 
-    const allCompanies = await Company.find({});
+    const dataCollection = getDataCollection();
+    console.log('[NTP-METADATA] Got data collection, running aggregation...');
 
-    const metadata = {
-      categories: new Set(),
-      technologies: new Set(),
-      predictions: new Set(),
-      companies: new Set(),
+    const result = await dataCollection.aggregate([
+      { $unwind: '$NTP' },
+      {
+        $group: {
+          _id: null,
+          categories: { $addToSet: '$NTP.Category' },
+          technologies: { $addToSet: '$NTP.Technology' },
+          predictions: { $addToSet: '$NTP.Purchase Prediction' },
+          companies: { $addToSet: '$Company Name' },
+          totalRecords: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          categories: { $sortArray: { input: '$categories', sortBy: 1 } },
+          technologies: { $sortArray: { input: '$technologies', sortBy: 1 } },
+          predictions: { $sortArray: { input: '$predictions', sortBy: 1 } },
+          companies: { $sortArray: { input: '$companies', sortBy: 1 } },
+          totalRecords: 1
+        }
+      }
+    ], { allowDiskUse: true }).toArray();
+
+    const metadata = result[0] || {
+      categories: [],
+      technologies: [],
+      predictions: [],
+      companies: [],
       totalRecords: 0
     };
 
-    allCompanies.forEach(company => {
-      if (company['Company Name']) metadata.companies.add(company['Company Name']);
-
-      const ntpArray = Array.isArray(company.NTP) ? company.NTP : [];
-      ntpArray.forEach(ntpItem => {
-        if (ntpItem.Category) metadata.categories.add(ntpItem.Category);
-        if (ntpItem.Technology) metadata.technologies.add(ntpItem.Technology);
-        if (ntpItem['Purchase Prediction']) metadata.predictions.add(ntpItem['Purchase Prediction']);
-        metadata.totalRecords++;
-      });
-    });
-
-    const result = {
-      categories: Array.from(metadata.categories).sort(),
-      technologies: Array.from(metadata.technologies).sort(),
-      predictions: Array.from(metadata.predictions).sort(),
-      companies: Array.from(metadata.companies).sort(),
-      totalRecords: metadata.totalRecords
-    };
-
-    ntpMetadataCache = result;
-    ntpMetadataCacheTime = now;
-
-    res.json(result);
+    setCachedQuery(cacheKey, metadata);
+    console.log(`[NTP-METADATA] ✓ Returned in ${Date.now() - startTime}ms`);
+    res.json(metadata);
   } catch (err) {
-    res.status(500).json({ error: 'Server Error' });
+    console.error('[NTP-METADATA] Error:', err.message);
+    console.error('[NTP-METADATA] Stack:', err.stack);
+    res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
 
 router.get('/ntp', async (req, res) => {
   try {
+    console.log('[NTP] Fetching initial 500 records from data collection...');
+    const startTime = Date.now();
+    
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 500;
     const skip = (page - 1) * limit;
 
-if (ntpCache && ntpCache.length > 0) {
-      const paginatedData = ntpCache.slice(skip, skip + limit);
-
-      return res.json({
-        data: paginatedData,
-        total: ntpCache.length,
-        page,
-        limit,
-        pages: Math.ceil(ntpCache.length / limit)
-      });
+    const cacheKey = `ntp-page-${page}-${limit}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[NTP] ✓ Returned from cache`);
+      return res.json(cached);
     }
 
-if (!ntpCacheBuilding) {
-      buildNtpCache();
-    }
+    const dataCollection = getDataCollection();
 
-return res.status(503).json({
-      error: 'Cache building in progress',
-      data: [],
-      retryAfter: 1000
-    });
+    const results = await dataCollection.aggregate([
+      { $unwind: '$NTP' },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 0,
+          companyName: '$Company Name',
+          domain: '$Firmographics.About.Domain',
+          linkedinUrl: {
+            $ifNull: [
+              '$Firmographics.About.linkedinUrl',
+              { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+            ]
+          },
+          category: '$NTP.Category',
+          technology: '$NTP.Technology',
+          purchaseProbability: '$NTP.Purchase Probability (%)',
+          purchasePrediction: '$NTP.Purchase Prediction',
+          ntpAnalysis: '$NTP.NTP Analysis',
+          latestDetectedDate: { $ifNull: ['$NTP.Latest Date', 'N/A'] },
+          previousDetectedDate: { $ifNull: ['$NTP.Previous Date', 'N/A'] }
+        }
+      }
+    ], { allowDiskUse: true }).toArray();
+
+    const totalCount = await dataCollection.aggregate([
+      { $unwind: '$NTP' },
+      { $count: 'total' }
+    ], { allowDiskUse: true }).toArray();
+
+    const total = totalCount[0]?.total || 0;
+
+    const response = {
+      data: results,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit)
+    };
+
+    setCachedQuery(cacheKey, response);
+    console.log(`[NTP] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
+    res.json(response);
   } catch (err) {
+    console.error('[NTP] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
 router.get('/ntp/all', async (req, res) => {
   try {
-    
+    console.log('[NTP-ALL] Fetching from data collection...');
+    const startTime = Date.now();
+
     const filters = {
       companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
       category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
@@ -274,240 +278,214 @@ router.get('/ntp/all', async (req, res) => {
       prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
     };
 
-    if (ntpCache && ntpCache.length > 0) {
-      
-      let filteredData = ntpCache.filter(row => {
-        if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
-        if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
-        if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
-        if (filters.prediction.length > 0 && !filters.prediction.includes(String(row.purchasePrediction))) return false;
-        return true;
-      });
-
-      console.log(`[NTP-ALL] ✓ Returning ${filteredData.length} records (filtered from ${ntpCache.length})`);
-      
-      return res.json({
-        data: filteredData,
-        total: filteredData.length
-      });
+    const cacheKey = `ntp-all-${JSON.stringify(filters)}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[NTP-ALL] ✓ Returned from cache`);
+      return res.json(cached);
     }
 
-    if (!ntpCacheBuilding) {
-      console.log('[NTP-ALL] Cache not ready, starting build in background...');
-      buildNtpCache(); 
+    const dataCollection = getDataCollection();
+
+    const matchStage = {};
+    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+
+    const pipeline = [
+      { $unwind: '$NTP' }
+    ];
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
     }
 
-    console.log(`[NTP-ALL] Cache not ready, returning 503`);
-    return res.status(503).json({ 
-      error: 'Cache building in progress', 
-      data: [],
-      retryAfter: 1000 
+    if (filters.category.length > 0) {
+      pipeline.push({ $match: { 'NTP.Category': { $in: filters.category } } });
+    }
+    if (filters.technology.length > 0) {
+      pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
+    }
+    if (filters.prediction.length > 0) {
+      pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
+    }
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        companyName: '$Company Name',
+        domain: '$Firmographics.About.Domain',
+        linkedinUrl: {
+          $ifNull: [
+            '$Firmographics.About.linkedinUrl',
+            { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+          ]
+        },
+        category: '$NTP.Category',
+        technology: '$NTP.Technology',
+        purchaseProbability: '$NTP.Purchase Probability (%)',
+        purchasePrediction: '$NTP.Purchase Prediction',
+        ntpAnalysis: '$NTP.NTP Analysis',
+        latestDetectedDate: { $ifNull: ['$NTP.Latest Date', 'N/A'] },
+        previousDetectedDate: { $ifNull: ['$NTP.Previous Date', 'N/A'] }
+      }
     });
+
+    const results = await dataCollection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+
+    const response = {
+      data: results,
+      total: results.length
+    };
+
+    setCachedQuery(cacheKey, response);
+    console.log(`[NTP-ALL] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
+    res.json(response);
   } catch (err) {
     console.error('[NTP-ALL] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
-let techCache = null;
-let techCacheTime = 0;
-let techCacheBuilding = false;
-const TECH_CACHE_DURATION = 10 * 60 * 1000;
-
-const buildTechCache = async () => {
-  if (techCacheBuilding) return;
-
-  try {
-    techCacheBuilding = true;
-    const startTime = Date.now();
-
-    const fetchStart = Date.now();
-
-    const companies = await Company.find({})
-      .lean()
-      .hint({ '_id': 1 });
-
-    const fetchTime = Date.now() - fetchStart;
-
-    const processStart = Date.now();
-    let technographicsData = [];
-    let skippedCount = 0;
-    let companiesWithTech = 0;
-    let companiesWithoutTech = 0;
-
-    companies.forEach((company, idx) => {
-      const firmographics = company.Firmographics || {};
-      const about = firmographics.About || {};
-      const location = firmographics.Location || {};
-      const finance = company.Financial_Data?.Finance || {};
-      const companyName = company['Company Name'];
-
-if (!companyName || companyName.trim() === '') {
-        skippedCount++;
-        return;
-      }
-
-const techArray = Array.isArray(company.Technographics) ? company.Technographics : [];
-      if (techArray.length === 0) {
-        companiesWithoutTech++;
-        return;
-      }
-
-      companiesWithTech++;
-
-      techArray.forEach(techItem => {
-        technographicsData.push({
-          companyName: companyName,
-          region: location.Country || 'N/A',
-          industry: about.Industry || 'N/A',
-          employeeSize: about['Full Time employees'] || about['Full time employees'] || about.Employees || 'N/A',
-          revenue: finance['Total Revenue'] || 'N/A',
-          category: techItem.Category,
-          technology: techItem.Keyword,
-          domain: about.Domain || 'N/A',
-          linkedinUrl: about.linkedinUrl || about['LinkedIn URL'] || about['Linkedin URL'] || about['linkedin url'] || '',
-          previousDetectedDate: techItem['Previous Date'] || 'N/A',
-          latestDetectedDate: techItem['Latest Date'] || 'N/A',
-          renewalDate: techItem['Renewal Date'] || 'N/A'
-        });
-      });
-    });
-
-    const processTime = Date.now() - processStart;
-
-    techCache = technographicsData;
-    techCacheTime = Date.now();
-    const totalTime = Date.now() - startTime;
-  } catch (err) {
-    console.error('[CACHE] Error building technographics cache:', err.message);
-  } finally {
-    techCacheBuilding = false;
-  }
-};
-
-setTimeout(() => {
-  if (mongoose.connection.readyState === 1) {
-    console.log('[TECH-CACHE] MongoDB ready, starting cache build');
-    buildTechCache();
-  } else {
-    console.log('[TECH-CACHE] Waiting for MongoDB connection...');
-    mongoose.connection.once('open', () => {
-      console.log('[TECH-CACHE] MongoDB connected, starting cache build');
-      buildTechCache();
-    });
-  }
-}, 3000); 
-
-setInterval(() => {
-  if (Date.now() - techCacheTime > TECH_CACHE_DURATION) {
-    buildTechCache();
-  }
-}, 5 * 60 * 1000); 
-
-let techMetadataCache = null;
-let techMetadataCacheTime = 0;
+// ====================================================
+// TECHNOGRAPHICS ROUTES - Query data collection directly
+// ====================================================
 
 router.get('/technographics/metadata', async (req, res) => {
   try {
-    const now = Date.now();
-
-if (techMetadataCache && (now - techMetadataCacheTime) < TECH_CACHE_DURATION) {
-      return res.json(techMetadataCache);
+    console.log('[TECH-METADATA] Fetching using aggregation...');
+    const startTime = Date.now();
+    
+    const cacheKey = 'tech-metadata';
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[TECH-METADATA] ✓ Returned from cache`);
+      return res.json(cached);
     }
 
-    const allCompanies = await Company.find({});
+    const dataCollection = getDataCollection();
 
-    const metadata = {
-      regions: new Set(),
-      industries: new Set(),
-      categories: new Set(),
-      employeeSizes: new Set(),
-      revenues: new Set(),
+    const result = await dataCollection.aggregate([
+      { $unwind: '$Technographics' },
+      {
+        $group: {
+          _id: null,
+          regions: { $addToSet: '$Firmographics.Location.Country' },
+          industries: { $addToSet: '$Firmographics.About.Industry' },
+          categories: { $addToSet: '$Technographics.Category' },
+          employeeSizes: { $addToSet: '$Firmographics.About.Full Time employees' },
+          revenues: { $addToSet: '$Financial_Data.Finance.Total Revenue' },
+          totalRecords: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          regions: { $sortArray: { input: '$regions', sortBy: 1 } },
+          industries: { $sortArray: { input: '$industries', sortBy: 1 } },
+          categories: { $sortArray: { input: '$categories', sortBy: 1 } },
+          employeeSizes: { $sortArray: { input: '$employeeSizes', sortBy: 1 } },
+          revenues: { $sortArray: { input: '$revenues', sortBy: 1 } },
+          totalRecords: 1
+        }
+      }
+    ], { allowDiskUse: true }).toArray();
+
+    const metadata = result[0] || {
+      regions: [],
+      industries: [],
+      categories: [],
+      employeeSizes: [],
+      revenues: [],
       totalRecords: 0
     };
 
-    allCompanies.forEach(company => {
-      const firmographics = company.Firmographics || {};
-      const about = firmographics.About || {};
-      const location = firmographics.Location || {};
-      const finance = company.Financial_Data?.Finance || {};
-
-      if (location.Country) metadata.regions.add(location.Country);
-      if (about.Industry) metadata.industries.add(about.Industry);
-      if (about['Full Time employees'] || about['Full time employees'] || about.Employees) {
-        metadata.employeeSizes.add(about['Full Time employees'] || about['Full time employees'] || about.Employees);
-      }
-      if (finance['Total Revenue']) metadata.revenues.add(finance['Total Revenue']);
-
-      const techArray = Array.isArray(company.Technographics) ? company.Technographics : [];
-      techArray.forEach(tech => {
-        if (tech.Category) metadata.categories.add(tech.Category);
-        metadata.totalRecords++;
-      });
-    });
-
-    const result = {
-      regions: Array.from(metadata.regions).sort(),
-      industries: Array.from(metadata.industries).sort(),
-      categories: Array.from(metadata.categories).sort(),
-      employeeSizes: Array.from(metadata.employeeSizes).sort(),
-      revenues: Array.from(metadata.revenues).sort(),
-      totalRecords: metadata.totalRecords
-    };
-
-    techMetadataCache = result;
-    techMetadataCacheTime = now;
-
-    res.json(result);
+    setCachedQuery(cacheKey, metadata);
+    console.log(`[TECH-METADATA] ✓ Returned in ${Date.now() - startTime}ms`);
+    res.json(metadata);
   } catch (err) {
-
+    console.error('[TECH-METADATA] Error:', err.message);
     res.status(500).send('Server Error');
   }
 });
 
 router.get('/technographics', async (req, res) => {
   try {
+    console.log('[TECH] Fetching initial 500 records from data collection...');
+    const startTime = Date.now();
+    
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 500;
     const skip = (page - 1) * limit;
 
-    if (techCache && techCache.length > 0) {
-      const paginatedData = techCache.slice(skip, skip + limit);
+    const cacheKey = `tech-page-${page}-${limit}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[TECH] ✓ Returned from cache`);
+      return res.json(cached);
+    }
 
-      if (page === 1 && paginatedData.length > 0) {
-        console.log(`[TECH] ✓ Page ${page}: ${paginatedData.length} records from cache`);
-        console.log('[TECH] Sample records:', paginatedData.slice(0, 3).map(r => ({
-          companyName: r.companyName,
-          technology: r.technology,
-          region: r.region
-        })));
+    const dataCollection = getDataCollection();
+
+    const results = await dataCollection.aggregate([
+      { $unwind: '$Technographics' },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 0,
+          companyName: '$Company Name',
+          region: { $ifNull: ['$Firmographics.Location.Country', 'N/A'] },
+          industry: { $ifNull: ['$Firmographics.About.Industry', 'N/A'] },
+          employeeSize: {
+            $ifNull: [
+              '$Firmographics.About.Full Time employees',
+              { $ifNull: ['$Firmographics.About.Employees', 'N/A'] }
+            ]
+          },
+          revenue: { $ifNull: ['$Financial_Data.Finance.Total Revenue', 'N/A'] },
+          category: '$Technographics.Category',
+          technology: '$Technographics.Keyword',
+          domain: { $ifNull: ['$Firmographics.About.Domain', 'N/A'] },
+          linkedinUrl: {
+            $ifNull: [
+              '$Firmographics.About.linkedinUrl',
+              { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+            ]
+          },
+          previousDetectedDate: { $ifNull: ['$Technographics.Previous Date', 'N/A'] },
+          latestDetectedDate: { $ifNull: ['$Technographics.Latest Date', 'N/A'] },
+          renewalDate: { $ifNull: ['$Technographics.Renewal Date', 'N/A'] }
+        }
       }
-      
-      return res.json({
-        data: paginatedData,
-        total: totalFiltered,
-        page,
-        limit,
-        pages: Math.ceil(totalFiltered / limit)
-      });
-    }
+    ], { allowDiskUse: true }).toArray();
 
-if (!techCacheBuilding) {
-      buildTechCache();
-    }
+    const totalCount = await dataCollection.aggregate([
+      { $unwind: '$Technographics' },
+      { $count: 'total' }
+    ], { allowDiskUse: true }).toArray();
 
-return res.status(503).json({
-      error: 'Cache building in progress',
-      data: [],
-      retryAfter: 1000
-    });
+    const total = totalCount[0]?.total || 0;
+
+    const response = {
+      data: results,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit)
+    };
+
+    setCachedQuery(cacheKey, response);
+    console.log(`[TECH] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
+    res.json(response);
   } catch (err) {
+    console.error('[TECH] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
 router.get('/technographics/all', async (req, res) => {
   try {
+    console.log('[TECH-ALL] Fetching from data collection...');
+    const startTime = Date.now();
     
     const filters = {
       companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
@@ -519,42 +497,84 @@ router.get('/technographics/all', async (req, res) => {
       revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
     };
 
-    if (techCache && techCache.length > 0) {
-      
-      let filteredData = techCache.filter(row => {
-        if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
-        if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
-        if (filters.technology.length > 0 && !filters.technology.includes(String(row.technology))) return false;
-        if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
-        if (filters.industry.length > 0 && !filters.industry.includes(String(row.industry))) return false;
-        return true;
-      });
-
-      console.log(`[TECH-ALL] ✓ Returning ${filteredData.length} records (filtered from ${techCache.length})`);
-      
-      return res.json({
-        data: filteredData,
-        total: filteredData.length
-      });
+    const cacheKey = `tech-all-${JSON.stringify(filters)}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) {
+      console.log(`[TECH-ALL] ✓ Returned from cache`);
+      return res.json(cached);
     }
 
-    if (!techCacheBuilding) {
-      console.log('[TECH-ALL] Cache not ready, starting build in background...');
-      buildTechCache(); 
+    const dataCollection = getDataCollection();
+
+    const matchStage = {};
+    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+
+    const pipeline = [
+      { $unwind: '$Technographics' }
+    ];
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
     }
 
-    console.log(`[TECH-ALL] Cache not ready, returning 503`);
-    return res.status(503).json({ 
-      error: 'Cache building in progress', 
-      data: [],
-      retryAfter: 1000 
+    if (filters.region.length > 0) {
+      pipeline.push({ $match: { 'Firmographics.Location.Country': { $in: filters.region } } });
+    }
+    if (filters.technology.length > 0) {
+      pipeline.push({ $match: { 'Technographics.Keyword': { $in: filters.technology } } });
+    }
+    if (filters.category.length > 0) {
+      pipeline.push({ $match: { 'Technographics.Category': { $in: filters.category } } });
+    }
+    if (filters.industry.length > 0) {
+      pipeline.push({ $match: { 'Firmographics.About.Industry': { $in: filters.industry } } });
+    }
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        companyName: '$Company Name',
+        region: { $ifNull: ['$Firmographics.Location.Country', 'N/A'] },
+        industry: { $ifNull: ['$Firmographics.About.Industry', 'N/A'] },
+        employeeSize: {
+          $ifNull: [
+            '$Firmographics.About.Full Time employees',
+            { $ifNull: ['$Firmographics.About.Employees', 'N/A'] }
+          ]
+        },
+        revenue: { $ifNull: ['$Financial_Data.Finance.Total Revenue', 'N/A'] },
+        category: '$Technographics.Category',
+        technology: '$Technographics.Keyword',
+        domain: { $ifNull: ['$Firmographics.About.Domain', 'N/A'] },
+        linkedinUrl: {
+          $ifNull: [
+            '$Firmographics.About.linkedinUrl',
+            { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+          ]
+        },
+        previousDetectedDate: { $ifNull: ['$Technographics.Previous Date', 'N/A'] },
+        latestDetectedDate: { $ifNull: ['$Technographics.Latest Date', 'N/A'] },
+        renewalDate: { $ifNull: ['$Technographics.Renewal Date', 'N/A'] }
+      }
     });
+
+    const results = await dataCollection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+
+    const response = {
+      data: results,
+      total: results.length
+    };
+
+    setCachedQuery(cacheKey, response);
+    console.log(`[TECH-ALL] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
+    res.json(response);
   } catch (err) {
     console.error('[TECH-ALL] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
+// Company details endpoint (still uses Company model for compatibility)
 let companyDetailsCache = null;
 let companyDetailsCacheTime = 0;
 const COMPANY_DETAILS_CACHE_DURATION = 10 * 60 * 1000;
@@ -563,11 +583,11 @@ router.get('/company-details', async (req, res) => {
   try {
     const now = Date.now();
 
-if (companyDetailsCache && (now - companyDetailsCacheTime) < COMPANY_DETAILS_CACHE_DURATION) {
+    if (companyDetailsCache && (now - companyDetailsCacheTime) < COMPANY_DETAILS_CACHE_DURATION) {
       return res.json(companyDetailsCache);
     }
 
-const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
+    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
 
     const companyDetails = {};
     companies.forEach(company => {
@@ -578,16 +598,18 @@ const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, 
       };
     });
 
-companyDetailsCache = companyDetails;
+    companyDetailsCache = companyDetails;
     companyDetailsCacheTime = now;
 
     res.json(companyDetails);
   } catch (err) {
-
     res.status(500).send('Server Error');
   }
 });
 
+// ====================================================
+// RENEWAL INTELLIGENCE ROUTES
+// ====================================================
 let renewalCache = null;
 let renewalCacheTime = 0;
 const RENEWAL_CACHE_DURATION = 10 * 60 * 1000;
