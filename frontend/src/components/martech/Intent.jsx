@@ -403,7 +403,7 @@ useEffect(() => {
             </div>
             <div className="summary-charts-grid">
               <div className="chart-item">
-                <h3>Intent Status Percentage Breakdown</h3>
+                {/* <h3 style={{ textAlign: 'center', marginBottom: '16px' }}>Intent Status Percentage Breakdown</h3> */}
                 <IntentPieChart data={getPieChartData()} />
               </div>
             </div>
