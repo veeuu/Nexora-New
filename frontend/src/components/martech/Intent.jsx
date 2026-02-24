@@ -9,7 +9,7 @@ const IntentStatusVisualizer = ({ status }) => {
     const statusLower = String(status || '').toLowerCase().trim();
     
     // 5-level status mapping
-    if (statusLower === 'greenfield') {
+    if (statusLower === 'greenfield' || statusLower === 'green field account') {
       return {
         bars: 5,
         color: '#059669',
@@ -181,6 +181,7 @@ const Intent = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState(new Set());
   const rowsPerPage = 10;
   const filterRef = useRef(null);
 
@@ -309,11 +310,19 @@ const searchMatches = !searchTerm || Object.values(row).some(value =>
   }, []);
 
   const handleDownloadCSV = () => {
-    if (filteredData.length === 0) return;
+    const dataToDownload = selectedRows.size > 0 
+      ? filteredData.filter((_, index) => selectedRows.has(index))
+      : filteredData;
+
+    if (dataToDownload.length === 0) {
+      alert('Please select at least one row to download');
+      return;
+    }
+
     const headers = ['companyName', 'intentStatus'];
     const csvContent = [
       headers.join(','),
-      ...filteredData.map(row => headers.map(h => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(','))
+      ...dataToDownload.map(row => headers.map(h => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(','))
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -696,6 +705,22 @@ useEffect(() => {
         <table>
           <thead className="sticky-header">
             <tr>
+              <th style={{ width: '40px', textAlign: 'center' }}>
+                <input
+                  type="checkbox"
+                  checked={selectedRows.size === filteredData.length && filteredData.length > 0}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const newSet = new Set();
+                      filteredData.forEach((_, idx) => newSet.add(idx));
+                      setSelectedRows(newSet);
+                    } else {
+                      setSelectedRows(new Set());
+                    }
+                  }}
+                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+              </th>
               <th>Company Name</th>
               <th>Intent Status</th>
               <th>Intent Level</th>
@@ -710,8 +735,25 @@ useEffect(() => {
 
               return paginatedData.map((row, idx) => {
                 const isHighlighted = rowMatchesSearch(row, searchTerm);
+                const actualIndex = startIndex + idx;
                 return (
                   <tr key={idx} className={isHighlighted ? 'table-row-highlighted' : 'table-row-normal'}>
+                    <td style={{ width: '40px', textAlign: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.has(actualIndex)}
+                        onChange={(e) => {
+                          const newSet = new Set(selectedRows);
+                          if (e.target.checked) {
+                            newSet.add(actualIndex);
+                          } else {
+                            newSet.delete(actualIndex);
+                          }
+                          setSelectedRows(newSet);
+                        }}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                      />
+                    </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.companyName, searchTerm)}
                     </td>
