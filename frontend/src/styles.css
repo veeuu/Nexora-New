@@ -1083,6 +1083,43 @@ tr:hover {
   border-color: #1e90ff;
 }
 
+/* ========== BUYING GROUP FILTERS ========== */
+.buying-group-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  align-items: center;
+  padding: 0;
+  margin-left: -140px;
+}
+
+.buying-group-filters button {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.buying-group-filters button:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.buying-group-filters button.active {
+  border: 2px solid #3b82f6;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+}
+
 /* ========== COMPANY SUMMARY & STOCK CHART ========== */
 .company-summary,
 .summary-container {

@@ -358,6 +358,8 @@ return personCategories.some(cat => selectedCategories.has(cat));
                 Buying Group
             </h1>
 
+            <div className="section-subtle-divider"></div>
+
             {}
             <div className="filters" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px' }}>
                 <div className="filter-group">
@@ -375,18 +377,13 @@ return personCategories.some(cat => selectedCategories.has(cat));
                         ))}
                     </select>
                 </div>
-                <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
                     {}
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto', alignItems: 'center' }} className="buying-group-filters">
                         <button
                             onClick={() => {
-                                if (selectedCategories.size === categories.length) {
-                                    setSelectedCategories(new Set());
-                                    setSelectedCategory('');
-                                } else {
-                                    setSelectedCategories(new Set(categories));
-                                    setSelectedCategory('');
-                                }
+                                setSelectedCategories(new Set());
+                                setSelectedCategory('All');
                             }}
                             style={{
                                 padding: '10px 16px',
@@ -418,14 +415,13 @@ return personCategories.some(cat => selectedCategories.has(cat));
                             <button
                                 key={index}
                                 onClick={() => {
-                                    const newSelected = new Set(selectedCategories);
-                                    if (newSelected.has(category)) {
-                                        newSelected.delete(category);
+                                    if (selectedCategories.has(category)) {
+                                        setSelectedCategories(new Set());
+                                        setSelectedCategory('All');
                                     } else {
-                                        newSelected.add(category);
+                                        setSelectedCategories(new Set([category]));
+                                        setSelectedCategory(category);
                                     }
-                                    setSelectedCategories(newSelected);
-                                    setSelectedCategory('');
                                 }}
                                 style={{
                                     padding: '10px 16px',
@@ -921,12 +917,14 @@ return personCategories.some(cat => selectedCategories.has(cat));
                 }
 
                 .filter-group {
+                    justify-content: flex-start
                     display: flex;
                     flex-direction: column;
                     gap: 8px;
                 }
 
                 .filter-group label {
+                    justify-content: flex-start
                     font-size: 14px;
                     font-weight: 500;
                     color: #374151;

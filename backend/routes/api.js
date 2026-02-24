@@ -968,12 +968,12 @@ res.setHeader('Content-Type', 'text/html; charset=utf-8');
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
     const fs = require('fs');
-    const XLSX = require('xlsx');
+    const csv = require('csv-parser');
 
-let excelPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-if (!fs.existsSync(excelPath)) {
-      excelPath = path.join(__dirname, '../AI_sample (1).xlsx');
+    if (!fs.existsSync(csvPath)) {
+      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
@@ -982,18 +982,14 @@ if (!fs.existsSync(excelPath)) {
       return { success: false, message: 'No companies selected' };
     }
 
-if (!fs.existsSync(outputFolder)) {
+    if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true });
     }
 
-const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
+    const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
     const existingCompanies = new Set(existingFiles.map(f => f.replace('.html', '')));
 
-const workbook = XLSX.readFile(excelPath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-
-const sanitizeFilename = (name) => {
+    const sanitizeFilename = (name) => {
       name = String(name);
       name = name.replace(/[^\w\s-]/g, '').trim();
       name = name.replace(/[-\s]+/g, '_');
@@ -1004,28 +1000,15 @@ const sanitizeFilename = (name) => {
     let chartsSkipped = 0;
 
     for (const company of selectedCompanies) {
-      const companyData = data.filter(row => row['Company Name'] === company);
-
-      if (!companyData.length) {
-
-        continue;
-      }
-
-      const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-
       let safeFileName = sanitizeFilename(company);
-      if (location) {
-        safeFileName = `${sanitizeFilename(company)}_${sanitizeFilename(location)}`;
-      }
 
-if (existingCompanies.has(safeFileName)) {
-
+      if (existingCompanies.has(safeFileName)) {
         chartsSkipped++;
         continue;
       }
 
-try {
-        const html = await generateOrgChartForCompany(excelPath, company);
+      try {
+        const html = await generateOrgChartForCompany(csvPath, company);
         const htmlFileName = `${safeFileName}.html`;
         const htmlFilePath = path.join(outputFolder, htmlFileName);
 
@@ -1033,7 +1016,7 @@ try {
 
         newChartsGenerated++;
       } catch (err) {
-
+        console.error(`Error generating chart for ${company}:`, err.message);
       }
     }
 
@@ -1044,7 +1027,7 @@ try {
       message: `${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`
     };
   } catch (err) {
-
+    console.error('Error in generateSelectedOrgCharts:', err.message);
     return { success: false, message: err.message };
   }
 }
