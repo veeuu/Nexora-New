@@ -3,7 +3,7 @@ import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
 const countryCodeMap = {
@@ -3281,7 +3281,7 @@ const Technographics = () => {
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company Name</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Industry</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Region</th>
-              <th style={{ textAlign: 'left', padding: '12px 8px' }}>Employee Size</th>
+              <th style={{ textAlign: 'center', padding: '12px 8px' }}>Employee Size</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Revenue</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Technology</th>
               <th style={{ textAlign: 'center', padding: '12px 8px' }}>Previous Detected</th>
@@ -3399,22 +3399,17 @@ const Technographics = () => {
                               return newSet;
                             });
                           }}
-                          disabled={revealedRows.has(`${actualIndex}-${row.companyName}`)}
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
+                            justifyContent: 'center',
                             gap: '6px',
-                            padding: '6px 12px',
-                            backgroundColor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#e5e7eb' : '#d1fae5',
-                            border: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                            padding: '8px 10px',
+                            backgroundColor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#f3f4f6' : '#f0fdf4',
+                            border: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                             borderRadius: '6px',
-                            cursor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'not-allowed' : 'pointer',
-                            fontSize: '13px',
-                            fontWeight: '500',
-                            color: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#9ca3af' : '#047857',
-                            transition: 'all 0.2s',
-                            whiteSpace: 'nowrap',
-                            opacity: revealedRows.has(`${actualIndex}-${row.companyName}`) ? 0.6 : 1
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
                           }}
                           onMouseEnter={(e) => {
                             if (!revealedRows.has(`${actualIndex}-${row.companyName}`)) {
@@ -3431,9 +3426,9 @@ const Technographics = () => {
                           title={revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                         >
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
-                            'Hidden'
+                            <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
                           ) : (
-                            'Unhide'
+                            <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
                           )}
                         </button>
                       </td>
@@ -3514,7 +3509,7 @@ const Technographics = () => {
                           {highlightText(row.region, searchTerm)}
                         </span>
                       </td>
-                      <td style={{ paddingLeft: '40px' }} onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
+                      <td style={{ textAlign: 'center', padding: '12px 8px' }} onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
                         {highlightText(formatEmployeeSize(row.employeeSize), searchTerm)}
                       </td>
                       <td style={{ paddingLeft: '20px' }} onMouseEnter={(e) => handleMouseEnter(e, row.revenue)} onMouseLeave={handleMouseLeave}>
@@ -4173,7 +4168,7 @@ const Technographics = () => {
         th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
         th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
         th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
-        th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+        th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
         th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
         th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
         th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
@@ -4187,7 +4182,7 @@ const Technographics = () => {
           th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
           th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
           th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
-          th:nth-child(6), td:nth-child(6) { width: 140px !important; } /* Employee Size */
+          th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
           th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
           th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
           th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
