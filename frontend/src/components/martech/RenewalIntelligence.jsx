@@ -664,6 +664,7 @@ const getAccountCountByQtr = (qtr) => {
     };
 
 const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 0;
+    const shouldShowTable = true; // Always show table by default like Technographics
 
     const getProximityValue = (renewalDate) => {
         if (!renewalDate) return 0;
@@ -696,12 +697,11 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
 
     const filteredData = tableData.filter(row => {
 
-        if (!hasMandatoryFilters) return false;
-
+        // Show all data by default (no mandatory filters required)
         const companyMatch = filters.companyName.length === 0 || filters.companyName.includes(row.companyName);
-        const categoryMatch = filters.category.includes(row.category);
+        const categoryMatch = filters.category.length === 0 || filters.category.includes(row.category);
         const productMatch = filters.product.length === 0 || filters.product.includes(row.product);
-        const qtrMatch = filters.qtr.includes(row.qtr);
+        const qtrMatch = filters.qtr.length === 0 || filters.qtr.includes(row.qtr);
         
         let renewalProximityMatch = true;
         if (filters.renewalProximity.length > 0) {
@@ -2048,7 +2048,7 @@ if (aQtr.year !== bQtr.year) {
                         <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             Loading data...
                         </div>
-                    ) : !hasMandatoryFilters ? (
+                    ) : shouldShowTable ? (
                         <div className="table-container">
                             <table>
                                 <thead className="sticky-header">
@@ -2076,6 +2076,156 @@ if (aQtr.year !== bQtr.year) {
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Proximity</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    {filteredData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#9ca3af', height: '400px', verticalAlign: 'middle' }}>
+                                                No data available for the selected filters
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        (() => {
+                                            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                            const startIndex = (currentPage - 1) * rowsPerPage;
+                                            const endIndex = startIndex + rowsPerPage;
+                                            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+                                            return paginatedData.map((row, index) => {
+                                                const actualIndex = startIndex + index;
+                                                const rowKey = `${actualIndex}-${row.companyName}`;
+                                                const isRevealed = revealedRows.has(rowKey);
+
+                                                return (
+                                                    <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px', width: '50px' }}>
+                                                          <input
+                                                            type="checkbox"
+                                                            checked={selectedRows.has(actualIndex)}
+                                                            onChange={(e) => {
+                                                              e.stopPropagation();
+                                                              const newSelected = new Set(selectedRows);
+                                                              if (e.target.checked) {
+                                                                newSelected.add(actualIndex);
+                                                              } else {
+                                                                newSelected.delete(actualIndex);
+                                                              }
+                                                              setSelectedRows(newSelected);
+                                                            }}
+                                                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                          />
+                                                        </td>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px' }}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setRevealedRows(prev => {
+                                                                        const newSet = new Set(prev);
+                                                                        newSet.add(rowKey);
+                                                                        return newSet;
+                                                                    });
+                                                                }}
+                                                                disabled={isRevealed}
+                                                                style={{
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '6px',
+                                                                    padding: '6px 12px',
+                                                                    backgroundColor: isRevealed ? '#e5e7eb' : '#d1fae5',
+                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                                                                    borderRadius: '6px',
+                                                                    cursor: isRevealed ? 'not-allowed' : 'pointer',
+                                                                    fontSize: '13px',
+                                                                    fontWeight: '500',
+                                                                    color: isRevealed ? '#9ca3af' : '#047857',
+                                                                    transition: 'all 0.2s',
+                                                                    whiteSpace: 'nowrap',
+                                                                    opacity: isRevealed ? 0.6 : 1
+                                                                }}
+                                                                onMouseEnter={(e) => {
+                                                                    if (!isRevealed) {
+                                                                        e.currentTarget.style.backgroundColor = '#a7f3d0';
+                                                                        e.currentTarget.style.borderColor = '#6ee7b7';
+                                                                    }
+                                                                }}
+                                                                onMouseLeave={(e) => {
+                                                                    if (!isRevealed) {
+                                                                        e.currentTarget.style.backgroundColor = '#d1fae5';
+                                                                        e.currentTarget.style.borderColor = '#a7f3d0';
+                                                                    }
+                                                                }}
+                                                                title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
+                                                            >
+                                                                {isRevealed ? 'Hide' : 'Unhide'}
+                                                            </button>
+                                                        </td>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
+                                                            {isRevealed ? (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                                    <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                                                                        {row.companyName}
+                                                                    </div>
+                                                                    <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                        {row.domain && row.domain !== 'N/A' && (
+                                                                            <a
+                                                                                href={`https://${row.domain}`}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                style={{
+                                                                                    color: '#3b82f6',
+                                                                                    textDecoration: 'none',
+                                                                                    opacity: 1,
+                                                                                    transition: 'opacity 0.2s'
+                                                                                }}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                                                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                                                                title={`Visit ${row.domain}`}
+                                                                            >
+                                                                                <FaGlobe size={16} />
+                                                                            </a>
+                                                                        )}
+                                                                        {row.linkedinUrl && (
+                                                                            <a
+                                                                                href={row.linkedinUrl}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                style={{
+                                                                                    color: '#0a66c2',
+                                                                                    textDecoration: 'none',
+                                                                                    opacity: 1,
+                                                                                    transition: 'opacity 0.2s'
+                                                                                }}
+                                                                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                                                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                                                                title="View LinkedIn Profile"
+                                                                            >
+                                                                                <FaLinkedin size={20} />
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                                                    ••••••••••••••••••
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
+                                                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                                                                {renderProductIcon(row.product)}
+                                                                {row.product}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
+                                                            {row.qtr}
+                                                        </td>
+                                                        <td style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>
+                                                            <RenewalMeter renewalDate={row.qtr} />
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            });
+                                        })()
+                                    )}
+                                </tbody>
                             </table>
                         </div>
                     ) : (
@@ -2273,7 +2423,7 @@ if (aQtr.year !== bQtr.year) {
                     )}
 
                     {}
-                    {hasMandatoryFilters && filteredData.length > rowsPerPage && (
+                    {shouldShowTable && filteredData.length > rowsPerPage && (
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',

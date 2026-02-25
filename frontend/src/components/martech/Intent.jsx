@@ -182,6 +182,7 @@ const Intent = () => {
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState(new Set());
+  const [revealedRows, setRevealedRows] = useState(new Set());
   const rowsPerPage = 10;
   const filterRef = useRef(null);
 
@@ -267,19 +268,16 @@ const getAccountCountByIntentStatus = (intentStatus) => {
   const filteredData = tableData
     .filter(row => {
 
-      if (filters.intentStatus.length === 0) {
+      // Show all data by default (no mandatory filters required)
+      if (filters.intentStatus.length > 0 && !filters.intentStatus.some(status => String(row.intentStatus).toLowerCase() === String(status).toLowerCase())) {
         return false;
       }
 
-if (!filters.intentStatus.some(status => String(row.intentStatus).toLowerCase() === String(status).toLowerCase())) {
+      if (filters.accountName.length > 0 && !filters.accountName.some(name => String(row.companyName).toLowerCase() === String(name).toLowerCase())) {
         return false;
       }
 
-if (filters.accountName.length > 0 && !filters.accountName.some(name => String(row.companyName).toLowerCase() === String(name).toLowerCase())) {
-        return false;
-      }
-
-const searchMatches = !searchTerm || Object.values(row).some(value =>
+      const searchMatches = !searchTerm || Object.values(row).some(value =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase())
       );
 
@@ -310,12 +308,20 @@ const searchMatches = !searchTerm || Object.values(row).some(value =>
   }, []);
 
   const handleDownloadCSV = () => {
-    const dataToDownload = selectedRows.size > 0 
+    let dataToDownload = selectedRows.size > 0 
       ? filteredData.filter((_, index) => selectedRows.has(index))
       : filteredData;
 
+    // Filter to only include revealed companies
+    dataToDownload = dataToDownload.filter((row) => {
+      // Find the actual index in filteredData to create the correct rowKey
+      const actualIndex = filteredData.indexOf(row);
+      const rowKey = `${actualIndex}-${row.companyName}`;
+      return revealedRows.has(rowKey);
+    });
+
     if (dataToDownload.length === 0) {
-      alert('Please select at least one row to download');
+      alert('No revealed companies to download. Please reveal company details first.');
       return;
     }
 
@@ -661,30 +667,6 @@ useEffect(() => {
           )}
 
           {}
-          {filters.intentStatus.length > 0 && (
-            <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
-              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="13" x2="12" y2="17"></line>
-                <line x1="8" y1="13" x2="8" y2="17"></line>
-                <line x1="16" y1="13" x2="16" y2="17"></line>
-              </svg>
-              Download CSV
-            </button>
-          )}
-        </div>
-      </div>
-
-      {}
-      {filters.intentStatus.length === 0 && (
-        <div className="warning-message">
-          <div className="warning-box">
-            <div className="warning-icon">⚠</div>
-            <div className="warning-text">
-              Please select an Intent Status to view data
-            </div>
-          </div>
           <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -696,10 +678,10 @@ useEffect(() => {
             Download CSV
           </button>
         </div>
-      )}
+      </div>
 
       {}
-      {}
+      {/* Table always shows by default, no mandatory filter required */}
 
       <div className="table-container">
         <table>
@@ -721,6 +703,7 @@ useEffect(() => {
                   style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                 />
               </th>
+              <th style={{ width: '80px', textAlign: 'center' }}>Reveal</th>
               <th>Company Name</th>
               <th>Intent Status</th>
               <th>Intent Level</th>
@@ -736,6 +719,8 @@ useEffect(() => {
               return paginatedData.map((row, idx) => {
                 const isHighlighted = rowMatchesSearch(row, searchTerm);
                 const actualIndex = startIndex + idx;
+                const rowKey = `${actualIndex}-${row.companyName}`;
+                const isRevealed = revealedRows.has(rowKey);
                 return (
                   <tr key={idx} className={isHighlighted ? 'table-row-highlighted' : 'table-row-normal'}>
                     <td style={{ width: '40px', textAlign: 'center' }}>
@@ -754,8 +739,59 @@ useEffect(() => {
                         style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                       />
                     </td>
+                    <td style={{ textAlign: 'center', width: '80px' }}>
+                      <button
+                        onClick={() => {
+                          setRevealedRows(prev => {
+                            const newSet = new Set(prev);
+                            newSet.add(rowKey);
+                            return newSet;
+                          });
+                        }}
+                        disabled={isRevealed}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 12px',
+                          backgroundColor: isRevealed ? '#e5e7eb' : '#d1fae5',
+                          border: isRevealed ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                          borderRadius: '6px',
+                          cursor: isRevealed ? 'not-allowed' : 'pointer',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          color: isRevealed ? '#9ca3af' : '#047857',
+                          transition: 'all 0.2s',
+                          whiteSpace: 'nowrap',
+                          opacity: isRevealed ? 0.6 : 1
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isRevealed) {
+                            e.currentTarget.style.backgroundColor = '#a7f3d0';
+                            e.currentTarget.style.borderColor = '#6ee7b7';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isRevealed) {
+                            e.currentTarget.style.backgroundColor = '#d1fae5';
+                            e.currentTarget.style.borderColor = '#a7f3d0';
+                          }
+                        }}
+                        title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
+                      >
+                        {isRevealed ? 'Hide' : 'Unhide'}
+                      </button>
+                    </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
-                      {highlightText(row.companyName, searchTerm)}
+                      {isRevealed ? (
+                        <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                          {row.companyName}
+                        </div>
+                      ) : (
+                        <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
+                          ••••••••••••••••••
+                        </div>
+                      )}
                     </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.intentStatus)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.intentStatus, searchTerm)}

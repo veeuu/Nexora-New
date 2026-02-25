@@ -533,10 +533,7 @@ const NTP = () => {
     const hasCategoryFilter = Array.isArray(filters.category) && filters.category.length > 0;
     const hasPurchasePredictionFilter = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0;
 
-    if (!hasCategoryFilter || !hasPurchasePredictionFilter) {
-      return [];
-    }
-
+    // Show all data by default (no mandatory filters required)
     return tableData
       .filter(row => {
         
@@ -1629,50 +1626,21 @@ const NTP = () => {
           </div>
           
           {}
-          {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && (
-            <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
-              <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="13" x2="12" y2="17"></line>
-                <line x1="8" y1="13" x2="8" y2="17"></line>
-                <line x1="16" y1="13" x2="16" y2="17"></line>
-              </svg>
-              Download CSV
-            </button>
-          )}
+          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
+            <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="13" x2="12" y2="17"></line>
+              <line x1="8" y1="13" x2="8" y2="17"></line>
+              <line x1="16" y1="13" x2="16" y2="17"></line>
+            </svg>
+            Download CSV
+          </button>
         </div>
       </div>
 
       {}
-      {((!Array.isArray(filters.purchasePrediction) || filters.purchasePrediction.length === 0) || (!Array.isArray(filters.category) || filters.category.length === 0)) && (
-        <div style={{
-          backgroundColor: '#fef3c7',
-          border: '1px solid #fcd34d',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          maxWidth: 'fit-content',
-          marginBottom: '20px'
-        }}>
-          <div style={{
-            fontSize: '18px',
-            color: '#d97706',
-            flexShrink: 0
-          }}>
-            ⓘ
-          </div>
-          <div style={{
-            fontSize: '13px',
-            color: '#92400e',
-            fontWeight: '500'
-          }}>
-            Please select both Category and Purchase Prediction to view data
-          </div>
-        </div>
-      )}
+      {/* Table always shows by default, no mandatory filters required */}
       
       <div className="table-container">
         <table>
