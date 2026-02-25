@@ -1876,11 +1876,9 @@ const NTP = () => {
                               </>
                             ) : (
                               <>
-                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                  ••••••••••••••••••
+                                <div style={{ fontWeight: '600', color: '#1f2937', backgroundColor: '#f3f4f6', height: '20px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none' }}>
                                 </div>
-                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                  ••••••••••
+                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#f3f4f6', height: '16px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
                                 </div>
                               </>
                             )}

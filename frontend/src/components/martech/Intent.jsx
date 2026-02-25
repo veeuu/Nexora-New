@@ -794,8 +794,7 @@ useEffect(() => {
                           {row.companyName}
                         </div>
                       ) : (
-                        <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                          ••••••••••••••••••
+                        <div style={{ fontWeight: '600', color: '#1f2937', backgroundColor: '#f3f4f6', height: '20px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none' }}>
                         </div>
                       )}
                     </td>
