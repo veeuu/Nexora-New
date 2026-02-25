@@ -600,7 +600,9 @@ const formatEmployeeSize = (value) => {
 const getEmployeeSizeRange = (value) => {
   if (!value || value === 'N/A') return null;
   
-  const num = parseInt(value);
+  // Remove commas and + sign, then parse
+  const cleanValue = String(value).replace(/[,+]/g, '').trim();
+  const num = parseInt(cleanValue);
   if (isNaN(num)) return null;
   
   return employeeSizeRanges.find(range => num >= range.min && num <= range.max);
@@ -609,8 +611,34 @@ const getEmployeeSizeRange = (value) => {
 const getRevenueRange = (value) => {
   if (!value || value === 'N/A') return null;
 
-  const cleanValue = String(value).replace(/[$,]/g, '');
-  const num = parseFloat(cleanValue);
+  let num = 0;
+  const revenueStr = String(value).trim().toUpperCase();
+  
+  // Handle different revenue formats
+  if (revenueStr.includes('B')) {
+    // Handle billions: "$1.5B" or "1.5B"
+    const billionMatch = revenueStr.match(/(\d+\.?\d*)\s*B/);
+    if (billionMatch) {
+      num = parseFloat(billionMatch[1]) * 1000000000;
+    }
+  } else if (revenueStr.includes('M')) {
+    // Handle millions: "$1.5M" or "1.5M"
+    const millionMatch = revenueStr.match(/(\d+\.?\d*)\s*M/);
+    if (millionMatch) {
+      num = parseFloat(millionMatch[1]) * 1000000;
+    }
+  } else if (revenueStr.includes('K')) {
+    // Handle thousands: "$1.5K" or "1.5K"
+    const thousandMatch = revenueStr.match(/(\d+\.?\d*)\s*K/);
+    if (thousandMatch) {
+      num = parseFloat(thousandMatch[1]) * 1000;
+    }
+  } else {
+    // Handle plain numbers with or without $ and commas
+    const cleanValue = revenueStr.replace(/[$,]/g, '');
+    num = parseFloat(cleanValue);
+  }
+  
   if (isNaN(num)) return null;
   
   return revenueRanges.find(range => num >= range.min && num <= range.max);
@@ -619,7 +647,9 @@ const getRevenueRange = (value) => {
 const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
   if (!employeeSize || employeeSize === 'N/A') return false;
   
-  const num = parseInt(employeeSize);
+  // Remove commas and + sign, then parse
+  const cleanValue = String(employeeSize).replace(/[,+]/g, '').trim();
+  const num = parseInt(cleanValue);
   if (isNaN(num)) return false;
   
   const range = employeeSizeRanges.find(r => r.label === rangeLabel);
@@ -631,8 +661,34 @@ const isEmployeeSizeInRange = (employeeSize, rangeLabel) => {
 const isRevenueInRange = (revenue, rangeLabel) => {
   if (!revenue || revenue === 'N/A') return false;
 
-  const cleanValue = String(revenue).replace(/[$,]/g, '');
-  const num = parseFloat(cleanValue);
+  let num = 0;
+  const revenueStr = String(revenue).trim().toUpperCase();
+  
+  // Handle different revenue formats
+  if (revenueStr.includes('B')) {
+    // Handle billions: "$1.5B" or "1.5B"
+    const billionMatch = revenueStr.match(/(\d+\.?\d*)\s*B/);
+    if (billionMatch) {
+      num = parseFloat(billionMatch[1]) * 1000000000;
+    }
+  } else if (revenueStr.includes('M')) {
+    // Handle millions: "$1.5M" or "1.5M"
+    const millionMatch = revenueStr.match(/(\d+\.?\d*)\s*M/);
+    if (millionMatch) {
+      num = parseFloat(millionMatch[1]) * 1000000;
+    }
+  } else if (revenueStr.includes('K')) {
+    // Handle thousands: "$1.5K" or "1.5K"
+    const thousandMatch = revenueStr.match(/(\d+\.?\d*)\s*K/);
+    if (thousandMatch) {
+      num = parseFloat(thousandMatch[1]) * 1000;
+    }
+  } else {
+    // Handle plain numbers with or without $ and commas
+    const cleanValue = revenueStr.replace(/[$,]/g, '');
+    num = parseFloat(cleanValue);
+  }
+  
   if (isNaN(num)) return false;
   
   const range = revenueRanges.find(r => r.label === rangeLabel);
