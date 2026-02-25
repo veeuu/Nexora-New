@@ -808,7 +808,7 @@ useEffect(() => {
       </div>
 
       {}
-      {hasMandatoryFilters && filteredData.length > rowsPerPage && (
+      {filteredData.length > rowsPerPage && (
       <div className="pagination-container">
           <div className="pagination-info">
               Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
