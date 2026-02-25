@@ -1075,12 +1075,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    if (Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').length && getUniqueOptions('purchasePrediction').length > 0) {
+                    const validOptions = getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected');
+                    if (Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === validOptions.length && validOptions.length > 0) {
                       
                       setFilters(prev => ({ ...prev, purchasePrediction: [] }));
                     } else {
                       
-                      setFilters(prev => ({ ...prev, purchasePrediction: getUniqueOptions('purchasePrediction') }));
+                      setFilters(prev => ({ ...prev, purchasePrediction: validOptions }));
                     }
                   }}
                   style={{
@@ -1098,7 +1099,7 @@ const NTP = () => {
                 >
                   <input
                     type="checkbox"
-                    checked={Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').length && getUniqueOptions('purchasePrediction').length > 0}
+                    checked={Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length && getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length > 0}
                     onChange={() => {}}
                     style={{
                       width: '16px',
@@ -1110,6 +1111,7 @@ const NTP = () => {
                   All
                 </div>
                 {getUniqueOptions('purchasePrediction')
+                  .filter(option => option !== 'Not Detected')
                   .sort((a, b) => {
                     const countA = getCompanyCountByPurchasePrediction(a);
                     const countB = getCompanyCountByPurchasePrediction(b);
@@ -1276,12 +1278,13 @@ const NTP = () => {
               }}>
                 <div
                   onClick={() => {
-                    if (Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0) {
+                    const validOptions = getUniqueOptions('category').filter(option => option !== 'Not Detected');
+                    if (Array.isArray(filters.category) && filters.category.length === validOptions.length && validOptions.length > 0) {
                       
                       setFilters(prev => ({ ...prev, category: [] }));
                     } else {
                       
-                      setFilters(prev => ({ ...prev, category: getUniqueOptions('category') }));
+                      setFilters(prev => ({ ...prev, category: validOptions }));
                     }
                   }}
                   style={{
@@ -1299,7 +1302,7 @@ const NTP = () => {
                 >
                   <input
                     type="checkbox"
-                    checked={Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
+                    checked={Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').filter(option => option !== 'NOT detected').length && getUniqueOptions('category').filter(option => option !== 'NOT detected').length > 0}
                     onChange={() => {}}
                     style={{
                       width: '16px',
@@ -1311,6 +1314,7 @@ const NTP = () => {
                   All
                 </div>
                 {getUniqueOptions('category')
+                  .filter(option => option !== 'Not Detected')
                   .sort((a, b) => {
                     const countA = getCompanyCountByCategory(a);
                     const countB = getCompanyCountByCategory(b);
@@ -1957,12 +1961,18 @@ const NTP = () => {
                           >
                             {company.technologies.map((t, idx) => (
                               <span key={idx} style={{ whiteSpace: 'nowrap' }}>
-                                {t.purchaseProbability}
+                                {(() => {
+                                  const val = String(t.purchaseProbability || '0').replace('%', '');
+                                  return `${parseFloat(val).toFixed(2)}%`;
+                                })()}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          tech.purchaseProbability
+                          (() => {
+                            const val = String(tech.purchaseProbability || '0').replace('%', '');
+                            return `${parseFloat(val).toFixed(2)}%`;
+                          })()
                         )}
                       </td>
                     </tr>
