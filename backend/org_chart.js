@@ -42,7 +42,23 @@ CANVAS_WIDTH: 900,
 MIN_CANVAS_WIDTH: 900,
   MIN_CANVAS_HEIGHT: 500,
   EMPLOYEES_PER_WIDTH_UNIT: 3,
-  EMPLOYEES_PER_HEIGHT_UNIT: 2
+  EMPLOYEES_PER_HEIGHT_UNIT: 2,
+  
+  // Dynamic sizing tiers (4-tier system)
+  TIER_XS_THRESHOLD: 5,      // 1-5 employees
+  TIER_XS_WIDTH: 0.25,
+  TIER_XS_HEIGHT: 0.15,
+  
+  TIER_S_THRESHOLD: 8,       // 6-8 employees
+  TIER_S_WIDTH: 0.40,
+  TIER_S_HEIGHT: 0.25,
+  
+  TIER_M_THRESHOLD: 12,      // 9-12 employees
+  TIER_M_WIDTH: 0.65,
+  TIER_M_HEIGHT: 0.35,
+  
+  TIER_L_WIDTH: 1.0,         // 13+ employees
+  TIER_L_HEIGHT: 0.50
 };
 
 function readCSVFile(csvFilePath) {
@@ -66,6 +82,40 @@ function readCSVFile(csvFilePath) {
         reject(error);
       });
   });
+}
+
+function getBoxDimensionsForCompany(companyData) {
+  const rowCount = companyData.length;
+  
+  if (rowCount <= CONFIG.TIER_XS_THRESHOLD) {
+    // Tier XS: 1-5 employees
+    return {
+      boxWidth: CONFIG.TIER_XS_WIDTH,
+      boxHeight: CONFIG.TIER_XS_HEIGHT,
+      tier: 'XS'
+    };
+  } else if (rowCount <= CONFIG.TIER_S_THRESHOLD) {
+    // Tier S: 6-8 employees
+    return {
+      boxWidth: CONFIG.TIER_S_WIDTH,
+      boxHeight: CONFIG.TIER_S_HEIGHT,
+      tier: 'S'
+    };
+  } else if (rowCount <= CONFIG.TIER_M_THRESHOLD) {
+    // Tier M: 9-12 employees
+    return {
+      boxWidth: CONFIG.TIER_M_WIDTH,
+      boxHeight: CONFIG.TIER_M_HEIGHT,
+      tier: 'M'
+    };
+  } else {
+    // Tier L: 13+ employees
+    return {
+      boxWidth: CONFIG.TIER_L_WIDTH,
+      boxHeight: CONFIG.TIER_L_HEIGHT,
+      tier: 'L'
+    };
+  }
 }
 
 function calculateCanvasDimensions(employees, roots) {
@@ -363,13 +413,18 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
   }
 }
 
-function generateOrgChartPlotly(data, companyName = 'Organization', location = '') {
+function generateOrgChartPlotly(data, companyName = 'Organization', location = '', customBoxWidth = null, customBoxHeight = null) {
   const { employees, roots, edges } = buildTreeFromData(data);
+
+  // Get dynamic box dimensions based on company data size
+  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight, isSmall } = getBoxDimensionsForCompany(data);
+  
+  // Use custom dimensions if provided, otherwise use dynamic
+  const boxWidth = customBoxWidth !== null ? customBoxWidth : dynamicBoxWidth;
+  const boxHeight = customBoxHeight !== null ? customBoxHeight : dynamicBoxHeight;
 
 const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
 
-const boxWidth = CONFIG.BOX_WIDTH;
-  const boxHeight = CONFIG.BOX_HEIGHT;
   const verticalGap = CONFIG.VERTICAL_GAP;
   const horizontalGap = CONFIG.HORIZONTAL_GAP;
 
@@ -639,8 +694,11 @@ function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CO
 }
 
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
+  // Get dynamic box dimensions based on company data size
+  const { boxWidth, boxHeight, isSmall } = getBoxDimensionsForCompany(data);
+  
   const htmlContent = generateOrgChartHTML(data, companyName, location);
-  const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
   const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
 
@@ -679,7 +737,10 @@ await page.screenshot({ path: outputPath, fullPage: false });
 }
 
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
-  const plotlyData = generateOrgChartPlotly(data, companyName, location);
+  // Get dynamic box dimensions based on company data size
+  const { boxWidth, boxHeight, isSmall } = getBoxDimensionsForCompany(data);
+  
+  const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
   const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
 
@@ -737,6 +798,25 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     </div>
   </div>
   <script>
+    // Build employee data map
+    const employeeDataMap = {};
+    const rawData = ${JSON.stringify(data)};
+    rawData.forEach(row => {
+      const name = String(row.Name || 'Unnamed').trim();
+      employeeDataMap[name] = {
+        name: row.Name || '',
+        role: row.Role || '',
+        email: row.email || '',
+        linkedin: row.Linkedin || '',
+        reportsTo: row['Reports To'] || '',
+        category: row.Category || '',
+        hierarchy: row.hierarchy || 'Other',
+        uniqueId: row['Unique ID'] || '',
+        companyName: row['Company Name'] || ''
+      };
+    });
+    window.employeeDataMap = employeeDataMap;
+
     const data = ${JSON.stringify(plotlyData.data)};
     const layout = ${JSON.stringify(plotlyData.layout)};
     const config = {
@@ -746,79 +826,134 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       scrollZoom: false
     };
 
-window.categoriesMap = {};
+    window.categoriesMap = {};
     if (layout && layout.shapes) {
       layout.shapes.forEach((shape, index) => {
         if (shape.categories && Array.isArray(shape.categories)) {
           window.categoriesMap[index] = shape.categories;
-
         }
       });
     }
 
-if (layout && layout.annotations) {
+    if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
 
-window.addEventListener('message', function(event) {
-
-if (event.data && event.data.type === 'highlightCategory') {
-        const category = event.data.category;
-
-const plotDiv = document.querySelector('#chart');
-
-if (!plotDiv || !plotDiv.layout) {
-
-          return;
-        }
-
-const plotLayout = plotDiv.layout;
-        if (!plotLayout || !plotLayout.shapes) {
-
-          return;
-        }
-
-const updateObj = {};
-        let shapesUpdated = 0;
-
-plotLayout.shapes.forEach((shape, index) => {
+    // ===== API FUNCTIONS =====
+    window.OrgChartAPI = {
+      getAllEmployees: function() {
+        return window.employeeDataMap;
+      },
+      
+      getEmployee: function(name) {
+        return window.employeeDataMap[name] || null;
+      },
+      
+      getEmployeesByRole: function(role) {
+        return Object.values(window.employeeDataMap).filter(emp => emp.role.includes(role));
+      },
+      
+      getEmployeesByCategory: function(category) {
+        return Object.values(window.employeeDataMap).filter(emp => emp.category.includes(category));
+      },
+      
+      getEmployeesByHierarchy: function(hierarchy) {
+        return Object.values(window.employeeDataMap).filter(emp => emp.hierarchy === hierarchy);
+      },
+      
+      getDirectReports: function(managerName) {
+        return Object.values(window.employeeDataMap).filter(emp => emp.reportsTo === managerName);
+      },
+      
+      highlightCategory: function(category) {
+        const plotDiv = document.querySelector('#chart');
+        if (!plotDiv || !plotDiv.layout) return;
+        
+        const plotLayout = plotDiv.layout;
+        if (!plotLayout || !plotLayout.shapes) return;
+        
+        const updateObj = {};
+        plotLayout.shapes.forEach((shape, index) => {
           const shapeCategories = window.categoriesMap[index] || [];
-
-if (category === 'All' || category === '') {
-
+          
+          if (category === 'All' || category === '') {
             updateObj[\`shapes[\${index}].line.width\`] = 0;
             updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
-
-          } else if (shapeCategories && shapeCategories.length > 0 && shapeCategories.includes(category)) {
-
-            const categoryColors = {
-              'IT': '#000000',
-              'Generalized': '#000000',
-              'AI': '#000000',
-              'AI/ML': '#000000',
-              'Cloud': '#000000',
-              'CRM': '#000000',
-              'Database': '#000000',
-              'Other': '#000000'
-            };
+          } else if (shapeCategories.includes(category)) {
             updateObj[\`shapes[\${index}].line.width\`] = 3;
-            updateObj[\`shapes[\${index}].line.color\`] = categoryColors[category] || '#000';
-
-            shapesUpdated++;
+            updateObj[\`shapes[\${index}].line.color\`] = '#000000';
           } else {
-
             updateObj[\`shapes[\${index}].line.width\`] = 0;
             updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
           }
         });
+        
+        Plotly.relayout(plotDiv, updateObj);
+      },
+      
+      exportAsJSON: function() {
+        return JSON.stringify(window.employeeDataMap, null, 2);
+      },
+      
+      exportAsCSV: function() {
+        const employees = Object.values(window.employeeDataMap);
+        if (employees.length === 0) return '';
+        
+        const headers = Object.keys(employees[0]);
+        const csvHeaders = headers.join(',');
+        const csvRows = employees.map(emp => {
+          return headers.map(header => {
+            const value = emp[header];
+            if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+              return \`"\${value.replace(/"/g, '""')}"\`;
+            }
+            return value;
+          }).join(',');
+        });
+        
+        return [csvHeaders, ...csvRows].join('\\n');
+      },
+      
+      getStatistics: function() {
+        const employees = Object.values(window.employeeDataMap);
+        const roles = {};
+        const categories = {};
+        const hierarchies = {};
+        
+        employees.forEach(emp => {
+          roles[emp.role] = (roles[emp.role] || 0) + 1;
+          hierarchies[emp.hierarchy] = (hierarchies[emp.hierarchy] || 0) + 1;
+          
+          if (emp.category) {
+            emp.category.split(',').forEach(cat => {
+              const trimmed = cat.trim();
+              categories[trimmed] = (categories[trimmed] || 0) + 1;
+            });
+          }
+        });
+        
+        return {
+          totalEmployees: employees.length,
+          roles: roles,
+          categories: categories,
+          hierarchies: hierarchies
+        };
+      }
+    };
 
-Plotly.relayout(plotDiv, updateObj);
-
+    // ===== MESSAGE HANDLER =====
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'highlightCategory') {
+        window.OrgChartAPI.highlightCategory(event.data.category);
       }
     });
-  </script>
+
+    // ===== CUSTOM EVENTS =====
+    window.addEventListener('employeeClicked', function(event) {
+      console.log('Employee clicked:', event.detail);
+    });
   </script>
 </body>
 </html>`;
