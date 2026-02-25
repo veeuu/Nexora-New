@@ -162,7 +162,7 @@ const Home = () => {
           {}
           <div className="home-stats-grid">
             <AnimatedStatCard
-              number="535M+"
+              number="600M+"
               label="Total Companies"
               cardClass="home-stat-card-teal"
               numberClass="home-stat-number-teal"
@@ -171,7 +171,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="510M+"
+              number="590M+"
               label="Technographics"
               cardClass="home-stat-card-orange"
               numberClass="home-stat-number-orange"
@@ -180,7 +180,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="450M+"
+              number="530M+"
               label="Renewal Intelligence"
               cardClass="home-stat-card-pink"
               numberClass="home-stat-number-pink"
@@ -189,7 +189,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="420M+"
+              number="470M+"
               label="Intent"
               cardClass="home-stat-card-purple"
               numberClass="home-stat-number-purple"
@@ -198,7 +198,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="370M+"
+              number="420M+"
               label="Buying Group"
               cardClass="home-stat-card-yellow"
               numberClass="home-stat-number-yellow"
@@ -207,7 +207,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="480M+"
+              number="530M+"
               label="Next Tech Purchase®"
               cardClass="home-stat-card-blue"
               numberClass="home-stat-number-blue"
