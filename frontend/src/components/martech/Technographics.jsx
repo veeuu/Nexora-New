@@ -3381,7 +3381,7 @@ const Technographics = () => {
                           )}
                         </button>
                       </td>
-                      <td onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
+                      <td style={{ overflow: 'visible', whiteSpace: 'normal' }} onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
                             <>
@@ -3441,11 +3441,9 @@ const Technographics = () => {
                             </>
                           ) : (
                             <>
-                              <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ••••••••••••••••••
+                              <div style={{ fontWeight: '600', color: '#1f2937', backgroundColor: '#f3f4f6', height: '20px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none' }}>
                               </div>
-                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                ••••••••••
+                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#f3f4f6', height: '16px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
                               </div>
                             </>
                           )}
@@ -4041,26 +4039,34 @@ const Technographics = () => {
 
         .table-container::-webkit-scrollbar {
           width: 0 !important;
+          height: 0 !important;
+          display: none !important;
         }
 
         .table-container::-webkit-scrollbar-track {
           background: transparent !important;
+          display: none !important;
         }
 
         .table-container::-webkit-scrollbar-thumb {
           background: transparent !important;
+          display: none !important;
         }
 
         .tech-scroll-container::-webkit-scrollbar {
-          display: none;
+          width: 0 !important;
+          height: 0 !important;
+          display: none !important;
         }
 
         .tech-scroll-container::-webkit-scrollbar-track {
-          display: none;
+          background: transparent !important;
+          display: none !important;
         }
 
         .tech-scroll-container::-webkit-scrollbar-thumb {
-          display: none;
+          background: transparent !important;
+          display: none !important;
         }
         
         .technographics-sticky-header {
@@ -4090,14 +4096,15 @@ const Technographics = () => {
           padding: 12px 15px;
           text-align: left;
           border-bottom: 1px solid #ddd;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          white-space: normal;
+          overflow: visible;
+          text-overflow: clip;
           cursor: default;
         }
         
         td {
           position: relative;
+          overflow: visible;
         }
         
         td:hover {
