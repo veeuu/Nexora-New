@@ -2021,7 +2021,13 @@ const Technographics = () => {
                     />
                     <span>ALL</span>
                   </div>
-                  {getUniqueOptions('region').map((region) => (
+                  {getUniqueOptions('region')
+                    .sort((a, b) => {
+                      const countA = getCompanyCountByRegion(a);
+                      const countB = getCompanyCountByRegion(b);
+                      return countB - countA;
+                    })
+                    .map((region) => (
                     <div
                       key={region}
                       onClick={() => {
@@ -2233,7 +2239,13 @@ const Technographics = () => {
                   />
                   All
                 </div>
-                {getUniqueOptions('category').map((option, idx) => (
+                {getUniqueOptions('category')
+                  .sort((a, b) => {
+                    const countA = getCompanyCountByCategory(a);
+                    const countB = getCompanyCountByCategory(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => (
                   <div
                     key={idx}
                     onClick={(e) => {
@@ -2403,7 +2415,13 @@ const Technographics = () => {
                     />
                     <span>ALL</span>
                   </div>
-                  {getUniqueOptions('industry').map((industry) => (
+                  {getUniqueOptions('industry')
+                    .sort((a, b) => {
+                      const countA = getCompanyCountByIndustry(a);
+                      const countB = getCompanyCountByIndustry(b);
+                      return countB - countA;
+                    })
+                    .map((industry) => (
                     <div
                       key={industry}
                       onClick={() => {
@@ -3031,7 +3049,13 @@ const Technographics = () => {
                     />
                     <span>ALL</span>
                   </div>
-                  {getUniqueOptions('technology').map((tech) => (
+                  {getUniqueOptions('technology')
+                    .sort((a, b) => {
+                      const countA = getCompanyCountByTechnology(a);
+                      const countB = getCompanyCountByTechnology(b);
+                      return countB - countA;
+                    })
+                    .map((tech) => (
                     <div
                       key={tech}
                       onClick={() => {

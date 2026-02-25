@@ -471,7 +471,13 @@ const getProductCountBySubCategory = (subCategory) => {
                   />
                   All
                 </div>
-                {getUniqueOptions('category').map((option, idx) => (
+                {getUniqueOptions('category')
+                  .sort((a, b) => {
+                    const countA = getProductCountByCategory(a);
+                    const countB = getProductCountByCategory(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => (
                   <div
                     key={idx}
                     onClick={() => handleFilterChange('category', option)}

@@ -1109,7 +1109,13 @@ const NTP = () => {
                   />
                   All
                 </div>
-                {getUniqueOptions('purchasePrediction').map((option, idx) => {
+                {getUniqueOptions('purchasePrediction')
+                  .sort((a, b) => {
+                    const countA = getCompanyCountByPurchasePrediction(a);
+                    const countB = getCompanyCountByPurchasePrediction(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.includes(option);
                   return (
                     <div
@@ -1304,7 +1310,13 @@ const NTP = () => {
                   />
                   All
                 </div>
-                {getUniqueOptions('category').map((option, idx) => {
+                {getUniqueOptions('category')
+                  .sort((a, b) => {
+                    const countA = getCompanyCountByCategory(a);
+                    const countB = getCompanyCountByCategory(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.category) && filters.category.includes(option);
                   return (
                     <div
@@ -1469,7 +1481,13 @@ const NTP = () => {
                   />
                   All
                 </div>
-                {getUniqueOptions('technology').map((option, idx) => {
+                {getUniqueOptions('technology')
+                  .sort((a, b) => {
+                    const countA = getCompanyCountByTechnology(a);
+                    const countB = getCompanyCountByTechnology(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.technology) && filters.technology.includes(option);
                   return (
                     <div

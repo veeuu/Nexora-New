@@ -124,7 +124,7 @@ const RenewalMeter = ({ renewalDate }) => {
   };
 
   const getStatusLabel = (proximity) => {
-    if (proximity >= 86) return 'Approaching Renewal';
+    if (proximity >= 86) return 'Upcoming Renewal';
     if (proximity >= 46) return 'Mid-Term Renewal';
     return 'Long-Term Renewal';
   };
@@ -613,7 +613,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['Approaching Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+        return ['Upcoming Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
     };
 
     const getUniqueCategories = () => {
@@ -707,7 +707,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['Approaching Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+            const statusLabels = ['Upcoming Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -1299,7 +1299,13 @@ if (aQtr.year !== bQtr.year) {
                         />
                         All
                       </div>
-                      {getUniqueCategories().map((option, idx) => (
+                      {getUniqueCategories()
+                        .sort((a, b) => {
+                          const countA = getAccountCountByCategory(a);
+                          const countB = getAccountCountByCategory(b);
+                          return countB - countA;
+                        })
+                        .map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
@@ -1460,7 +1466,13 @@ if (aQtr.year !== bQtr.year) {
                       </div>
 
                       {}
-                      {getUniqueProducts().map((option, idx) => (
+                      {getUniqueProducts()
+                        .sort((a, b) => {
+                          const countA = getAccountCountByProduct(a);
+                          const countB = getAccountCountByProduct(b);
+                          return countB - countA;
+                        })
+                        .map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
@@ -1621,7 +1633,13 @@ if (aQtr.year !== bQtr.year) {
                         />
                         All
                       </div>
-                      {getUniqueQtrs().map((option, idx) => (
+                      {getUniqueQtrs()
+                        .sort((a, b) => {
+                          const countA = getAccountCountByQtr(a);
+                          const countB = getAccountCountByQtr(b);
+                          return countB - countA;
+                        })
+                        .map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
@@ -1754,7 +1772,7 @@ if (aQtr.year !== bQtr.year) {
                         backgroundColor: '#f9fafb'
                       }}>
                         <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
-                        <div>• Approaching (&lt;1 year)</div>
+                        <div>• Upcoming (&lt;1 year)</div>
                         <div>• Mid-Term (1–2 years)</div>
                         <div>• Long-Term (2+ years)</div>
                       </div>

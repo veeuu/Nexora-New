@@ -610,7 +610,13 @@ useEffect(() => {
                   />
                   All
                 </div>
-                {getUniqueOptions('intentStatus').map((option, idx) => {
+                {getUniqueOptions('intentStatus')
+                  .sort((a, b) => {
+                    const countA = getAccountCountByIntentStatus(a);
+                    const countB = getAccountCountByIntentStatus(b);
+                    return countB - countA;
+                  })
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.intentStatus) && filters.intentStatus.includes(option);
                   return (
                     <div
