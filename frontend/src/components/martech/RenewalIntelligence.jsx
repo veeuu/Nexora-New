@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaGlobe, FaLinkedin } from 'react-icons/fa';
+import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
 
@@ -2139,22 +2139,17 @@ if (aQtr.year !== bQtr.year) {
                                                                         return newSet;
                                                                     });
                                                                 }}
-                                                                disabled={isRevealed}
                                                                 style={{
                                                                     display: 'inline-flex',
                                                                     alignItems: 'center',
+                                                                    justifyContent: 'center',
                                                                     gap: '6px',
-                                                                    padding: '6px 12px',
-                                                                    backgroundColor: isRevealed ? '#e5e7eb' : '#d1fae5',
-                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                                                                    padding: '8px 10px',
+                                                                    backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
+                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                                                                     borderRadius: '6px',
-                                                                    cursor: isRevealed ? 'not-allowed' : 'pointer',
-                                                                    fontSize: '13px',
-                                                                    fontWeight: '500',
-                                                                    color: isRevealed ? '#9ca3af' : '#047857',
-                                                                    transition: 'all 0.2s',
-                                                                    whiteSpace: 'nowrap',
-                                                                    opacity: isRevealed ? 0.6 : 1
+                                                                    cursor: 'pointer',
+                                                                    transition: 'all 0.2s'
                                                                 }}
                                                                 onMouseEnter={(e) => {
                                                                     if (!isRevealed) {
@@ -2170,7 +2165,11 @@ if (aQtr.year !== bQtr.year) {
                                                                 }}
                                                                 title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
                                                             >
-                                                                {isRevealed ? 'Hide' : 'Unhide'}
+                                                                {isRevealed ? (
+                                                                    <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
+                                                                ) : (
+                                                                    <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
+                                                                )}
                                                             </button>
                                                         </td>
                                                         <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>
@@ -2319,22 +2318,18 @@ if (aQtr.year !== bQtr.year) {
                                                                         return newSet;
                                                                     });
                                                                 }}
-                                                                disabled={isRevealed}
                                                                 style={{
                                                                     display: 'inline-flex',
                                                                     alignItems: 'center',
                                                                     gap: '6px',
-                                                                    padding: '6px 12px',
-                                                                    backgroundColor: isRevealed ? '#e5e7eb' : '#d1fae5',
-                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                                                                    padding: '8px 10px',
+                                                                    backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
+                                                                    border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                                                                     borderRadius: '6px',
-                                                                    cursor: isRevealed ? 'not-allowed' : 'pointer',
-                                                                    fontSize: '13px',
-                                                                    fontWeight: '500',
-                                                                    color: isRevealed ? '#9ca3af' : '#047857',
+                                                                    cursor: 'pointer',
                                                                     transition: 'all 0.2s',
-                                                                    whiteSpace: 'nowrap',
-                                                                    opacity: isRevealed ? 0.6 : 1
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center'
                                                                 }}
                                                                 onMouseEnter={(e) => {
                                                                     if (!isRevealed) {
@@ -2350,7 +2345,11 @@ if (aQtr.year !== bQtr.year) {
                                                                 }}
                                                                 title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
                                                             >
-                                                                {isRevealed ? 'Hide' : 'Unhide'}
+                                                                {isRevealed ? (
+                                                                    <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
+                                                                ) : (
+                                                                    <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
+                                                                )}
                                                             </button>
                                                         </td>
                                                         <td style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}

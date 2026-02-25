@@ -5,7 +5,7 @@ import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
 import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
 import probabilityDist from '../../final_charts/probability_dist (1).png';
-import { FaLinkedin, FaGlobe, FaRobot } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
 
 import { performanceMonitor } from '../../utils/performanceMonitor';
@@ -1781,22 +1781,17 @@ const NTP = () => {
                                 return newSet;
                               });
                             }}
-                            disabled={revealedRows.has(`${actualIndex}-${company.companyName}`)}
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
+                              justifyContent: 'center',
                               gap: '6px',
-                              padding: '6px 12px',
-                              backgroundColor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#e5e7eb' : '#d1fae5',
-                              border: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #a7f3d0',
+                              padding: '8px 10px',
+                              backgroundColor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#f3f4f6' : '#f0fdf4',
+                              border: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                               borderRadius: '6px',
-                              cursor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'not-allowed' : 'pointer',
-                              fontSize: '13px',
-                              fontWeight: '500',
-                              color: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#9ca3af' : '#047857',
-                              transition: 'all 0.2s',
-                              whiteSpace: 'nowrap',
-                              opacity: revealedRows.has(`${companyIndex}-${company.companyName}`) ? 0.6 : 1
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
                             }}
                             onMouseEnter={(e) => {
                               if (!revealedRows.has(`${companyIndex}-${company.companyName}`)) {
@@ -1812,7 +1807,11 @@ const NTP = () => {
                             }}
                             title={revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                           >
-                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Hide' : 'Unhide'}
+                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
+                              <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
+                            ) : (
+                              <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
+                            )}
                           </button>
                         </td>
                       )}
