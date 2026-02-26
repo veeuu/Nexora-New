@@ -1378,7 +1378,29 @@ const Technographics = () => {
       return searchMatches;
     })
     .sort((a, b) => {
-      
+      // Helper function to check if a row has complete data
+      const isRowComplete = (row) => {
+        // Check if all key fields have values (not empty, not 'N/A', not null/undefined)
+        const hasCompanyName = row.companyName && String(row.companyName).trim() !== '';
+        const hasIndustry = row.industry && String(row.industry).trim() !== '' && String(row.industry).toLowerCase() !== 'n/a';
+        const hasRegion = row.region && String(row.region).trim() !== '' && String(row.region).toLowerCase() !== 'n/a';
+        const hasEmployeeSize = row.employeeSize && String(row.employeeSize).trim() !== '' && String(row.employeeSize).toLowerCase() !== 'n/a';
+        const hasRevenue = row.revenue && String(row.revenue).trim() !== '' && String(row.revenue).toLowerCase() !== 'n/a';
+        const hasTechnology = (row.technologies && row.technologies.length > 0) || (row.technology && String(row.technology).trim() !== '');
+        const hasPreviousDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.previousDetectedDate && String(td.previousDetectedDate).trim() !== '');
+        const hasLatestDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.latestDetectedDate && String(td.latestDetectedDate).trim() !== '');
+
+        return hasCompanyName && hasIndustry && hasRegion && hasEmployeeSize && hasRevenue && hasTechnology && hasPreviousDate && hasLatestDate;
+      };
+
+      const aComplete = isRowComplete(a);
+      const bComplete = isRowComplete(b);
+
+      // Complete rows first, incomplete rows last
+      if (aComplete && !bComplete) return -1;
+      if (!aComplete && bComplete) return 1;
+
+      // If both complete or both incomplete, sort by search match
       const aMatches = rowMatchesSearch(a);
       const bMatches = rowMatchesSearch(b);
 
@@ -1416,7 +1438,31 @@ const Technographics = () => {
     return acc;
   }, {});
 
-  const groupedDataArray = Object.values(groupedData);
+  const groupedDataArray = Object.values(groupedData).sort((a, b) => {
+    // Helper function to check if a row has complete data
+    const isRowComplete = (row) => {
+      // Check if all key fields have values (not empty, not 'N/A', not null/undefined)
+      const hasCompanyName = row.companyName && String(row.companyName).trim() !== '';
+      const hasIndustry = row.industry && String(row.industry).trim() !== '' && String(row.industry).toLowerCase() !== 'n/a';
+      const hasRegion = row.region && String(row.region).trim() !== '' && String(row.region).toLowerCase() !== 'n/a';
+      const hasEmployeeSize = row.employeeSize && String(row.employeeSize).trim() !== '' && String(row.employeeSize).toLowerCase() !== 'n/a';
+      const hasRevenue = row.revenue && String(row.revenue).trim() !== '' && String(row.revenue).toLowerCase() !== 'n/a';
+      const hasTechnology = (row.technologies && row.technologies.length > 0) || (row.technology && String(row.technology).trim() !== '');
+      const hasPreviousDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.previousDetectedDate && String(td.previousDetectedDate).trim() !== '');
+      const hasLatestDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.latestDetectedDate && String(td.latestDetectedDate).trim() !== '');
+
+      return hasCompanyName && hasIndustry && hasRegion && hasEmployeeSize && hasRevenue && hasTechnology && hasPreviousDate && hasLatestDate;
+    };
+
+    const aComplete = isRowComplete(a);
+    const bComplete = isRowComplete(b);
+
+    // Complete rows first, incomplete rows last
+    if (aComplete && !bComplete) return -1;
+    if (!aComplete && bComplete) return 1;
+    
+    return 0;
+  });
 
   useEffect(() => {
     setTotalGroupedRecords(groupedDataArray.length);
@@ -1928,7 +1974,8 @@ const Technographics = () => {
                         onChange={() => {}}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{company}</span>
+                      <FaLock size={12} style={{ color: '#6b7280', flexShrink: 0 }} />
+                      <span style={{ filter: 'blur(4px)', userSelect: 'none', color: '#1f2937' }}>••••••••••••••••••</span>
                     </div>
                   </div>
                 ))
@@ -2297,6 +2344,10 @@ const Technographics = () => {
                 </div>
                 {getUniqueOptions('category')
                   .sort((a, b) => {
+                    // Move "Not Detected" to the end
+                    if (a === 'Not Detected') return 1;
+                    if (b === 'Not Detected') return -1;
+                    
                     const countA = getCompanyCountByCategory(a);
                     const countB = getCompanyCountByCategory(b);
                     return countB - countA;
@@ -3492,9 +3543,12 @@ const Technographics = () => {
                             </>
                           ) : (
                             <>
-                              <div style={{ fontWeight: '600', color: '#1f2937', backgroundColor: '#f3f4f6', height: '20px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none' }}>
+                              <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <FaLock size={14} style={{ color: '#6b7280', filter: 'blur(0px)' }} />
+                                <span>••••••••••••••••••</span>
                               </div>
-                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#f3f4f6', height: '16px', borderRadius: '4px', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
+                              <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
+                                <span>••••••••••</span>
                               </div>
                             </>
                           )}
