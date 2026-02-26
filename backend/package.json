@@ -20,7 +20,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.4.1",
     "nodemailer": "^8.0.1",
+    "pg": "^8.19.0",
     "puppeteer": "^24.36.1",
+    "sequelize": "^6.37.7",
     "xlsx": "^0.18.5",
     "yahoo-finance2": "^2.13.3"
   },

@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Session = require('../models/Session');
+const PgUser = require('../models/PgUser');
+const PgSession = require('../models/PgSession');
 const { sendOTPEmail } = require('../config/email');
 
 const generateOTP = () => {
@@ -22,19 +22,15 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
-    let user = await User.findOne({ email });
+    let user = await PgUser.findOne({ where: { email } });
     if (user) {
       if (user.isVerified) {
         return res.status(400).json({ message: 'User already exists. Please login.' });
       } else {
-        
         const otp = generateOTP();
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-        user.otp = otp;
-        user.otpExpiry = otpExpiry;
-        await user.save();
-
+        await user.update({ otp, otpExpiry });
         await sendOTPEmail(email, otp, fullName);
 
         return res.status(200).json({
@@ -49,9 +45,9 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    user = new User({
+    user = await PgUser.create({
       email,
       fullName,
       password: hashedPassword,
@@ -59,8 +55,6 @@ router.post('/signup', async (req, res) => {
       otpExpiry,
       isVerified: false
     });
-
-    await user.save();
 
     await sendOTPEmail(email, otp, fullName);
 
@@ -83,7 +77,7 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(400).json({ message: 'Email and OTP are required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await PgUser.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -100,10 +94,11 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
     }
 
-    user.isVerified = true;
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
+    await user.update({
+      isVerified: true,
+      otp: null,
+      otpExpiry: null
+    });
 
     res.status(200).json({
       message: 'Email verified successfully. You can now login.',
@@ -123,7 +118,7 @@ router.post('/resend-otp', async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await PgUser.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -133,12 +128,9 @@ router.post('/resend-otp', async (req, res) => {
     }
 
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    await user.save();
-
+    await user.update({ otp, otpExpiry });
     await sendOTPEmail(email, otp, user.fullName);
 
     res.status(200).json({
@@ -159,7 +151,7 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await PgUser.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: 'No account found with this email' });
     }
@@ -169,12 +161,9 @@ router.post('/forgot-password', async (req, res) => {
     }
 
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); 
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    await user.save();
-
+    await user.update({ otp, otpExpiry });
     await sendOTPEmail(email, otp, user.fullName);
 
     res.status(200).json({
@@ -199,7 +188,7 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await PgUser.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -215,12 +204,13 @@ router.post('/reset-password', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    user.password = hashedPassword;
-    user.otp = null;
-    user.otpExpiry = null;
-    await user.save();
+    await user.update({
+      password: hashedPassword,
+      otp: null,
+      otpExpiry: null
+    });
 
-    await Session.deleteMany({ userId: user._id });
+    await PgSession.destroy({ where: { userId: user.id } });
 
     res.status(200).json({
       message: 'Password reset successfully. Please login with your new password.',
@@ -240,13 +230,13 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await PgUser.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     if (!user.isVerified) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Please verify your email first',
         requiresVerification: true,
         email: user.email
@@ -259,17 +249,16 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user.id, email: user.email },
       process.env.JWT_SECRET || 'default_jwt_secret_change_in_production',
       { expiresIn: '7d' }
     );
 
-    const session = new Session({
-      userId: user._id,
+    await PgSession.create({
+      userId: user.id,
       token,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) 
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     });
-    await session.save();
 
     res.status(200).json({
       message: 'Login successful',
