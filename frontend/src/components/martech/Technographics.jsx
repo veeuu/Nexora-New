@@ -3314,14 +3314,14 @@ const Technographics = () => {
                     const rowsPerPageConst = 10;
                     const startIndex = (currentPage - 1) * rowsPerPageConst;
                     const endIndex = startIndex + rowsPerPageConst;
-                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
                     return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
                   })()}
                   onChange={(e) => {
                     const rowsPerPageConst = 10;
                     const startIndex = (currentPage - 1) * rowsPerPageConst;
                     const endIndex = startIndex + rowsPerPageConst;
-                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
                     
                     if (e.target.checked) {
                       const newSelected = new Set(selectedRows);
@@ -3351,10 +3351,10 @@ const Technographics = () => {
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
                       
-                      selectedRows.forEach(rowIndex => {
-                        const rowData = filteredData[rowIndex];
+                      selectedRows.forEach(actualIndex => {
+                        const rowData = groupedDataArray[actualIndex];
                         if (rowData) {
-                          const rowKey = `${rowIndex}-${rowData.companyName}`;
+                          const rowKey = `${actualIndex}-${rowData.companyName}`;
                           newSet.add(rowKey);
                         }
                       });
@@ -4278,7 +4278,7 @@ const Technographics = () => {
         /* Set specific column widths */
         th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
         th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
-        th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+        th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
         th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
         th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
         th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
@@ -4292,7 +4292,7 @@ const Technographics = () => {
         @media (min-width: 1024px) {
           th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
           th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
-          th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
+          th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
           th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
           th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
           th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
