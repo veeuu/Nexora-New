@@ -19,91 +19,79 @@ const BuyingGroup = () => {
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
-useEffect(() => {
+    useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('/api/org-chart/companies');
+                const response = await fetch('/api/buying-groups/companies');
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
                     setSelectedCompany(data.companies[0]);
                 }
             } catch (err) {
-
+                console.error('Error fetching companies:', err);
                 setError('Failed to load companies');
             }
         };
         fetchCompanies();
     }, []);
 
-useEffect(() => {
+    useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/org-chart/categories');
+                const response = await fetch('/api/buying-groups/categories');
                 const data = await response.json();
                 let fetchedCategories = data.categories || [];
 
-fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
+                fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
 
-const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud'];
+                const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud'];
 
-setCategories(desiredOrder);
+                setCategories(desiredOrder);
             } catch (err) {
-
-setCategories(['AI/ML', 'CRM', 'Database', 'Cloud']);
+                console.error('Error fetching categories:', err);
+                setCategories(['AI/ML', 'CRM', 'Database', 'Cloud']);
             }
         };
         fetchCategories();
     }, []);
 
-useEffect(() => {
+    useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
-                const response = await fetch('/api/org-chart/person-details');
+                const response = await fetch('/api/buying-groups/person-details');
                 if (response.ok) {
                     const data = await response.json();
-
+                    console.log('Person details loaded:', Object.keys(data).length, 'companies');
                     setPersonDetailsData(data);
                 } else {
-
+                    console.error('Failed to fetch person details');
                 }
             } catch (err) {
-
+                console.error('Error fetching person details:', err);
             }
         };
         fetchPersonDetails();
     }, []);
 
-useEffect(() => {
+    useEffect(() => {
         if (!selectedCompany) return;
 
         const fetchOrgChart = async () => {
             setLoading(true);
             setError('');
             try {
-                
-                const generateResponse = await fetch('/api/org-chart/generate-selected', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ companies: [selectedCompany] })
-                });
-
-                if (!generateResponse.ok) {
-                    console.warn('Could not pre-generate chart, will fetch on-demand');
-                }
-
-const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const chartUrl = `/api/org-chart/${encodedCompanyName}`;
+                // No need to pre-generate - charts are generated on-demand now
+                const encodedCompanyName = encodeURIComponent(selectedCompany);
+                const chartUrl = `/api/buying-groups/${encodedCompanyName}/org-chart`;
                 setOrgChartUrl(chartUrl);
                 setOrgChartHtml('');
             } catch (err) {
-
-                setError('Failed to generate org chart. Please try again.');
+                console.error('Error setting org chart URL:', err);
+                setError('Failed to load org chart. Please try again.');
                 setOrgChartUrl('');
             } finally {
-
+                // Give iframe time to load
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000);
@@ -113,7 +101,7 @@ const encodedCompanyName = encodeURIComponent(selectedCompany);
         fetchOrgChart();
     }, [selectedCompany]);
 
-useEffect(() => {
+    useEffect(() => {
         if (!iframeRef.current || !orgChartUrl) return;
 
         const iframe = iframeRef.current;

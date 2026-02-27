@@ -752,8 +752,6 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 <html>
 <head>
   <meta charset="utf-8">
-  <title>${companyName}${location ? ' (' + location + ')' : ''}</title>
-  <link rel="icon" type="image/png" href="${faviconUrl}">
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
     * {
@@ -815,15 +813,18 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     .chart-wrapper {
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
       background-color: white;
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     #chart {
       background-color: white;
+      transform-origin: center center;
+      transition: transform 0.2s ease;
     }
 
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -834,20 +835,6 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <img 
-        src="${logoUrl}" 
-        alt="${companyName} Logo" 
-        class="company-logo"
-        onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
-      >
-      <div id="logo-fallback" class="company-logo-fallback" style="display: none;">
-        ${companyName.charAt(0).toUpperCase()}
-      </div>
-      <div class="header-title">
-        ${companyName}${location ? ' - ' + location : ''} Organization Chart
-      </div>
-    </div>
     <div class="chart-wrapper">
       <div id="chart"></div>
     </div>
@@ -892,6 +879,14 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
+      
+      // Apply initial zoom after chart is rendered
+      setTimeout(() => {
+        const chartDiv = document.getElementById('chart');
+        if (chartDiv) {
+          chartDiv.style.transform = 'scale(0.8)'; // Default 80% zoom
+        }
+      }, 100);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
@@ -999,9 +994,17 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     };
 
     // ===== MESSAGE HANDLER =====
+    let currentZoom = 100;
+    
     window.addEventListener('message', function(event) {
       if (event.data && event.data.type === 'highlightCategory') {
         window.OrgChartAPI.highlightCategory(event.data.category);
+      } else if (event.data && event.data.type === 'setZoom') {
+        currentZoom = event.data.zoomLevel;
+        const chartDiv = document.getElementById('chart');
+        if (chartDiv) {
+          chartDiv.style.transform = 'scale(' + (currentZoom / 100) + ')';
+        }
       }
     });
 

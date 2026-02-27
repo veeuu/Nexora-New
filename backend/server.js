@@ -20,8 +20,11 @@ app.get('/', (req, res) => {
 
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
+const buyingGroupRouter = require('./routes/buyingGroup');
+
 app.use('/api', apiRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/buying-groups', buyingGroupRouter);
 
 const startServer = async () => {
   try {
