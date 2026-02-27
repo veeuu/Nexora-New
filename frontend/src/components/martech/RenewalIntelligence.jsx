@@ -124,9 +124,9 @@ const RenewalMeter = ({ renewalDate }) => {
   };
 
   const getStatusLabel = (proximity) => {
-    if (proximity >= 86) return 'Upcoming Renewal';
-    if (proximity >= 46) return 'Mid-Term Renewal';
-    return 'Long-Term Renewal';
+    if (proximity >= 86) return 'Upcoming ';
+    if (proximity >= 46) return 'Mid-Term ';
+    return 'Long-Term ';
   };
 
   const proximity = calculateProximity();
@@ -613,7 +613,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['Upcoming Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+        return ['Upcoming ', 'Mid-Term', 'Long-Term '];
     };
 
     const getUniqueCategories = () => {
@@ -707,7 +707,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['Upcoming Renewal', 'Mid-Term Renewal', 'Long-Term Renewal'];
+            const statusLabels = ['Upcoming ', 'Mid-Term ', 'Long-Term '];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -2833,10 +2833,10 @@ if (aQtr.year !== bQtr.year) {
                 }
 
 td:nth-child(1), th:nth-child(1) { width: 50px !important; }
-                td:nth-child(2), th:nth-child(2) { width: 120px !important; }
-                td:nth-child(3), th:nth-child(3) { width: 200px !important; }
-                td:nth-child(4), th:nth-child(4) { width: 200px !important; }
-                td:nth-child(5), th:nth-child(5) { width: 200px !important; }
+                td:nth-child(2), th:nth-child(2) { width: 100px !important; }
+                td:nth-child(3), th:nth-child(3) { width: 140px !important; }
+                td:nth-child(4), th:nth-child(4) { width: 140px !important; }
+                td:nth-child(5), th:nth-child(5) { width: 120px !important; }
 
 td:nth-child(2), th:nth-child(2) {
                   padding-right: 30px !important;

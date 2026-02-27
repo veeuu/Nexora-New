@@ -1685,12 +1685,12 @@ const NTP = () => {
                   style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                 />
               </th>
-              <th style={{ width: '70px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Reveal</th>
-              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Company Name</th>
-              <th style={{ width: '110px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Category</th>
-              <th style={{ width: '130px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Prediction</th>
-              <th style={{ width: '120px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Technology</th>
-              <th style={{ width: '130px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Propensity (%)</th>
+              <th style={{ width: '100px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Reveal</th>
+              <th style={{ width: '140px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Company Name</th>
+              <th style={{ width: '100px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Category</th>
+              <th style={{ width: '140px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Prediction</th>
+              <th style={{ width: '100px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Technology</th>
+              <th style={{ width: '160px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Propensity (%)</th>
             </tr>
           </thead>
           <tbody>
@@ -1772,7 +1772,7 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '70px', padding: '12px 8px' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '100px', padding: '12px 8px' }}>
                           <button
                             onClick={() => {
                               const rowKey = `${actualIndex}-${company.companyName}`;
@@ -1819,7 +1819,7 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '140px', padding: '12px 8px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
                               <>
@@ -1891,7 +1891,7 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '110px', padding: '12px 8px' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '100px', padding: '12px 8px' }}>
                           <span style={{ display: 'flex', alignItems: 'center' }}>
                             {renderTechLogo(company.category)}
                             {company.category}
@@ -1901,13 +1901,13 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '130px', padding: '12px 8px' }}>
+                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '140px', padding: '12px 8px', textAlign: 'center' }}>
                           {company.purchasePrediction}
                         </td>
                       )}
 
                       {}
-                      <td style={{ width: '120px', padding: '12px 8px' }}>
+                      <td style={{ width: '100px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
                           <div 
                             ref={techScrollRef}
@@ -1941,7 +1941,7 @@ const NTP = () => {
                       </td>
 
                       {}
-                      <td style={{ textAlign: 'center', width: '130px', padding: '12px 8px' }}>
+                      <td style={{ textAlign: 'center', width: '160px', padding: '12px 8px' }}>
                         {company.technologies.length > 3 ? (
                           <div 
                             ref={propensityScrollRef}
@@ -2386,12 +2386,12 @@ const NTP = () => {
         }
         
         th:nth-child(1), td:nth-child(1) { width: 50px !important; white-space: normal; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; } /* Reveal */
+        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; text-align: center !important; } /* Reveal */
         th:nth-child(3), td:nth-child(3) { width: 140px !important; white-space: nowrap; } /* Company Name */
-        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; } /* Category */
-        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; } /* Purchase Prediction */
+        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; text-align: center !important; } /* Category */
+        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; text-align: center !important; } /* Purchase Prediction */
         th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; } /* Technology */
-        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; } /* Purchase Propensity */
+        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; text-align: center !important; } /* Purchase Propensity */
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }
