@@ -264,6 +264,7 @@ const NTP = () => {
     purchasePrediction: [],
     category: []
   });
+  const [companyNameSearch, setCompanyNameSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [modalContent, setModalContent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -904,46 +905,39 @@ const NTP = () => {
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 zIndex: 1000,
                 minWidth: '250px',
-                maxHeight: '300px',
-                overflowY: 'auto'
+                maxHeight: '400px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column'
               }}>
-                <div
-                  onClick={() => {
-                    if (Array.isArray(filters.companyName) && filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
-                      
-                      setFilters(prev => ({ ...prev, companyName: [] }));
-                    } else {
-                      
-                      setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
-                    }
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                >
+                {/* Search Bar */}
+                <div style={{
+                  padding: '12px',
+                  borderBottom: '1px solid #e5e7eb',
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white',
+                  zIndex: 10
+                }}>
                   <input
-                    type="checkbox"
-                    checked={Array.isArray(filters.companyName) && filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
-                    onChange={() => {}}
+                    type="text"
+                    placeholder="Search companies..."
+                    value={companyNameSearch}
+                    onChange={(e) => setCompanyNameSearch(e.target.value)}
                     style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
                     }}
                   />
-                  All
                 </div>
-                {getUniqueOptions('companyName').map((option, idx) => {
+                {getUniqueOptions('companyName')
+                  .filter(option => option.toLowerCase().includes(companyNameSearch.toLowerCase()))
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
                   return (
                     <div
@@ -975,8 +969,7 @@ const NTP = () => {
                           accentColor: '#3b82f6'
                         }}
                       />
-                      <FaLock size={12} style={{ color: '#6b7280', flexShrink: 0 }} />
-                      <span style={{ filter: 'blur(4px)', userSelect: 'none', color: '#1f2937' }}>••••••••••••••••••</span>
+                      {option}
                     </div>
                   );
                 })}
@@ -1675,7 +1668,6 @@ const NTP = () => {
                   style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                 />
               </th>
-              <th style={{ width: '100px', textAlign: 'center', padding: '12px 8px', whiteSpace: 'nowrap' }}>Reveal</th>
               <th style={{ width: '140px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Company Name</th>
               <th style={{ width: '100px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Category</th>
               <th style={{ width: '140px', padding: '12px 8px', whiteSpace: 'nowrap' }}>Purchase Prediction</th>
@@ -1762,119 +1754,58 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '100px', padding: '12px 8px' }}>
-                          <button
-                            onClick={() => {
-                              const rowKey = `${actualIndex}-${company.companyName}`;
-                              setRevealedRows(prev => {
-                                const newSet = new Set(prev);
-                                newSet.add(rowKey);
-                                return newSet;
-                              });
-                            }}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px',
-                              padding: '8px 10px',
-                              backgroundColor: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '#f3f4f6' : '#f0fdf4',
-                              border: revealedRows.has(`${actualIndex}-${company.companyName}`) ? '1px solid #d1d5db' : '1px solid #bbf7d0',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!revealedRows.has(`${companyIndex}-${company.companyName}`)) {
-                                e.currentTarget.style.backgroundColor = '#a7f3d0';
-                                e.currentTarget.style.borderColor = '#6ee7b7';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!revealedRows.has(`${actualIndex}-${company.companyName}`)) {
-                                e.currentTarget.style.backgroundColor = '#d1fae5';
-                                e.currentTarget.style.borderColor = '#a7f3d0';
-                              }
-                            }}
-                            title={revealedRows.has(`${actualIndex}-${company.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
-                          >
-                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
-                              <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
-                            ) : (
-                              <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
-                            )}
-                          </button>
-                        </td>
-                      )}
-
-                      {}
-                      {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', width: '140px', padding: '12px 8px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {revealedRows.has(`${actualIndex}-${company.companyName}`) ? (
-                              <>
-                                <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                                  {company.companyName}
-                                </div>
-                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  {company.domain && (
-                                    <a
-                                      href={`https://${company.domain}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        color: '#6b7280',
-                                        textDecoration: 'none',
-                                        transition: 'color 0.2s, transform 0.2s',
-                                        cursor: 'pointer'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                        e.currentTarget.style.color = '#3b82f6';
-                                        e.currentTarget.style.transform = 'scale(1.2)';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = '#6b7280';
-                                        e.currentTarget.style.transform = 'scale(1)';
-                                      }}
-                                      title={`Visit ${company.domain}`}
-                                    >
-                                      <FaGlobe size={16} />
-                                    </a>
-                                  )}
-                                  {company.linkedinUrl && (
-                                    <a
-                                      href={company.linkedinUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        color: '#0077b5',
-                                        textDecoration: 'none',
-                                        transition: 'opacity 0.2s'
-                                      }}
-                                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-                                      title="View LinkedIn Profile"
-                                    >
-                                      <FaLinkedin size={20} />
-                                    </a>
-                                  )}
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <FaLock size={14} style={{ color: '#6b7280', filter: 'blur(0px)' }} />
-                                  <span>••••••••••••••••••</span>
-                                </div>
-                                <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
-                                  <span>••••••••••</span>
-                                </div>
-                              </>
-                            )}
+                            <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                              {company.companyName}
+                            </div>
+                            <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {company.domain && (
+                                <a
+                                    href={`https://${company.domain}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      color: '#6b7280',
+                                      textDecoration: 'none',
+                                      transition: 'color 0.2s, transform 0.2s',
+                                      cursor: 'pointer'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.color = '#3b82f6';
+                                      e.currentTarget.style.transform = 'scale(1.2)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.color = '#6b7280';
+                                      e.currentTarget.style.transform = 'scale(1)';
+                                    }}
+                                    title={`Visit ${company.domain}`}
+                                  >
+                                    <FaGlobe size={16} />
+                                  </a>
+                                )}
+                                {company.linkedinUrl && (
+                                  <a
+                                    href={company.linkedinUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      color: '#0077b5',
+                                      textDecoration: 'none',
+                                      transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                    title="View LinkedIn Profile"
+                                  >
+                                    <FaLinkedin size={20} />
+                                  </a>
+                                )}
+                            </div>
                           </div>
                         </td>
                       )}
@@ -1944,14 +1875,13 @@ const NTP = () => {
                               paddingRight: '4px',
                               width: '100%',
                               scrollbarWidth: 'none',
-                              msOverflowStyle: 'none',
-                              alignItems: 'center'
+                              msOverflowStyle: 'none'
                             }}
                             className="tech-scroll-container"
                             onScroll={handlePropensityScroll}
                           >
                             {company.technologies.map((t, idx) => (
-                              <span key={idx} style={{ whiteSpace: 'nowrap' }}>
+                              <span key={idx} style={{ whiteSpace: 'nowrap', display: 'block', textAlign: 'center' }}>
                                 {(() => {
                                   const val = String(t.purchaseProbability || '0').replace('%', '');
                                   return `${parseFloat(val).toFixed(2)}%`;
@@ -1960,10 +1890,12 @@ const NTP = () => {
                             ))}
                           </div>
                         ) : (
-                          (() => {
-                            const val = String(tech.purchaseProbability || '0').replace('%', '');
-                            return `${parseFloat(val).toFixed(2)}%`;
-                          })()
+                          <span style={{ whiteSpace: 'nowrap', display: 'block', textAlign: 'center' }}>
+                            {(() => {
+                              const val = String(tech.purchaseProbability || '0').replace('%', '');
+                              return `${parseFloat(val).toFixed(2)}%`;
+                            })()}
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -2376,12 +2308,11 @@ const NTP = () => {
         }
         
         th:nth-child(1), td:nth-child(1) { width: 50px !important; white-space: normal; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 100px !important; white-space: nowrap; text-align: center !important; } /* Reveal */
-        th:nth-child(3), td:nth-child(3) { width: 140px !important; white-space: nowrap; } /* Company Name */
-        th:nth-child(4), td:nth-child(4) { width: 100px !important; white-space: nowrap; text-align: center !important; } /* Category */
-        th:nth-child(5), td:nth-child(5) { width: 140px !important; white-space: nowrap; text-align: center !important; } /* Purchase Prediction */
-        th:nth-child(6), td:nth-child(6) { width: 100px !important; white-space: nowrap; } /* Technology */
-        th:nth-child(7), td:nth-child(7) { width: 160px !important; white-space: nowrap; text-align: center !important; } /* Purchase Propensity */
+        th:nth-child(2), td:nth-child(2) { width: 140px !important; white-space: nowrap; } /* Company Name */
+        th:nth-child(3), td:nth-child(3) { width: 100px !important; white-space: nowrap; text-align: center !important; } /* Category */
+        th:nth-child(4), td:nth-child(4) { width: 140px !important; white-space: nowrap; text-align: center !important; } /* Purchase Prediction */
+        th:nth-child(5), td:nth-child(5) { width: 100px !important; white-space: nowrap; } /* Technology */
+        th:nth-child(6), td:nth-child(6) { width: 160px !important; white-space: nowrap; text-align: center !important; } /* Purchase Propensity */
         
         td { position: relative; }
         td:hover { background-color: #f9fafb; }

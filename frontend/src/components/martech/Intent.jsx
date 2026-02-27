@@ -9,16 +9,17 @@ const IntentStatusVisualizer = ({ status }) => {
   const getStatusConfig = (status) => {
     const statusLower = String(status || '').toLowerCase().trim();
     
-    // 5-level status mapping
+    // Greenfield: flat line in blue
     if (statusLower === 'greenfield' || statusLower === 'green field account') {
       return {
-        bars: 5,
-        color: '#059669',
-        bgColor: '#ecfdf5',
+        type: 'line',
+        color: '#3b82f6',
+        bgColor: '#eff6ff',
         label: 'Greenfield'
       };
     } else if (statusLower === 'high') {
       return {
+        type: 'bars',
         bars: 4,
         color: '#10b981',
         bgColor: '#ecfdf5',
@@ -26,6 +27,7 @@ const IntentStatusVisualizer = ({ status }) => {
       };
     } else if (statusLower === 'high-medium') {
       return {
+        type: 'bars',
         bars: 3,
         color: '#34d399',
         bgColor: '#ecfdf5',
@@ -33,6 +35,7 @@ const IntentStatusVisualizer = ({ status }) => {
       };
     } else if (statusLower === 'medium') {
       return {
+        type: 'bars',
         bars: 2,
         color: '#fbbf24',
         bgColor: '#fffbeb',
@@ -40,6 +43,7 @@ const IntentStatusVisualizer = ({ status }) => {
       };
     } else if (statusLower === 'low') {
       return {
+        type: 'bars',
         bars: 1,
         color: '#f87171',
         bgColor: '#fef2f2',
@@ -48,6 +52,7 @@ const IntentStatusVisualizer = ({ status }) => {
     }
     
     return {
+      type: 'bars',
       bars: 0,
       color: '#d1d5db',
       bgColor: '#f9fafb',
@@ -65,17 +70,29 @@ const IntentStatusVisualizer = ({ status }) => {
       }}
       title={config.label}
     >
-      {[1, 2, 3, 4, 5].map((bar) => (
+      {config.type === 'line' ? (
         <div
-          key={bar}
-          className="status-bar"
           style={{
-            height: bar <= config.bars ? `${6 + bar * 4}px` : '4px',
-            backgroundColor: bar <= config.bars ? config.color : '#e5e7eb',
-            boxShadow: bar <= config.bars ? `0 2px 4px ${config.color}40` : 'none'
+            width: '100%',
+            height: '3px',
+            backgroundColor: config.color,
+            borderRadius: '2px',
+            boxShadow: `0 2px 4px ${config.color}40`
           }}
         />
-      ))}
+      ) : (
+        [1, 2, 3, 4, 5].map((bar) => (
+          <div
+            key={bar}
+            className="status-bar"
+            style={{
+              height: bar <= config.bars ? `${6 + bar * 4}px` : '4px',
+              backgroundColor: bar <= config.bars ? config.color : '#e5e7eb',
+              boxShadow: bar <= config.bars ? `0 2px 4px ${config.color}40` : 'none'
+            }}
+          />
+        ))
+      )}
     </div>
   );
 };
@@ -698,20 +715,77 @@ useEffect(() => {
               <th style={{ width: '40px', textAlign: 'center' }}>
                 <input
                   type="checkbox"
-                  checked={selectedRows.size === filteredData.length && filteredData.length > 0}
+                  checked={(() => {
+                    const startIndex = (currentPage - 1) * rowsPerPage;
+                    const endIndex = startIndex + rowsPerPage;
+                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
+                  })()}
                   onChange={(e) => {
+                    const startIndex = (currentPage - 1) * rowsPerPage;
+                    const endIndex = startIndex + rowsPerPage;
+                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    
                     if (e.target.checked) {
-                      const newSet = new Set();
-                      filteredData.forEach((_, idx) => newSet.add(idx));
-                      setSelectedRows(newSet);
+                      const newSelected = new Set(selectedRows);
+                      currentPageRows.forEach((_, idx) => newSelected.add(startIndex + idx));
+                      setSelectedRows(newSelected);
                     } else {
-                      setSelectedRows(new Set());
+                      const newSelected = new Set(selectedRows);
+                      currentPageRows.forEach((_, idx) => newSelected.delete(startIndex + idx));
+                      setSelectedRows(newSelected);
                     }
                   }}
                   style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                 />
               </th>
-              <th style={{ width: '80px', textAlign: 'center' }}>Reveal</th>
+              <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
+                <button
+                  onClick={() => {
+                    if (selectedRows.size === 0) {
+                      alert('Please select at least one company to reveal');
+                      return;
+                    }
+                    setRevealedRows(prev => {
+                      const newSet = new Set(prev);
+                      
+                      selectedRows.forEach(rowIndex => {
+                        const rowData = filteredData[rowIndex];
+                        if (rowData) {
+                          const rowKey = `${rowIndex}-${rowData.companyName}`;
+                          newSet.add(rowKey);
+                        }
+                      });
+                      return newSet;
+                    });
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    backgroundColor: selectedRows.size > 0 ? '#3b82f6' : '#d1d5db',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: selectedRows.size > 0 ? 'pointer' : 'not-allowed',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    transition: 'all 0.2s',
+                    opacity: selectedRows.size > 0 ? 1 : 0.6
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedRows.size > 0) {
+                      e.currentTarget.style.backgroundColor = '#1d4ed8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedRows.size > 0) {
+                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                    }
+                  }}
+                  title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
+                >
+                  Reveal
+                </button>
+              </th>
               <th>Company Name</th>
               <th>Intent Status</th>
               <th>Intent Level</th>
