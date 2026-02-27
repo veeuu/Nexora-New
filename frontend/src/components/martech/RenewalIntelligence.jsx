@@ -133,7 +133,8 @@ const RenewalMeter = ({ renewalDate }) => {
   const statusLabel = getStatusLabel(proximity);
   
   // Calculate arrow rotation based on proximity
-  // 100% = -90 (left/dark), 0% = 90 (right/light)
+  // For Upcoming (proximity 100): should point left (-90)
+  // For Long-term (proximity 0): should point right (90)
   const rotation = 90 - (proximity * 1.8);
 
   return (
@@ -141,17 +142,17 @@ const RenewalMeter = ({ renewalDate }) => {
       <div style={{ position: 'relative', width: '50px', height: '28px' }}>
         <svg width="50" height="28" viewBox="0 0 100 55" style={{ position: 'absolute', top: 0, left: 0 }}>
           <defs>
-            {/* Gradient from dark blue (left) to light blue (right) */}
+            {/* Gradient from light (Upcoming) to dark (Long-term) */}
             <linearGradient id="renewalGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0c4a6e" />
-              <stop offset="25%" stopColor="#0369a1" />
+              <stop offset="0%" stopColor="#e0f2fe" />
+              <stop offset="25%" stopColor="#0ea5e9" />
               <stop offset="50%" stopColor="#0284c7" />
-              <stop offset="75%" stopColor="#0ea5e9" />
-              <stop offset="100%" stopColor="#e0f2fe" />
+              <stop offset="75%" stopColor="#0369a1" />
+              <stop offset="100%" stopColor="#0c4a6e" />
             </linearGradient>
           </defs>
           
-          {/* Arc with gradient from dark to light */}
+          {/* Arc with gradient from light (Upcoming) to dark (Long-term) */}
           <path
             d="M 8 50 A 45 45 0 0 1 92 50"
             fill="none"
@@ -573,7 +574,7 @@ useEffect(() => {
             return;
         }
 
-        const headers = ['Company Name', 'Product', 'Renewal Intelligence'];
+        const headers = ['Company Name', 'Product', 'Renewal Timelines'];
         const csvContent = [
             headers.join(','),
             ...revealedData.map(row =>
@@ -2072,24 +2073,83 @@ if (aQtr.year !== bQtr.year) {
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '50px' }}>
                                           <input
                                             type="checkbox"
-                                            checked={selectedRows.size > 0 && selectedRows.size === tableData.length}
+                                            checked={(() => {
+                                              const startIndex = (currentPage - 1) * rowsPerPage;
+                                              const endIndex = startIndex + rowsPerPage;
+                                              const currentPageRows = filteredData.slice(startIndex, endIndex);
+                                              return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
+                                            })()}
                                             onChange={(e) => {
+                                              const startIndex = (currentPage - 1) * rowsPerPage;
+                                              const endIndex = startIndex + rowsPerPage;
+                                              const currentPageRows = filteredData.slice(startIndex, endIndex);
+                                              
                                               if (e.target.checked) {
-                                                const newSelected = new Set();
-                                                tableData.forEach((_, idx) => newSelected.add(idx));
+                                                const newSelected = new Set(selectedRows);
+                                                currentPageRows.forEach((_, idx) => newSelected.add(startIndex + idx));
                                                 setSelectedRows(newSelected);
                                               } else {
-                                                setSelectedRows(new Set());
+                                                const newSelected = new Set(selectedRows);
+                                                currentPageRows.forEach((_, idx) => newSelected.delete(startIndex + idx));
+                                                setSelectedRows(newSelected);
                                               }
                                             }}
                                             style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                                           />
                                         </th>
-                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
+                                          <button
+                                            onClick={() => {
+                                              if (selectedRows.size === 0) {
+                                                alert('Please select at least one company to reveal');
+                                                return;
+                                              }
+                                              setRevealedRows(prev => {
+                                                const newSet = new Set(prev);
+                                                const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                                const startIndex = (currentPage - 1) * rowsPerPage;
+                                                
+                                                selectedRows.forEach(rowIndex => {
+                                                  const rowData = filteredData[rowIndex];
+                                                  if (rowData) {
+                                                    const rowKey = `${rowIndex}-${rowData.companyName}`;
+                                                    newSet.add(rowKey);
+                                                  }
+                                                });
+                                                return newSet;
+                                              });
+                                            }}
+                                            style={{
+                                              padding: '8px 12px',
+                                              backgroundColor: selectedRows.size > 0 ? '#3b82f6' : '#d1d5db',
+                                              color: 'white',
+                                              border: 'none',
+                                              borderRadius: '6px',
+                                              cursor: selectedRows.size > 0 ? 'pointer' : 'not-allowed',
+                                              fontSize: '13px',
+                                              fontWeight: '600',
+                                              transition: 'all 0.2s',
+                                              opacity: selectedRows.size > 0 ? 1 : 0.6
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              if (selectedRows.size > 0) {
+                                                e.currentTarget.style.backgroundColor = '#1d4ed8';
+                                              }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              if (selectedRows.size > 0) {
+                                                e.currentTarget.style.backgroundColor = '#3b82f6';
+                                              }
+                                            }}
+                                            title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
+                                          >
+                                            Reveal
+                                          </button>
+                                        </th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
-                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
-                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Proximity</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Timelines</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Tracker</th>
                                     </tr>
                                 </thead>
                                 <tbody>
