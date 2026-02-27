@@ -22,7 +22,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [loading, setLoading] = useState(false);
   const [conversationStage, setConversationStage] = useState('greeting');
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [dynamicCategories, setDynamicCategories] = useState([]);
   const messagesEndRef = useRef(null);
 
@@ -92,7 +91,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       handleSeeDemoFlow();
     } else if (optionId === 'analyze-company') {
       setSelectedCompany(null);
-      setSelectedCategory(null);
       handleAnalyzeCompanyFlow();
     } else if (optionId === 'analyze-category') {
       handleAnalyzeDifferentCategory();
@@ -107,7 +105,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     ];
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `✅ Got it � Which caategory interests you for ${selectedCompany}?`,
+      text: `✅ Got it! Which category interests you for ${selectedCompany}?`,
       showCategories: true,
       categories: categoriesWithAll
     }]);
@@ -174,7 +172,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   };
 
   const handleCategorySubmit = async (categoryId) => {
-    setSelectedCategory(categoryId);
     setLoading(true);
 
     try {
@@ -226,13 +223,12 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               showOptions: true,
               options: [
                 { id: 'analyze-company', label: '🔍 Analyze another company' },
-                { id: 'analyze-category', label: '�A View different category' },
+                { id: 'analyze-category', label: '📊 View different category' },
                 { id: 'see-demo', label: '📊 View a sample' }
               ]
             }]);
             
             // Keep selectedCompany for category switching, but reset stage
-            setSelectedCategory(null);
             setConversationStage('greeting');
           }, 500);
         } else if (status === 'not-found') {
@@ -240,7 +236,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           
           // Reset for next search
           setSelectedCompany(null);
-          setSelectedCategory(null);
           setConversationStage('greeting');
         } else {
           const botMessage = `Sorry, no data available for "${selectedCompany}" in this category.`;
@@ -248,7 +243,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           
           // Reset for next search
           setSelectedCompany(null);
-          setSelectedCategory(null);
           setConversationStage('greeting');
         }
       }, 1500);
@@ -353,7 +347,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     setTimeout(() => {
       setMessages(prev => [...prev, {
         type: 'bot',
-        text: 'Here\'s what the signals suggest � nReady to analyze a company you\'re targeting?',
+        text: 'Here\'s what the signals suggest. Ready to analyze a company you\'re targeting?',
         showOptions: true,
         options: [
           { id: 'analyze-company', label: '🔍 Analyze a company' },
@@ -427,7 +421,32 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     setMessages(prev => [...prev, { type: 'user', text: userMessage }]);
 
     try {
-      // Step 1: Get company name
+      // Check if user input matches a company name from the data
+      const data = ntpData || tableData;
+      const matchedCompany = data && data.find(row => 
+        String(row.companyName || '').toLowerCase() === userMessage.toLowerCase()
+      );
+
+      // If company name is found directly, skip to category selection
+      if (matchedCompany && !selectedCompany) {
+        setSelectedCompany(userMessage);
+        setConversationStage('category-input');
+        
+        // Ask for category with buttons
+        const categoriesWithAll = [
+          ...dynamicCategories,
+          { id: 'all', label: '📊 ALL' }
+        ];
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text: `✅ Got it! Which category interests you for ${userMessage}?`,
+          showCategories: true,
+          categories: categoriesWithAll
+        }]);
+        return;
+      }
+
+      // Step 1: Get company name (when in company-input stage)
       if (conversationStage === 'company-input' && !selectedCompany) {
         setSelectedCompany(userMessage);
         setConversationStage('category-input');
@@ -435,11 +454,11 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         // Ask for category with buttons
         const categoriesWithAll = [
           ...dynamicCategories,
-          { id: 'all', label: '� AhLL' }
+          { id: 'all', label: '📊 ALL' }
         ];
         setMessages(prev => [...prev, {
           type: 'bot',
-          text: `✅ Got it � Want winsights on ${dynamicCategories.map(c => c.label.split(' ')[1]).join(', ')}, or everything?`,
+          text: `✅ Got it! Which category interests you for ${userMessage}?`,
           showCategories: true,
           categories: categoriesWithAll
         }]);
