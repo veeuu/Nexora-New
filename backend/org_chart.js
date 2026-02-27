@@ -635,7 +635,7 @@ const layout = {
     },
     showlegend: true,
     hovermode: 'closest',
-    margin: { l: 20, r: 20, t: 100, b: 20 },
+    margin: { l: 20, r: 20, t: 100, b: 5 },
     width: canvasWidth,
     height: canvasHeight,
     plot_bgcolor: CONFIG.COLOR_BACKGROUND,
@@ -813,11 +813,11 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     .chart-wrapper {
       flex: 1;
-      overflow: auto;
+      overflow: hidden;
       background-color: white;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       position: relative;
     }
 
@@ -880,11 +880,34 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
       
-      // Apply initial zoom after chart is rendered
+      // Apply intelligent zoom logic after chart is rendered
       setTimeout(() => {
         const chartDiv = document.getElementById('chart');
-        if (chartDiv) {
-          chartDiv.style.transform = 'scale(0.8)'; // Default 80% zoom
+        const wrapper = document.querySelector('.chart-wrapper');
+        
+        if (chartDiv && wrapper) {
+          // Get the actual dimensions
+          const chartRect = chartDiv.getBoundingClientRect();
+          const wrapperRect = wrapper.getBoundingClientRect();
+          
+          const chartWidth = chartRect.width;
+          const chartHeight = chartRect.height;
+          const wrapperWidth = wrapperRect.width;
+          const wrapperHeight = wrapperRect.height;
+          
+          // Calculate if chart is "large" (exceeds wrapper dimensions)
+          const isLargeChart = chartWidth > wrapperWidth || chartHeight > wrapperHeight;
+          
+          if (isLargeChart) {
+            // For large charts, apply 80% zoom and enable scrolling
+            chartDiv.style.transform = 'scale(0.8)';
+            chartDiv.style.transformOrigin = 'top center';
+            wrapper.style.overflow = 'auto';
+          } else {
+            // For small charts that fit, keep at 100%
+            chartDiv.style.transform = 'scale(1.0)';
+            wrapper.style.overflow = 'hidden';
+          }
         }
       }, 100);
     } else {
