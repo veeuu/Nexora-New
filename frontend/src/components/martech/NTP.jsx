@@ -1910,6 +1910,8 @@ const NTP = () => {
       {}
       {filteredData.length > 0 && (() => {
         const groupedData = {};
+        const uniqueCompanies = new Set();
+        
         filteredData.forEach(row => {
           const key = `${row.category}|${row.purchasePrediction}`;
           if (!groupedData[key]) {
@@ -1918,8 +1920,11 @@ const NTP = () => {
           if (!groupedData[key].companies.has(row.companyName)) {
             groupedData[key].companies.set(row.companyName, true);
           }
+          // Add to unique companies set
+          uniqueCompanies.add(row.companyName);
         });
-        const totalCompanies = Object.values(groupedData).reduce((sum, g) => sum + g.companies.size, 0);
+        
+        const totalCompanies = uniqueCompanies.size;
         const totalPages = Math.ceil(totalCompanies / rowsPerPage);
         const startIndex = (currentPage - 1) * rowsPerPage + 1;
         const endIndex = Math.min(currentPage * rowsPerPage, totalCompanies);
