@@ -6,7 +6,7 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [messages, setMessages] = useState([
-    { type: 'bot', text: 'Hi! I can help you find NTP analysis for specific companies. Just ask me about any company\'s Next Tech Purchase analysis.' }
+    { type: 'bot', text: 'Hi! I can help you find NTP® Next Purchase analysis for specific companies. Just ask me about any company\'s Next Purchase analysis.' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -132,12 +132,12 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
       } else if (status === 'not-found') {
         setMessages(prev => [...prev, { type: 'bot', text: '', isFormatted: false, messageType: 'not-found', company: userMessage }]);
       } else {
-        const botMessage = `Please reveal companies in the table first to view their NTP analysis. Click the lock icon on a company row to reveal it.`;
+        const botMessage = `Please reveal companies in the table first to view their NTP® Next Purchase analysis. Click the lock icon on a company row to reveal it.`;
         setMessages(prev => [...prev, { type: 'bot', text: botMessage }]);
       }
     } catch (error) {
       console.error('Error fetching NTP data:', error);
-      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP analysis. Please try again.' }]);
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP® Next Purchase analysis. Please try again.' }]);
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
       {isOpen ? (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h3>🔍 NTP Analysis</h3>
+            <h3>🔍 NTP® Next Purchase</h3>
             <button
               onClick={() => setIsOpen(false)}
               className="chatbot-close-btn"
@@ -229,7 +229,7 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
             {loading && (
               <div className="chatbot-loading">
                 <div className="chatbot-loading-text">
-                  Searching NTP analysis...
+                  Searching NTP® Next Purchase analysis...
                 </div>
               </div>
             )}
@@ -296,7 +296,7 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
             }}
-            title="Open NTP Analysis Assistant"
+            title="Open NTP® Next Purchase Assistant"
             style={{
               position: 'relative',
               overflow: 'visible'

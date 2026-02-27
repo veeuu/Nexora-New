@@ -465,7 +465,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                     </div>
                 </div>
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
-                    {}
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#6b7280', marginBottom: '4px' }}>Highlight Roles</div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto', alignItems: 'center' }} className="buying-group-filters">
                         <button
                             onClick={() => {
@@ -642,32 +642,37 @@ return personCategories.some(cat => selectedCategories.has(cat));
                 <button
                     onClick={handleImageClick}
                     style={{
-                        padding: '0',
-                        border: 'none',
-                        borderRadius: '50%',
-                        backgroundColor: 'transparent',
+                        padding: '6px 12px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '6px',
+                        backgroundColor: '#f9fafb',
                         cursor: 'pointer',
-                        fontSize: '18px',
-                        color: '#9ca3af',
+                        fontSize: '13px',
+                        color: '#6b7280',
                         transition: 'all 0.2s',
                         marginLeft: 'auto',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: '40px',
-                        height: '40px'
+                        gap: '6px',
+                        fontWeight: '500'
                     }}
                     onMouseEnter={(e) => {
-                        e.target.style.color = '#6b7280';
-                        e.target.style.transform = 'scale(1.1)';
+                        e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        e.currentTarget.style.borderColor = '#d1d5db';
+                        e.currentTarget.style.color = '#374151';
                     }}
                     onMouseLeave={(e) => {
-                        e.target.style.color = '#9ca3af';
-                        e.target.style.transform = 'scale(1)';
+                        e.currentTarget.style.backgroundColor = '#f9fafb';
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.color = '#6b7280';
                     }}
                     title="View Team Details"
                 >
-                    <FaInfoCircle size={20} />
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        More
+                        <FaInfoCircle size={14} />
+                    </span>
                 </button>
             </div>
 

@@ -56,7 +56,7 @@ const Keywords = () => {
   return (
     <div className="keywords-container">
       <div className="keywords-header">
-        <h2>Keywords</h2>
+        <h2>Keywords Surge</h2>
       </div>
 
       <div className="section-subtle-divider" />
