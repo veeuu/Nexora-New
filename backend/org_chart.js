@@ -744,11 +744,16 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
   const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
 
+  // Generate favicon URL from company name
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(companyName.toLowerCase())}.com&sz=64`;
+  const logoUrl = `https://logo.clearbit.com/${encodeURIComponent(companyName.toLowerCase())}.com`;
+
   const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>${companyName}${location ? ' (' + location + ')' : ''}</title>
+  <link rel="icon" type="image/png" href="${faviconUrl}">
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
     * {
@@ -772,6 +777,42 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
       overflow: hidden;
     }
 
+    .header {
+      background: white;
+      padding: 15px 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 3px solid #0070C0;
+    }
+
+    .company-logo {
+      width: 120px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .company-logo-fallback {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .header-title {
+      flex: 1;
+      font-size: 24px;
+      color: #2d3748;
+      font-weight: 600;
+    }
+
     .chart-wrapper {
       flex: 1;
       overflow: hidden;
@@ -793,6 +834,20 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 </head>
 <body>
   <div class="container">
+    <div class="header">
+      <img 
+        src="${logoUrl}" 
+        alt="${companyName} Logo" 
+        class="company-logo"
+        onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';"
+      >
+      <div id="logo-fallback" class="company-logo-fallback" style="display: none;">
+        ${companyName.charAt(0).toUpperCase()}
+      </div>
+      <div class="header-title">
+        ${companyName}${location ? ' - ' + location : ''} Organization Chart
+      </div>
+    </div>
     <div class="chart-wrapper">
       <div id="chart"></div>
     </div>
