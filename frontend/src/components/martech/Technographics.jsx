@@ -3310,14 +3310,27 @@ const Technographics = () => {
               <th style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }}>
                 <input
                   type="checkbox"
-                  checked={selectedRows.size > 0 && selectedRows.size === filteredData.length && filteredData.length > 0}
+                  checked={(() => {
+                    const rowsPerPageConst = 10;
+                    const startIndex = (currentPage - 1) * rowsPerPageConst;
+                    const endIndex = startIndex + rowsPerPageConst;
+                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
+                  })()}
                   onChange={(e) => {
+                    const rowsPerPageConst = 10;
+                    const startIndex = (currentPage - 1) * rowsPerPageConst;
+                    const endIndex = startIndex + rowsPerPageConst;
+                    const currentPageRows = filteredData.slice(startIndex, endIndex);
+                    
                     if (e.target.checked) {
-                      const newSelected = new Set();
-                      filteredData.forEach((_, index) => newSelected.add(index));
+                      const newSelected = new Set(selectedRows);
+                      currentPageRows.forEach((_, idx) => newSelected.add(startIndex + idx));
                       setSelectedRows(newSelected);
                     } else {
-                      setSelectedRows(new Set());
+                      const newSelected = new Set(selectedRows);
+                      currentPageRows.forEach((_, idx) => newSelected.delete(startIndex + idx));
+                      setSelectedRows(newSelected);
                     }
                   }}
                   style={{
@@ -3328,7 +3341,53 @@ const Technographics = () => {
                   }}
                 />
               </th>
-              <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
+              <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
+                <button
+                  onClick={() => {
+                    if (selectedRows.size === 0) {
+                      alert('Please select at least one company to reveal');
+                      return;
+                    }
+                    setRevealedRows(prev => {
+                      const newSet = new Set(prev);
+                      
+                      selectedRows.forEach(rowIndex => {
+                        const rowData = filteredData[rowIndex];
+                        if (rowData) {
+                          const rowKey = `${rowIndex}-${rowData.companyName}`;
+                          newSet.add(rowKey);
+                        }
+                      });
+                      return newSet;
+                    });
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    backgroundColor: selectedRows.size > 0 ? '#3b82f6' : '#d1d5db',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: selectedRows.size > 0 ? 'pointer' : 'not-allowed',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    transition: 'all 0.2s',
+                    opacity: selectedRows.size > 0 ? 1 : 0.6
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedRows.size > 0) {
+                      e.currentTarget.style.backgroundColor = '#1d4ed8';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedRows.size > 0) {
+                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                    }
+                  }}
+                  title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
+                >
+                  Reveal
+                </button>
+              </th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company Name</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Industry</th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Region</th>
@@ -4218,7 +4277,7 @@ const Technographics = () => {
         
         /* Set specific column widths */
         th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+        th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
         th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
         th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
         th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
@@ -4232,7 +4291,7 @@ const Technographics = () => {
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
           th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
-          th:nth-child(2), td:nth-child(2) { width: 80px !important; } /* Reveal */
+          th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
           th:nth-child(3), td:nth-child(3) { width: 140px !important; } /* Company Name */
           th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
           th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */

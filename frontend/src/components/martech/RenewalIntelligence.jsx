@@ -968,7 +968,7 @@ if (aQtr.year !== bQtr.year) {
                     {[
                       { label: 'Company Name', key: 'companyName', mandatory: false },
                       { label: 'Product', key: 'product', mandatory: false },
-                      { label: 'Renewal Proximity', key: 'renewalProximity', mandatory: false }
+                      { label: 'Renewal Tracker', key: 'renewalProximity', mandatory: false }
                     ].map((filterOption) => (
                       <div
                         key={filterOption.key}
@@ -1061,7 +1061,7 @@ if (aQtr.year !== bQtr.year) {
                       e.target.style.borderColor = '#d1d5db';
                     }}
                   >
-                    <span>Renewal Timeline {Array.isArray(filters.qtr) && filters.qtr.length > 0 && `(${filters.qtr.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <span>Renewal Timelines {Array.isArray(filters.qtr) && filters.qtr.length > 0 && `(${filters.qtr.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                   </button>
                 </div>
               )}
@@ -1566,7 +1566,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Renewal Timeline ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Renewal Timelines ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1732,7 +1732,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Renewal Proximity ({filters.renewalProximity.length})</span>
+                      <span>Renewal Tracker ({filters.renewalProximity.length})</span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -2016,7 +2016,7 @@ if (aQtr.year !== bQtr.year) {
                   onClick={() => setActiveFilterMenu('renewalProximity')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Renewal Proximity ({filters.renewalProximity.length})
+                      Renewal Tracker ({filters.renewalProximity.length})
                     </span>
                     <button
                       onClick={(e) => {
@@ -2327,8 +2327,8 @@ if (aQtr.year !== bQtr.year) {
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
-                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Intelligence</th>
-                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Proximity</th>
+                                        <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Timelines</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '100px' }}>Renewal Tracker</th>
                                     </tr>
                                 </thead>
                                 <tbody>
