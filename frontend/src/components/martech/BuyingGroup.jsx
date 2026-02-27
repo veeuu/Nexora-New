@@ -160,7 +160,7 @@ useEffect(() => {
             try {
                 iframe.contentWindow.postMessage({
                     type: 'highlightCategory',
-                    category: selectedCategory || 'All'
+                    category: selectedCategory || 'ALL'
                 }, '*');
             } catch (err) {
 
@@ -470,7 +470,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                         <button
                             onClick={() => {
                                 setSelectedCategories(new Set());
-                                setSelectedCategory('All');
+                                setSelectedCategory('ALL');
                             }}
                             style={{
                                 padding: '10px 16px',
@@ -496,7 +496,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                 }
                             }}
                             >
-                            All
+                            Reset
                         </button>
                         {categories.map((category, index) => (
                             <button

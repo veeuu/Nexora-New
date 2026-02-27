@@ -730,12 +730,12 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
 const getChartData = () => {
         const qtrCounts = {};
         const colors = {
-            'Q1 2025': '#06b6d4',
-            'Q2 2025': '#00432cff',
-            'Q3 2025': '#f59e0b',
-            'Q4 2025': '#4497efff',
-            'Q1 2026': '#8b5cf6',
-            'Q2 2026': '#001f3f9f'
+            'Q1 2025': '#dbeafe',
+            'Q2 2025': '#bfdbfe',
+            'Q3 2025': '#93c5fd',
+            'Q4 2025': '#60a5fa',
+            'Q1 2026': '#3b82f6',
+            'Q2 2026': '#1d4ed8'
         };
 
         filteredData.forEach(row => {

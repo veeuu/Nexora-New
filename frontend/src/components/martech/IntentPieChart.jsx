@@ -5,10 +5,10 @@ const IntentPieChart = ({ data }) => {
   const [activeSlice, setActiveSlice] = useState(null);
 
   const COLORS = {
-    'Low': { main: '#7c3aed', light: '#a78bfa', gradient: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)' },
-    'Medium': { main: '#f59e0b', light: '#fbbf24', gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)' },
-    'High-Medium': { main: '#3b82f6', light: '#60a5fa', gradient: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)' },
-    'High': { main: '#ec4899', light: '#f472b6', gradient: 'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)' }
+    'Low': { main: '#dbeafe', light: '#bfdbfe', gradient: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)' },
+    'Medium': { main: '#93c5fd', light: '#60a5fa', gradient: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)' },
+    'High-Medium': { main: '#3b82f6', light: '#1d4ed8', gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
+    'High': { main: '#1e40af', light: '#1e3a8a', gradient: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' }
   };
 
   const getColor = (status) => COLORS[status]?.main || '#8884d8';
