@@ -35,7 +35,7 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
 
   const findNTPAnalysis = (query, data, revealed) => {
     if (!data || data.length === 0) {
-      return [];
+      return { results: [], status: 'no-data' };
     }
 
     // Extract company names from revealed rows (format: "index-companyName")
@@ -52,33 +52,45 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
 
     const queryLower = query.toLowerCase();
     const resultsMap = new Map();
+    let foundInDatabase = false;
+    let foundButNotRevealed = false;
 
     data.forEach(row => {
       const companyName = String(row.companyName || '').toLowerCase();
       
-      // If revealed rows exist, only include companies that are revealed
-      if (revealed && revealed.size > 0) {
-        if (!revealedCompanies.has(companyName)) {
-          return;
-        }
-      }
-      
       if (companyName.includes(queryLower) || queryLower.includes(companyName)) {
-        if (!resultsMap.has(companyName)) {
-          resultsMap.set(companyName, {
-            companyName: row.companyName,
-            technology: row.technology,
-            category: row.category,
-            purchasePrediction: row.purchasePrediction,
-            purchaseProbability: row.purchaseProbability,
-            ntpAnalysis: row.ntpAnalysis,
-            domain: row.domain
-          });
+        foundInDatabase = true;
+        
+        // Check if company is revealed
+        if (revealedCompanies.has(companyName)) {
+          if (!resultsMap.has(companyName)) {
+            resultsMap.set(companyName, {
+              companyName: row.companyName,
+              technology: row.technology,
+              category: row.category,
+              purchasePrediction: row.purchasePrediction,
+              purchaseProbability: row.purchaseProbability,
+              ntpAnalysis: row.ntpAnalysis,
+              domain: row.domain
+            });
+          }
+        } else {
+          foundButNotRevealed = true;
         }
       }
     });
 
-    return Array.from(resultsMap.values());
+    const results = Array.from(resultsMap.values());
+    
+    if (results.length > 0) {
+      return { results, status: 'found' };
+    } else if (foundButNotRevealed) {
+      return { results: [], status: 'hidden' };
+    } else if (foundInDatabase) {
+      return { results: [], status: 'hidden' };
+    } else {
+      return { results: [], status: 'not-found' };
+    }
   };
 
   const handleSendMessage = async () => {
@@ -98,39 +110,29 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
         data = result.data || [];
       }
 
-      const analysisResults = findNTPAnalysis(userMessage, data, revealedRows);
+      const { results: analysisResults, status } = findNTPAnalysis(userMessage, data, revealedRows);
 
-      if (analysisResults.length > 0) {
+      if (status === 'found' && analysisResults.length > 0) {
         const botMessage = analysisResults.map((result, idx) => {
-          let content = '';
-          content += `${idx + 1}. ${result.companyName}\n`;
-          content += `━━━━━━━━━━━━\n\n`;
-          content += `Domain: ${result.domain || 'N/A'}\n`;
-          content += `Technology: ${result.technology || 'N/A'}\n`;
-          content += `Category: ${result.category || 'N/A'}\n`;
-          content += `Purchase Prediction: ${result.purchasePrediction || 'N/A'}\n`;
-          content += `Purchase Probability: ${result.purchaseProbability || 'N/A'}\n`;
-          
-          if (result.ntpAnalysis) {
-            content += `\n📊 Analysis:\n`;
-            content += `${result.ntpAnalysis}\n`;
-          }
-          
-          if (idx < analysisResults.length - 1) {
-            content += '\n\n';
-          }
-          
-          return content;
-        }).join('');
+          return {
+            index: idx + 1,
+            companyName: result.companyName,
+            domain: result.domain || 'N/A',
+            technology: result.technology || 'N/A',
+            category: result.category || 'N/A',
+            purchasePrediction: result.purchasePrediction || 'N/A',
+            purchaseProbability: result.purchaseProbability || 'N/A',
+            analysis: result.ntpAnalysis || 'No analysis available'
+          };
+        });
         
-        setMessages(prev => [...prev, { type: 'bot', text: botMessage, isFormatted: true, content: botMessage }]);
+        setMessages(prev => [...prev, { type: 'bot', text: '', isFormatted: true, data: botMessage }]);
+      } else if (status === 'hidden') {
+        setMessages(prev => [...prev, { type: 'bot', text: '', isFormatted: false, messageType: 'hidden', company: userMessage }]);
+      } else if (status === 'not-found') {
+        setMessages(prev => [...prev, { type: 'bot', text: '', isFormatted: false, messageType: 'not-found', company: userMessage }]);
       } else {
-        let botMessage = '';
-        if (revealedRows && revealedRows.size > 0) {
-          botMessage = `I couldn't find any NTP analysis for "${userMessage}" in the revealed companies. Please reveal more companies or try a different search.`;
-        } else {
-          botMessage = `Please reveal companies in the table first to view their NTP analysis. Click the eye icon on a company row to reveal it.`;
-        }
+        const botMessage = `Please reveal companies in the table first to view their NTP analysis. Click the lock icon on a company row to reveal it.`;
         setMessages(prev => [...prev, { type: 'bot', text: botMessage }]);
       }
     } catch (error) {
@@ -161,9 +163,62 @@ const ChatBot = ({ isAuthenticated, ntpData, revealedRows, tableData }) => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`chatbot-message-wrapper ${msg.type}`}>
                 <div className={`chatbot-message ${msg.type}`}>
-                  {msg.type === 'bot' && msg.isFormatted ? (
-                    <div className="chatbot-message-content">
-                      {msg.content}
+                  {msg.type === 'bot' && msg.isFormatted && msg.data ? (
+                    <div className="chatbot-analysis-container">
+                      {msg.data.map((item, itemIdx) => (
+                        <div key={itemIdx} className="chatbot-analysis-card">
+                          <div className="analysis-header">
+                            <span className="analysis-number">{item.index}</span>
+                            <span className="analysis-company">{item.companyName}</span>
+                          </div>
+                          
+                          <div className="analysis-details">
+                            <div className="detail-row">
+                              <span className="detail-label">Domain:</span>
+                              <span className="detail-value">{item.domain}</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="detail-label">Technology:</span>
+                              <span className="detail-value">{item.technology}</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="detail-label">Category:</span>
+                              <span className="detail-value">{item.category}</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="detail-label">Purchase Prediction:</span>
+                              <span className="detail-value prediction">{item.purchasePrediction}</span>
+                            </div>
+                            <div className="detail-row">
+                              <span className="detail-label">Probability:</span>
+                              <span className="detail-value probability">{item.purchaseProbability}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="analysis-section">
+                            <div className="analysis-title">📊 Analysis</div>
+                            <div className="analysis-text">{item.analysis}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : msg.type === 'bot' && msg.messageType === 'hidden' ? (
+                    <div className="chatbot-message-card hidden-card">
+                      <div className="message-card-icon">🔒</div>
+                      <div className="message-card-content">
+                        <div className="message-card-text">
+                          Please reveal <strong>"{msg.company}"</strong> to view its analysis.
+                        </div>
+                      </div>
+                    </div>
+                  ) : msg.type === 'bot' && msg.messageType === 'not-found' ? (
+                    <div className="chatbot-message-card not-found-card">
+                      <div className="message-card-icon">❌</div>
+                      <div className="message-card-content">
+                        <div className="message-card-text">
+                          No data available for <strong>"{msg.company}"</strong>.
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     msg.text
