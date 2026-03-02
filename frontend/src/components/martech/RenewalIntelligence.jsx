@@ -114,11 +114,11 @@ const RenewalMeter = ({ renewalDate }) => {
     const yearDiff = year - currentYear;
     const quarterDiff = (yearDiff * 4) + (quarter - currentQuarter);
     
-    // If past or current quarter, return 100 (darkest/leftmost)
+    // If past or current quarter, return 100 (darkest/rightmost - Upcoming)
     if (quarterDiff <= 0) return 100;
     
     // Map quarters to proximity (0-100)
-    // 0 quarters = 100% (darkest/left), 8+ quarters = 0% (lightest/right)
+    // 0 quarters = 100% (darkest/right - Upcoming), 8+ quarters = 0% (lightest/left - Long-term)
     const maxQuarters = 8;
     return Math.min(100, Math.max(0, 100 - (quarterDiff / maxQuarters) * 100));
   };
@@ -133,9 +133,9 @@ const RenewalMeter = ({ renewalDate }) => {
   const statusLabel = getStatusLabel(proximity);
   
   // Calculate arrow rotation based on proximity
-  // For Upcoming (proximity 100): should point left (-90)
-  // For Long-term (proximity 0): should point right (90)
-  const rotation = 90 - (proximity * 1.8);
+  // For Upcoming (proximity 100): should point right (90)
+  // For Long-term (proximity 0): should point left (-90)
+  const rotation = -90 + (proximity * 1.8);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
