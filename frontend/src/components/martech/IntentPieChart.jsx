@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useState } from 'react';
+import '../../styles/intentPieChart.css';
 
 const IntentPieChart = ({ data }) => {
   const [activeSlice, setActiveSlice] = useState(null);
@@ -50,24 +51,16 @@ const IntentPieChart = ({ data }) => {
       const status = payload[0].name;
       const color = getColor(status);
       return (
-        <div style={{
-          backgroundColor: 'white',
-          padding: '14px 18px',
-          border: `2px solid ${color}`,
-          borderRadius: '10px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-          backdropFilter: 'blur(8px)',
-          animation: 'slideIn 0.2s ease-out'
-        }}>
-          <p style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '700', color: color }}>
+        <div className="intent-tooltip" style={{ borderColor: color }}>
+          <p className="tooltip-title" style={{ color }}>
             {payload[0].name}
           </p>
-          <div style={{ borderTop: `1px solid ${color}20`, paddingTop: '8px' }}>
-            <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6b7280' }}>
-              Count: <span style={{ fontWeight: '700', color: '#1f2937', fontSize: '13px' }}>{payload[0].value}</span>
+          <div className="tooltip-divider" style={{ borderTopColor: `${color}20` }}>
+            <p className="tooltip-row">
+              Count: <span className="tooltip-value">{payload[0].value}</span>
             </p>
-            <p style={{ margin: '0', fontSize: '12px', color: '#6b7280' }}>
-              Percentage: <span style={{ fontWeight: '700', color: color, fontSize: '13px' }}>{payload[0].payload.percentage}%</span>
+            <p className="tooltip-row">
+              Percentage: <span className="tooltip-value" style={{ color }}>{payload[0].payload.percentage}%</span>
             </p>
           </div>
         </div>
@@ -77,80 +70,18 @@ const IntentPieChart = ({ data }) => {
   };
 
   return (
-    <div style={{ width: '100%', padding: '0' }}>
-      <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .chart-card {
-          animation: fadeIn 0.4s ease-out;
-        }
-      `}</style>
-
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 1fr', 
-        gap: '28px', 
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
+    <div className="intent-pie-chart-container">
+      <div className="charts-grid">
         {/* Pie Chart Container */}
-        <div className="chart-card" style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          padding: '20px',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-          borderRadius: '16px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            position: 'absolute',
-            top: '-50%',
-            right: '-50%',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none'
-          }}></div>
+        <div className="chart-card chart-wrapper">
+          <div className="chart-background-glow"></div>
           
-          <h3 style={{
-            margin: '0',
-            fontSize: '17px',
-            fontWeight: '700',
-            color: '#1f2937',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            position: 'relative',
-            zIndex: 1
-          }}>
-            <span style={{
-              width: '5px',
-              height: '20px',
-              background: 'linear-gradient(180deg, #3b82f6 0%, #1e40af 100%)',
-              borderRadius: '3px',
-              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
-            }}></span>
+          <h3 className="chart-title">
+            <span className="chart-title-accent"></span>
             Intent Status Distribution
           </h3>
           
-          <div style={{ height: '320px', width: '100%', position: 'relative', zIndex: 1 }}>
+          <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -171,6 +102,7 @@ const IntentPieChart = ({ data }) => {
                     <Cell 
                       key={`cell-${index}`} 
                       fill={getColor(entry.name)}
+                      className={`pie-slice ${activeSlice !== null && activeSlice !== index ? 'pie-slice-inactive' : 'pie-slice-active'}`}
                       style={{
                         filter: activeSlice !== null && activeSlice !== index ? 'brightness(0.7)' : 'brightness(1)',
                         transition: 'filter 0.3s ease, transform 0.3s ease',
@@ -186,48 +118,34 @@ const IntentPieChart = ({ data }) => {
             </ResponsiveContainer>
             
             {/* Legend */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px',
-              flexWrap: 'wrap',
-              marginTop: '10px',
-              paddingTop: '10px',
-              borderTop: '2px solid #e5e7eb'
-            }}>
+            <div className="chart-legend">
               {chartData.map((item, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontSize: '13px',
-                  color: '#6b7280',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: '#f9fafb',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = `${getColor(item.name)}15`;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
+                <div 
+                  key={idx} 
+                  className="legend-item"
+                  style={{
+                    backgroundColor: '#f9fafb'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `${getColor(item.name)}15`;
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f9fafb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
                 >
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: getColor(item.name),
-                    boxShadow: `0 2px 8px ${getColor(item.name)}40`
-                  }}></div>
-                  <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                  <div 
+                    className="legend-color-dot"
+                    style={{
+                      backgroundColor: getColor(item.name),
+                      boxShadow: `0 2px 8px ${getColor(item.name)}40`
+                    }}
+                  ></div>
+                  <span className="legend-label">
                     {item.name}
                   </span>
-                  <span style={{ fontWeight: '700', color: getColor(item.name), marginLeft: '4px' }}>
+                  <span className="legend-percentage" style={{ color: getColor(item.name) }}>
                     {item.percentage}%
                   </span>
                 </div>
@@ -237,51 +155,15 @@ const IntentPieChart = ({ data }) => {
         </div>
 
         {/* Bar Chart Container */}
-        <div className="chart-card" style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          padding: '20px',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-          borderRadius: '16px',
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            position: 'absolute',
-            top: '-50%',
-            right: '-50%',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none'
-          }}></div>
+        <div className="chart-card chart-wrapper">
+          <div className="chart-background-glow"></div>
 
-          <h3 style={{
-            margin: '0',
-            fontSize: '17px',
-            fontWeight: '700',
-            color: '#1f2937',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            position: 'relative',
-            zIndex: 1
-          }}>
-            <span style={{
-              width: '5px',
-              height: '20px',
-              background: 'linear-gradient(180deg, #3b82f6 0%, #1e40af 100%)',
-              borderRadius: '3px',
-              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
-            }}></span>
+          <h3 className="chart-title">
+            <span className="chart-title-accent"></span>
             Company Count by Status
           </h3>
 
-          <div style={{ height: '320px', width: '100%', position: 'relative', zIndex: 1 }}>
+          <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
