@@ -2,13 +2,8 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import keywordHeatmap from '../../final_charts/keyword_heatmap (1).png';
-import portfolioRadar from '../../final_charts/new_data_portfolio_radar (1).png';
-import probabilityDist from '../../final_charts/probability_dist (1).png';
 import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
-
-import { performanceMonitor } from '../../utils/performanceMonitor';
 
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -267,7 +262,6 @@ const NTP = () => {
   const [companyNameSearch, setCompanyNameSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [modalContent, setModalContent] = useState(null);
-  const [showSummary, setShowSummary] = useState(false);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
@@ -420,10 +414,6 @@ const NTP = () => {
       try {
         setLoading(true);
         setError(null);
-        performanceMonitor.reset();
-        performanceMonitor.start('total-load');
-        
-        performanceMonitor.start('api-fetch');
 
         const metadataResponse = await fetch('/api/ntp/metadata');
         await metadataResponse.json();
@@ -450,18 +440,7 @@ const NTP = () => {
           throw new Error('Failed to fetch all data after retries');
         }
         
-        performanceMonitor.end('api-fetch');
-        
-        performanceMonitor.start('parse-json');
-        
-        performanceMonitor.end('parse-json');
-
-        performanceMonitor.start('state-update');
         setTableData(allData.data || []);
-        
-        performanceMonitor.end('state-update');
-        performanceMonitor.end('total-load');
-        performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
         setTableData([]);
@@ -2236,48 +2215,6 @@ const NTP = () => {
         </div>
       )}
 
-      {showSummary && (
-        <div className="modal-overlay" onClick={() => setShowSummary(false)}>
-          <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="summary-modal-header">
-              <h2>Next Tech Purchase® Summary - Analytics Overview</h2>
-              <button 
-                className="close-button"
-                onClick={() => setShowSummary(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  padding: '0',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="summary-charts-grid">
-              <div className="chart-item">
-                <h3>Keyword Heatmap</h3>
-                <img src={keywordHeatmap} alt="Keyword Heatmap" />
-              </div>
-              <div className="chart-item">
-                <h3>Portfolio Radar</h3>
-                <img src={portfolioRadar} alt="Portfolio Radar" />
-              </div>
-              <div className="chart-item">
-                <h3>Probability Distribution</h3>
-                <img src={probabilityDist} alt="Probability Distribution" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       <style>{`
         .table-container {
           max-height: 500px !important;
@@ -2381,88 +2318,7 @@ const NTP = () => {
           background-color: #0056b3;
         }
 
-        .summary-modal-content {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          max-width: 1200px;
-          width: 95%;
-          max-height: 90vh;
-          overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .summary-modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 24px;
-          border-bottom: 1px solid #e5e7eb;
-          flex-shrink: 0;
-        }
-
-        .summary-modal-header h2 {
-          margin: 0;
-          font-size: 20px;
-          font-weight: 600;
-          color: #1f2937;
-        }
-
-        .summary-charts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-          gap: 24px;
-          padding: 24px;
-          overflow-y: auto;
-        }
-
-        .chart-item {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          background: #f9fafb;
-          padding: 16px;
-          border-radius: 8px;
-          border: 1px solid #e5e7eb;
-        }
-
-        .chart-item h3 {
-          margin: 0;
-          font-size: 14px;
-          font-weight: 600;
-          color: #1f2937;
-        }
-
-        .chart-item img {
-          width: 100%;
-          height: auto;
-          border-radius: 6px;
-          background: white;
-          border: 1px solid #d1d5db;
-        }
-
-        @media (max-width: 1024px) {
-          .summary-charts-grid {
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-          }
-        }
-
         @media (max-width: 768px) {
-          .summary-charts-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-            padding: 16px;
-          }
-
-          .summary-modal-header {
-            padding: 16px;
-          }
-
-          .summary-modal-header h2 {
-            font-size: 18px;
-          }
-
           th, td {
             padding: 10px 12px;
             font-size: 12px;
@@ -2477,20 +2333,6 @@ const NTP = () => {
         }
 
         @media (max-width: 480px) {
-          .summary-charts-grid {
-            grid-template-columns: 1fr;
-            gap: 12px;
-            padding: 12px;
-          }
-
-          .summary-modal-header {
-            padding: 12px;
-          }
-
-          .summary-modal-header h2 {
-            font-size: 16px;
-          }
-
           th, td {
             padding: 8px 10px;
             font-size: 11px;

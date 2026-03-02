@@ -4,7 +4,6 @@ import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
-import { performanceMonitor } from '../../utils/performanceMonitor';
 
 const countryCodeMap = {
   'United States': 'US', 'USA': 'US', 'UNITED STATES': 'US',
@@ -1023,10 +1022,6 @@ const Technographics = () => {
       try {
         setLoading(true);
         setError(null);
-        performanceMonitor.reset();
-        performanceMonitor.start('total-load');
-
-        performanceMonitor.start('api-fetch');
 
         const metadataResponse = await fetch('/api/technographics/metadata');
         const metadata = await metadataResponse.json();
@@ -1065,19 +1060,9 @@ const Technographics = () => {
           }
         }
         
-        performanceMonitor.end('api-fetch');
-
         if (!allData) {
           throw new Error('Failed to fetch all data after multiple retries');
         }
-
-        performanceMonitor.start('parse-json');
-        
-        performanceMonitor.end('parse-json');
-
-        performanceMonitor.start('process-data');
-
-        setTotalRecords(allData.total || 0);
 
         const data = allData.data || [];
 
@@ -1126,9 +1111,6 @@ const Technographics = () => {
             techDataWithPercentages[region][category] = percentage;
           });
         });
-        performanceMonitor.end('process-data');
-
-        performanceMonitor.start('state-update');
 
         setTableData(data);
         setIndustryData(industryArray);
@@ -1138,12 +1120,6 @@ const Technographics = () => {
         if (ntpAllData && ntpAllData.data) {
           setNtpData(ntpAllData.data);
         }
-        
-        performanceMonitor.end('state-update');
-        
-        performanceMonitor.end('total-load');
-        setMeasurements(performanceMonitor.getAllMeasurements());
-        performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
         setTableData([]);

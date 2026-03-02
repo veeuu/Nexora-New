@@ -3,7 +3,6 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { IndustryProvider } from '../context/IndustryContext';
 import Menu from './Menu';
 import Home from './martech/Home';
-import MartechSummary from './martech/Summary';
 import MartechNTP from './martech/NTP';
 import Martechintent from './martech/Intent';
 import MartechTechnographics from './martech/Technographics';
@@ -61,11 +60,10 @@ const sectionToRoute = {
       'Technographics': 'Technographics',
       'NTP': 'Next Tech Purchase®',
       'Buying Group': 'Buying Group',
-      'Renewal Intelligence': 'Renewal Intelligence',
-      'Summary': 'Summary'
+      'Renewal Intelligence': 'Renewal Intelligence'
     };
 
-    const section = sectionMap[page.page] || 'Summary';
+    const section = sectionMap[page.page] || 'Home';
     handleMenuClick(section);
   };
 
@@ -83,8 +81,6 @@ const sectionToRoute = {
     switch (activeSection) {
       case 'Home':
         return <Home />;
-      case 'Summary':
-        return <MartechSummary />;
       case 'NTP':
       case 'Next Tech Purchase®':
         return <MartechNTP />;

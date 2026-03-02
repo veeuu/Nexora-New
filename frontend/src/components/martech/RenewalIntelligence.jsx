@@ -4,8 +4,6 @@ import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
 
-import { performanceMonitor } from '../../utils/performanceMonitor';
-
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -482,28 +480,20 @@ const iconName = getProductIcon(productName);
 
 useEffect(() => {
         setLoading(true);
-        performanceMonitor.reset();
-        performanceMonitor.start('total-load');
 
         const fetchRenewalData = async () => {
             try {
                 setLoading(true);
 
-performanceMonitor.start('api-fetch');
                 const [renewalResponse, companyDetailsResponse, metadataResponse] = await Promise.all([
                     fetch('/api/renewal-intelligence?page=1&limit=500'),
                     fetch('/api/company-details'),
                     fetch('/api/renewal-intelligence/metadata')
                 ]);
-                performanceMonitor.end('api-fetch');
 
-                performanceMonitor.start('parse-json');
                 const renewalData = await renewalResponse.json();
                 const companyDetailsMap = await companyDetailsResponse.json();
                 const metadata = await metadataResponse.json();
-                performanceMonitor.end('parse-json');
-
-                performanceMonitor.start('process-data');
 
                 const data = renewalData.data || renewalData;
 
@@ -521,15 +511,8 @@ const dataWithDetails = data.map(row => {
                         linkedinUrl: companyDetails.linkedinUrl || ''
                     };
                 });
-                performanceMonitor.end('process-data');
 
-                performanceMonitor.start('state-update');
                 setTableData(dataWithDetails);
-                performanceMonitor.end('state-update');
-
-                performanceMonitor.end('total-load');
-                setMeasurements(performanceMonitor.getAllMeasurements());
-                performanceMonitor.logSummary();
             } catch (error) {
 
                 setTableData([]);
