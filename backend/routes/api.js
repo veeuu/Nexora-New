@@ -112,11 +112,9 @@ const zoomScript = `<script>
 // Helper to get data collection
 const getDataCollection = () => {
   if (mongoose.connection.readyState !== 1) {
-    console.error('[DB] MongoDB connection state:', mongoose.connection.readyState);
     throw new Error('MongoDB not connected');
   }
   if (!mongoose.connection.db) {
-    console.error('[DB] MongoDB connection exists but db is null');
     throw new Error('MongoDB database not available');
   }
   return mongoose.connection.db.collection('data');
@@ -144,18 +142,15 @@ function setCachedQuery(key, data) {
 
 router.get('/ntp/metadata', async (req, res) => {
   try {
-    console.log('[NTP-METADATA] Fetching using aggregation...');
     const startTime = Date.now();
     
     const cacheKey = 'ntp-metadata';
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[NTP-METADATA] ✓ Returned from cache`);
       return res.json(cached);
     }
 
     const dataCollection = getDataCollection();
-    console.log('[NTP-METADATA] Got data collection, running aggregation...');
 
     const result = await dataCollection.aggregate([
       { $unwind: '$NTP' },
@@ -190,18 +185,14 @@ router.get('/ntp/metadata', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, metadata);
-    console.log(`[NTP-METADATA] ✓ Returned in ${Date.now() - startTime}ms`);
     res.json(metadata);
   } catch (err) {
-    console.error('[NTP-METADATA] Error:', err.message);
-    console.error('[NTP-METADATA] Stack:', err.stack);
     res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
 
 router.get('/ntp', async (req, res) => {
   try {
-    console.log('[NTP] Fetching initial 500 records from data collection...');
     const startTime = Date.now();
     
     const page = parseInt(req.query.page) || 1;
@@ -211,7 +202,6 @@ router.get('/ntp', async (req, res) => {
     const cacheKey = `ntp-page-${page}-${limit}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[NTP] ✓ Returned from cache`);
       return res.json(cached);
     }
 
@@ -259,17 +249,14 @@ router.get('/ntp', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, response);
-    console.log(`[NTP] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
     res.json(response);
   } catch (err) {
-    console.error('[NTP] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
 router.get('/ntp/all', async (req, res) => {
   try {
-    console.log('[NTP-ALL] Fetching from data collection...');
     const startTime = Date.now();
 
     const filters = {
@@ -282,7 +269,6 @@ router.get('/ntp/all', async (req, res) => {
     const cacheKey = `ntp-all-${JSON.stringify(filters)}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[NTP-ALL] ✓ Returned from cache`);
       return res.json(cached);
     }
 
@@ -338,10 +324,8 @@ router.get('/ntp/all', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, response);
-    console.log(`[NTP-ALL] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
     res.json(response);
   } catch (err) {
-    console.error('[NTP-ALL] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
@@ -352,13 +336,11 @@ router.get('/ntp/all', async (req, res) => {
 
 router.get('/technographics/metadata', async (req, res) => {
   try {
-    console.log('[TECH-METADATA] Fetching using aggregation...');
     const startTime = Date.now();
     
     const cacheKey = 'tech-metadata';
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[TECH-METADATA] ✓ Returned from cache`);
       return res.json(cached);
     }
 
@@ -400,17 +382,14 @@ router.get('/technographics/metadata', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, metadata);
-    console.log(`[TECH-METADATA] ✓ Returned in ${Date.now() - startTime}ms`);
     res.json(metadata);
   } catch (err) {
-    console.error('[TECH-METADATA] Error:', err.message);
     res.status(500).send('Server Error');
   }
 });
 
 router.get('/technographics', async (req, res) => {
   try {
-    console.log('[TECH] Fetching initial 500 records from data collection...');
     const startTime = Date.now();
     
     const page = parseInt(req.query.page) || 1;
@@ -420,7 +399,6 @@ router.get('/technographics', async (req, res) => {
     const cacheKey = `tech-page-${page}-${limit}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[TECH] ✓ Returned from cache`);
       return res.json(cached);
     }
 
@@ -475,17 +453,14 @@ router.get('/technographics', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, response);
-    console.log(`[TECH] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
     res.json(response);
   } catch (err) {
-    console.error('[TECH] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
 
 router.get('/technographics/all', async (req, res) => {
   try {
-    console.log('[TECH-ALL] Fetching from data collection...');
     const startTime = Date.now();
     
     const filters = {
@@ -501,7 +476,6 @@ router.get('/technographics/all', async (req, res) => {
     const cacheKey = `tech-all-${JSON.stringify(filters)}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
-      console.log(`[TECH-ALL] ✓ Returned from cache`);
       return res.json(cached);
     }
 
@@ -567,10 +541,8 @@ router.get('/technographics/all', async (req, res) => {
     };
 
     setCachedQuery(cacheKey, response);
-    console.log(`[TECH-ALL] ✓ Returned ${results.length} records in ${Date.now() - startTime}ms`);
     res.json(response);
   } catch (err) {
-    console.error('[TECH-ALL] Error:', err.message);
     res.status(500).json({ error: 'Server Error', data: [] });
   }
 });
@@ -742,19 +714,15 @@ let intentCacheTime = 0;
 const INTENT_CACHE_DURATION = 10 * 60 * 1000;
 
 router.get('/intent', async (req, res) => {
-  console.log('[INTENT-API] Request received');
   try {
     const now = Date.now();
 
     if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
-      console.log('[INTENT-API] Returning cached data');
       return res.json(intentCache);
     }
 
-    console.log('[INTENT-API] Fetching from MongoDB...');
     const intentCollection = mongoose.connection.db.collection('intent_data');
     const intentDocs = await intentCollection.find({}).toArray();
-    console.log(`[INTENT-API] Found ${intentDocs.length} documents`);
 
     const intentData = intentDocs.map(item => ({
       companyName: item['Company Name'],
@@ -764,10 +732,8 @@ router.get('/intent', async (req, res) => {
     intentCache = intentData;
     intentCacheTime = now;
 
-    console.log('[INTENT-API] Sending response');
     res.json(intentData);
   } catch (err) {
-    console.error('[INTENT-API] Error:', err);
     res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
@@ -1038,7 +1004,6 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
 
         newChartsGenerated++;
       } catch (err) {
-        console.error(`Error generating chart for ${company}:`, err.message);
       }
     }
 
@@ -1049,7 +1014,6 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
       message: `${newChartsGenerated} new chart(s) generated, ${chartsSkipped} existing chart(s) skipped`
     };
   } catch (err) {
-    console.error('Error in generateSelectedOrgCharts:', err.message);
     return { success: false, message: err.message };
   }
 }

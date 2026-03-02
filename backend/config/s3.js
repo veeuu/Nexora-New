@@ -40,15 +40,12 @@ async function uploadOrgChartToS3(fileName, htmlContent) {
     // Generate public URL (if bucket is public) or signed URL
     const s3Url = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${s3Key}`;
 
-    console.log(`✓ Uploaded to S3: ${s3Key}`);
-
     return {
       s3Key,
       s3Url,
       fileSize
     };
   } catch (error) {
-    console.error('Error uploading to S3:', error);
     throw new Error(`Failed to upload to S3: ${error.message}`);
   }
 }
@@ -68,7 +65,6 @@ async function getSignedOrgChartUrl(s3Key) {
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
     return signedUrl;
   } catch (error) {
-    console.error('Error generating signed URL:', error);
     throw new Error(`Failed to generate signed URL: ${error.message}`);
   }
 }
@@ -90,7 +86,6 @@ async function getOrgChartFromS3(s3Key) {
     
     return htmlContent;
   } catch (error) {
-    console.error('Error fetching from S3:', error);
     throw new Error(`Failed to fetch from S3: ${error.message}`);
   }
 }
@@ -130,9 +125,7 @@ async function deleteOrgChartFromS3(s3Key) {
     });
 
     await s3Client.send(command);
-    console.log(`✓ Deleted from S3: ${s3Key}`);
   } catch (error) {
-    console.error('Error deleting from S3:', error);
     throw new Error(`Failed to delete from S3: ${error.message}`);
   }
 }

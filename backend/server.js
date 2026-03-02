@@ -32,12 +32,8 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`✓ Backend server listening on http://0.0.0.0:${PORT}`);
-      console.log(`✓ API available at http://localhost:${PORT}/api`);
-      console.log('✓ Server ready to accept requests');
     });
   } catch (error) {
-    console.error('✗ Failed to start server:', error);
     process.exit(1);
   }
 };

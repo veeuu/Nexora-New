@@ -64,7 +64,6 @@ router.post('/signup', async (req, res) => {
       requiresVerification: true
     });
   } catch (err) {
-    console.error('Signup error:', err.message);
     res.status(500).json({ message: 'Server error during signup' });
   }
 });
@@ -105,7 +104,6 @@ router.post('/verify-otp', async (req, res) => {
       email: user.email
     });
   } catch (err) {
-    console.error('OTP verification error:', err.message);
     res.status(500).json({ message: 'Server error during OTP verification' });
   }
 });
@@ -138,7 +136,6 @@ router.post('/resend-otp', async (req, res) => {
       email: user.email
     });
   } catch (err) {
-    console.error('Resend OTP error:', err.message);
     res.status(500).json({ message: 'Server error while resending OTP' });
   }
 });
@@ -171,7 +168,6 @@ router.post('/forgot-password', async (req, res) => {
       email: user.email
     });
   } catch (err) {
-    console.error('Forgot password error:', err.message);
     res.status(500).json({ message: 'Server error during password reset request' });
   }
 });
@@ -217,7 +213,6 @@ router.post('/reset-password', async (req, res) => {
       email: user.email
     });
   } catch (err) {
-    console.error('Reset password error:', err.message);
     res.status(500).json({ message: 'Server error during password reset' });
   }
 });
@@ -269,7 +264,6 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error during login' });
   }
 });

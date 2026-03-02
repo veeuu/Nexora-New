@@ -720,7 +720,6 @@ await page.waitForFunction(() => {
       const plotDiv = document.querySelector('#chart');
       return plotDiv && plotDiv.data && plotDiv.data.length > 0;
     }, { timeout: 5000 }).catch(() => {
-      console.warn('⚠ Plotly rendering timeout, proceeding anyway');
     });
 
 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1034,7 +1033,6 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     // ===== CUSTOM EVENTS =====
     window.addEventListener('employeeClicked', function(event) {
-      console.log('Employee clicked:', event.detail);
     });
   </script>
 </body>
@@ -1116,19 +1114,14 @@ if (!fs.existsSync(csvFilePath)) {
     const data = await readCSVFile(csvFilePath);
 
 if (!data[0] || !('Company Name' in data[0])) {
-      console.warn('⚠ "Company Name" column not found. Processing as "Overall_Organization".');
       data.forEach(row => row['Company Name'] = 'Overall_Organization');
     }
 
     if (!data[0] || !('hierarchy' in data[0])) {
-      console.warn('⚠ "hierarchy" column not found. Defaulting to "Other".');
       data.forEach(row => row.hierarchy = row.hierarchy || 'Other');
     }
 
     const hasLocationColumn = data[0] && 'Location' in data[0];
-    if (!hasLocationColumn) {
-      console.warn('⚠ "Location" column not found. Titles will not include location.');
-    }
 
 const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
 
@@ -1292,5 +1285,5 @@ function convertToCSV(data) {
 module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
 
 if (require.main === module) {
-  main().catch(console.error);
+  main().catch(() => {});
 }

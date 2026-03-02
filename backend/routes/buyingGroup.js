@@ -352,15 +352,12 @@ router.post('/:companyName/regenerate-chart', async (req, res) => {
     };
     await buyingGroup.save();
 
-    console.log(`[ORG-CHART] ✓ Regenerated and uploaded to S3`);
-
     res.json({
       success: true,
       message: 'Org chart regenerated successfully',
       s3Url: s3Result.s3Url
     });
   } catch (error) {
-    console.error('[ORG-CHART] Error:', error.message);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to regenerate org chart' 
@@ -373,12 +370,8 @@ router.post('/:companyName/regenerate-chart', async (req, res) => {
 // ============================================
 router.post('/', async (req, res) => {
   try {
-    console.log('[BUYING-GROUPS] Creating new buying group...');
-    
     const buyingGroup = new BuyingGroup(req.body);
     await buyingGroup.save();
-
-    console.log(`[BUYING-GROUPS] ✓ Created: ${buyingGroup.companyName}`);
     
     res.status(201).json({
       success: true,
@@ -386,8 +379,6 @@ router.post('/', async (req, res) => {
       data: buyingGroup
     });
   } catch (error) {
-    console.error('[BUYING-GROUPS] Error:', error.message);
-    
     if (error.code === 11000) {
       return res.status(400).json({ 
         success: false, 
@@ -410,8 +401,6 @@ router.put('/:companyName', async (req, res) => {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     
-    console.log(`[BUYING-GROUPS] Updating: ${decodedCompanyName}`);
-    
     const buyingGroup = await BuyingGroup.findOneAndUpdate(
       { companyName: decodedCompanyName },
       { $set: req.body },
@@ -425,15 +414,12 @@ router.put('/:companyName', async (req, res) => {
       });
     }
 
-    console.log(`[BUYING-GROUPS] ✓ Updated: ${decodedCompanyName}`);
-    
     res.json({
       success: true,
       message: 'Buying group updated successfully',
       data: buyingGroup
     });
   } catch (error) {
-    console.error('[BUYING-GROUPS] Error:', error.message);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to update buying group' 
@@ -448,8 +434,6 @@ router.delete('/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
-    
-    console.log(`[BUYING-GROUPS] Deleting: ${decodedCompanyName}`);
     
     const buyingGroup = await BuyingGroup.findOneAndDelete({ 
       companyName: decodedCompanyName 
@@ -467,18 +451,14 @@ router.delete('/:companyName', async (req, res) => {
       try {
         await deleteOrgChartFromS3(buyingGroup.orgChart.s3Key);
       } catch (s3Error) {
-        console.error('[BUYING-GROUPS] S3 deletion failed:', s3Error.message);
       }
     }
 
-    console.log(`[BUYING-GROUPS] ✓ Deleted: ${decodedCompanyName}`);
-    
     res.json({
       success: true,
       message: 'Buying group deleted successfully'
     });
   } catch (error) {
-    console.error('[BUYING-GROUPS] Error:', error.message);
     res.status(500).json({ 
       success: false, 
       error: 'Failed to delete buying group' 
