@@ -537,6 +537,10 @@ const NTP = () => {
     // Show all data by default (no mandatory filters required)
     return tableData
       .filter(row => {
+        // Exclude "Not Detected" records
+        if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
+          return false;
+        }
         
         const filterMatches = Object.keys(filters).every(key => {
           const selectedValues = Array.isArray(filters[key]) ? filters[key] : [];

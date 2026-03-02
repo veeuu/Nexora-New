@@ -423,8 +423,18 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     try {
       // Check if user input matches a company name from the data
       const data = ntpData || tableData;
-      const matchedCompany = data && data.find(row => 
-        String(row.companyName || '').toLowerCase() === userMessage.toLowerCase()
+      
+      if (!data || data.length === 0) {
+        setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no data available. Please try again later.' }]);
+        return;
+      }
+
+      // Filter out "Not Detected" records and find matching company
+      const matchedCompany = data.find(row => 
+        String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
+        row.category !== 'Not Detected' &&
+        row.purchasePrediction !== 'Not Detected' &&
+        row.purchasePrediction !== 'NOT detected'
       );
 
       // If company name is found directly, skip to category selection
@@ -437,6 +447,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           ...dynamicCategories,
           { id: 'all', label: '📊 ALL' }
         ];
+        
+        if (categoriesWithAll.length === 1) {
+          // If only "ALL" is available, show error
+          setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
+          setSelectedCompany(null);
+          setConversationStage('greeting');
+          return;
+        }
+        
         setMessages(prev => [...prev, {
           type: 'bot',
           text: `✅ Got it! Which category interests you for ${userMessage}?`,
@@ -456,6 +475,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           ...dynamicCategories,
           { id: 'all', label: '📊 ALL' }
         ];
+        
+        if (categoriesWithAll.length === 1) {
+          // If only "ALL" is available, show error
+          setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
+          setSelectedCompany(null);
+          setConversationStage('greeting');
+          return;
+        }
+        
         setMessages(prev => [...prev, {
           type: 'bot',
           text: `✅ Got it! Which category interests you for ${userMessage}?`,
