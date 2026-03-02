@@ -25,7 +25,7 @@ const routeToSection = {
     '/dashboard/buying-group': 'Buying Group',
     '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue',
-    '/dashboard/keywords': 'Keywords'
+    '/dashboard/keywords': 'Keywords Surge'
   };
 
 useEffect(() => {
@@ -45,7 +45,7 @@ const sectionToRoute = {
       'Buying Group': '/dashboard/buying-group',
       'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue',
-      'Keywords': '/dashboard/keywords'
+      'Keywords Surge': '/dashboard/keywords'
     };
 
     const route = sectionToRoute[section] || '/dashboard/home';
@@ -94,7 +94,7 @@ const sectionToRoute = {
         return <MartechBuyingGroup />;
       case 'Product Catalogue':
         return <ProductCatalogue />;
-      case 'Keywords':
+      case 'Keywords Surge':
         return <Keywords />;
       default:
         return <Home />;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils.jsx';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import '../../styles/productCatalogue.css';
 
 const ProductCatalogue = () => {
   const [tableData, setTableData] = useState([]);
@@ -157,184 +158,58 @@ const getProductCountBySubCategory = (subCategory) => {
 
   if (loading) {
     return (
-      <div style={{
-        position: 'relative',
-        minHeight: '100vh',
-        backgroundColor: '#ffffffff',
-        padding: '40px 20px'
-      }}>
-        {/* Background Full Page Skeleton (blurred) */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-          padding: '40px 20px',
-          filter: 'blur(4px)',
-          opacity: 0.6,
-          pointerEvents: 'none',
-          overflow: 'hidden'
-        }}>
-          {/* Title Skeleton */}
-          <div style={{
-            height: '32px',
-            backgroundColor: '#e5e7eb',
-            borderRadius: '4px',
-            marginBottom: '24px',
-            width: '200px'
-          }} />
-
-          {/* Filter Bar Skeleton */}
-          <div style={{
-            display: 'flex',
-            gap: '12px',
-            marginBottom: '20px',
-            flexWrap: 'wrap'
-          }}>
+      <div className="loading-container">
+        <div className="loading-skeleton">
+          <div className="skeleton-title" />
+          <div className="skeleton-filters">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={`filter-${i}`} style={{
-                height: '36px',
-                backgroundColor: '#f3f4f6',
-                borderRadius: '6px',
-                width: '120px'
-              }} />
+              <div key={`filter-${i}`} className="skeleton-filter-item" />
             ))}
           </div>
-
-          {/* Divider */}
-          <div style={{
-            height: '1px',
-            backgroundColor: '#e5e7eb',
-            marginBottom: '20px'
-          }} />
-
-          {/* Table Header Skeleton */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(8, 1fr)',
-            gap: '12px',
-            marginBottom: '16px',
-            padding: '16px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '6px'
-          }}>
+          <div className="skeleton-divider" />
+          <div className="skeleton-table-header">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={`header-${i}`} style={{
-                height: '18px',
-                backgroundColor: '#e5e7eb',
-                borderRadius: '4px'
-              }} />
+              <div key={`header-${i}`} className="skeleton-header-cell" />
             ))}
           </div>
-
-          {/* Table Rows Skeleton */}
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(row => (
-            <div key={`row-${row}`} style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(8, 1fr)',
-              gap: '12px',
-              padding: '16px',
-              borderBottom: '1px solid #e5e7eb',
-              backgroundColor: row % 2 === 0 ? '#ffffff' : '#f9fafb'
-            }}>
+            <div key={`row-${row}`} className={`skeleton-table-row ${row % 2 === 0 ? 'even' : 'odd'}`}>
               {[1, 2, 3, 4, 5, 6, 7, 8].map(col => (
-                <div key={`cell-${row}-${col}`} style={{
-                  height: '14px',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '4px'
-                }} />
+                <div key={`cell-${row}-${col}`} className="skeleton-cell" />
               ))}
             </div>
           ))}
         </div>
-
-        {/* Centered Loading GIF */}
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 10
-        }}>
+        <div className="loading-gif-container">
           <img 
             src={loadingGif} 
             alt="Loading" 
-            style={{
-              width: '600px',
-              height: '600px',
-              objectFit: 'contain'
-            }}
+            className="loading-gif"
           />
         </div>
-
-        <style>{`
-          @keyframes pulse {
-            0%, 100% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0.5;
-            }
-          }
-        `}</style>
       </div>
     );
   }
 
   return (
     <div className="product-catalogue-container">
-      {}
       {error && (
-        <div style={{
-          backgroundColor: '#fee2e2',
-          border: '1px solid #fca5a5',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <div style={{
-            fontSize: '18px',
-            color: '#dc2626',
-            flexShrink: 0
-          }}>
-            �
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: '#991b1b',
-            fontWeight: '500'
-          }}>
+        <div className="error-message">
+          <div className="error-icon">⚠</div>
+          <div className="error-text">
             Error fetching data: {error}. Showing UI with no data.
           </div>
           <button
             onClick={() => setError(null)}
-            style={{
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '18px',
-              color: '#991b1b',
-              padding: '0',
-              lineHeight: '1'
-            }}
+            className="error-close-btn"
           >
             ✕
           </button>
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: '700' }}>Product Catalogue</h2>
+      <div className="catalogue-header">
+        <h2 className="catalogue-title">Product Catalogue</h2>
         <div className="year-dropdown">
           <label className="year-label">Year :</label>
           <select
@@ -349,205 +224,104 @@ const getProductCountBySubCategory = (subCategory) => {
       </div>
       <div className="section-subtle-divider" />
 
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-          <div className="filter-container" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-
-          {}
-          {activeFilterMenu !== 'category' && (
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => setActiveFilterMenu('category')}
-                style={{
-                  padding: '8px 14px',
-                  backgroundColor: 'white',
-                  color: '#3b82f6',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f3f4f6';
-                  e.target.style.borderColor = '#3b82f6';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
-              >
-                <span>Category {filters.category.length > 0 && `(${filters.category.length})`}</span>
-              </button>
-            </div>
-          )}
-
-          {activeFilterMenu === 'category' && (
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                backgroundColor: '#dbeafe',
-                border: '1px solid #93c5fd',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#1e40af'
-              }}>
-                <span>Category</span>
+      <div className="filter-section">
+        <div className="filter-controls">
+          <div className="filter-container">
+            {activeFilterMenu !== 'category' && (
+              <div style={{ position: 'relative' }}>
                 <button
-                  onClick={() => {
-                    setActiveFilterMenu(null);
-                    setFilters(prev => ({ ...prev, category: [] }));
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    padding: '0',
-                    color: '#1e40af',
-                    lineHeight: '1'
-                  }}
+                  onClick={() => setActiveFilterMenu('category')}
+                  className="filter-button"
                 >
-                  ✕
+                  <span>Category {filters.category.length > 0 && `(${filters.category.length})`}</span>
                 </button>
               </div>
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                marginTop: '8px',
-                backgroundColor: 'white',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                zIndex: 1000,
-                minWidth: '250px',
-                maxHeight: '300px',
-                overflowY: 'auto'
-              }}>
-                <div
-                  onClick={() => {
-                    const allOptions = getUniqueOptions('category');
+            )}
 
-                    if (filters.category.length === allOptions.length) {
+            {activeFilterMenu === 'category' && (
+              <div style={{ position: 'relative' }}>
+                <div className="filter-active">
+                  <span>Category</span>
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
                       setFilters(prev => ({ ...prev, category: [] }));
-                    } else {
-                      setFilters(prev => ({ ...prev, category: allOptions }));
-                    }
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
-                    onChange={() => {
+                    }}
+                    className="filter-close-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="filter-dropdown">
+                  <div
+                    onClick={() => {
                       const allOptions = getUniqueOptions('category');
-
                       if (filters.category.length === allOptions.length) {
                         setFilters(prev => ({ ...prev, category: [] }));
                       } else {
                         setFilters(prev => ({ ...prev, category: allOptions }));
                       }
                     }}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  All
-                </div>
-                {getUniqueOptions('category')
-                  .sort((a, b) => {
-                    const countA = getProductCountByCategory(a);
-                    const countB = getProductCountByCategory(b);
-                    return countB - countA;
-                  })
-                  .map((option, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => handleFilterChange('category', option)}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      backgroundColor: filters.category.includes(option) ? '#dbeafe' : 'white',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      justifyContent: 'space-between'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.includes(option) ? '#dbeafe' : 'white'}
+                    className="filter-option"
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input
-                        type="checkbox"
-                        checked={filters.category.includes(option)}
-                        onChange={() => handleFilterChange('category', option)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      {option}
-                    </div>
-                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                      {getProductCountByCategory(option)}
-                    </span>
+                    <input
+                      type="checkbox"
+                      checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
+                      onChange={() => {
+                        const allOptions = getUniqueOptions('category');
+                        if (filters.category.length === allOptions.length) {
+                          setFilters(prev => ({ ...prev, category: [] }));
+                        } else {
+                          setFilters(prev => ({ ...prev, category: allOptions }));
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    All
                   </div>
-                ))}
-
-                {}
-                <div style={{
-                  padding: '12px',
-                  borderTop: '1px solid #e5e7eb',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                  backgroundColor: '#f9fafb',
-                  position: 'sticky',
-                  bottom: 0
-                }}>
-                  <button
-                    onClick={() => {
-                      setActiveFilterMenu(null);
-                    }}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
-                  >
-                    Save
-                  </button>
+                  {getUniqueOptions('category')
+                    .sort((a, b) => {
+                      const countA = getProductCountByCategory(a);
+                      const countB = getProductCountByCategory(b);
+                      return countB - countA;
+                    })
+                    .map((option, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleFilterChange('category', option)}
+                      className={`filter-option ${filters.category.includes(option) ? 'selected' : ''}`}
+                    >
+                      <div className="filter-option-content">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <input
+                            type="checkbox"
+                            checked={filters.category.includes(option)}
+                            onChange={() => handleFilterChange('category', option)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          {option}
+                        </div>
+                        <span className="filter-option-count">
+                          {getProductCountByCategory(option)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="filter-footer">
+                    <button
+                      onClick={() => {
+                        setActiveFilterMenu(null);
+                      }}
+                      className="filter-save-btn"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
 
-          {}
           <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)} style={{ flexShrink: 0 }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -581,7 +355,7 @@ const getProductCountBySubCategory = (subCategory) => {
               return paginatedData.map((row, index) => {
                 const isHighlighted = rowMatchesSearch(row, searchTerm);
                 return (
-                  <tr key={index} style={{ backgroundColor: isHighlighted ? '#fefce8' : 'transparent' }}>
+                  <tr key={index} className={isHighlighted ? 'table-row-highlighted' : ''}>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.prodName)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.prodName, searchTerm)}
                     </td>
@@ -593,7 +367,7 @@ const getProductCountBySubCategory = (subCategory) => {
                     </td>
                     <td
                       onClick={() => handleDescriptionClick(row.description)}
-                      style={{ cursor: 'pointer', color: '#010810ff', textDecoration: 'underline' }}
+                      className="table-cell-description"
                     >
                       {row.description ? highlightText(`${row.description.substring(0, 30)}...`, searchTerm) : 'N/A'}
                     </td>
@@ -605,37 +379,13 @@ const getProductCountBySubCategory = (subCategory) => {
         </table>
       </div>
 
-      {}
       {filteredData.length > rowsPerPage && (
-      <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '20px',
-          marginBottom: '20px',
-          paddingBottom: '15px',
-          borderBottom: '1px solid #e5e7eb',
-          position: 'sticky',
-          bottom: 0,
-          backgroundColor: '#ffffff',
-          zIndex: 100
-      }}>
-          <div style={{
-              fontSize: '14px',
-              color: '#1f2937',
-              fontWeight: '600'
-          }}>
+      <div className="pagination-container">
+          <div className="pagination-info">
               Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
           </div>
 
-          {}
-          <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '8px',
-              paddingBottom: '10px'
-          }}>
+          <div className="pagination-controls">
               {(() => {
                   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
                   const maxPagesToShow = 5;
@@ -654,104 +404,36 @@ const getProductCountBySubCategory = (subCategory) => {
 
                   return (
                       <>
-                          {}
                           <button
                               key="first"
                               onClick={() => setCurrentPage(1)}
                               disabled={currentPage === 1}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === 1 ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className="pagination-button nav"
                               title="First page"
                           >
                               ≪
                           </button>
 
-                          {}
                           <button
                               key="prev"
                               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                               disabled={currentPage === 1}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === 1 ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage > 1) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className="pagination-button nav"
                               title="Previous page"
                           >
                               ‹
                           </button>
 
-                          {}
                           {startPage > 1 && (
                               <>
                                   <button
                                       key={1}
                                       onClick={() => setCurrentPage(1)}
-                                      style={{
-                                          padding: '8px 12px',
-                                          border: '1px solid #d1d5db',
-                                          borderRadius: '6px',
-                                          backgroundColor: 'white',
-                                          cursor: 'pointer',
-                                          fontSize: '14px',
-                                          color: '#6b7280',
-                                          fontWeight: '500',
-                                          minWidth: '40px',
-                                          transition: 'all 0.2s'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }}
+                                      className="pagination-button"
                                   >
                                       1
                                   </button>
-                                  {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                                  {startPage > 2 && <span className="pagination-ellipsis">...</span>}
                               </>
                           )}
 
@@ -759,31 +441,7 @@ const getProductCountBySubCategory = (subCategory) => {
                               <button
                                   key={i}
                                   onClick={() => setCurrentPage(i)}
-                                  style={{
-                                      padding: '8px 12px',
-                                      border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
-                                      borderRadius: '6px',
-                                      backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: i === currentPage ? '#1e40af' : '#6b7280',
-                                      fontWeight: i === currentPage ? '600' : '500',
-                                      minWidth: '40px',
-                                      transition: 'all 0.2s',
-                                      boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                      if (i !== currentPage) {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }
-                                  }}
-                                  onMouseLeave={(e) => {
-                                      if (i !== currentPage) {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }
-                                  }}
+                                  className={`pagination-button ${i === currentPage ? 'active' : ''}`}
                               >
                                   {i}
                               </button>
@@ -791,99 +449,32 @@ const getProductCountBySubCategory = (subCategory) => {
 
                           {endPage < totalPages && (
                               <>
-                                  {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                                  {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
                                   <button
                                       key={totalPages}
                                       onClick={() => setCurrentPage(totalPages)}
-                                      style={{
-                                          padding: '8px 12px',
-                                          border: '1px solid #d1d5db',
-                                          borderRadius: '6px',
-                                          backgroundColor: 'white',
-                                          cursor: 'pointer',
-                                          fontSize: '14px',
-                                          color: '#6b7280',
-                                          fontWeight: '500',
-                                          minWidth: '40px',
-                                          transition: 'all 0.2s'
-                                      }}
-                                      onMouseEnter={(e) => {
-                                          e.target.style.backgroundColor = '#f9fafb';
-                                          e.target.style.borderColor = '#9ca3af';
-                                      }}
-                                      onMouseLeave={(e) => {
-                                          e.target.style.backgroundColor = 'white';
-                                          e.target.style.borderColor = '#d1d5db';
-                                      }}
+                                      className="pagination-button"
                                   >
                                       {totalPages}
                                   </button>
                               </>
                           )}
 
-                          {}
                           <button
                               key="next"
                               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                               disabled={currentPage === totalPages}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === totalPages ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className="pagination-button nav"
                               title="Next page"
                           >
                               ›
                           </button>
 
-                          {}
                           <button
                               key="last"
                               onClick={() => setCurrentPage(totalPages)}
                               disabled={currentPage === totalPages}
-                              style={{
-                                  padding: '8px 12px',
-                                  border: '1px solid #d1d5db',
-                                  borderRadius: '6px',
-                                  backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                  fontSize: '16px',
-                                  color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
-                                  fontWeight: '600',
-                                  transition: 'all 0.2s',
-                                  opacity: currentPage === totalPages ? 0.5 : 1
-                              }}
-                              onMouseEnter={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = '#f9fafb';
-                                      e.target.style.borderColor = '#9ca3af';
-                                  }
-                              }}
-                              onMouseLeave={(e) => {
-                                  if (currentPage < totalPages) {
-                                      e.target.style.backgroundColor = 'white';
-                                      e.target.style.borderColor = '#d1d5db';
-                                  }
-                              }}
+                              className="pagination-button nav"
                               title="Last page"
                           >
                               ≫
@@ -893,11 +484,7 @@ const getProductCountBySubCategory = (subCategory) => {
               })()}
           </div>
 
-          <div style={{
-              fontSize: '14px',
-              color: '#6b7280',
-              fontWeight: '500'
-          }}>
+          <div className="pagination-results">
               Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length.toLocaleString()} results
           </div>
       </div>
@@ -914,272 +501,6 @@ const getProductCountBySubCategory = (subCategory) => {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        h2 {
-          margin: 0 0 15px 0;
-        }
-
-        .header-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 15px;
-          gap: 15px;
-        }
-
-        .actions-left {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .actions-right {
-          display: flex;
-          gap: 15px;
-          align-items: center;
-        }
-
-        .search-bar {
-          position: relative;
-          display: flex;
-          align-items: center;
-          width: 250px;
-        }
-
-        .search-folder-icon {
-          position: absolute;
-          left: 10px;
-          width: 18px;
-          height: 18px;
-          color: #999;
-          pointer-events: none;
-        }
-
-        .search-bar input {
-          padding: 8px 12px 8px 35px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          width: 100%;
-          font-size: 14px;
-          transition: border-color 0.2s;
-        }
-
-        .search-bar input:focus {
-          outline: none;
-          border-color: #4CAF50;
-          box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-        }
-
-        .search-icon {
-          position: absolute;
-          right: 10px;
-          width: 18px;
-          height: 18px;
-          color: #999;
-          cursor: pointer;
-          transition: color 0.2s;
-        }
-
-        .search-icon:hover {
-          color: #4CAF50;
-        }
-
-        .year-dropdown {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .year-label {
-          font-weight: 600;
-          font-size: 14px;
-          margin: 0;
-        }
-
-        .year-select {
-          padding: 8px 12px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          background-color: white;
-          cursor: pointer;
-          font-size: 14px;
-        }
-
-        .year-select:hover {
-          border-color: #999;
-        }
-
-        .download-csv-button {
-          padding: 8px 16px;
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          transition: background-color 0.2s, box-shadow 0.2s;
-        }
-
-        .download-csv-button:hover {
-          background-color: #45a049;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .download-csv-button:active {
-          background-color: #3d8b40;
-        }
-
-        .csv-icon {
-          width: 18px;
-          height: 18px;
-        }
-
-        .section-subtle-divider {
-          height: 1px;
-          background-color: #e0e0e0;
-          margin-bottom: 20px;
-        }
-
-        .filters {
-          display: flex;
-          gap: 15px;
-          margin-bottom: 20px;
-          flex-wrap: wrap;
-        }
-
-        .filter-group {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .filter-group label {
-          font-weight: 600;
-          font-size: 14px;
-        }
-
-        .filter-group select {
-          padding: 8px 12px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          background-color: white;
-          cursor: pointer;
-        }
-
-        .table-container {
-          max-height:390px;
-          overflow-x: auto;
-          overflow-y: auto;
-          position: relative;
-        }
-
-        .sticky-header {
-          position: sticky;
-          top: 0;
-          background-color: #fff;
-          z-index: 10;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .sticky-header th {
-          position: sticky;
-          top: 0;
-        }
-
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          table-layout: fixed;
-        }
-
-        th, td {
-          padding: 12px 15px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          cursor: default;
-        }
-
-        .product-catalogue-container .table-container {
-          max-height: 390px !important;
-          overflow-x: auto !important;
-          overflow-y: auto !important;
-          position: relative !important;
-        }
-
-        .product-catalogue-container th:nth-child(1), .product-catalogue-container td:nth-child(1) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
-        .product-catalogue-container th:nth-child(2), .product-catalogue-container td:nth-child(2) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
-        .product-catalogue-container th:nth-child(3), .product-catalogue-container td:nth-child(3) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
-        .product-catalogue-container th:nth-child(4), .product-catalogue-container td:nth-child(4) { width: 25% !important; padding: 12px 8px !important; text-align: left !important; box-sizing: border-box !important; }
-
-        .product-catalogue-container td { position: relative !important; }
-        .product-catalogue-container td:hover { background-color: #f9fafb !important; }
-
-        .product-catalogue-container th {
-          background-color: #f8f9fa !important;
-          font-weight: 600 !important;
-          vertical-align: middle !important;
-          text-align: left !important;
-          padding: 12px 8px !important;
-          box-sizing: border-box !important;
-        }
-
-        .product-catalogue-container tr:hover {
-          background-color: #f5f5f5 !important;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-
-        .modal-content {
-          background: white;
-          padding: 20px;
-          border-radius: 8px;
-          max-width: 500px;
-          width: 90%;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .modal-content h3 {
-          margin-top: 0;
-        }
-
-        .modal-content p {
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-
-        .modal-content button {
-          margin-top: 15px;
-          padding: 8px 16px;
-          background-color: #007bff;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        .modal-content button:hover {
-          background-color: #0056b3;
-        }
-      `}</style>
     </div>
   );
 };
