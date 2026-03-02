@@ -7,6 +7,7 @@ const EmployeeSchema = new mongoose.Schema({
   role: { type: String, required: true },
   email: { type: String },
   phone: { type: String },
+  mobileDID: { type: String }, // Mobile DID field
   linkedin: { type: String },
   reportsTo: { type: String },
   hierarchy: { 
@@ -32,6 +33,13 @@ const BuyingGroupSchema = new mongoose.Schema({
   industry: { type: String },
   employeeCount: { type: String },
   revenue: { type: String },
+  
+  // New fields from CSV
+  companyDescription: { type: String },
+  employeeSize: { type: String },
+  country: { type: String },
+  companyPhone: { type: String },
+  domain: { type: String },
   
   // Employees array
   employees: [EmployeeSchema],

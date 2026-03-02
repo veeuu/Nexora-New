@@ -461,7 +461,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                 setSelectedCategory('ALL');
                             }}
                             style={{
-                                padding: '10px 16px',
+                                padding: '8px 12px',
                                 border: selectedCategories.size === categories.length && categories.length > 0 ? '2px solid #3b82f6' : '1px solid #d1d5db',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -499,7 +499,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                     }
                                 }}
                                 style={{
-                                    padding: '10px 16px',
+                                    padding: '8px 12px',
                                     border: selectedCategories.has(category) ? '2px solid #3b82f6' : '1px solid #d1d5db',
                                     borderRadius: '6px',
                                     fontSize: '14px',
@@ -842,6 +842,239 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                 marginBottom: '28px'
                             }} />
 
+                            {/* Company Information Section */}
+                            <div style={{
+                                marginBottom: '28px'
+                            }}>
+                                <h3 style={{
+                                    margin: '0 0 16px 0',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    color: '#666',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px'
+                                }}>
+                                    Company Information
+                                </h3>
+                                
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr',
+                                    gap: '12px'
+                                }}>
+                                    {/* Company Description */}
+                                    {personDetailsData[selectedCompany]?.[0]?.companyDescription && (
+                                        <div style={{
+                                            gridColumn: '1 / -1',
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Description
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                lineHeight: '1.4'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].companyDescription}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Employee Size */}
+                                    {personDetailsData[selectedCompany]?.[0]?.employeeSize && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Employee Size
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].employeeSize}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Country */}
+                                    {personDetailsData[selectedCompany]?.[0]?.country && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Country
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].country}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Revenue */}
+                                    {personDetailsData[selectedCompany]?.[0]?.revenue && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Revenue
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].revenue}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Industry */}
+                                    {personDetailsData[selectedCompany]?.[0]?.industry && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Industry
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].industry}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Company Phone */}
+                                    {personDetailsData[selectedCompany]?.[0]?.companyPhone && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Company Phone
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].companyPhone}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Domain */}
+                                    {personDetailsData[selectedCompany]?.[0]?.domain && (
+                                        <div style={{
+                                            padding: '12px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '8px',
+                                            border: '1px solid #e8e8e8'
+                                        }}>
+                                            <p style={{
+                                                margin: '0 0 6px 0',
+                                                fontSize: '10px',
+                                                fontWeight: '700',
+                                                color: '#888',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                Domain
+                                            </p>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12px',
+                                                color: '#1a1a1a',
+                                                fontWeight: '600'
+                                            }}>
+                                                {personDetailsData[selectedCompany][0].domain}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div style={{
+                                height: '1px',
+                                backgroundColor: '#e8e8e8',
+                                marginBottom: '28px'
+                            }} />
+
                             {}
                             <div>
                                 <h3 style={{
@@ -959,6 +1192,17 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                                 }}>
                                                     {person.email}
                                                 </p>
+                                                {person.mobileDID && person.mobileDID !== 'N/A' && (
+                                                    <p style={{
+                                                        margin: '6px 0 0 0',
+                                                        fontSize: '12px',
+                                                        color: '#666',
+                                                        wordBreak: 'break-all',
+                                                        lineHeight: '1.5'
+                                                    }}>
+                                                        <strong>Mobile DID:</strong> {person.mobileDID}
+                                                    </p>
+                                                )}
                                             </div>
                                         );
                                     })}

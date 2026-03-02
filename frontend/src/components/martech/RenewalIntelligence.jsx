@@ -614,7 +614,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['Upcoming ', 'Mid-Term', 'Long-Term '];
+        return ['Upcoming ', 'Mid-Term ', 'Long-Term '];
     };
 
     const getUniqueCategories = () => {

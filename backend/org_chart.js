@@ -13,7 +13,7 @@ const CONFIG = {
   VERTICAL_GAP: 0.20,
   TOP_PADDING: 0.10,
   SIDE_PADDING: 0.02,
-  MAX_CHARS_PER_LINE: 16,
+  MAX_CHARS_PER_LINE: 20,
   MAX_NAME_LINES: 1,
   MAX_ROLE_LINES: 1,
   CHART_GLOBAL_X_OFFSET: 0.0,
@@ -204,7 +204,8 @@ function wrapText(text, maxChars, maxLines = null) {
 
   if (maxLines !== null && lines.length > maxLines) {
     lines.splice(maxLines);
-    if (lines.length > 0) {
+    // Only truncate if the last line is too long, preserve abbreviated text
+    if (lines.length > 0 && lines[lines.length - 1].length > maxChars) {
       lines[lines.length - 1] = lines[lines.length - 1].substring(0, Math.max(1, maxChars - 3)) + '...';
     }
   }
