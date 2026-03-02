@@ -505,7 +505,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       {isOpen ? (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h3>🔍 NTP® Next Purchase</h3>
+            <h3>🔍 NTP® - Your Next Purchase</h3>
             <button
               onClick={() => setIsOpen(false)}
               className="chatbot-close-btn"
