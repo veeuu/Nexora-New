@@ -247,7 +247,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         }
       }, 1500);
     } catch (error) {
-      console.error('Error fetching NTP data:', error);
       setMessages(prev => prev.filter(msg => !msg.isThinking));
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP® Next Purchase analysis. Please try again.' }]);
     } finally {
@@ -493,7 +492,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         return;
       }
     } catch (error) {
-      console.error('Error:', error);
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
     }
   };

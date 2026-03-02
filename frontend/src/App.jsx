@@ -62,10 +62,8 @@ function App() {
           localStorage.setItem('cursorHidden', newState);
           if (newState) {
             document.body.classList.add('hide-cursor-recording');
-            console.log('🚫 Cursor hidden from screen recording (custom cursor visible to you)');
           } else {
             document.body.classList.remove('hide-cursor-recording');
-            console.log('👁️ Normal cursor visible in screen recording');
           }
           return newState;
         });

@@ -175,7 +175,6 @@ export const getTechIcon = async (techName) => {
       }
     }
   } catch (e) {
-    console.warn("Failed to load SI icons:", e);
   }
   
   return FaQuestionCircle;

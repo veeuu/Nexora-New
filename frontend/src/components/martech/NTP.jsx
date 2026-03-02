@@ -464,7 +464,6 @@ const NTP = () => {
         performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
-        console.error("Failed to fetch NTP data:", e);
         setTableData([]);
       } finally {
         setLoading(false);

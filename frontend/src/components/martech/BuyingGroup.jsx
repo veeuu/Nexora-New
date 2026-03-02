@@ -29,7 +29,6 @@ const BuyingGroup = () => {
                     setSelectedCompany(data.companies[0]);
                 }
             } catch (err) {
-                console.error('Error fetching companies:', err);
                 setError('Failed to load companies');
             }
         };
@@ -49,7 +48,6 @@ const BuyingGroup = () => {
 
                 setCategories(desiredOrder);
             } catch (err) {
-                console.error('Error fetching categories:', err);
                 setCategories(['AI/ML', 'CRM', 'Database', 'Cloud']);
             }
         };
@@ -62,13 +60,10 @@ const BuyingGroup = () => {
                 const response = await fetch('/api/buying-groups/person-details');
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Person details loaded:', Object.keys(data).length, 'companies');
                     setPersonDetailsData(data);
                 } else {
-                    console.error('Failed to fetch person details');
                 }
             } catch (err) {
-                console.error('Error fetching person details:', err);
             }
         };
         fetchPersonDetails();
@@ -87,7 +82,6 @@ const BuyingGroup = () => {
                 setOrgChartUrl(chartUrl);
                 setOrgChartHtml('');
             } catch (err) {
-                console.error('Error setting org chart URL:', err);
                 setError('Failed to load org chart. Please try again.');
                 setOrgChartUrl('');
             } finally {

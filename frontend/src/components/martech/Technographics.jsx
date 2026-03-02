@@ -986,13 +986,11 @@ const Technographics = () => {
       const data = await response.json();
 
       if (response.status === 503 && retries > 0) {
-        console.log(`[FETCH] Page ${pageNum}: Cache building, retrying in ${delay}ms... (${retries} retries left)`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); 
       }
 
       if (!data.data || data.data.length === 0) {
-        console.warn(`[FETCH] Page ${pageNum}: No data returned`, data);
         return data;
       }
       
@@ -1003,7 +1001,6 @@ const Technographics = () => {
       
       return data;
     } catch (err) {
-      console.error(`[FETCH] Page ${pageNum}: Error:`, err);
       return null;
     }
   };
@@ -1016,7 +1013,7 @@ const Technographics = () => {
 
     pagesToPrefetch.forEach(page => {
       if (!pageCache[page]) {
-        fetchPage(page).catch(err => console.error(`Prefetch failed for page ${page}:`, err));
+        fetchPage(page).catch(() => {});
       }
     });
   };
@@ -1042,7 +1039,6 @@ const Technographics = () => {
           const allDataResponse = await fetch('/api/technographics/all');
           
           if (allDataResponse.status === 503) {
-            console.log(`[INIT] Cache building, retrying in ${delay}ms... (${retries} retries left)`);
             await new Promise(resolve => setTimeout(resolve, delay));
             delay = Math.min(delay * 1.5, 5000); 
             retries--;
@@ -1060,7 +1056,6 @@ const Technographics = () => {
           const ntpResponse = await fetch('/api/ntp/all');
           
           if (ntpResponse.status === 503) {
-            console.log(`[INIT] NTP cache building, retrying in ${ntpDelay}ms... (${ntpRetries} retries left)`);
             await new Promise(resolve => setTimeout(resolve, ntpDelay));
             ntpDelay = Math.min(ntpDelay * 1.5, 5000);
             ntpRetries--;
@@ -1135,13 +1130,6 @@ const Technographics = () => {
 
         performanceMonitor.start('state-update');
 
-        console.log('[DEBUG] First 5 records from API:', data.slice(0, 5).map(r => ({
-          companyName: r.companyName,
-          industry: r.industry,
-          region: r.region,
-          technology: r.technology
-        })));
-        
         setTableData(data);
         setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
@@ -1158,7 +1146,6 @@ const Technographics = () => {
         performanceMonitor.logSummary();
       } catch (e) {
         setError(e.message);
-        console.error("Failed to fetch Technographics data:", e);
         setTableData([]);
       } finally {
         setLoading(false);
@@ -1201,7 +1188,6 @@ const Technographics = () => {
             setTotalRecords(allData.total || 0);
           }
         } catch (err) {
-          console.error('Error reloading all data:', err);
         } finally {
           setPageLoading(false);
         }
@@ -1212,7 +1198,6 @@ const Technographics = () => {
 
   const getUniqueOptions = (key) => {
     if (!tableData || tableData.length === 0) {
-      console.log(`[DEBUG] getUniqueOptions('${key}'): tableData is empty or undefined`);
       return [];
     }
     
@@ -1222,11 +1207,6 @@ const Technographics = () => {
     
     const uniqueValues = [...new Set(allValues)].sort();
 
-    if (key === 'companyName') {
-      console.log(`[DEBUG] getUniqueOptions('${key}'): Found ${uniqueValues.length} unique values from ${tableData.length} rows`);
-      console.log('[DEBUG] Sample company names:', uniqueValues.slice(0, 10));
-    }
-    
     return uniqueValues;
   };
 
@@ -4280,7 +4260,7 @@ const Technographics = () => {
         th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
         th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
         th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
-        th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+        th:nth-child(5), td:nth-child(5) { width: 140px !important; } /* Region */
         th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
         th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
         th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
@@ -4294,7 +4274,7 @@ const Technographics = () => {
           th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
           th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
           th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
-          th:nth-child(5), td:nth-child(5) { width: 90px !important; } /* Region */
+          th:nth-child(5), td:nth-child(5) { width: 95px !important; } /* Region */
           th:nth-child(6), td:nth-child(6) { width: 140px !important; text-align: center !important; } /* Employee Size */
           th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
           th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */

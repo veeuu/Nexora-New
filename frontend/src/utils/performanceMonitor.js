@@ -15,7 +15,6 @@ class PerformanceMonitor {
    */
   start(label) {
     this.marks[label] = performance.now();
-    console.log(`⏱️ [START] ${label}`);
   }
 
   /**
@@ -25,13 +24,11 @@ class PerformanceMonitor {
    */
   end(label) {
     if (!this.marks[label]) {
-      console.warn(`⚠️ No start mark found for: ${label}`);
       return 0;
     }
 
     const duration = performance.now() - this.marks[label];
     this.measurements[label] = duration;
-    console.log(`✓ [END] ${label} - ${duration.toFixed(2)}ms`);
     return duration;
   }
 
@@ -75,11 +72,7 @@ class PerformanceMonitor {
    * Log a summary to console
    */
   logSummary() {
-    const summary = this.getSummary();
-    console.group('📊 Performance Summary');
-    console.log(`Total Time: ${summary.total}ms`);
-    console.table(summary.breakdown);
-    console.groupEnd();
+    // Summary logging disabled
   }
 
   /**
