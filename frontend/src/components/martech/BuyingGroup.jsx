@@ -802,13 +802,13 @@ return personCategories.some(cat => selectedCategories.has(cat));
                             {}
                             <div style={{
                                 marginBottom: '28px',
-                                padding: '16px',
+                                padding: '20px',
                                 backgroundColor: '#f8f9fa',
                                 borderRadius: '10px',
                                 border: '1px solid #e8e8e8'
                             }}>
                                 <h3 style={{
-                                    margin: '0 0 10px 0',
+                                    margin: '0 0 12px 0',
                                     fontSize: '11px',
                                     fontWeight: '700',
                                     color: '#666',
@@ -818,8 +818,8 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                     Company Name
                                 </h3>
                                 <p style={{
-                                    margin: 0,
-                                    fontSize: '17px',
+                                    margin: '0 0 20px 0',
+                                    fontSize: '18px',
                                     fontWeight: '700',
                                     color: '#1a1a1a',
                                     lineHeight: '1.6',
@@ -827,75 +827,18 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                 }}>
                                     {selectedCompany}
                                 </p>
-                            </div>
 
-                            {}
-                            <div style={{
-                                height: '1px',
-                                backgroundColor: '#e8e8e8',
-                                marginBottom: '28px'
-                            }} />
-
-                            {/* Company Information Section */}
-                            <div style={{
-                                marginBottom: '28px'
-                            }}>
-                                <h3 style={{
-                                    margin: '0 0 16px 0',
-                                    fontSize: '11px',
-                                    fontWeight: '700',
-                                    color: '#666',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px'
-                                }}>
-                                    Company Information
-                                </h3>
-                                
                                 <div style={{
                                     display: 'grid',
                                     gridTemplateColumns: '1fr 1fr',
-                                    gap: '12px'
+                                    gap: '20px 30px',
+                                    rowGap: '16px'
                                 }}>
-                                    {/* Company Description */}
-                                    {personDetailsData[selectedCompany]?.[0]?.companyDescription && (
-                                        <div style={{
-                                            gridColumn: '1 / -1',
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
-                                            <p style={{
-                                                margin: '0 0 6px 0',
-                                                fontSize: '10px',
-                                                fontWeight: '700',
-                                                color: '#888',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '0.5px'
-                                            }}>
-                                                Description
-                                            </p>
-                                            <p style={{
-                                                margin: 0,
-                                                fontSize: '12px',
-                                                color: '#1a1a1a',
-                                                lineHeight: '1.4'
-                                            }}>
-                                                {personDetailsData[selectedCompany][0].companyDescription}
-                                            </p>
-                                        </div>
-                                    )}
-
                                     {/* Employee Size */}
                                     {personDetailsData[selectedCompany]?.[0]?.employeeSize && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -906,7 +849,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -917,14 +860,9 @@ return personCategories.some(cat => selectedCategories.has(cat));
 
                                     {/* Country */}
                                     {personDetailsData[selectedCompany]?.[0]?.country && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -935,7 +873,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -946,14 +884,9 @@ return personCategories.some(cat => selectedCategories.has(cat));
 
                                     {/* Revenue */}
                                     {personDetailsData[selectedCompany]?.[0]?.revenue && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -964,7 +897,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -975,14 +908,9 @@ return personCategories.some(cat => selectedCategories.has(cat));
 
                                     {/* Industry */}
                                     {personDetailsData[selectedCompany]?.[0]?.industry && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -993,7 +921,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -1004,14 +932,9 @@ return personCategories.some(cat => selectedCategories.has(cat));
 
                                     {/* Company Phone */}
                                     {personDetailsData[selectedCompany]?.[0]?.companyPhone && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -1022,7 +945,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -1033,14 +956,9 @@ return personCategories.some(cat => selectedCategories.has(cat));
 
                                     {/* Domain */}
                                     {personDetailsData[selectedCompany]?.[0]?.domain && (
-                                        <div style={{
-                                            padding: '12px',
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e8e8e8'
-                                        }}>
+                                        <div>
                                             <p style={{
-                                                margin: '0 0 6px 0',
+                                                margin: '0 0 4px 0',
                                                 fontSize: '10px',
                                                 fontWeight: '700',
                                                 color: '#888',
@@ -1051,7 +969,7 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                             </p>
                                             <p style={{
                                                 margin: 0,
-                                                fontSize: '12px',
+                                                fontSize: '14px',
                                                 color: '#1a1a1a',
                                                 fontWeight: '600'
                                             }}>
@@ -1150,10 +1068,10 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                                                 display: 'inline-flex',
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center',
-                                                                width: '36px',
-                                                                height: '36px',
+                                                                width: '28px',
+                                                                height: '28px',
                                                                 backgroundColor: '#0a66c2',
-                                                                borderRadius: '8px',
+                                                                borderRadius: '6px',
                                                                 textDecoration: 'none',
                                                                 transition: 'all 0.2s ease',
                                                                 cursor: 'pointer',
@@ -1177,25 +1095,61 @@ return personCategories.some(cat => selectedCategories.has(cat));
                                                         </a>
                                                     )}
                                                 </div>
-                                                <p style={{
-                                                    margin: '10px 0 0 0',
-                                                    fontSize: '12px',
-                                                    color: '#666',
-                                                    wordBreak: 'break-all',
-                                                    lineHeight: '1.5'
-                                                }}>
-                                                    {person.email}
-                                                </p>
-                                                {person.mobileDID && person.mobileDID !== 'N/A' && (
+                                                <div style={{ marginTop: '10px' }}>
                                                     <p style={{
-                                                        margin: '6px 0 0 0',
+                                                        margin: '0 0 4px 0',
+                                                        fontSize: '10px',
+                                                        fontWeight: '700',
+                                                        color: '#888',
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.5px'
+                                                    }}>
+                                                        Email
+                                                    </p>
+                                                    <p style={{
+                                                        margin: '0 0 0 0',
                                                         fontSize: '12px',
                                                         color: '#666',
                                                         wordBreak: 'break-all',
-                                                        lineHeight: '1.5'
+                                                        lineHeight: '1.5',
+                                                        filter: 'blur(4px)',
+                                                        userSelect: 'none',
+                                                        WebkitUserSelect: 'none',
+                                                        MozUserSelect: 'none',
+                                                        msUserSelect: 'none',
+                                                        pointerEvents: 'none'
                                                     }}>
-                                                        <strong>Mobile DID:</strong> {person.mobileDID}
+                                                        {person.email}
                                                     </p>
+                                                </div>
+                                                {person.mobileDID && person.mobileDID !== 'N/A' && (
+                                                    <div style={{ marginTop: '10px' }}>
+                                                        <p style={{
+                                                            margin: '0 0 4px 0',
+                                                            fontSize: '10px',
+                                                            fontWeight: '700',
+                                                            color: '#888',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            Mobile DID
+                                                        </p>
+                                                        <p style={{
+                                                            margin: '0',
+                                                            fontSize: '12px',
+                                                            color: '#666',
+                                                            wordBreak: 'break-all',
+                                                            lineHeight: '1.5',
+                                                            filter: 'blur(4px)',
+                                                            userSelect: 'none',
+                                                            WebkitUserSelect: 'none',
+                                                            MozUserSelect: 'none',
+                                                            msUserSelect: 'none',
+                                                            pointerEvents: 'none'
+                                                        }}>
+                                                            {person.mobileDID}
+                                                        </p>
+                                                    </div>
                                                 )}
                                             </div>
                                         );
