@@ -76,7 +76,7 @@ const sectionToRoute = {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords Surge'];
   };
 
   const renderActiveSection = () => {
