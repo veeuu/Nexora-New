@@ -752,6 +752,8 @@ body {
   width: calc(100% - 3.5rem);
   max-width: calc(100% - 3.5rem);
   overflow-x: hidden;
+  overflow-y: hidden;
+  min-height: 850px !important;
 }
 h2 {
   font-size: clamp(1.2rem, 2vw, 1.4rem);
@@ -909,7 +911,38 @@ h2 {
   background-color: #fff !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
-  max-height: 530px !important;
+  max-height: 650px !important;
+}
+
+.technographics-container .table-container {
+  max-height: 600px !important;
+}
+
+.renewal-intelligence-container .table-container {
+  max-height: 600px !important;
+  height: 600px !important;
+}
+
+.intent-container {
+  min-height: 850px !important;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.intent-container .table-container {
+  max-height: 600px !important;
+  height: 600px !important;
+}
+
+.ntp-container {
+  min-height: 850px !important;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.ntp-container .table-container {
+  max-height: 600px !important;
+  height: 600px !important;
 }
 
 .table-container::-webkit-scrollbar {

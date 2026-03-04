@@ -3259,7 +3259,7 @@ const Technographics = () => {
         </div>
       </div>
 
-      <div className="table-container">
+      <div className="table-container" style={{ maxHeight: '600px', height: '600px' }}>
         <table>
           <thead className="technographics-sticky-header">
             <tr>
@@ -4134,7 +4134,7 @@ const Technographics = () => {
           width: calc(100% - 3rem);
           max-width: calc(100% - 3rem);
           overflow: visible;
-          min-height: 400px;
+          min-height: 750px !important;
           position: relative;
           top: 0;
         }
@@ -4149,7 +4149,8 @@ const Technographics = () => {
         }
 
         .table-container {
-          max-height: 480px;
+          height: 600px !important;
+          max-height: 600px !important;
           overflow-x: hidden;
           overflow-y: scroll;
           position: relative;

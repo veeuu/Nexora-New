@@ -708,7 +708,7 @@ useEffect(() => {
       {}
       {/* Table always shows by default, no mandatory filter required */}
 
-      <div className="table-container">
+      <div className="table-container" style={{ maxHeight: '600px', height: '600px' }}>
         <table>
           <thead className="sticky-header">
             <tr>
