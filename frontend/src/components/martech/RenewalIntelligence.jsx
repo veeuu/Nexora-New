@@ -890,7 +890,7 @@ if (aQtr.year !== bQtr.year) {
     return (
         <>
         <div className="renewal-intelligence-container">
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '0px' }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '0px', marginTop: '16px'  }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {}

@@ -1606,7 +1606,7 @@ const Technographics = () => {
         </div>
       )}
       
-      <div className="header-actions" style={{ marginBottom: '16px', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
+      <div className="header-actions" style={{ marginBottom: '16px', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px', marginTop: '16px'  }}>
         <h2 style={{ fontSize: '24px', fontWeight: '700', margin: '0' }}>Technographics</h2>
         {
 
