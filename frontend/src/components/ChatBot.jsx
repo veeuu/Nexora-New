@@ -228,7 +228,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               ]
             }]);
             
-            // Keep selectedCompany for category switching, but reset stage
+            // Reset for next search
+            setSelectedCompany(null);
             setConversationStage('greeting');
           }, 500);
         } else if (status === 'not-found') {
@@ -436,19 +437,41 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         row.purchasePrediction !== 'NOT detected'
       );
 
-      // If company name is found directly, skip to category selection
-      if (matchedCompany && !selectedCompany) {
+      // If company name is found directly (when in greeting or after completing a search), show category selection for that company
+      if (matchedCompany && (conversationStage === 'greeting' || conversationStage === 'company-input')) {
         setSelectedCompany(userMessage);
         setConversationStage('category-input');
         
-        // Ask for category with buttons
-        const categoriesWithAll = [
-          ...dynamicCategories,
-          { id: 'all', label: '📊 ALL' }
-        ];
+        // Get unique categories for this company only
+        const companyCategoriesSet = new Set();
+        data.forEach(row => {
+          if (String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
+              row.category !== 'Not Detected' &&
+              row.purchasePrediction !== 'Not Detected' &&
+              row.purchasePrediction !== 'NOT detected') {
+            companyCategoriesSet.add(row.category);
+          }
+        });
         
-        if (categoriesWithAll.length === 1) {
-          // If only "ALL" is available, show error
+        const companyCategories = Array.from(companyCategoriesSet)
+          .map(cat => {
+            const catLower = cat.toLowerCase().replace(/\s+/g, '-');
+            const categoryMap = {
+              'database': '🗄️ Database',
+              'ai-ml': '🤖 AI/ML',
+              'crm': '👥 CRM',
+              'cloud': '☁️ Cloud',
+              'security': '🔒 Security',
+              'analytics': '📊 Analytics',
+              'infrastructure': '🏗️ Infrastructure',
+              'devops': '⚙️ DevOps'
+            };
+            const label = categoryMap[catLower] || `📌 ${cat}`;
+            return { id: catLower, label: label, originalName: cat };
+          })
+          .sort((a, b) => a.label.localeCompare(b.label));
+        
+        if (companyCategories.length === 0) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
           setSelectedCompany(null);
           setConversationStage('greeting');
@@ -459,7 +482,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           type: 'bot',
           text: `✅ Got it! Which category interests you for ${userMessage}?`,
           showCategories: true,
-          categories: categoriesWithAll
+          categories: companyCategories
         }]);
         return;
       }
@@ -469,14 +492,36 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         setSelectedCompany(userMessage);
         setConversationStage('category-input');
         
-        // Ask for category with buttons
-        const categoriesWithAll = [
-          ...dynamicCategories,
-          { id: 'all', label: '📊 ALL' }
-        ];
+        // Get unique categories for this company only
+        const companyCategoriesSet = new Set();
+        data.forEach(row => {
+          if (String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
+              row.category !== 'Not Detected' &&
+              row.purchasePrediction !== 'Not Detected' &&
+              row.purchasePrediction !== 'NOT detected') {
+            companyCategoriesSet.add(row.category);
+          }
+        });
         
-        if (categoriesWithAll.length === 1) {
-          // If only "ALL" is available, show error
+        const companyCategories = Array.from(companyCategoriesSet)
+          .map(cat => {
+            const catLower = cat.toLowerCase().replace(/\s+/g, '-');
+            const categoryMap = {
+              'database': '🗄️ Database',
+              'ai-ml': '🤖 AI/ML',
+              'crm': '👥 CRM',
+              'cloud': '☁️ Cloud',
+              'security': '🔒 Security',
+              'analytics': '📊 Analytics',
+              'infrastructure': '🏗️ Infrastructure',
+              'devops': '⚙️ DevOps'
+            };
+            const label = categoryMap[catLower] || `📌 ${cat}`;
+            return { id: catLower, label: label, originalName: cat };
+          })
+          .sort((a, b) => a.label.localeCompare(b.label));
+        
+        if (companyCategories.length === 0) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
           setSelectedCompany(null);
           setConversationStage('greeting');
@@ -487,7 +532,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           type: 'bot',
           text: `✅ Got it! Which category interests you for ${userMessage}?`,
           showCategories: true,
-          categories: categoriesWithAll
+          categories: companyCategories
         }]);
         return;
       }
