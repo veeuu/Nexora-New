@@ -890,7 +890,7 @@ if (aQtr.year !== bQtr.year) {
     return (
         <>
         <div className="renewal-intelligence-container">
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '0px', marginTop: '16px'  }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '16px', marginTop: '16px', paddingTop: '12px'  }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {}
@@ -899,7 +899,7 @@ if (aQtr.year !== bQtr.year) {
 
             <div className="section-subtle-divider" />
 
-            <div style={{ marginBottom: '20px' }} ref={filterRef}>
+            <div style={{ marginBottom: '8px' }} ref={filterRef}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '60px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 {}
