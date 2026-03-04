@@ -15,6 +15,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('Home');
+  const [homeResetTrigger, setHomeResetTrigger] = useState(0);
 
 const routeToSection = {
     '/dashboard': 'Home',
@@ -37,7 +38,7 @@ useEffect(() => {
   const handleMenuClick = (section) => {
     setActiveSection(section);
 
-const sectionToRoute = {
+    const sectionToRoute = {
       'Home': '/dashboard/home',
       'Technographics': '/dashboard/technographics',
       'Renewal Intelligence': '/dashboard/renewal-intelligence',
@@ -50,6 +51,11 @@ const sectionToRoute = {
 
     const route = sectionToRoute[section] || '/dashboard/home';
     navigate(route);
+    
+    // Trigger reset for Home component when Home is clicked
+    if (section === 'Home') {
+      setHomeResetTrigger(prev => prev + 1);
+    }
   };
 
   const handleChatbotNavigation = (page) => {
@@ -114,7 +120,7 @@ const sectionToRoute = {
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             <Routes>
-              <Route path="/home" element={<Home />} />
+              <Route path="/home" element={<Home key={homeResetTrigger} />} />
               <Route path="/technographics" element={<MartechTechnographics />} />
               <Route path="/renewal-intelligence" element={<RenewalIntelligence />} />
               <Route path="/intent" element={<Martechintent />} />
@@ -122,7 +128,7 @@ const sectionToRoute = {
               <Route path="/ntp" element={<MartechNTP />} />
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
               <Route path="/keywords" element={<Keywords />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home key={homeResetTrigger} />} />
             </Routes>
           </main>
         </div>

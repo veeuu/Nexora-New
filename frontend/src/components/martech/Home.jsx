@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ProductCatalogue from './ProductCatalogue';
 import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
@@ -8,6 +8,7 @@ import '../../styles/home.css';
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [stats, setStats] = useState({
     totalCompanies: 0,
     totalTechnologies: 0,
@@ -20,9 +21,12 @@ const Home = () => {
   const [showDataDictionary, setShowDataDictionary] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Reset to welcome page when Home component mounts or when navigating back to home
   useEffect(() => {
+    setShowProductCatalogue(false);
+    setShowDataDictionary(false);
     setLoading(false);
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -93,7 +97,7 @@ const Home = () => {
       {}
       <div className="home-header">
         <div>
-          {(showProductCatalogue || showDataDictionary) && (
+          {/* {(showProductCatalogue || showDataDictionary) && (
             <button
               className="home-back-btn"
               onClick={() => {
@@ -104,7 +108,7 @@ const Home = () => {
             >
               ← Back
             </button>
-          )}
+          )} */}
           {!showProductCatalogue && !showDataDictionary && (
             <>
               <h1 className="home-title">
