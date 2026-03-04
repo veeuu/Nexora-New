@@ -1606,7 +1606,7 @@ const Technographics = () => {
         </div>
       )}
       
-      <div className="header-actions" style={{ marginBottom: '16px', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
+      <div className="header-actions" style={{ marginBottom: '16px', position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '12px' }}>
         <h2 style={{ fontSize: '24px', fontWeight: '700', margin: '0' }}>Technographics</h2>
         {
 
@@ -1617,7 +1617,7 @@ const Technographics = () => {
       
       {}
       <div style={{ marginBottom: '16px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '6 0px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {}
           <div style={{ position: 'relative' }}>
