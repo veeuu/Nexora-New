@@ -691,29 +691,13 @@ const NTP = () => {
                       setFilters(prev => ({ ...prev, purchasePrediction: validOptions }));
                     }
                   }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  className="ntp-filter-option-item"
                 >
                   <input
                     type="checkbox"
                     checked={Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length && getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length > 0}
                     onChange={() => {}}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
-                    }}
+                    className="ntp-filter-option-item-checkbox"
                   />
                   All
                 </div>
@@ -732,35 +716,18 @@ const NTP = () => {
                       onClick={() => {
                         handleFilterChange('purchasePrediction', option);
                       }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? '#dbeafe' : 'white',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        justifyContent: 'space-between'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                      className={`ntp-filter-option-item ${isSelected ? 'selected' : ''}`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="ntp-filter-option-item-content">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => {}}
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            cursor: 'pointer',
-                            accentColor: '#3b82f6'
-                          }}
+                          className="ntp-filter-option-item-checkbox"
                         />
                         {option}
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      <span className="ntp-filter-option-item-count">
                         {getCompanyCountByPurchasePrediction(option)}
                       </span>
                     </div>
@@ -850,29 +817,13 @@ const NTP = () => {
                       setFilters(prev => ({ ...prev, category: validOptions }));
                     }
                   }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  className="ntp-filter-option-item"
                 >
                   <input
                     type="checkbox"
                     checked={Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').filter(option => option !== 'NOT detected').length && getUniqueOptions('category').filter(option => option !== 'NOT detected').length > 0}
                     onChange={() => {}}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
-                    }}
+                    className="ntp-filter-option-item-checkbox"
                   />
                   All
                 </div>
@@ -891,38 +842,21 @@ const NTP = () => {
                       onClick={() => {
                         handleFilterChange('category', option);
                       }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? '#dbeafe' : 'white',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        justifyContent: 'space-between'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                      className={`ntp-filter-option-item ${isSelected ? 'selected' : ''}`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="ntp-filter-option-item-content">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => {}}
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            cursor: 'pointer',
-                            accentColor: '#3b82f6'
-                          }}
+                          className="ntp-filter-option-item-checkbox"
                         />
                         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           {renderTechLogo(option)}
                           {option}
                         </span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      <span className="ntp-filter-option-item-count">
                         {getCompanyCountByCategory(option)}
                       </span>
                     </div>
@@ -991,29 +925,13 @@ const NTP = () => {
                       setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
                     }
                   }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                  className="ntp-filter-option-item"
                 >
                   <input
                     type="checkbox"
                     checked={Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0}
                     onChange={() => {}}
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      cursor: 'pointer',
-                      accentColor: '#3b82f6'
-                    }}
+                    className="ntp-filter-option-item-checkbox"
                   />
                   All
                 </div>
@@ -1031,36 +949,19 @@ const NTP = () => {
                       onClick={() => {
                         handleFilterChange('technology', option);
                       }}
-                      style={{
-                        padding: '10px 12px',
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? '#dbeafe' : 'white',
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        justifyContent: 'space-between'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
+                      className={`ntp-filter-option-item ${isSelected ? 'selected' : ''}`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="ntp-filter-option-item-content">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => {}}
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            cursor: 'pointer',
-                            accentColor: '#3b82f6'
-                          }}
+                          className="ntp-filter-option-item-checkbox"
                         />
                         {renderTechLogo(option)}
                         {option}
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
+                      <span className="ntp-filter-option-item-count">
                         {getCompanyCountByTechnology(option)}
                       </span>
                     </div>
@@ -1433,18 +1334,6 @@ const NTP = () => {
                       onClick={() => setCurrentPage(1)}
                       disabled={currentPage === 1}
                       className="ntp-pagination-button"
-                      onMouseEnter={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
                       title="First page"
                     >
                       ≪
@@ -1456,18 +1345,6 @@ const NTP = () => {
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
                       className="ntp-pagination-button"
-                      onMouseEnter={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
                       title="Previous page"
                     >
                       ‹
@@ -1480,14 +1357,6 @@ const NTP = () => {
                           key={1}
                           onClick={() => setCurrentPage(1)}
                           className="ntp-pagination-button"
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }}
                         >
                           1
                         </button>
@@ -1500,18 +1369,6 @@ const NTP = () => {
                         key={i}
                         onClick={() => setCurrentPage(i)}
                         className={`ntp-pagination-button ${i === currentPage ? 'active' : ''}`}
-                        onMouseEnter={(e) => {
-                          if (i !== currentPage) {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (i !== currentPage) {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }
-                        }}
                       >
                         {i}
                       </button>
@@ -1519,30 +1376,11 @@ const NTP = () => {
 
                     {endPage < totalPages && (
                       <>
-                        {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                        {endPage < totalPages - 1 && <span className="ntp-pagination-ellipsis">...</span>}
                         <button
                           key={totalPages}
                           onClick={() => setCurrentPage(totalPages)}
-                          style={{
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            backgroundColor: 'white',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                            minWidth: '40px',
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }}
+                          className="ntp-pagination-last-button"
                         >
                           {totalPages}
                         </button>
