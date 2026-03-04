@@ -907,3 +907,90 @@ tr:hover {
     width: 16.66%;
   }
 }
+
+
+/* ===== FILTER DROPDOWN OPTION ITEM STYLES ===== */
+.ntp-filter-option-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.ntp-filter-option-item:hover {
+  background-color: #f9fafb;
+}
+
+.ntp-filter-option-item.selected {
+  background-color: #dbeafe;
+}
+
+.ntp-filter-option-item-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.ntp-filter-option-item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ntp-filter-option-item-count {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+
+/* ===== PAGINATION BUTTON HOVER STATES ===== */
+.ntp-pagination-button:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.ntp-pagination-button:disabled {
+  background-color: #f3f4f6;
+  color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ntp-pagination-button.active {
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+.ntp-pagination-ellipsis {
+  color: #d1d5db;
+  padding: 0 4px;
+}
+
+.ntp-pagination-last-button {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 40px;
+  transition: all 0.2s;
+}
+
+.ntp-pagination-last-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
