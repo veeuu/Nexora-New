@@ -3631,8 +3631,8 @@ const Technographics = () => {
                           onScroll={handleDateScroll}
                         >
                           {(row.technologyDates || []).map((dateInfo, idx) => (
-                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
-                              {highlightText(dateInfo.previousDetectedDate, searchTerm)}
+                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', minHeight: '24px', justifyContent: 'center' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.previousDetectedDate)} onMouseLeave={handleMouseLeave}>
+                              {highlightText(dateInfo.previousDetectedDate && String(dateInfo.previousDetectedDate).trim() !== '' && String(dateInfo.previousDetectedDate).toLowerCase() !== 'n/a' ? dateInfo.previousDetectedDate : '-', searchTerm)}
                             </span>
                           ))}
                         </div>
@@ -3656,8 +3656,8 @@ const Technographics = () => {
                           onScroll={handleDateScroll}
                         >
                           {(row.technologyDates || []).map((dateInfo, idx) => (
-                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
-                              {highlightText(dateInfo.latestDetectedDate, searchTerm)}
+                            <span key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', minHeight: '24px', justifyContent: 'center' }} onMouseEnter={(e) => handleMouseEnter(e, dateInfo.latestDetectedDate)} onMouseLeave={handleMouseLeave}>
+                              {highlightText(dateInfo.latestDetectedDate && String(dateInfo.latestDetectedDate).trim() !== '' && String(dateInfo.latestDetectedDate).toLowerCase() !== 'n/a' ? dateInfo.latestDetectedDate : '-', searchTerm)}
                             </span>
                           ))}
                         </div>
