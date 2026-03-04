@@ -720,15 +720,14 @@ const NTP = () => {
         </div>
       )}
       
-      <div className="header-actions">
+      <div className="header-actions" style={{ position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingTop: '12px', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '16px', borderBottom: '1px solid #e5e7eb', boxSizing: 'border-box' }}>
         <h2 style={{ fontSize: '25px', fontWeight: '700' }}>Next Tech Purchase®</h2>
         <div className="actions-right" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
         </div>
       </div>
-      <div className="section-subtle-divider" />
       
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '90px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           
           {}

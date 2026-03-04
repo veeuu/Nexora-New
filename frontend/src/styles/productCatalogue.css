@@ -466,7 +466,7 @@
 }
 
 .table-container {
-  max-height: 390px;
+  max-height: 600px;
   overflow-x: auto;
   overflow-y: auto;
   position: relative;
@@ -502,7 +502,7 @@ th, td {
 }
 
 .product-catalogue-container .table-container {
-  max-height: 390px !important;
+  max-height: 600px !important;
   overflow-x: auto !important;
   overflow-y: auto !important;
   position: relative !important;

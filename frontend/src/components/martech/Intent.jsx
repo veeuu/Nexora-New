@@ -459,23 +459,14 @@ useEffect(() => {
         </div>
       )}
 
-      <div className="header-actions">
+      <div className="header-actions" style={{ position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '12px', marginBottom: '0px', paddingTop: '12px', paddingLeft: '16px', paddingRight: '16px', borderBottom: '1px solid #e5e7eb' }}>
         <h2>Intent Data</h2>
         <div className="actions-right">
-          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
-            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            View Summary
-          </button>
         </div>
       </div>
 
-      <div className="section-subtle-divider" />
-
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '80px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {}
           <div style={{ position: 'relative' }}>
@@ -701,6 +692,13 @@ useEffect(() => {
               <line x1="16" y1="13" x2="16" y2="17"></line>
             </svg>
             Download CSV
+          </button>
+          <button className="view-summary-button" onClick={() => setShowSummary(true)} style={{ flexShrink: 0 }}>
+            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            View Summary
           </button>
         </div>
       </div>
