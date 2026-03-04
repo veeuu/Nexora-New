@@ -161,6 +161,63 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     setMessages(prev => [...prev, ...botMessages]);
   };
 
+  const handleSuggestedCompanyClick = (companyName) => {
+    setMessages(prev => [...prev, { type: 'user', text: companyName }]);
+    
+    // Treat it as if the user typed the company name
+    const data = ntpData || tableData;
+    if (!data || data.length === 0) return;
+
+    setSelectedCompany(companyName);
+    setConversationStage('category-input');
+    
+    // Get unique categories for this company only
+    const companyCategoriesSet = new Set();
+    data.forEach(row => {
+      if (String(row.companyName || '').toLowerCase() === companyName.toLowerCase() &&
+          row.category !== 'Not Detected' &&
+          row.purchasePrediction !== 'Not Detected' &&
+          row.purchasePrediction !== 'NOT detected') {
+        companyCategoriesSet.add(row.category);
+      }
+    });
+    
+    const companyCategories = Array.from(companyCategoriesSet)
+      .map(cat => {
+        const catLower = cat.toLowerCase().replace(/\s+/g, '-');
+        const categoryMap = {
+          'database': '🗄️ Database',
+          'ai-ml': '🤖 AI/ML',
+          'crm': '👥 CRM',
+          'cloud': '☁️ Cloud',
+          'security': '🔒 Security',
+          'analytics': '📊 Analytics',
+          'infrastructure': '🏗️ Infrastructure',
+          'devops': '⚙️ DevOps'
+        };
+        const label = categoryMap[catLower] || `📌 ${cat}`;
+        return { id: catLower, label: label, originalName: cat };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+    
+    // Add ALL option at the end
+    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+    
+    if (companyCategories.length === 1) {
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
+      setSelectedCompany(null);
+      setConversationStage('greeting');
+      return;
+    }
+    
+    setMessages(prev => [...prev, {
+      type: 'bot',
+      text: `✅ Got it! Which category interests you for ${companyName}?`,
+      showCategories: true,
+      categories: companyCategories
+    }]);
+  };
+
   const handleCategorySelect = (categoryId) => {
     const allCategories = [
       ...dynamicCategories,
@@ -376,8 +433,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       const rowCompanyName = String(row.companyName || '').toLowerCase();
       const rowCategory = String(row.category || '');
       
-      // Match company name
-      if (rowCompanyName.includes(companyLower) || companyLower.includes(rowCompanyName)) {
+      // Match company name - EXACT match only
+      if (rowCompanyName === companyLower) {
         // If category is provided, also match category
         if (categoryToMatch) {
           if (rowCategory && rowCategory.toLowerCase() === categoryToMatch.toLowerCase()) {
@@ -471,7 +528,10 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           })
           .sort((a, b) => a.label.localeCompare(b.label));
         
-        if (companyCategories.length === 0) {
+        // Add ALL option at the end
+        companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+        
+        if (companyCategories.length === 1) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
           setSelectedCompany(null);
           setConversationStage('greeting');
@@ -485,6 +545,44 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           categories: companyCategories
         }]);
         return;
+      }
+
+      // If no exact match, suggest similar company names
+      if ((conversationStage === 'greeting' || conversationStage === 'company-input') && !matchedCompany) {
+        const userMessageLower = userMessage.toLowerCase();
+        
+        // Get unique companies with valid data
+        const uniqueCompanies = new Set();
+        data.forEach(row => {
+          if (row.category !== 'Not Detected' &&
+              row.purchasePrediction !== 'Not Detected' &&
+              row.purchasePrediction !== 'NOT detected') {
+            uniqueCompanies.add(row.companyName);
+          }
+        });
+        
+        // Find companies that contain the user input (one-way matching only)
+        const suggestedCompanies = Array.from(uniqueCompanies)
+          .filter(company => 
+            company.toLowerCase().includes(userMessageLower)
+          )
+          .slice(0, 5); // Limit to 5 suggestions
+        
+        if (suggestedCompanies.length > 0) {
+          setMessages(prev => [...prev, {
+            type: 'bot',
+            text: `I couldn't find an exact match for "${userMessage}". Did you mean one of these?`,
+            showSuggestedCompanies: true,
+            suggestedCompanies: suggestedCompanies
+          }]);
+          return;
+        } else {
+          setMessages(prev => [...prev, {
+            type: 'bot',
+            text: `Sorry, I couldn't find any company matching "${userMessage}". Please try another company name.`
+          }]);
+          return;
+        }
       }
 
       // Step 1: Get company name (when in company-input stage)
@@ -521,7 +619,10 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           })
           .sort((a, b) => a.label.localeCompare(b.label));
         
-        if (companyCategories.length === 0) {
+        // Add ALL option at the end
+        companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+        
+        if (companyCategories.length === 1) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
           setSelectedCompany(null);
           setConversationStage('greeting');
@@ -627,6 +728,21 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                           👉 {company.name}
                         </button>
                       ))}
+                    </div>
+                  ) : msg.type === 'bot' && msg.showSuggestedCompanies ? (
+                    <div className="chatbot-suggested-companies">
+                      <div className="chatbot-suggested-text">{msg.text}</div>
+                      <div className="chatbot-suggested-buttons">
+                        {msg.suggestedCompanies.map((company, idx) => (
+                          <button
+                            key={idx}
+                            className="chatbot-suggested-company-btn"
+                            onClick={() => handleSuggestedCompanyClick(company)}
+                          >
+                            🏢 {company}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   ) : msg.type === 'bot' && msg.showCategories ? (
                     <div className="chatbot-categories">
