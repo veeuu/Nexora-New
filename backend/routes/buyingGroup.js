@@ -53,36 +53,18 @@ router.get('/', async (req, res) => {
 });
 
 // ============================================
-// GET /api/buying-groups/companies - Get company names only from CSV
+// GET /api/buying-groups/companies - Get company names only from MongoDB
 // ============================================
 router.get('/companies', async (req, res) => {
   try {
-    
-    const fs = require('fs');
-    const csv = require('csv-parser');
-    const path = require('path');
+    const companies = await BuyingGroup.find({}, { companyName: 1 })
+      .sort({ companyName: 1 });
 
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'CSV file not found' });
-    }
-
-    const csvData = [];
-    
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(csvPath)
-        .pipe(csv())
-        .on('data', (row) => csvData.push(row))
-        .on('end', resolve)
-        .on('error', reject);
-    });
-
-    const companies = [...new Set(csvData.map(row => row['Company Name']).filter(Boolean))].sort();
+    const companyNames = companies.map(bg => bg.companyName);
 
     res.json({
       success: true,
-      companies
+      companies: companyNames
     });
   } catch (error) {
     res.status(500).json({ 
@@ -93,36 +75,22 @@ router.get('/companies', async (req, res) => {
 });
 
 // ============================================
-// GET /api/buying-groups/categories - Get all unique categories from CSV
+// GET /api/buying-groups/categories - Get all unique categories from MongoDB
 // ============================================
 router.get('/categories', async (req, res) => {
   try {
-    
-    const fs = require('fs');
-    const csv = require('csv-parser');
-    const path = require('path');
-
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'CSV file not found' });
-    }
-
-    const csvData = [];
-    
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(csvPath)
-        .pipe(csv())
-        .on('data', (row) => csvData.push(row))
-        .on('end', resolve)
-        .on('error', reject);
-    });
+    const buyingGroups = await BuyingGroup.find({}, { employees: 1 });
 
     const categoriesSet = new Set();
-    csvData.forEach(row => {
-      if (row.Category) {
-        row.Category.split(',').forEach(cat => {
-          categoriesSet.add(cat.trim());
+    
+    buyingGroups.forEach(bg => {
+      if (bg.employees && Array.isArray(bg.employees)) {
+        bg.employees.forEach(emp => {
+          if (emp.category) {
+            emp.category.split(',').forEach(cat => {
+              categoriesSet.add(cat.trim());
+            });
+          }
         });
       }
     });
@@ -142,62 +110,47 @@ router.get('/categories', async (req, res) => {
 });
 
 // ============================================
-// GET /api/buying-groups/person-details - Get all employee details from CSV
+// GET /api/buying-groups/person-details - Get all employee details from MongoDB
 // ============================================
 router.get('/person-details', async (req, res) => {
   try {
-    
-    const fs = require('fs');
-    const csv = require('csv-parser');
-    const path = require('path');
-
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'CSV file not found' });
-    }
-
-    const csvData = [];
-    
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(csvPath)
-        .pipe(csv())
-        .on('data', (row) => csvData.push(row))
-        .on('end', resolve)
-        .on('error', reject);
+    const buyingGroups = await BuyingGroup.find({}, { 
+      companyName: 1, 
+      employees: 1,
+      employeeSize: 1,
+      country: 1,
+      revenue: 1,
+      industry: 1,
+      companyPhone: 1,
+      domain: 1,
+      companyDescription: 1
     });
 
-    // Group by company and extract company info from first row
     const companiesMap = {};
     
-    csvData.forEach(row => {
-      const companyName = row['Company Name'];
-      if (!companyName) return;
-
-      if (!companiesMap[companyName]) {
-        companiesMap[companyName] = [];
+    buyingGroups.forEach(bg => {
+      if (bg.employees && Array.isArray(bg.employees)) {
+        companiesMap[bg.companyName] = bg.employees.map(emp => ({
+          id: emp.uniqueId || '',
+          name: emp.name || 'N/A',
+          designation: emp.role || 'N/A',
+          email: emp.email || 'N/A',
+          phone: emp.phone || 'N/A',
+          mobileDID: emp.mobileDID || 'N/A',
+          linkedin: emp.linkedin || '',
+          reportsTo: emp.reportsTo || 'N/A',
+          category: emp.category || 'N/A',
+          hierarchy: emp.hierarchy || 'OTHER',
+          // Company-level fields
+          companyDescription: bg.companyDescription || 'N/A',
+          employeeSize: bg.employeeSize || 'N/A',
+          country: bg.country || 'N/A',
+          revenue: bg.revenue || 'N/A',
+          industry: bg.industry || 'N/A',
+          companyPhone: bg.companyPhone || 'N/A',
+          domain: bg.domain || 'N/A'
+        }));
       }
-
-      companiesMap[companyName].push({
-        id: row['Unique ID'] || '',
-        name: row.Name || 'N/A',
-        designation: row.Role || 'N/A',
-        email: row.email || 'N/A',
-        phone: row.phone || row.Phone || 'N/A',
-        mobileDID: row['Mobile DID'] || 'N/A',
-        linkedin: row.Linkedin || '',
-        reportsTo: row['Reports To'] || 'N/A',
-        category: row.Category || 'N/A',
-        hierarchy: row.hierarchy || 'OTHER',
-        // Company-level fields
-        companyDescription: row['Company Description'] || 'N/A',
-        employeeSize: row['Employee Size'] || 'N/A',
-        country: row.Country || 'N/A',
-        revenue: row.Revenue || 'N/A',
-        industry: row.Industry || 'N/A',
-        companyPhone: row['Company Phone'] || 'N/A',
-        domain: row.Domain || 'N/A'
-      });
     });
 
     res.json(companiesMap);
@@ -241,51 +194,58 @@ router.get('/:companyName', async (req, res) => {
 });
 
 // ============================================
-// GET /api/buying-groups/:companyName/org-chart - Get org chart HTML
+// GET /api/buying-groups/:companyName/org-chart - Get org chart HTML from MongoDB
 // ============================================
 router.get('/:companyName/org-chart', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
     
-    const fs = require('fs');
-    const csv = require('csv-parser');
-    const path = require('path');
-
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'CSV file not found' });
-    }
-
-    const csvData = [];
-    
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(csvPath)
-        .pipe(csv())
-        .on('data', (row) => csvData.push(row))
-        .on('end', resolve)
-        .on('error', reject);
+    const buyingGroup = await BuyingGroup.findOne({ 
+      companyName: decodedCompanyName 
     });
 
-    // Filter data for this company
-    const companyData = csvData.filter(row => row['Company Name'] === decodedCompanyName);
-
-    if (companyData.length === 0) {
+    if (!buyingGroup) {
       return res.status(404).json({ 
         success: false, 
         error: 'Company not found' 
       });
     }
 
-    // Generate org chart from CSV data
-    const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
-    
+    // Convert employees to format expected by generateOrgChartHTML
+    const employeeData = buyingGroup.employees.map(emp => ({
+      'Unique ID': emp.uniqueId || '',
+      'Company Name': buyingGroup.companyName,
+      'Name': emp.name,
+      'Role': emp.role,
+      'Reports To': emp.reportsTo || '',
+      'hierarchy': emp.hierarchy,
+      'Category': emp.category || '',
+      'Linkedin': emp.linkedin || '',
+      'email': emp.email || '',
+      'Location': buyingGroup.location || ''
+    }));
+
     const htmlContent = generateOrgChartHTML(
-      companyData, 
-      decodedCompanyName, 
-      location
+      employeeData, 
+      buyingGroup.companyName, 
+      buyingGroup.location || ''
     );
+
+    // Upload to S3
+    try {
+      const fileName = buyingGroup.location 
+        ? `${sanitizeFilename(buyingGroup.companyName)}_${sanitizeFilename(buyingGroup.location)}.html`
+        : `${sanitizeFilename(buyingGroup.companyName)}.html`;
+
+      const s3Result = await uploadOrgChartToS3(fileName, htmlContent);
+      
+      // Log successful upload
+      console.log(`Org chart uploaded to S3: ${s3Result.s3Url}`);
+    } catch (s3Error) {
+      // Log S3 error but don't fail the request - still serve the HTML
+      console.error(`Failed to upload org chart to S3: ${s3Error.message}`);
+    }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(htmlContent);
