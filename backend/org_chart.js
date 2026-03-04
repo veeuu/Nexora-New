@@ -186,6 +186,7 @@ function wrapText(text, maxChars, maxLines = null) {
   const words = text.split(' ');
   const lines = [];
   let currentLine = '';
+  let isTruncated = false;
 
   for (const word of words) {
     if (!currentLine) {
@@ -202,11 +203,25 @@ function wrapText(text, maxChars, maxLines = null) {
     lines.push(currentLine);
   }
 
+  // Check if we need to truncate due to maxLines
   if (maxLines !== null && lines.length > maxLines) {
     lines.splice(maxLines);
-    // Only truncate if the last line is too long, preserve abbreviated text
-    if (lines.length > 0 && lines[lines.length - 1].length > maxChars) {
-      lines[lines.length - 1] = lines[lines.length - 1].substring(0, Math.max(1, maxChars - 3)) + '...';
+    isTruncated = true;
+  }
+
+  // Ensure each line doesn't exceed maxChars, add ellipsis if truncated
+  if (lines.length > 0) {
+    const lastLineIndex = lines.length - 1;
+    if (lines[lastLineIndex].length > maxChars) {
+      lines[lastLineIndex] = lines[lastLineIndex].substring(0, Math.max(1, maxChars - 3)) + '...';
+      isTruncated = true;
+    } else if (isTruncated) {
+      // If truncated due to maxLines, add ellipsis to last line
+      if (lines[lastLineIndex].length + 3 <= maxChars) {
+        lines[lastLineIndex] += '...';
+      } else {
+        lines[lastLineIndex] = lines[lastLineIndex].substring(0, Math.max(1, maxChars - 3)) + '...';
+      }
     }
   }
 
