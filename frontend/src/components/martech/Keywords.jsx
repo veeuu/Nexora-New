@@ -82,69 +82,35 @@ const Keywords = () => {
                 ) : groupedDataArray.length === 0 ? (
                   <tr><td colSpan="7" className="no-data-message">No data matches filters</td></tr>
                 ) : (
-                  paginatedData.map((groupedRow, groupIdx) => {
+                  paginatedData.flatMap((groupedRow, groupIdx) => {
                     const items = groupedRow.items || [groupedRow];
-                    return (
-                      <tr key={groupIdx} className="table-row-grouped">
-                        <td className="table-cell-company">
-                          {groupedRow.Company}
+                    return items.map((row, itemIdx) => (
+                      <tr key={`${groupIdx}-${itemIdx}`} className={itemIdx === 0 ? "table-row-grouped" : "table-row-item"}>
+                        {itemIdx === 0 && (
+                          <td className="table-cell-company" rowSpan={items.length}>
+                            {groupedRow.Company}
+                          </td>
+                        )}
+                        <td className="table-cell">
+                          {row['Products / Services']}
                         </td>
                         <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['Products / Services']}
-                              </div>
-                            ))}
-                          </div>
+                          {row['Primary Category (Products/Services Keywords)']}
                         </td>
                         <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['Primary Category (Products/Services Keywords)']}
-                              </div>
-                            ))}
-                          </div>
+                          {row['Secondary Category Keywords ']}
                         </td>
                         <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['Secondary Category Keywords ']}
-                              </div>
-                            ))}
-                          </div>
+                          {row['First Detected (Timeline Start)'] || '-'}
                         </td>
                         <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['First Detected (Timeline Start)'] || 'N/A'}
-                              </div>
-                            ))}
-                          </div>
+                          {row['Expansion Phase']}
                         </td>
                         <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['Expansion Phase']}
-                              </div>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="table-cell">
-                          <div className="table-cell-content">
-                            {items.map((row, idx) => (
-                              <div key={idx} className="table-cell-item">
-                                {row['Current Stage']}
-                              </div>
-                            ))}
-                          </div>
+                          {row['Current Stage']}
                         </td>
                       </tr>
-                    );
+                    ));
                   })
                 )}
               </tbody>

@@ -26,7 +26,7 @@
   border-radius: 6px !important;
   background-color: #ffffff !important;
   margin-bottom: 16px !important;
-  max-height: 530px !important;
+  max-height: 600px !important;
   height: auto !important;
   display: block !important;
   position: relative !important;
@@ -37,7 +37,7 @@
   border-collapse: collapse !important;
   font-size: 14px !important;
   color: #1f2937 !important;
-  min-width: 900px !important;
+  min-width: 950px !important;
   table-layout: fixed !important;
   box-sizing: border-box !important;
 }
@@ -48,26 +48,28 @@
 }
 
 .table-container th {
-  padding: 12px 8px !important;
+  padding: 12px 10px !important;
   text-align: left !important;
   font-weight: 600 !important;
   color: #374151 !important;
   background-color: #eef2ff !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
   vertical-align: middle !important;
   box-sizing: border-box !important;
+  line-height: 1.4 !important;
 }
 
 .keywords-container .table-container td {
-  padding: 12px 8px !important;
+  padding: 12px 10px !important;
   word-break: break-word !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
   vertical-align: top !important;
   box-sizing: border-box !important;
   text-align: left !important;
+  white-space: normal !important;
 }
 
 .keywords-container .table-container td:last-child {
@@ -131,45 +133,44 @@
 /* Keywords table column widths */
 .keywords-container .table-container table th:nth-child(1),
 .keywords-container .table-container table td:nth-child(1) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 12% !important;
+  min-width: 110px !important;
 }
 
 .keywords-container .table-container table th:nth-child(2),
 .keywords-container .table-container table td:nth-child(2) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 16% !important;
+  min-width: 140px !important;
 }
 
 .keywords-container .table-container table th:nth-child(3),
 .keywords-container .table-container table td:nth-child(3) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 16% !important;
+  min-width: 140px !important;
 }
 
 .keywords-container .table-container table th:nth-child(4),
 .keywords-container .table-container table td:nth-child(4) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 16% !important;
+  min-width: 140px !important;
 }
 
 .keywords-container .table-container table th:nth-child(5),
 .keywords-container .table-container table td:nth-child(5) {
-  width: 14.28% !important;
+  width: 12% !important;
   min-width: 100px !important;
-  padding-left: 30px !important;
 }
 
 .keywords-container .table-container table th:nth-child(6),
 .keywords-container .table-container table td:nth-child(6) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 14% !important;
+  min-width: 120px !important;
 }
 
 .keywords-container .table-container table th:nth-child(7),
 .keywords-container .table-container table td:nth-child(7) {
-  width: 14.28% !important;
-  min-width: 100px !important;
+  width: 14% !important;
+  min-width: 120px !important;
 }
 
 /* Loading overlay */
@@ -232,30 +233,27 @@
 }
 
 .table-cell-content {
-  max-height: 96px;
-  overflow-y: auto;
-  padding-right: 4px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.table-cell-content::-webkit-scrollbar {
   display: none;
 }
 
 .table-cell-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
+  display: block;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
+  margin-bottom: 0;
 }
 
-.table-cell-item:not(:last-child) {
-  margin-bottom: 4px;
+.table-cell-item:last-child {
+  margin-bottom: 0;
 }
 
 .table-row-grouped {
   border-bottom: 2px solid #e5e7eb;
+}
+
+.table-row-item {
+  border-bottom: 1px solid #e5e7eb;
 }
 
 /* Pagination */
