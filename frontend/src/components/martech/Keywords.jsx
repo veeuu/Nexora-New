@@ -1,11 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import KeywordsStageChart from './KeywordsStageChart';
 import '../../styles/keywords.css';
 
 const Keywords = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({
+    currentStage: []
+  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
+  const filterRef = useRef(null);
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -23,6 +31,50 @@ const Keywords = () => {
       });
   }, []);
 
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => {
+      const currentValues = prev[filterName];
+      if (currentValues.includes(value)) {
+        return { ...prev, [filterName]: currentValues.filter(v => v !== value) };
+      } else {
+        return { ...prev, [filterName]: [...currentValues, value] };
+      }
+    });
+  };
+
+  const getUniqueOptions = (key) => {
+    if (!tableData) return [];
+    const allValues = tableData.map(item => item[key]);
+    return [...new Set(allValues)].filter(v => v && v.trim()).sort();
+  };
+
+  const getSummaryData = () => {
+    return {
+      totalCompanies: groupedDataArray.length,
+      totalProducts: groupedDataArray.reduce((sum, group) => sum + (group.items || []).length, 0),
+      stageBreakdown: getUniqueOptions('Current Stage').map(stage => ({
+        stage,
+        count: groupedDataArray.reduce((sum, group) => 
+          sum + (group.items || []).filter(item => item['Current Stage'] === stage).length, 0
+        )
+      }))
+    };
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setActiveFilterMenu(null);
+        setShowFilters(false);
+      }
+    };
+
+    if (activeFilterMenu || showFilters) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [activeFilterMenu, showFilters]);
+
   // Group data by company name
   const groupedData = tableData.reduce((acc, row) => {
     const companyKey = row.Company;
@@ -39,7 +91,15 @@ const Keywords = () => {
     return acc;
   }, {});
 
-  const groupedDataArray = Object.values(groupedData);
+  let groupedDataArray = Object.values(groupedData);
+
+  // Apply filters
+  if (filters.currentStage.length > 0) {
+    groupedDataArray = groupedDataArray.map(group => ({
+      ...group,
+      items: group.items.filter(item => filters.currentStage.includes(item['Current Stage']))
+    })).filter(group => group.items.length > 0);
+  }
 
   if (loading) {
     return (
@@ -49,17 +109,148 @@ const Keywords = () => {
     );
   }
 
+  const summaryData = getSummaryData();
+
   const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = groupedDataArray.slice(startIndex, startIndex + rowsPerPage);
 
   return (
     <div className="keywords-container">
+      {showSummary && (
+        <div className="modal-overlay" onClick={() => setShowSummary(false)}>
+          <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="summary-modal-header">
+              <h2>Keywords Surge Summary - Analytics Overview</h2>
+              <button
+                className="close-button"
+                onClick={() => setShowSummary(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="summary-charts-grid" style={{ padding: '20px' }}>
+              <div className="chart-item">
+                <KeywordsStageChart data={summaryData.stageBreakdown} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="keywords-header">
         <h2>Keywords Surge</h2>
       </div>
 
       <div className="section-subtle-divider" />
+
+      <div style={{ marginBottom: '0px' }} ref={filterRef}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="filter-button"
+            >
+              <span>+ Filter</span>
+            </button>
+
+            {showFilters && (
+              <div className="filter-menu">
+                {[
+                  { label: 'Current Stage', key: 'currentStage', mandatory: false }
+                ].map((filterOption) => (
+                  <div
+                    key={filterOption.key}
+                    onClick={() => {
+                      setActiveFilterMenu(filterOption.key);
+                      setShowFilters(false);
+                    }}
+                    className="filter-menu-item"
+                  >
+                    {filterOption.label}
+                    {filterOption.mandatory && (
+                      <span className="filter-menu-item mandatory-indicator">*</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button className="view-summary-button" onClick={() => setShowSummary(true)}>
+            <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            View Summary
+          </button>
+
+          {activeFilterMenu === 'currentStage' && (
+            <div className="filter-dropdown-wrapper">
+              <div className="filter-dropdown-label">
+                <span>Current Stage {Array.isArray(filters.currentStage) && filters.currentStage.length > 0 && `(${filters.currentStage.length})`}</span>
+                <button
+                  onClick={() => {
+                    setActiveFilterMenu(null);
+                    setFilters(prev => ({ ...prev, currentStage: [] }));
+                  }}
+                  className="filter-close-button"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="filter-dropdown-content">
+                <div
+                  onClick={() => {
+                    if (Array.isArray(filters.currentStage) && filters.currentStage.length === getUniqueOptions('Current Stage').length && getUniqueOptions('Current Stage').length > 0) {
+                      setFilters(prev => ({ ...prev, currentStage: [] }));
+                    } else {
+                      setFilters(prev => ({ ...prev, currentStage: getUniqueOptions('Current Stage') }));
+                    }
+                  }}
+                  className="filter-option"
+                >
+                  <input
+                    type="checkbox"
+                    checked={Array.isArray(filters.currentStage) && filters.currentStage.length === getUniqueOptions('Current Stage').length && getUniqueOptions('Current Stage').length > 0}
+                    onChange={() => {}}
+                    className="filter-option-checkbox"
+                  />
+                  All
+                </div>
+                {getUniqueOptions('Current Stage').map((option, idx) => {
+                  const isSelected = Array.isArray(filters.currentStage) && filters.currentStage.includes(option);
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => handleFilterChange('currentStage', option)}
+                      className={`filter-option ${isSelected ? 'selected' : ''}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        className="filter-option-checkbox"
+                      />
+                      <span style={{ color: '#1f2937' }}>{option}</span>
+                    </div>
+                  );
+                })}
+
+                <div className="filter-dropdown-footer">
+                  <button
+                    onClick={() => {
+                      setActiveFilterMenu(null);
+                    }}
+                    className="filter-save-button"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="table-grid">
         <div className="table-grid-item">

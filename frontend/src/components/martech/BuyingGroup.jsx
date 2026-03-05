@@ -291,7 +291,7 @@ const BuyingGroup = () => {
                     </div>
                 </div>
                 <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#6b7280', marginBottom: '4px' }}>Highlight Roles</div>
+                    <div className="highlight-roles-box">Highlight Roles</div>
                     <div className="buying-group-filters">
                         <button
                             onClick={() => {
