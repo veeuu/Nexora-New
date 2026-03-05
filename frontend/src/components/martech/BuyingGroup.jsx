@@ -248,14 +248,14 @@ const BuyingGroup = () => {
             <div className="filters">
                 <div className="filter-group">
                     <label>Company Name</label>
-                    <div ref={dropdownRef} style={{ position: 'relative' }}>
+                    <div ref={dropdownRef} className="dropdown-container">
                         <button
                             onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
                             disabled={companies.length === 0}
                             className="dropdown-button"
                         >
                             <span>{selectedCompany || 'Select a company...'}</span>
-                            <span style={{ fontSize: '12px' }}>▼</span>
+                            <span className="dropdown-arrow">▼</span>
                         </button>
                         
                         {isCompanyDropdownOpen && (
@@ -266,8 +266,6 @@ const BuyingGroup = () => {
                                         setIsCompanyDropdownOpen(false);
                                     }}
                                     className={`dropdown-item ${selectedCompany === '' ? 'selected' : ''}`}
-                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                                    onMouseLeave={(e) => e.target.style.backgroundColor = selectedCompany === '' ? '#f3f4f6' : 'white'}
                                 >
                                     Select a company...
                                 </div>
@@ -279,8 +277,6 @@ const BuyingGroup = () => {
                                             setIsCompanyDropdownOpen(false);
                                         }}
                                         className={`dropdown-item ${selectedCompany === company ? 'selected' : ''}`}
-                                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                                        onMouseLeave={(e) => e.target.style.backgroundColor = selectedCompany === company ? '#dbeafe' : 'white'}
                                     >
                                         <span>{company}</span>
                                         <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
@@ -290,7 +286,7 @@ const BuyingGroup = () => {
                         )}
                     </div>
                 </div>
-                <div className="filter-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+                <div className="filter-group filter-group-highlight">
                     <div className="highlight-roles-box">Highlight Roles</div>
                     <div className="buying-group-filters">
                         <button
@@ -357,7 +353,7 @@ const BuyingGroup = () => {
                     className="more-info-button"
                     title="View Team Details"
                 >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span className="more-info-button-span">
                         More
                         <FaInfoCircle size={14} />
                     </span>
@@ -409,14 +405,6 @@ const BuyingGroup = () => {
                             <button
                                 onClick={handleClosePanel}
                                 className="side-panel-close-button"
-                                onMouseEnter={(e) => {
-                                    e.target.style.background = '#e0e0e0';
-                                    e.target.style.color = '#1a1a1a';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.background = '#f0f0f0';
-                                    e.target.style.color = '#666';
-                                }}
                             >
                                 <FaTimes size={20} />
                             </button>
@@ -503,18 +491,6 @@ const BuyingGroup = () => {
                                             <div
                                                 key={index}
                                                 className="team-member-card"
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#ffffff';
-                                                    e.currentTarget.style.borderColor = '#d0d0d0';
-                                                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.1)';
-                                                    e.currentTarget.style.transform = 'translateY(-3px)';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.backgroundColor = '#ffffff';
-                                                    e.currentTarget.style.borderColor = '#e8e8e8';
-                                                    e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
-                                                    e.currentTarget.style.transform = 'translateY(0)';
-                                                }}
                                             >
                                                 <div className="team-member-header">
                                                     <div className="team-member-info">
@@ -527,16 +503,6 @@ const BuyingGroup = () => {
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="linkedin-button"
-                                                            onMouseEnter={(e) => {
-                                                                e.target.style.backgroundColor = '#084a94';
-                                                                e.target.style.transform = 'scale(1.15)';
-                                                                e.target.style.boxShadow = '0 4px 12px rgba(10, 102, 194, 0.4)';
-                                                            }}
-                                                            onMouseLeave={(e) => {
-                                                                e.target.style.backgroundColor = '#0a66c2';
-                                                                e.target.style.transform = 'scale(1)';
-                                                                e.target.style.boxShadow = '0 2px 6px rgba(10, 102, 194, 0.25)';
-                                                            }}
                                                             title="Visit LinkedIn Profile"
                                                         >
                                                             <FaLinkedin size={18} color="white" />

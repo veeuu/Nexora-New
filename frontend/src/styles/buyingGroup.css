@@ -701,3 +701,82 @@
   display: inline-block;
   box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
 }
+
+/* Dropdown Container */
+.dropdown-container {
+  position: relative;
+}
+
+/* Dropdown Arrow */
+.dropdown-arrow {
+  font-size: 12px;
+}
+
+/* Filter Group with Highlight Roles */
+.filter-group-highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* More Info Button Span */
+.more-info-button-span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Dropdown Item Hover States */
+.dropdown-item {
+  background-color: white;
+}
+
+.dropdown-item:hover {
+  background-color: #f9fafb;
+}
+
+.dropdown-item.selected {
+  background-color: #dbeafe;
+}
+
+.dropdown-item.selected:hover {
+  background-color: #dbeafe;
+}
+
+/* Team Member Card Hover States */
+.team-member-card {
+  background-color: #ffffff;
+  border-color: #e8e8e8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.team-member-card:hover {
+  background-color: #ffffff;
+  border-color: #d0d0d0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+/* LinkedIn Button Hover States */
+.linkedin-button {
+  background-color: #0a66c2;
+  box-shadow: 0 2px 6px rgba(10, 102, 194, 0.25);
+}
+
+.linkedin-button:hover {
+  background-color: #084a94;
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);
+}
+
+/* Side Panel Close Button Hover States */
+.side-panel-close-button {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.side-panel-close-button:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
