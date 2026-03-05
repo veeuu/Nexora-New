@@ -294,7 +294,6 @@ export const getLogoPath = (techName) => {
     "computer vision": "computer_vision.png",
     "gen ai": "generative_ai.png",
     "genai": "generative_ai.png",
-    "generative ai": "generative_ai.png",
     "llm": "LLM.png",
     "large language model": "Large Language Model.png",
     "foundation models": "foundation_models.png",
@@ -372,7 +371,7 @@ export const getLogoPath = (techName) => {
   
   // Try exact match first
   if (logoMap[normalized]) {
-    return `/src/logos/tech logo/logos_logo/${logoMap[normalized]}`;
+    return `/src/logos/${logoMap[normalized]}`;
   }
   
   // Try partial matches - check if any key is contained in the normalized text
@@ -380,8 +379,9 @@ export const getLogoPath = (techName) => {
   const sortedKeys = Object.keys(logoMap).sort((a, b) => b.length - a.length);
   
   for (const key of sortedKeys) {
-    if (normalized.includes(key) && key.length > 2) {
-      return `/src/logos/tech logo/logos_logo/${logoMap[key]}`;
+    // Skip very short keys to avoid false matches (e.g., "ai" matching "generative ai")
+    if (normalized.includes(key) && key.length > 3) {
+      return `/src/logos/${logoMap[key]}`;
     }
   }
   

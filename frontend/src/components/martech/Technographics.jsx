@@ -795,11 +795,18 @@ const Technographics = () => {
   const renderTechLogo = (techName) => {
     if (!techName) return null;
     
-    // Check if it's an AI-related term
-    const aiTerms = ['rag', 'taradata', 'large language model', 'machine learning', 'artificial intelligence', 'llm', 'generative ai', 'ai', 'deep learning', 'neural network'];
-    const techNameLower = techName.toLowerCase();
+    const techNameLower = techName.toLowerCase().trim();
+    
+    // Debug log
+    if (techNameLower.includes('generative')) {
+      console.log('DEBUG renderTechLogo:', { techName, techNameLower });
+    }
+    
+    // Check if it's an AI-related term - prioritize AI icon over logo
+    const aiTerms = ['rag', 'taradata', 'large language model', 'machine learning', 'artificial intelligence', 'llm', 'generative ai', 'gen ai', 'genai', 'ai', 'deep learning', 'neural network'];
     const isAITerm = aiTerms.some(term => techNameLower.includes(term));
     
+    // Force purple robot icon for AI terms
     if (isAITerm) {
       return (
         <FaRobot
@@ -834,7 +841,6 @@ const Technographics = () => {
             objectFit: 'contain'
           }}
           onError={(e) => {
-            
             e.target.style.display = 'none';
           }}
         />
