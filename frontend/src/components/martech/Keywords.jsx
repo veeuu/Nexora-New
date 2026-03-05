@@ -21,9 +21,17 @@ const Keywords = () => {
     fetch('/api/keywords')
       .then(res => res.json())
       .then(data => {
-        setTableData(data.data || []);
+        // Normalize column names to handle trailing spaces
+        const normalizedData = (data.data || []).map(row => {
+          const normalized = {};
+          Object.keys(row).forEach(key => {
+            normalized[key.trim()] = row[key];
+          });
+          return normalized;
+        });
+        setTableData(normalizedData);
       })
-      .catch(err => {
+      .catch(() => {
         setTableData([]);
       })
       .finally(() => {
@@ -51,12 +59,11 @@ const Keywords = () => {
   const getSummaryData = () => {
     return {
       totalCompanies: groupedDataArray.length,
-      totalProducts: groupedDataArray.reduce((sum, group) => sum + (group.items || []).length, 0),
       stageBreakdown: getUniqueOptions('Current Stage').map(stage => ({
         stage,
-        count: groupedDataArray.reduce((sum, group) => 
-          sum + (group.items || []).filter(item => item['Current Stage'] === stage).length, 0
-        )
+        count: groupedDataArray.filter(group => 
+          (group.items || []).some(item => item['Current Stage'] === stage)
+        ).length
       }))
     };
   };
@@ -111,7 +118,6 @@ const Keywords = () => {
 
   const summaryData = getSummaryData();
 
-  const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = groupedDataArray.slice(startIndex, startIndex + rowsPerPage);
 
@@ -289,7 +295,7 @@ const Keywords = () => {
                           {row['Primary Category (Products/Services Keywords)']}
                         </td>
                         <td className="table-cell">
-                          {row['Secondary Category Keywords ']}
+                          {row['Secondary Category Keywords']}
                         </td>
                         <td className="table-cell">
                           {row['First Detected (Timeline Start)'] || '-'}
@@ -308,118 +314,113 @@ const Keywords = () => {
             </table>
           </div>
 
-          {groupedDataArray.length > 0 && (
+          {groupedDataArray.length > rowsPerPage && (
             <div className="pagination-container">
               <div className="pagination-info">
-                Page {currentPage} of {totalPages}
+                Page {currentPage} of {Math.ceil(groupedDataArray.length / rowsPerPage).toLocaleString()}
               </div>
 
-              <div className="pagination-buttons">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="pagination-btn"
-                  onMouseEnter={(e) => {
-                    if (currentPage > 1) {
-                      e.target.style.backgroundColor = '#f9fafb';
-                      e.target.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage > 1) {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                  title="First page"
-                >
-                  ≪
-                </button>
+              <div className="pagination-controls">
+                {(() => {
+                  const totalPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+                  const maxPagesToShow = 5;
+                  let startPage = 1;
+                  let endPage = Math.min(maxPagesToShow, totalPages);
 
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="pagination-btn"
-                  onMouseEnter={(e) => {
-                    if (currentPage > 1) {
-                      e.target.style.backgroundColor = '#f9fafb';
-                      e.target.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage > 1) {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                  title="Previous page"
-                >
-                  ‹
-                </button>
+                  if (currentPage > maxPagesToShow) {
+                    startPage = currentPage - Math.floor(maxPagesToShow / 2);
+                    endPage = startPage + maxPagesToShow - 1;
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i)}
-                    className={`pagination-btn-number ${i === currentPage ? 'active' : ''}`}
-                    onMouseEnter={(e) => {
-                      if (i !== currentPage) {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (i !== currentPage) {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.borderColor = '#d1d5db';
-                      }
-                    }}
-                  >
-                    {i}
-                  </button>
-                ))}
+                    if (endPage > totalPages) {
+                      endPage = totalPages;
+                      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+                  }
 
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="pagination-btn"
-                  onMouseEnter={(e) => {
-                    if (currentPage < totalPages) {
-                      e.target.style.backgroundColor = '#f9fafb';
-                      e.target.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage < totalPages) {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                  title="Next page"
-                >
-                  ›
-                </button>
+                  return (
+                    <>
+                      <button
+                        key="first"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
+                        title="First page"
+                      >
+                        «
+                      </button>
 
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="pagination-btn"
-                  onMouseEnter={(e) => {
-                    if (currentPage < totalPages) {
-                      e.target.style.backgroundColor = '#f9fafb';
-                      e.target.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage < totalPages) {
-                      e.target.style.backgroundColor = 'white';
-                      e.target.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                  title="Last page"
-                >
-                  ≫
-                </button>
+                      <button
+                        key="prev"
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
+                        title="Previous page"
+                      >
+                        ‹
+                      </button>
+
+                      {startPage > 1 && (
+                        <>
+                          <button
+                            key={1}
+                            onClick={() => setCurrentPage(1)}
+                            className="pagination-button"
+                          >
+                            1
+                          </button>
+                          {startPage > 2 && <span className="pagination-ellipsis">...</span>}
+                        </>
+                      )}
+
+                      {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(i)}
+                          className={`pagination-button ${i === currentPage ? 'active' : ''}`}
+                        >
+                          {i}
+                        </button>
+                      ))}
+
+                      {endPage < totalPages && (
+                        <>
+                          {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
+                          <button
+                            key={totalPages}
+                            onClick={() => setCurrentPage(totalPages)}
+                            className="pagination-button"
+                          >
+                            {totalPages}
+                          </button>
+                        </>
+                      )}
+
+                      <button
+                        key="next"
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
+                        title="Next page"
+                      >
+                        ›
+                      </button>
+
+                      <button
+                        key="last"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
+                        title="Last page"
+                      >
+                        »
+                      </button>
+                    </>
+                  );
+                })()}
+              </div>
+
+              <div className="pagination-results">
+                Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, groupedDataArray.length)} of {groupedDataArray.length.toLocaleString()} results
               </div>
             </div>
           )}

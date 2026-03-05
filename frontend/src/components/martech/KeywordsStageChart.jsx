@@ -80,7 +80,7 @@ const KeywordsStageChart = ({ data }) => {
       {/* Total */}
       <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #e5e7eb' }}>
         <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>
-          Total: <span style={{ color: '#1f2937', fontWeight: '600' }}>{totalCount} products/services</span>
+          Total: <span style={{ color: '#1f2937', fontWeight: '600' }}>{totalCount} companies</span>
         </div>
       </div>
     </div>
