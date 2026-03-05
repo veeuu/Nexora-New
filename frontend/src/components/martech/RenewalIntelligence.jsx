@@ -292,6 +292,7 @@ const RenewalIntelligence = () => {
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [measurements, setMeasurements] = useState({});
+    const [companySearchTerm, setCompanySearchTerm] = useState('');
     const rowsPerPage = 9;
     const filterRef = useRef(null);
 
@@ -527,6 +528,7 @@ useEffect(() => {
         const handleClickOutside = (event) => {
             if (filterRef.current && !filterRef.current.contains(event.target)) {
                 setActiveFilterMenu(null);
+                setCompanySearchTerm('');
                 setShowFilters(false);
             }
         };
@@ -1067,6 +1069,7 @@ if (aQtr.year !== bQtr.year) {
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
+                          setCompanySearchTerm('');
                           setFilters(prev => ({ ...prev, companyName: [] }));
                         }}
                         style={{
@@ -1093,9 +1096,32 @@ if (aQtr.year !== bQtr.year) {
                       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                       zIndex: 1000,
                       minWidth: '250px',
-                      maxHeight: '300px',
+                      maxHeight: '400px',
                       overflowY: 'auto'
                     }}>
+                      <div style={{
+                        padding: '12px',
+                        borderBottom: '1px solid #e5e7eb',
+                        position: 'sticky',
+                        top: 0,
+                        backgroundColor: 'white'
+                      }}>
+                        <input
+                          type="text"
+                          placeholder="Search companies..."
+                          value={companySearchTerm}
+                          onChange={(e) => setCompanySearchTerm(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontFamily: 'inherit',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
                       <div
                         onClick={() => {
                           if (filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0) {
@@ -1131,7 +1157,9 @@ if (aQtr.year !== bQtr.year) {
                         />
                         All
                       </div>
-                      {getUniqueCompanies().map((option, idx) => (
+                      {getUniqueCompanies()
+                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
+                        .map((option, idx) => (
                         <div
                           key={idx}
                           onClick={() => {
@@ -1163,9 +1191,20 @@ if (aQtr.year !== bQtr.year) {
                               height: '16px'
                             }}
                           />
-                          <span style={{ filter: 'blur(4px)', userSelect: 'none' }}>{option}</span>
+                          <span style={{ color: '#1f2937' }}>{option}</span>
                         </div>
                       ))}
+
+                      {getUniqueCompanies().filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueCompanies().length > 0 && (
+                        <div style={{
+                          padding: '10px 12px',
+                          textAlign: 'center',
+                          color: '#999',
+                          fontSize: '13px'
+                        }}>
+                          No companies found
+                        </div>
+                      )}
 
                       {}
                       <div style={{

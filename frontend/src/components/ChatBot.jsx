@@ -8,13 +8,13 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
-      text: 'Hey there 👋 I\'m here to help you spot tech buying signals before your competitors do.\n\nWhat would you like to explore?',
+      text: 'I\'m here to help you spot tech buying signals before your competitors do.\n\nWhat would you like to explore?',
       isGreeting: true,
       showOptions: true,
       options: [
-        { id: 'what-is-ntp', label: '❓ What is NTP®?' },
-        { id: 'see-demo', label: '📊 View a sample analysis' },
-        { id: 'analyze-company', label: '🔍 Analyze a specific company' }
+        { id: 'what-is-ntp', label: 'What is NTP®?' },
+        { id: 'see-demo', label: 'View a sample analysis' },
+        { id: 'analyze-company', label: 'Analyze a specific company' }
       ]
     }
   ]);
@@ -33,21 +33,21 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       
       const uniqueCats = [...new Set(data.map(item => item.category))].filter(cat => cat && cat !== 'Not Detected').sort();
       
-      // Map categories to display format with emojis
+      // Map categories to display format
       const categoryMap = {
-        'database': '🗄️ Database',
-        'ai-ml': '🤖 AI/ML',
-        'crm': '👥 CRM',
-        'cloud': '☁️ Cloud',
-        'security': '🔒 Security',
-        'analytics': '📊 Analytics',
-        'infrastructure': '🏗️ Infrastructure',
-        'devops': '⚙️ DevOps'
+        'database': 'Database',
+        'ai-ml': 'AI/ML',
+        'crm': 'CRM',
+        'cloud': 'Cloud',
+        'security': 'Security',
+        'analytics': 'Analytics',
+        'infrastructure': 'Infrastructure',
+        'devops': 'DevOps'
       };
       
       return uniqueCats.map(cat => {
         const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-        const label = categoryMap[catLower] || `📌 ${cat}`;
+        const label = categoryMap[catLower] || cat;
         return { id: catLower, label: label, originalName: cat };
       });
     };
@@ -101,11 +101,11 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     setConversationStage('category-input');
     const categoriesWithAll = [
       ...dynamicCategories,
-      { id: 'all', label: '📊 ALL' }
+      { id: 'all', label: 'ALL' }
     ];
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `✅ Got it! Which category interests you for ${selectedCompany}?`,
+      text: `Got it! Which category interests you for ${selectedCompany}?`,
       showCategories: true,
       categories: categoriesWithAll
     }]);
@@ -116,15 +116,19 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     const botMessages = [
       {
         type: 'bot',
-        text: 'Exactly 🎯 NTP® predicts which technologies companies are about to buy based on real signals—hiring, partnerships, tech stack changes.\n\nThis means you can reach prospects at the exact moment they\'re ready to buy. Pretty powerful, right?'
+        text: 'Next Tech Purchase (NTP) predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators.'
+      },
+      {
+        type: 'bot',
+        text: 'This means you can identify prospects at the exact moment they\'re ready to buy before your competitors do.'
       },
       {
         type: 'bot',
         text: 'Would you like to see a demo?',
         showOptions: true,
         options: [
-          { id: 'see-demo', label: '📊 View a sample analysis' },
-          { id: 'analyze-company', label: '🔍 Analyze a specific company' }
+          { id: 'see-demo', label: 'View a sample analysis' },
+          { id: 'analyze-company', label: 'Analyze a specific company' }
         ]
       }
     ];
@@ -137,7 +141,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     const botMessages = [
       {
         type: 'bot',
-        text: 'Perfect! I can show you a quick demo of how NTP® insights look. 📊\n\nClick any company below to view its NTP® analysis:'
+        text: 'I can show you a quick demo of how NTP® insights look.\n\nClick any company below to view its NTP® analysis:'
       },
       {
         type: 'bot',
@@ -154,7 +158,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     const botMessages = [
       {
         type: 'bot',
-        text: 'Great! 👍 I can help you analyze a company.\n\nFirst, what\'s the company name?'
+        text: 'I can help you analyze a company.\n\nFirst, what\'s the company name?'
       }
     ];
     
@@ -186,22 +190,22 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       .map(cat => {
         const catLower = cat.toLowerCase().replace(/\s+/g, '-');
         const categoryMap = {
-          'database': '🗄️ Database',
-          'ai-ml': '🤖 AI/ML',
-          'crm': '👥 CRM',
-          'cloud': '☁️ Cloud',
-          'security': '🔒 Security',
-          'analytics': '📊 Analytics',
-          'infrastructure': '🏗️ Infrastructure',
-          'devops': '⚙️ DevOps'
+          'database': 'Database',
+          'ai-ml': 'AI/ML',
+          'crm': 'CRM',
+          'cloud': 'Cloud',
+          'security': 'Security',
+          'analytics': 'Analytics',
+          'infrastructure': 'Infrastructure',
+          'devops': 'DevOps'
         };
-        const label = categoryMap[catLower] || `📌 ${cat}`;
+        const label = categoryMap[catLower] || cat;
         return { id: catLower, label: label, originalName: cat };
       })
       .sort((a, b) => a.label.localeCompare(b.label));
     
     // Add ALL option at the end
-    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+    companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
     
     if (companyCategories.length === 1) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
@@ -212,7 +216,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `✅ Got it! Which category interests you for ${companyName}?`,
+      text: `Got it! Which category interests you for ${companyName}?`,
       showCategories: true,
       categories: companyCategories
     }]);
@@ -221,7 +225,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const handleCategorySelect = (categoryId) => {
     const allCategories = [
       ...dynamicCategories,
-      { id: 'all', label: '📊 ALL' }
+      { id: 'all', label: 'ALL' }
     ];
     const categoryLabel = allCategories.find(c => c.id === categoryId)?.label || categoryId;
     setMessages(prev => [...prev, { type: 'user', text: categoryLabel }]);
@@ -242,7 +246,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       // Add thinking effect
       setMessages(prev => [...prev, { 
         type: 'bot', 
-        text: '🔍 Analyzing digital signals and technology indicators… ⏳',
+        text: 'Analyzing digital signals and technology indicators...',
         isThinking: true
       }]);
 
@@ -268,7 +272,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           });
           
           setMessages(prev => [...prev, 
-            { type: 'bot', text: `Nice choice 👍 Here's what the signals suggest for ${analysisResults[0].companyName}:` },
+            { type: 'bot', text: `Here's what the signals suggest for ${analysisResults[0].companyName}:` },
             { type: 'bot', text: '', isFormatted: true, data: botMessage }
           ]);
           
@@ -279,9 +283,9 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               text: 'Want to explore another sample, or analyze a company you\'re targeting?',
               showOptions: true,
               options: [
-                { id: 'analyze-company', label: '🔍 Analyze another company' },
-                { id: 'analyze-category', label: '📊 View different category' },
-                { id: 'see-demo', label: '📊 View a sample' }
+                { id: 'analyze-company', label: 'Analyze another company' },
+                { id: 'analyze-category', label: 'View different category' },
+                { id: 'see-demo', label: 'View a sample' }
               ]
             }]);
             
@@ -318,7 +322,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     // Add thinking effect
     setMessages(prev => [...prev, { 
       type: 'bot', 
-      text: '🔍 Analyzing digital signals and technology indicators…',
+      text: 'Analyzing digital signals and technology indicators...',
       isThinking: true
     }]);
     
@@ -407,8 +411,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         text: 'Here\'s what the signals suggest. Ready to analyze a company you\'re targeting?',
         showOptions: true,
         options: [
-          { id: 'analyze-company', label: '🔍 Analyze a company' },
-          { id: 'see-demo', label: '📊 View another sample' }
+          { id: 'analyze-company', label: 'Analyze a company' },
+          { id: 'see-demo', label: 'View another sample' }
         ]
       }]);
     }, 500);
@@ -649,7 +653,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       {isOpen ? (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h3>🔍 NTP® - Your Next Purchase</h3>
+            <h3>Your Next Purchase</h3>
             <button
               onClick={() => setIsOpen(false)}
               className="chatbot-close-btn"
@@ -694,13 +698,13 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                   ) : msg.type === 'bot' && msg.isDemoAnalysis ? (
                     <div className="chatbot-demo-analysis">
                       <div className="demo-analysis-header">
-                        🔍 NTP® Analysis: {msg.analysis.companyName}
+                        NTP® Analysis: {msg.analysis.companyName}
                       </div>
                       <div className="demo-analysis-section">
                         <div className="demo-section-title">Predicted Next Investments:</div>
                         <ul className="demo-predictions">
                           {msg.analysis.predictions.map((pred, i) => (
-                            <li key={i}>• {pred}</li>
+                            <li key={i}>{pred}</li>
                           ))}
                         </ul>
                       </div>
@@ -708,7 +712,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                         <div className="demo-section-title">Intent Signals Detected:</div>
                         <ul className="demo-signals">
                           {msg.analysis.signals.map((signal, i) => (
-                            <li key={i}>✔ {signal}</li>
+                            <li key={i}>{signal}</li>
                           ))}
                         </ul>
                       </div>
@@ -725,7 +729,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                           className="demo-company-btn"
                           onClick={() => handleDemoCompanyClick(company)}
                         >
-                          👉 {company.name}
+                          {company.name}
                         </button>
                       ))}
                     </div>
@@ -739,7 +743,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                             className="chatbot-suggested-company-btn"
                             onClick={() => handleSuggestedCompanyClick(company)}
                           >
-                            🏢 {company}
+                            {company}
                           </button>
                         ))}
                       </div>

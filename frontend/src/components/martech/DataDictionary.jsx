@@ -62,11 +62,25 @@ const dataDictionary = [
       'Use Case': 'Identify technology vendors for outreach'
     },
     {
+      'Data Attribute': 'Next Tech Purchase (NTP®)',
+      'Definition': 'Predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators',
+      'Standard / Special': 'Special',
+      'Example': 'AI/ML platforms, Cloud infrastructure, Data analytics tools',
+      'Use Case': 'Identify high-probability technology adoption opportunities for targeted sales outreach'
+    },
+    {
       'Data Attribute': 'Renewal Intelligence',
       'Definition': 'Renewal Cycle of a product',
       'Standard / Special': 'Special',
       'Example': 'Annual, Monthly, Multi-year',
       'Use Case': 'Predict renewal dates for sales opportunities'
+    },
+    {
+      'Data Attribute': 'Buying Group',
+      'Definition': 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements',
+      'Standard / Special': 'Special',
+      'Example': 'CTO, VP Engineering, IT Director, Product Manager',
+      'Use Case': 'Identify key stakeholders and decision-makers for targeted engagement and sales strategies'
     },
     {
       'Data Attribute': 'Skills Matrix',

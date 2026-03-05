@@ -1936,8 +1936,7 @@ const Technographics = () => {
                         onChange={() => {}}
                         style={{ cursor: 'pointer' }}
                       />
-                      <FaLock size={12} style={{ color: '#6b7280', flexShrink: 0 }} />
-                      <span style={{ filter: 'blur(4px)', userSelect: 'none', color: '#1f2937' }}>••••••••••••••••••</span>
+                      <span style={{ color: '#1f2937' }}>{company}</span>
                     </div>
                   </div>
                 ))

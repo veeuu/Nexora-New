@@ -201,6 +201,7 @@ const Intent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [revealedRows, setRevealedRows] = useState(new Set());
+  const [companySearchTerm, setCompanySearchTerm] = useState('');
   const rowsPerPage = 10;
   const filterRef = useRef(null);
 
@@ -364,6 +365,7 @@ useEffect(() => {
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setActiveFilterMenu(null);
+        setCompanySearchTerm('');
         setShowFilters(false);
       }
     };
@@ -521,6 +523,7 @@ useEffect(() => {
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
+                    setCompanySearchTerm('');
                     setFilters(prev => ({ ...prev, accountName: [] }));
                   }}
                   className="filter-close-button"
@@ -529,6 +532,29 @@ useEffect(() => {
                 </button>
               </div>
               <div className="filter-dropdown-content">
+                <div style={{
+                  padding: '12px',
+                  borderBottom: '1px solid #e5e7eb',
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: 'white'
+                }}>
+                  <input
+                    type="text"
+                    placeholder="Search companies..."
+                    value={companySearchTerm}
+                    onChange={(e) => setCompanySearchTerm(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
                 <div
                   onClick={() => {
                     if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
@@ -549,7 +575,9 @@ useEffect(() => {
                   />
                   All
                 </div>
-                {getUniqueOptions('companyName').map((option, idx) => {
+                {getUniqueOptions('companyName')
+                  .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
+                  .map((option, idx) => {
                   const isSelected = Array.isArray(filters.accountName) && filters.accountName.includes(option);
                   return (
                     <div
@@ -563,11 +591,21 @@ useEffect(() => {
                         onChange={() => {}}
                         className="filter-option-checkbox"
                       />
-                      <FaLock size={12} style={{ color: '#6b7280', flexShrink: 0 }} />
-                      <span style={{ filter: 'blur(4px)', userSelect: 'none', color: '#1f2937' }}>••••••••••••••••••</span>
+                      <span style={{ color: '#1f2937' }}>{option}</span>
                     </div>
                   );
                 })}
+
+                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueOptions('companyName').length > 0 && (
+                  <div style={{
+                    padding: '10px 12px',
+                    textAlign: 'center',
+                    color: '#999',
+                    fontSize: '13px'
+                  }}>
+                    No companies found
+                  </div>
+                )}
 
                 {}
                 <div className="filter-dropdown-footer">

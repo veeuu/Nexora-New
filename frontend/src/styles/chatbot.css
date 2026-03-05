@@ -6,6 +6,13 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Reset all button pseudo-elements */
+button::before,
+button::after {
+  display: none !important;
+  content: none !important;
+}
+
 .chatbot-window {
   width: 400px;
   height: 600px;
@@ -18,7 +25,7 @@
 }
 
 .chatbot-header {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #0d2439 0%, #0050b3 100%);
   color: white;
   padding: 16px;
   display: flex;
@@ -77,13 +84,13 @@
 }
 
 .chatbot-message.user {
-  background-color: #8b5cf6;
+  background-color: #0891b2;
   color: white;
   max-width: 70%;
   padding: 10px 14px;
   border-radius: 16px;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(8, 145, 178, 0.3);
 }
 
 .chatbot-message.bot {
@@ -164,7 +171,7 @@
 .thinking-dots span {
   width: 6px;
   height: 6px;
-  background-color: #8b5cf6;
+  background-color: #0891b2;
   border-radius: 50%;
   animation: bounce 1.4s infinite;
 }
@@ -197,10 +204,10 @@
 
 .chatbot-option-btn {
   padding: 12px 16px;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e9ecff 100%);
-  border: 2px solid #8b5cf6;
+  background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
+  border: 2px solid #0891b2;
   border-radius: 10px;
-  color: #8b5cf6;
+  color: #0369a1;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -209,10 +216,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.chatbot-option-btn::before,
+.chatbot-option-btn::after {
+  display: none !important;
+  content: none !important;
 }
 
 .chatbot-option-btn:hover {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #0891b2 0%, #0369a1 100%);
   color: white;
   transform: translateX(4px);
 }
@@ -244,6 +260,15 @@
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.demo-company-btn::before,
+.demo-company-btn::after {
+  display: none !important;
+  content: none !important;
 }
 
 .demo-company-btn:hover {
@@ -276,10 +301,10 @@
 
 .chatbot-category-btn {
   padding: 12px 16px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 2px solid #f59e0b;
+  background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
+  border: 2px solid #06b6d4;
   border-radius: 10px;
-  color: #d97706;
+  color: #0891b2;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -288,10 +313,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.chatbot-category-btn::before,
+.chatbot-category-btn::after {
+  display: none !important;
+  content: none !important;
 }
 
 .chatbot-category-btn:hover {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   color: white;
   transform: translateX(4px);
 }
@@ -306,8 +340,8 @@
 }
 
 .chatbot-demo-analysis {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #0891b2;
   border-radius: 10px;
   padding: 14px;
   margin-top: 8px;
@@ -358,10 +392,10 @@
   font-size: 12px;
   color: #1e293b;
   line-height: 1.6;
-  background: #dbeafe;
+  background: #cffafe;
   padding: 10px;
   border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #0891b2;
 }
 
 .chatbot-analysis-container {
@@ -401,7 +435,7 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #0d2439 0%, #0050b3 100%);
   color: white;
   border-radius: 50%;
   font-weight: 700;
@@ -475,10 +509,10 @@
   font-size: 11px;
   color: #1e293b;
   line-height: 1.5;
-  background: #dbeafe;
+  background: #cffafe;
   padding: 8px;
   border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #0891b2;
 }
 
 .chatbot-message-card {
@@ -571,7 +605,7 @@
 
 .chatbot-send-btn {
   padding: 8px 12px;
-  background-color: #8b5cf6;
+  background-color: #0891b2;
   color: white;
   border: none;
   border-radius: 6px;
@@ -582,25 +616,25 @@
 }
 
 .chatbot-send-btn:disabled {
-  background-color: #8b5cf6;
+  background-color: #0891b2;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .chatbot-send-btn:not(:disabled):hover {
-  background-color: #7c3aed;
+  background-color: #0369a1;
 }
 
 .chatbot-toggle-btn {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #0d2439 0%, #0050b3 100%);
   color: white;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(13, 36, 57, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -609,7 +643,7 @@
 
 .chatbot-toggle-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 6px 16px rgba(13, 36, 57, 0.5);
 }
 
 .chatbot-toggle-btn:active {
@@ -671,8 +705,8 @@
 
 .chatbot-suggested-company-btn {
   padding: 12px 16px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 2px solid #0ea5e9;
+  background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
+  border: 2px solid #0891b2;
   border-radius: 10px;
   color: #0369a1;
   font-size: 14px;
@@ -683,10 +717,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.chatbot-suggested-company-btn::before,
+.chatbot-suggested-company-btn::after {
+  display: none !important;
+  content: none !important;
 }
 
 .chatbot-suggested-company-btn:hover {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #0891b2 0%, #0369a1 100%);
   color: white;
   transform: translateX(4px);
 }
