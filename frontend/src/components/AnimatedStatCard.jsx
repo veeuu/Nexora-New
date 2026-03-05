@@ -47,7 +47,7 @@ useEffect(() => {
     if (!isVisible) return;
 
     let animationFrame;
-    let currentValue = 0;
+    let currentValue = 100;
     const duration = 5000;
     const startTime = Date.now();
 
