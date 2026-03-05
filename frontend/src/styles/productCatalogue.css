@@ -695,3 +695,20 @@ th, td {
   color: #010810ff;
   text-decoration: underline;
 }
+
+/* Filter Container Relative Position */
+.filter-container-relative {
+  position: relative;
+}
+
+/* Download CSV Button Flex Shrink */
+.download-csv-button-wrapper {
+  flex-shrink: 0;
+}
+
+/* Filter Option Content Flex */
+.filter-option-flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
