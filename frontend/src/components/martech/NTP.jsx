@@ -516,14 +516,6 @@ const NTP = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="ntp-filter-button"
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-                e.target.style.borderColor = '#3b82f6';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white';
-                e.target.style.borderColor = '#d1d5db';
-              }}
             >
               <span>+ Filter</span>
             </button>
@@ -542,8 +534,6 @@ const NTP = () => {
                       setShowFilters(false);
                     }}
                     className="ntp-filter-menu-item"
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                   >
                     {filterOption.label}
                     {filterOption.mandatory && (
@@ -561,14 +551,6 @@ const NTP = () => {
               <button
                 onClick={() => setActiveFilterMenu('purchasePrediction')}
                 className="ntp-filter-button"
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f3f4f6';
-                  e.target.style.borderColor = '#3b82f6';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
               >
                 <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span className="ntp-filter-required-badge">*</span></span>
               </button>
@@ -620,8 +602,6 @@ const NTP = () => {
                         handleFilterChange('companyName', option);
                       }}
                       className={`ntp-filter-option ${isSelected ? 'selected' : ''}`}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = isSelected ? '#dbeafe' : 'white'}
                     >
                       <input
                         type="checkbox"
@@ -720,33 +700,12 @@ const NTP = () => {
                 })}
 
                 {}
-                <div style={{
-                  padding: '12px',
-                  borderTop: '1px solid #e5e7eb',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                  backgroundColor: '#f9fafb',
-                  position: 'sticky',
-                  bottom: 0
-                }}>
+                <div className="ntp-filter-footer-container">
                   <button
                     onClick={() => {
                       setActiveFilterMenu(null);
                     }}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    className="ntp-filter-footer-save-button"
                   >
                     Save
                   </button>
@@ -761,14 +720,6 @@ const NTP = () => {
               <button
                 onClick={() => setActiveFilterMenu('category')}
                 className="ntp-filter-button"
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f3f4f6';
-                  e.target.style.borderColor = '#3b82f6';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white';
-                  e.target.style.borderColor = '#d1d5db';
-                }}
               >
                 <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span className="ntp-filter-required-badge">*</span></span>
               </button>
@@ -836,7 +787,7 @@ const NTP = () => {
                           onChange={() => {}}
                           className="ntp-filter-option-item-checkbox"
                         />
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="ntp-category-tech-logo-span">
                           {renderTechLogo(option)}
                           {option}
                         </span>
@@ -954,33 +905,12 @@ const NTP = () => {
                 })}
 
                 {}
-                <div style={{
-                  padding: '12px',
-                  borderTop: '1px solid #e5e7eb',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '8px',
-                  backgroundColor: '#f9fafb',
-                  position: 'sticky',
-                  bottom: 0
-                }}>
+                <div className="ntp-filter-footer-container">
                   <button
                     onClick={() => {
                       setActiveFilterMenu(null);
                     }}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: '#3b82f6',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                    className="ntp-filter-footer-save-button"
                   >
                     Save
                   </button>
@@ -1011,7 +941,7 @@ const NTP = () => {
             <div className="ntp-filter-active-badge"
             onClick={() => setActiveFilterMenu('technology')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>
                 Technology: {filters.technology.length} selected
               </span>
               <button
@@ -1129,7 +1059,7 @@ const NTP = () => {
                     <tr key={`${actualIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan} style={{ verticalAlign: 'top', textAlign: 'center', width: '50px', padding: '12px 8px' }}>
+                        <td rowSpan={companyRowSpan} className="ntp-table-cell-checkbox">
                           <input
                             type="checkbox"
                             checked={selectedRows.has(actualIndex)}
@@ -1160,15 +1090,7 @@ const NTP = () => {
                                     href={`https://${company.domain}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="ntp-company-link"
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.color = '#3b82f6';
-                                      e.currentTarget.style.transform = 'scale(1.2)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.color = '#6b7280';
-                                      e.currentTarget.style.transform = 'scale(1)';
-                                    }}
+                                    className="ntp-company-domain-link"
                                     title={`Visit ${company.domain}`}
                                   >
                                     <FaGlobe size={16} />
@@ -1179,9 +1101,7 @@ const NTP = () => {
                                     href={company.linkedinUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="ntp-linkedin-link"
-                                    onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-                                    onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                    className="ntp-company-linkedin-link"
                                     title="View LinkedIn Profile"
                                   >
                                     <FaLinkedin size={20} />
@@ -1194,7 +1114,7 @@ const NTP = () => {
 
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan}>
-                          <span style={{ display: 'flex', alignItems: 'center' }}>
+                          <span className="ntp-table-cell-category">
                             {renderTechLogo(company.category)}
                             {company.category}
                           </span>
@@ -1378,18 +1298,6 @@ const NTP = () => {
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
                       className="ntp-pagination-button"
-                      onMouseEnter={(e) => {
-                        if (currentPage < totalPages) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage < totalPages) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
                       title="Next page"
                     >
                       ›
@@ -1401,18 +1309,6 @@ const NTP = () => {
                       onClick={() => setCurrentPage(totalPages)}
                       disabled={currentPage === totalPages}
                       className="ntp-pagination-button"
-                      onMouseEnter={(e) => {
-                        if (currentPage < totalPages) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage < totalPages) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
                       title="Last page"
                     >
                       ≫
