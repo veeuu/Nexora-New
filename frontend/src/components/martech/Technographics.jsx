@@ -3,7 +3,7 @@ import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaLock, FaUnlock } from 'react-icons/fa';
 
 const countryCodeMap = {
   'United States': 'US', 'USA': 'US', 'UNITED STATES': 'US',
@@ -800,28 +800,6 @@ const Technographics = () => {
     // Debug log
     if (techNameLower.includes('generative')) {
       console.log('DEBUG renderTechLogo:', { techName, techNameLower });
-    }
-    
-    // Check if it's an AI-related term - prioritize AI icon over logo
-    const aiTerms = ['rag', 'taradata', 'large language model', 'machine learning', 'artificial intelligence', 'llm', 'generative ai', 'gen ai', 'genai', 'ai', 'deep learning', 'neural network'];
-    const isAITerm = aiTerms.some(term => techNameLower.includes(term));
-    
-    // Force purple robot icon for AI terms
-    if (isAITerm) {
-      return (
-        <FaRobot
-          size={16}
-          style={{
-            marginRight: '6px',
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            color: '#8b5cf6',
-            opacity: 0.85,
-            filter: 'drop-shadow(0 0 0.5px rgba(0,0,0,0.1))'
-          }}
-          title={techName}
-        />
-      );
     }
     
     const logoPath = getLogoPath(techName);

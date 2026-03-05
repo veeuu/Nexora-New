@@ -1,11 +1,44 @@
 import * as SiIcons from 'react-icons/si';
-import { FaCloud, FaDatabase, FaRobot, FaQuestionCircle } from 'react-icons/fa';
+import { FaCloud, FaDatabase, FaQuestionCircle } from 'react-icons/fa';
 
 // Logo mapping - maps technology names to logo filenames
 export const getLogoPath = (techName) => {
   if (!techName) return null;
   
   const normalized = techName.toLowerCase().trim();
+  
+  // AI/ML Concepts - prioritize these logos over robot icon
+  const aimlConceptLogos = {
+    "ai": "AI.png",
+    "ai/ml": "AIML.png",
+    "artificial intelligence": "AI.png",
+    "machine learning": "Machine Learning.png",
+    "deep learning": "Machine Learning.png",
+    "nlp": "NLP.png",
+    "natural language processing": "NLP.png",
+    "computer vision": "Machine Learning.png",
+    "gen ai": "Generative AI.png",
+    "genai": "Generative AI.png",
+    "generative ai": "Generative AI.png",
+    "llm": "LLM.png",
+    "large language model": "Large Language Models.png",
+    "foundation models": "Large Language Models.png",
+    "rag": "RAG.png",
+    "transfer learning": "Transfer Learning.png",
+    "transformers": "Transformers.png",
+    "inference engine": "Inference Engine.png",
+    "model serving": "Model Serving.png",
+    "model inference": "Model Inference.png",
+    "feature store": "Feature Store.png",
+    "explainable ai": "Explainable AI.png",
+    "aiml": "AIML.png",
+    "model training": "Model Training.png",
+  };
+  
+  // Check AI/ML concepts first
+  if (aimlConceptLogos[normalized]) {
+    return `/src/logos/${aimlConceptLogos[normalized]}`;
+  }
   
   const logoMap = {
     // AWS Services
@@ -257,32 +290,8 @@ export const getLogoPath = (techName) => {
     "apache mxnet": "Apache MXNet.png",
     "mxnet": "Apache MXNet.png",
     
-    // AI/ML Concepts
-    "ai": "AI.png",
-    "artificial intelligence": "AI.png",
-    "machine learning": "Machine Learning.png",
-    "deep learning": "Machine Learning.png",
-    "nlp": "NLP.png",
-    "natural language processing": "NLP.png",
-    "computer vision": "Machine Learning.png",
-    "gen ai": "Generative AI.png",
-    "genai": "Generative AI.png",
-    "generative ai": "Generative AI.png",
-    "llm": "LLM.png",
-    "large language model": "Large Language Models.png",
-    "foundation models": "Large Language Models.png",
-    "rag": "RAG.png",
-    "transfer learning": "Transfer Learning.png",
-    "transformers": "Transformers.png",
-    "inference engine": "Inference Engine.png",
-    "model serving": "Model Serving.png",
-    "model inference": "Model Inference.png",
-    "feature store": "Feature Store.png",
-    "explainable ai": "Explainable AI.png",
-    "aiml": "AIML.png",
-    
     // Generic/Fallback
-    "database": "Database.png",
+    "database": "Database.webp",
     "cloud": "Cloud.webp",
     "cloud computing": "Cloud.webp",
     "crm": "CRM.png",
@@ -315,20 +324,6 @@ export const getTechIcon = (techName) => {
   const normalized = techName.toLowerCase().trim();
   
   const faIcons = {
-    "ai": { component: FaRobot, color: "#8B5CF6" },
-    "ai/ml": { component: FaRobot, color: "#8B5CF6" },
-    "aiml": { component: FaRobot, color: "#8B5CF6" },
-    "artificial intelligence": { component: FaRobot, color: "#8B5CF6" },
-    "machine learning": { component: FaRobot, color: "#8B5CF6" },
-    "deep learning": { component: FaRobot, color: "#8B5CF6" },
-    "nlp": { component: FaRobot, color: "#8B5CF6" },
-    "natural language processing": { component: FaRobot, color: "#8B5CF6" },
-    "computer vision": { component: FaRobot, color: "#8B5CF6" },
-    "gen ai": { component: FaRobot, color: "#8B5CF6" },
-    "genai": { component: FaRobot, color: "#8B5CF6" },
-    "generative ai": { component: FaRobot, color: "#8B5CF6" },
-    "llm": { component: FaRobot, color: "#8B5CF6" },
-    "pytorch": { component: FaRobot, color: "#8B5CF6" },
     "cloud": { component: FaCloud, color: "#4A90E2" },
     "cloud computing": { component: FaCloud, color: "#4A90E2" },
     "on prem": { component: FaDatabase, color: "#7ED321" },
@@ -393,10 +388,6 @@ export const getTechIcon = (techName) => {
     if ((normalized.includes(key) || key.includes(normalized)) && key.length > 2) {
       return { component: iconData.component, color: iconData.color };
     }
-  }
-  
-  if (normalized.includes("artificial") || normalized.includes("machine")) {
-    return { component: FaRobot, color: "#8B5CF6" };
   }
   
   const siIconData = siIcons[normalized];

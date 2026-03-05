@@ -224,21 +224,6 @@ const NTP = () => {
   const renderTechLogo = (techName) => {
     if (!techName) return null;
     
-    // Check if it's an AI-related term
-    const aiTerms = ['rag', 'taradata', 'large language model', 'machine learning', 'artificial intelligence', 'llm', 'generative ai', 'ai', 'deep learning', 'neural network'];
-    const techNameLower = techName.toLowerCase();
-    const isAITerm = aiTerms.some(term => techNameLower.includes(term));
-    
-    if (isAITerm) {
-      return (
-        <FaRobot
-          size={16}
-          className="ntp-tech-logo-icon ntp-tech-logo-ai"
-          title={techName}
-        />
-      );
-    }
-    
     const logoPath = getLogoPath(techName);
 
     if (logoPath) {
