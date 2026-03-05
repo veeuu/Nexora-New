@@ -1170,6 +1170,22 @@ const Technographics = () => {
     return uniqueValues;
   };
 
+  // Get available categories for selected companies
+  const getAvailableCategoriesForCompanies = () => {
+    if (filters.companyName.length === 0 || !tableData) {
+      return getUniqueOptions('category');
+    }
+    
+    const availableCategories = new Set();
+    tableData.forEach(row => {
+      if (filters.companyName.includes(String(row.companyName)) && row.category) {
+        availableCategories.add(row.category);
+      }
+    });
+    
+    return Array.from(availableCategories).sort();
+  };
+
   const getCompanyCountByCategory = (category) => {
     if (!tableData) return 0;
     const uniqueCompanies = new Set();
@@ -1889,10 +1905,7 @@ const Technographics = () => {
                   <div
                     key={idx}
                     onClick={() => {
-                      const newCompanies = filters.companyName.includes(company)
-                        ? filters.companyName.filter(c => c !== company)
-                        : [...filters.companyName, company];
-                      handleFilterChange('companyName', newCompanies);
+                      handleFilterChange('companyName', company);
                     }}
                     style={{
                       padding: '10px 12px',
@@ -2238,7 +2251,7 @@ const Technographics = () => {
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    const allOptions = getUniqueOptions('category');
+                    const allOptions = getAvailableCategoriesForCompanies();
                     
                     if (filters.category.length === allOptions.length) {
                       setFilters(prev => ({ ...prev, category: [] }));
@@ -2264,9 +2277,9 @@ const Technographics = () => {
                 >
                   <input
                     type="checkbox"
-                    checked={filters.category.length === getUniqueOptions('category').length && getUniqueOptions('category').length > 0}
+                    checked={filters.category.length === getAvailableCategoriesForCompanies().length && getAvailableCategoriesForCompanies().length > 0}
                     onChange={() => {
-                      const allOptions = getUniqueOptions('category');
+                      const allOptions = getAvailableCategoriesForCompanies();
                       
                       if (filters.category.length === allOptions.length) {
                         setFilters(prev => ({ ...prev, category: [] }));
@@ -2281,7 +2294,7 @@ const Technographics = () => {
                   />
                   All
                 </div>
-                {getUniqueOptions('category')
+                {getAvailableCategoriesForCompanies()
                   .sort((a, b) => {
                     // Move "Not Detected" to the end
                     if (a === 'Not Detected') return 1;
