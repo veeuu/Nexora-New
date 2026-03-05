@@ -776,3 +776,218 @@ tbody tr:hover {
   background-color: #f3f4f6;
   border-radius: 4px;
 }
+
+/* CustomDropdown Styles */
+.custom-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-dropdown-button {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-dropdown-button:hover {
+  border-color: #9ca3af;
+}
+
+.custom-dropdown-arrow {
+  font-size: 12px;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.custom-dropdown-item:hover {
+  background-color: #f9fafb;
+}
+
+.custom-dropdown-item.selected {
+  background-color: #f3f4f6;
+}
+
+/* Status Visualizer Inline Styles */
+.status-visualizer-line {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* Header Actions Fixed */
+.header-actions-fixed {
+  position: fixed;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 100;
+  width: 100%;
+  padding-bottom: 8px;
+  margin-bottom: 0px;
+  padding-top: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Filter Controls Container */
+.filter-controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 90px;
+}
+
+.filter-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Filter Dropdown Wrapper Relative */
+.filter-dropdown-wrapper-relative {
+  position: relative;
+}
+
+/* Intent Status Filter Button */
+.intent-status-filter-button {
+  position: relative;
+}
+
+/* Company Search Input */
+.company-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* Filter Dropdown Search Container */
+.filter-dropdown-search {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+
+/* No Companies Found Message */
+.no-companies-found {
+  padding: 10px 12px;
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Reveal Button */
+.reveal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reveal-button-locked {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.reveal-button-locked:hover {
+  background-color: #a7f3d0;
+  border-color: #6ee7b7;
+}
+
+.reveal-button-unlocked {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+}
+
+/* Company Name Cell Blurred */
+.company-name-blurred {
+  font-weight: 600;
+  color: #1f2937;
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.company-name-revealed {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Reveal Button Styles */
+.reveal-button-header {
+  padding: 8px 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.reveal-button-header:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reveal-button-header:not(:disabled):hover {
+  background-color: #1d4ed8;
+}
+
+/* Download CSV Button Flex Shrink */
+.download-csv-button-wrapper {
+  flex-shrink: 0;
+}
+
+/* View Summary Button Flex Shrink */
+.view-summary-button-wrapper {
+  flex-shrink: 0;
+}

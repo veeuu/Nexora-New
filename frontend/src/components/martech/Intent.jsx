@@ -65,18 +65,13 @@ const IntentStatusVisualizer = ({ status }) => {
   return (
     <div
       className="status-visualizer"
-      style={{
-        backgroundColor: config.bgColor
-      }}
       title={config.label}
     >
       {config.type === 'line' ? (
         <div
+          className="status-visualizer-line"
           style={{
-            width: '100%',
-            height: '3px',
             backgroundColor: config.color,
-            borderRadius: '2px',
             boxShadow: `0 2px 4px ${config.color}40`
           }}
         />
@@ -101,59 +96,24 @@ const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className="custom-dropdown-container">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '10px 12px',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          fontSize: '14px',
-          fontFamily: 'inherit',
-          backgroundColor: 'white',
-          cursor: 'pointer',
-          transition: 'border-color 0.2s',
-          textAlign: 'left',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
+        className="custom-dropdown-button"
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>▼</span>
+        <span className="custom-dropdown-arrow">▼</span>
       </button>
 
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            marginTop: '4px',
-            maxHeight: '300px',
-            overflowY: 'auto',
-            zIndex: 1000,
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}
-        >
+        <div className="custom-dropdown-menu">
           <div
             onClick={() => {
               onChange('');
               setIsOpen(false);
             }}
-            style={{
-              padding: '10px 12px',
-              cursor: 'pointer',
-              backgroundColor: value === '' ? '#f3f4f6' : 'white',
-              borderBottom: '1px solid #e5e7eb',
-              fontSize: '14px'
-            }}
+            className={`custom-dropdown-item ${value === '' ? 'selected' : ''}`}
             onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
             onMouseLeave={(e) => e.target.style.backgroundColor = value === '' ? '#f3f4f6' : 'white'}
           >
@@ -166,13 +126,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              style={{
-                padding: '10px 12px',
-                cursor: 'pointer',
-                backgroundColor: value === option ? '#dbeafe' : 'white',
-                borderBottom: '1px solid #e5e7eb',
-                fontSize: '14px'
-              }}
+              className={`custom-dropdown-item ${value === option ? 'selected' : ''}`}
               onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
               onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
             >
@@ -461,17 +415,17 @@ useEffect(() => {
         </div>
       )}
 
-      <div className="header-actions" style={{ position: 'fixed', top: '0', backgroundColor: '#ffffff', zIndex: '100', width: '100%', paddingBottom: '12px', marginBottom: '0px', paddingTop: '12px', paddingLeft: '16px', paddingRight: '16px', borderBottom: '1px solid #e5e7eb' }}>
+      <div className="header-actions-fixed">
         <h2>Intent Data</h2>
         <div className="actions-right">
         </div>
       </div>
 
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '60px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="filter-controls-container">
+          <div className="filter-controls-left">
           {}
-          <div style={{ position: 'relative' }}>
+          <div className="filter-dropdown-wrapper-relative">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="filter-button"
@@ -505,7 +459,7 @@ useEffect(() => {
 
           {}
           {activeFilterMenu !== 'intentStatus' && (
-            <div style={{ position: 'relative' }}>
+            <div className="intent-status-filter-button">
               <button
                 onClick={() => setActiveFilterMenu('intentStatus')}
                 className="filter-button"
@@ -532,27 +486,13 @@ useEffect(() => {
                 </button>
               </div>
               <div className="filter-dropdown-content">
-                <div style={{
-                  padding: '12px',
-                  borderBottom: '1px solid #e5e7eb',
-                  position: 'sticky',
-                  top: 0,
-                  backgroundColor: 'white'
-                }}>
+                <div className="filter-dropdown-search">
                   <input
                     type="text"
                     placeholder="Search companies..."
                     value={companySearchTerm}
                     onChange={(e) => setCompanySearchTerm(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      fontFamily: 'inherit',
-                      boxSizing: 'border-box'
-                    }}
+                    className="company-search-input"
                   />
                 </div>
                 <div
@@ -597,12 +537,7 @@ useEffect(() => {
                 })}
 
                 {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueOptions('companyName').length > 0 && (
-                  <div style={{
-                    padding: '10px 12px',
-                    textAlign: 'center',
-                    color: '#999',
-                    fontSize: '13px'
-                  }}>
+                  <div className="no-companies-found">
                     No companies found
                   </div>
                 )}
@@ -721,7 +656,7 @@ useEffect(() => {
           )}
 
           {}
-          <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0 }}>
+          <button className="download-csv-button download-csv-button-wrapper" onClick={handleDownloadCSV}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -731,7 +666,7 @@ useEffect(() => {
             </svg>
             Download CSV
           </button>
-          <button className="view-summary-button" onClick={() => setShowSummary(true)} style={{ flexShrink: 0 }}>
+          <button className="view-summary-button view-summary-button-wrapper" onClick={() => setShowSummary(true)}>
             <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -866,18 +801,7 @@ useEffect(() => {
                             return newSet;
                           });
                         }}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '6px',
-                          padding: '8px 10px',
-                          backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
-                          border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
+                        className={`reveal-button ${isRevealed ? 'reveal-button-unlocked' : 'reveal-button-locked'}`}
                         onMouseEnter={(e) => {
                           if (!isRevealed) {
                             e.currentTarget.style.backgroundColor = '#a7f3d0';
@@ -901,11 +825,11 @@ useEffect(() => {
                     </td>
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {isRevealed ? (
-                        <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                        <div className="company-name-revealed">
                           {row.companyName}
                         </div>
                       ) : (
-                        <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div className="company-name-blurred">
                           <FaLock size={14} style={{ color: '#6b7280', filter: 'blur(0px)' }} />
                           <span>••••••••••••••••••</span>
                         </div>
