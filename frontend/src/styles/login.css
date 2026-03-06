@@ -24,7 +24,7 @@
 
 .login-left svg,
 .login-left img {
-  width: 100%;
+  width: 90%;
   height: 100%;
   object-fit: contain;
   position: absolute;
@@ -142,15 +142,17 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .form-group label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #ffffff;
-  text-transform: capitalize;
-  letter-spacing: 0.2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  width: fit-content;
 }
 
 .input-wrapper {
@@ -161,47 +163,48 @@
 
 .input-icon {
   position: absolute;
-  left: 12px;
-  width: 18px;
-  height: 18px;
-  color: #8c8c8c;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
   pointer-events: none;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.65rem 0.85rem 0.65rem 2.5rem;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  padding: 0.7rem 0.9rem 0.7rem 2.8rem;
+  border: 1px solid #404854;
+  border-radius: 6px;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
+  color: #ffffff;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #1890ff;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.2);
 }
 
 .form-input::placeholder {
-  color: #c0c0c0;
+  color: #9ca3af;
 }
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 14px;
   background: none;
   border: none;
   cursor: pointer;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8c8c8c;
+  color: #6b7280;
   padding: 0;
   transition: color 0.2s ease;
   border-radius: 0;
@@ -209,7 +212,7 @@
 }
 
 .toggle-password:hover {
-  color: #262626;
+  color: #d1d5db;
 }
 
 .toggle-password svg {
@@ -226,6 +229,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
 .form-remember input[type='checkbox'] {
@@ -237,47 +241,48 @@
 
 .form-remember label {
   cursor: pointer;
-  color: #ffffff;
+  color: #d1d5db;
   font-weight: 500;
   margin: 0;
+  font-size: 0.8rem;
 }
 
 .remember-text {
-  color: #8c8c8c;
+  color: #9ca3af;
   font-size: 0.75rem;
   font-weight: 400;
   margin-left: auto;
 }
 
 .btn-signin {
-  padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  padding: 0.8rem 1.25rem;
+  background: #0066ff;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   width: 100%;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.35);
 }
 
 .btn-signin:hover {
-  background: linear-gradient(135deg, #40a9ff 0%, #0050b3 100%);
-  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
-  transform: translateY(-2px);
+  background: #0052cc;
+  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.45);
+  transform: translateY(-1px);
 }
 
 .btn-signin:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.35);
 }
 
 .btn-signin:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -408,7 +413,7 @@
 
 /* Right Section - Login Form */
 .login-right {
-  flex: 1;
+  flex: 0.75;
   display: flex;
   align-items: center;
   justify-content: center;
