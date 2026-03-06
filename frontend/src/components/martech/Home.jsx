@@ -193,7 +193,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="470M+"
+              number="530M+"
               label="Intent"
               cardClass="home-stat-card-purple"
               numberClass="home-stat-number-purple"
@@ -202,7 +202,7 @@ const Home = () => {
             />
 
             <AnimatedStatCard
-              number="420M+"
+              number="430M+"
               label="Buying Group"
               cardClass="home-stat-card-yellow"
               numberClass="home-stat-number-yellow"
