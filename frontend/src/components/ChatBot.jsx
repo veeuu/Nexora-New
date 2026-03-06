@@ -8,7 +8,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
-      text: 'I\'m here to help you spot tech buying signals before your competitors do.\n\nWhat would you like to explore?',
+      text: 'Hey! I\'m here to help you spot tech buying signals before your competitors do.\n\nWhat would you like to explore?',
       isGreeting: true,
       showOptions: true,
       options: [

@@ -112,17 +112,17 @@ const RenewalMeter = ({ renewalDate }) => {
     const yearDiff = year - currentYear;
     const quarterDiff = (yearDiff * 4) + (quarter - currentQuarter);
     
-    // If past or current quarter, return 100 (darkest/rightmost - Upcoming)
+    // If past or current quarter, return 100 (darkest/rightmost - Immediate)
     if (quarterDiff <= 0) return 100;
     
     // Map quarters to proximity (0-100)
-    // 0 quarters = 100% (darkest/right - Upcoming), 8+ quarters = 0% (lightest/left - Long-term)
+    // 0 quarters = 100% (darkest/right - Immediate), 8+ quarters = 0% (lightest/left - Long-term)
     const maxQuarters = 8;
     return Math.min(100, Math.max(0, 100 - (quarterDiff / maxQuarters) * 100));
   };
 
   const getStatusLabel = (proximity) => {
-    if (proximity >= 86) return 'Upcoming ';
+    if (proximity >= 86) return 'Immediate ';
     if (proximity >= 46) return 'Mid-Term ';
     return 'Long-Term ';
   };
@@ -131,7 +131,7 @@ const RenewalMeter = ({ renewalDate }) => {
   const statusLabel = getStatusLabel(proximity);
   
   // Calculate arrow rotation based on proximity
-  // For Upcoming (proximity 100): should point right (90)
+  // For Immediate (proximity 100): should point right (90)
   // For Long-term (proximity 0): should point left (-90)
   const rotation = -90 + (proximity * 1.8);
 
@@ -140,7 +140,7 @@ const RenewalMeter = ({ renewalDate }) => {
       <div style={{ position: 'relative', width: '50px', height: '28px' }}>
         <svg width="50" height="28" viewBox="0 0 100 55" style={{ position: 'absolute', top: 0, left: 0 }}>
           <defs>
-            {/* Gradient from light (Upcoming) to dark (Long-term) */}
+            {/* Gradient from light (Immediate) to dark (Long-term) */}
             <linearGradient id="renewalGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#e0f2fe" />
               <stop offset="25%" stopColor="#0ea5e9" />
@@ -150,7 +150,7 @@ const RenewalMeter = ({ renewalDate }) => {
             </linearGradient>
           </defs>
           
-          {/* Arc with gradient from light (Upcoming) to dark (Long-term) */}
+          {/* Arc with gradient from light (Immediate) to dark (Long-term) */}
           <path
             d="M 8 50 A 45 45 0 0 1 92 50"
             fill="none"
@@ -599,7 +599,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['Upcoming ', 'Mid-Term ', 'Long-Term '];
+        return ['Immediate ', 'Mid-Term ', 'Long-Term '];
     };
 
     const getUniqueCategories = () => {
@@ -693,7 +693,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['Upcoming ', 'Mid-Term ', 'Long-Term '];
+            const statusLabels = ['Immediate ', 'Mid-Term ', 'Long-Term '];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -1795,7 +1795,7 @@ if (aQtr.year !== bQtr.year) {
                         backgroundColor: '#f9fafb'
                       }}>
                         <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
-                        <div>• Upcoming (&lt;1 year)</div>
+                        <div>• Immediate (&lt;1 year)</div>
                         <div>• Mid-Term (1–2 years)</div>
                         <div>• Long-Term (2+ years)</div>
                       </div>
