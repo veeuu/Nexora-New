@@ -200,7 +200,7 @@ body {
 }
 
 .menu-solutions-image {
-  max-width: 100px;
+  max-width: 140px;
   height: auto;
   object-fit: contain;
   flex-shrink: 0;

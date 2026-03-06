@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import nexoraLogo from '../assets/Nexora Logo-cropped.svg';
+import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
 import heroImage from '../assets/Nexora Login Page Left with Clients.svg';
-import proplusDataLogo from '../assets/Proplus Data Logo - Horizontal Transparent (1).png';
+import proplusDataLogo from '../assets/unnamed (1).png';
 import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
@@ -694,7 +694,7 @@ if (newPassword !== confirmPassword) {
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <p style={{ fontSize: '0.875rem', color: '#666' }}>
+              <p style={{ fontSize: '0.875rem', color: '#ffffffff' }}>
                 {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}
                 <button
                   type="button"
@@ -723,7 +723,7 @@ if (newPassword !== confirmPassword) {
             </div>
 
             <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-              <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.75rem', fontWeight: '500' }}>
+              <p style={{ fontSize: '0.875rem', color: '#ffffffff', marginBottom: '0.75rem', fontWeight: '500' }}>
                 Connect with Us
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
@@ -788,8 +788,8 @@ if (newPassword !== confirmPassword) {
                   </svg>
                 </a>
 
-                {}
-                <a
+                {/* Instagram - Commented out */}
+                {/* <a
                   href="https://www.instagram.com/proplusdata/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -818,7 +818,7 @@ if (newPassword !== confirmPassword) {
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <circle cx="17.5" cy="6.5" r="1.5"></circle>
                   </svg>
-                </a>
+                </a> */}
               </div>
             </div>
 
