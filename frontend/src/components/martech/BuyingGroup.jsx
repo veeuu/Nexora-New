@@ -522,7 +522,7 @@ const BuyingGroup = () => {
                                                 <div className="team-member-header">
                                                     <div className="team-member-info">
                                                         <p className="team-member-name">{person.name}</p>
-                                                        <p className="team-member-designation">{person.designation}</p>
+                                                        <p className="team-member-designation">{person.fullRole || person.designation}</p>
                                                     </div>
                                                     {linkedinUrl && (
                                                         <a
@@ -542,11 +542,19 @@ const BuyingGroup = () => {
                                                         {person.email}
                                                     </p>
                                                 </div>
-                                                {person.mobileDID && person.mobileDID !== 'N/A' && (
+                                                {person.mobileDID && person.mobileDID !== '-' && (
                                                     <div className="team-member-detail">
                                                         <p className="team-member-detail-label">Mobile DID</p>
                                                         <p className="team-member-detail-value team-member-phone">
                                                             {person.mobileDID}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                {(!person.mobileDID || person.mobileDID === '-') && (
+                                                    <div className="team-member-detail">
+                                                        <p className="team-member-detail-label">Mobile DID</p>
+                                                        <p className="team-member-detail-value">
+                                                            -
                                                         </p>
                                                     </div>
                                                 )}

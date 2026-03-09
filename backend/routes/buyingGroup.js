@@ -126,6 +126,7 @@ router.get('/person-details', async (req, res) => {
             id: emp.uniqueId || '',
             name: emp.name || '-',
             designation: designation,
+            fullRole: emp.fullRole || designation,
             email: emp.email || '-',
             phone: emp.phone || '-',
             mobileDID: emp.mobileDID || '-',

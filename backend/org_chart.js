@@ -651,7 +651,7 @@ const layout = {
     },
     showlegend: true,
     hovermode: 'closest',
-    margin: { l: 20, r: 20, t: 100, b: 5 },
+    margin: { l: 20, r: 20, t: 150, b: 5 },
     width: canvasWidth,
     height: canvasHeight,
     plot_bgcolor: CONFIG.COLOR_BACKGROUND,
