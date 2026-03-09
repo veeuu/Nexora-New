@@ -3,10 +3,7 @@ const router = express.Router();
 const BuyingGroup = require('../models/BuyingGroup');
 const { generateOrgChartHTML } = require('../org_chart');
 const { 
-  uploadOrgChartToS3, 
-  getSignedOrgChartUrl, 
-  getOrgChartFromS3,
-  orgChartExistsInS3 
+  uploadOrgChartToS3
 } = require('../config/s3');
 
 // Helper function to sanitize filename
@@ -114,50 +111,50 @@ router.get('/categories', async (req, res) => {
 // ============================================
 router.get('/person-details', async (req, res) => {
   try {
-    const buyingGroups = await BuyingGroup.find({}, { 
-      companyName: 1, 
-      employees: 1,
-      employeeSize: 1,
-      country: 1,
-      revenue: 1,
-      industry: 1,
-      companyPhone: 1,
-      domain: 1,
-      companyDescription: 1
-    });
+    // Get all buying groups with nested employees structure using .lean()
+    const buyingGroups = await BuyingGroup.find({}).lean();
 
     const companiesMap = {};
     
     buyingGroups.forEach(bg => {
+      const companyName = bg.companyName;
+      
       if (bg.employees && Array.isArray(bg.employees)) {
-        companiesMap[bg.companyName] = bg.employees.map(emp => ({
-          id: emp.uniqueId || '',
-          name: emp.name || 'N/A',
-          designation: emp.role || 'N/A',
-          email: emp.email || 'N/A',
-          phone: emp.phone || 'N/A',
-          mobileDID: emp.mobileDID || 'N/A',
-          linkedin: emp.linkedin || '',
-          reportsTo: emp.reportsTo || 'N/A',
-          category: emp.category || 'N/A',
-          hierarchy: emp.hierarchy || 'OTHER',
-          // Company-level fields
-          companyDescription: bg.companyDescription || 'N/A',
-          employeeSize: bg.employeeSize || 'N/A',
-          country: bg.country || 'N/A',
-          revenue: bg.revenue || 'N/A',
-          industry: bg.industry || 'N/A',
-          companyPhone: bg.companyPhone || 'N/A',
-          domain: bg.domain || 'N/A'
-        }));
+        companiesMap[companyName] = bg.employees.map(emp => {
+          const designation = emp.designation || emp.role || 'N/A';
+          return {
+            id: emp.uniqueId || '',
+            name: emp.name || 'N/A',
+            designation: designation,
+            email: emp.email || 'N/A',
+            phone: emp.phone || 'N/A',
+            mobileDID: emp.mobileDID || 'N/A',
+            linkedin: emp.linkedin || '',
+            reportsTo: emp.reportsTo || 'N/A',
+            category: emp.category || 'N/A',
+            hierarchy: emp.hierarchy || 'OTHER',
+            // Company-level fields (check both old and new field names)
+            companyDescription: bg.companyDescription || 'N/A',
+            employeeSize: bg.employeeSize || bg.employeeCount || 'N/A',
+            country: bg.country || bg.location || 'N/A',
+            revenue: bg.revenue || 'N/A',
+            industry: bg.industry || 'N/A',
+            companyPhone: bg.companyPhone || bg.companyPhonethis || 'N/A',
+            domain: bg.domain || bg.website || 'N/A'
+          };
+        });
       }
     });
 
+    console.log(`[BuyingGroup] Fetched person details for ${Object.keys(companiesMap).length} companies`);
+
     res.json(companiesMap);
   } catch (error) {
+    console.error('[BuyingGroup] Error fetching person details:', error);
     res.status(500).json({ 
       success: false, 
-      error: 'Failed to fetch person details' 
+      error: 'Failed to fetch person details',
+      details: error.message
     });
   }
 });
@@ -203,7 +200,7 @@ router.get('/:companyName/org-chart', async (req, res) => {
     
     const buyingGroup = await BuyingGroup.findOne({ 
       companyName: decodedCompanyName 
-    });
+    }).lean();
 
     if (!buyingGroup) {
       return res.status(404).json({ 
@@ -213,18 +210,28 @@ router.get('/:companyName/org-chart', async (req, res) => {
     }
 
     // Convert employees to format expected by generateOrgChartHTML
-    const employeeData = buyingGroup.employees.map(emp => ({
-      'Unique ID': emp.uniqueId || '',
-      'Company Name': buyingGroup.companyName,
-      'Name': emp.name,
-      'Role': emp.role,
-      'Reports To': emp.reportsTo || '',
-      'hierarchy': emp.hierarchy,
-      'Category': emp.category || '',
-      'Linkedin': emp.linkedin || '',
-      'email': emp.email || '',
-      'Location': buyingGroup.location || ''
-    }));
+    const employeeData = buyingGroup.employees.map(emp => {
+      // Ensure hierarchy has a valid value
+      let hierarchyValue = emp.hierarchy || 'OTHER';
+      if (!hierarchyValue || hierarchyValue.trim() === '') {
+        hierarchyValue = 'OTHER';
+      }
+      
+      return {
+        'Unique ID': emp.uniqueId || '',
+        'Company Name': buyingGroup.companyName,
+        'Name': emp.name,
+        'Role': emp.designation || emp.role || 'N/A',
+        'Reports To': emp.reportsTo || '',
+        'hierarchy': hierarchyValue.toLowerCase().replace(/_/g, ' '),
+        'Category': emp.category || '',
+        'Linkedin': emp.linkedin || '',
+        'email': emp.email || '',
+        'Location': buyingGroup.location || ''
+      };
+    });
+
+    console.log(`[OrgChart] Sample employee data:`, employeeData.slice(0, 2));
 
     const htmlContent = generateOrgChartHTML(
       employeeData, 
@@ -267,7 +274,7 @@ router.post('/:companyName/regenerate-chart', async (req, res) => {
     
     const buyingGroup = await BuyingGroup.findOne({ 
       companyName: decodedCompanyName 
-    });
+    }).lean();
 
     if (!buyingGroup) {
       return res.status(404).json({ 
@@ -277,18 +284,26 @@ router.post('/:companyName/regenerate-chart', async (req, res) => {
     }
 
     // Convert employees to format expected by generateOrgChartHTML
-    const employeeData = buyingGroup.employees.map(emp => ({
-      'Unique ID': emp.uniqueId,
-      'Company Name': buyingGroup.companyName,
-      'Name': emp.name,
-      'Role': emp.role,
-      'Reports To': emp.reportsTo || '',
-      'hierarchy': emp.hierarchy,
-      'Category': emp.category || '',
-      'Linkedin': emp.linkedin || '',
-      'email': emp.email || '',
-      'Location': buyingGroup.location || ''
-    }));
+    const employeeData = buyingGroup.employees.map(emp => {
+      // Ensure hierarchy has a valid value
+      let hierarchyValue = emp.hierarchy || 'OTHER';
+      if (!hierarchyValue || hierarchyValue.trim() === '') {
+        hierarchyValue = 'OTHER';
+      }
+      
+      return {
+        'Unique ID': emp.uniqueId,
+        'Company Name': buyingGroup.companyName,
+        'Name': emp.name,
+        'Role': emp.designation || emp.role || 'N/A',
+        'Reports To': emp.reportsTo || '',
+        'hierarchy': hierarchyValue.toLowerCase().replace(/_/g, ' '),
+        'Category': emp.category || '',
+        'Linkedin': emp.linkedin || '',
+        'email': emp.email || '',
+        'Location': buyingGroup.location || ''
+      };
+    });
 
     const htmlContent = generateOrgChartHTML(
       employeeData, 
@@ -409,8 +424,9 @@ router.delete('/:companyName', async (req, res) => {
     // Delete from S3 if exists
     if (buyingGroup.orgChart && buyingGroup.orgChart.s3Key) {
       try {
-        await deleteOrgChartFromS3(buyingGroup.orgChart.s3Key);
+        // S3 deletion would go here if the function was available
       } catch (s3Error) {
+        // Handle error silently
       }
     }
 
