@@ -264,7 +264,6 @@ const Keywords = () => {
             <table>
               <thead className="sticky-header">
                 <tr>
-                  <th className="table-cell-header">Company</th>
                   <th className="table-cell-header">Products / Services</th>
                   <th className="table-cell-header">Primary Category</th>
                   <th className="table-cell-header">Secondary Category</th>
@@ -275,19 +274,14 @@ const Keywords = () => {
               </thead>
               <tbody>
                 {tableData.length === 0 ? (
-                  <tr><td colSpan="7" className="no-data-message">No data loaded</td></tr>
+                  <tr><td colSpan="6" className="no-data-message">No data loaded</td></tr>
                 ) : groupedDataArray.length === 0 ? (
-                  <tr><td colSpan="7" className="no-data-message">No data matches filters</td></tr>
+                  <tr><td colSpan="6" className="no-data-message">No data matches filters</td></tr>
                 ) : (
                   paginatedData.flatMap((groupedRow, groupIdx) => {
                     const items = groupedRow.items || [groupedRow];
                     return items.map((row, itemIdx) => (
                       <tr key={`${groupIdx}-${itemIdx}`} className={itemIdx === 0 ? "table-row-grouped" : "table-row-item"}>
-                        {itemIdx === 0 && (
-                          <td className="table-cell-company" rowSpan={items.length}>
-                            {groupedRow.Company}
-                          </td>
-                        )}
                         <td className="table-cell">
                           {row['Products / Services']}
                         </td>
