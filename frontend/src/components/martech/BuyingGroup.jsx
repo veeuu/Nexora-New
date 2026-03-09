@@ -6,6 +6,7 @@ import '../../styles/buyingGroup.css';
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedCategories, setSelectedCategories] = useState(new Set());
@@ -256,34 +257,38 @@ const BuyingGroup = () => {
                             disabled={companies.length === 0}
                             className="dropdown-button"
                         >
-                            <span>{selectedCompany || 'Select a company...'}</span>
+                            <span>{selectedCompany || 'Search companies...'}</span>
                             <span className="dropdown-arrow">▼</span>
                         </button>
                         
                         {isCompanyDropdownOpen && (
                             <div className="dropdown-menu">
-                                <div
-                                    onClick={() => {
-                                        setSelectedCompany('');
-                                        setIsCompanyDropdownOpen(false);
-                                    }}
-                                    className={`dropdown-item ${selectedCompany === '' ? 'selected' : ''}`}
-                                >
-                                    Select a company...
-                                </div>
-                                {companies.map((company, index) => (
-                                    <div
-                                        key={index}
-                                        onClick={() => {
-                                            setSelectedCompany(company);
-                                            setIsCompanyDropdownOpen(false);
-                                        }}
-                                        className={`dropdown-item ${selectedCompany === company ? 'selected' : ''}`}
-                                    >
-                                        <span>{company}</span>
-                                        <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
-                                    </div>
-                                ))}
+                                <input
+                                    type="text"
+                                    placeholder="Search companies..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="dropdown-search"
+                                    autoFocus
+                                />
+                                {companies
+                                    .filter(company => 
+                                        company.toLowerCase().includes(searchQuery.toLowerCase())
+                                    )
+                                    .map((company, index) => (
+                                        <div
+                                            key={index}
+                                            onClick={() => {
+                                                setSelectedCompany(company);
+                                                setIsCompanyDropdownOpen(false);
+                                                setSearchQuery('');
+                                            }}
+                                            className={`dropdown-item ${selectedCompany === company ? 'selected' : ''}`}
+                                        >
+                                            <span>{company}</span>
+                                            <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
+                                        </div>
+                                    ))}
                             </div>
                         )}
                     </div>

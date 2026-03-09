@@ -131,6 +131,23 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.dropdown-search {
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+
+.dropdown-search:focus {
+  background-color: #f9fafb;
+}
+
 .dropdown-item {
   padding: 10px 12px;
   cursor: pointer;

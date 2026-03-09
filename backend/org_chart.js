@@ -447,8 +447,7 @@ const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, sca
 const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
   const roleTextSize = Math.round(CONFIG.ROLE_TEXT_SIZE * scaleFactor);
 
-  const titleText = location && String(location).trim() ?
-    `${companyName} (${location})` : String(companyName);
+  const titleText = String(companyName);
 
   if (!Object.keys(employees).length) {
     return createErrorPlotly(`No Employee Data for ${titleText}`, canvasWidth, canvasHeight);
