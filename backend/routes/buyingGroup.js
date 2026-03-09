@@ -121,32 +121,31 @@ router.get('/person-details', async (req, res) => {
       
       if (bg.employees && Array.isArray(bg.employees)) {
         companiesMap[companyName] = bg.employees.map(emp => {
-          const designation = emp.designation || emp.role || 'N/A';
+          const designation = emp.designation || emp.role || '-';
           return {
             id: emp.uniqueId || '',
-            name: emp.name || 'N/A',
+            name: emp.name || '-',
             designation: designation,
-            email: emp.email || 'N/A',
-            phone: emp.phone || 'N/A',
-            mobileDID: emp.mobileDID || 'N/A',
+            email: emp.email || '-',
+            phone: emp.phone || '-',
+            mobileDID: emp.mobileDID || '-',
             linkedin: emp.linkedin || '',
-            reportsTo: emp.reportsTo || 'N/A',
-            category: emp.category || 'N/A',
+            reportsTo: emp.reportsTo || '-',
+            category: emp.category || '-',
             hierarchy: emp.hierarchy || 'OTHER',
             // Company-level fields (check both old and new field names)
-            companyDescription: bg.companyDescription || 'N/A',
-            employeeSize: bg.employeeSize || bg.employeeCount || 'N/A',
-            country: bg.country || bg.location || 'N/A',
-            revenue: bg.revenue || 'N/A',
-            industry: bg.industry || 'N/A',
-            companyPhone: bg.companyPhone || bg.companyPhonethis || 'N/A',
-            domain: bg.domain || bg.website || 'N/A'
+            companyDescription: bg.companyDescription || '-',
+            employeeSize: bg.employeeSize || bg.employeeCount || '-',
+            country: bg.country || bg.location || '-',
+            revenue: bg.revenue || '-',
+            industry: bg.industry || '-',
+            companyPhone: bg.companyPhone || bg.companyPhonethis || '-',
+            domain: bg.domain || bg.website || '-',
+            linkedinProfile: bg.linkedinProfile || '-'
           };
         });
       }
     });
-
-    console.log(`[BuyingGroup] Fetched person details for ${Object.keys(companiesMap).length} companies`);
 
     res.json(companiesMap);
   } catch (error) {
@@ -231,8 +230,6 @@ router.get('/:companyName/org-chart', async (req, res) => {
       };
     });
 
-    console.log(`[OrgChart] Sample employee data:`, employeeData.slice(0, 2));
-
     const htmlContent = generateOrgChartHTML(
       employeeData, 
       buyingGroup.companyName, 
@@ -246,12 +243,8 @@ router.get('/:companyName/org-chart', async (req, res) => {
         : `${sanitizeFilename(buyingGroup.companyName)}.html`;
 
       const s3Result = await uploadOrgChartToS3(fileName, htmlContent);
-      
-      // Log successful upload
-      console.log(`Org chart uploaded to S3: ${s3Result.s3Url}`);
     } catch (s3Error) {
-      // Log S3 error but don't fail the request - still serve the HTML
-      console.error(`Failed to upload org chart to S3: ${s3Error.message}`);
+      // S3 error - continue without logging
     }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

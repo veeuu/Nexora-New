@@ -471,6 +471,31 @@ const BuyingGroup = () => {
                                             </p>
                                         </div>
                                     )}
+
+                                    {personDetailsData[selectedCompany]?.[0]?.linkedinProfile && personDetailsData[selectedCompany][0].linkedinProfile !== '-' && (
+                                        <div className="company-detail-item">
+                                            <p className="company-detail-label">LinkedIn</p>
+                                            <p className="company-detail-value">
+                                                <a 
+                                                    href={personDetailsData[selectedCompany][0].linkedinProfile}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{ 
+                                                        color: '#0A66C2', 
+                                                        textDecoration: 'none',
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px'
+                                                    }}
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.722-2.004 1.418-.103.249-.129.597-.129.946v5.441h-3.554s.05-8.81 0-9.728h3.554v1.375c.427-.659 1.191-1.595 2.897-1.595 2.117 0 3.704 1.385 3.704 4.362v5.586zM5.337 8.855c-1.144 0-1.915-.759-1.915-1.71 0-.955.77-1.71 1.954-1.71 1.184 0 1.915.755 1.915 1.71 0 .951-.731 1.71-1.954 1.71zm1.575 11.597H3.762V9.624h3.15v10.828zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                                                    </svg>
+                                                    View Profile
+                                                </a>
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
