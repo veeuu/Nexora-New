@@ -4,6 +4,7 @@ import ProductCatalogue from './ProductCatalogue';
 import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
 import nexoraLogo from '../../assets/nexora-logo.png';
+import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import '../../styles/home.css';
 
 const Home = () => {
@@ -251,6 +252,20 @@ const Home = () => {
           </div>
         </>
       )}
+    </div>
+
+    {/* Powered by ProPlus Data */}
+    <div className="home-powered-by">
+      <span>Powered by</span>
+      <img 
+        src={proplusDataLogo} 
+        alt="ProPlus Data" 
+        style={{
+          height: '20px',
+          marginLeft: '6px',
+          objectFit: 'contain'
+        }}
+      />
     </div>
     </>
   );

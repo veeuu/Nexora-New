@@ -18,6 +18,8 @@ const BuyingGroup = () => {
     const [orgChartUrl, setOrgChartUrl] = useState('');
     const [zoomLevel, setZoomLevel] = useState(80);
     const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+    const [revealedEmails, setRevealedEmails] = useState(new Set());
+    const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(new Set());
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
@@ -177,6 +179,24 @@ const BuyingGroup = () => {
 
     const handleResetZoom = () => {
         setZoomLevel(100);
+    };
+
+    const toggleEmailReveal = (personIndex) => {
+        const key = `${selectedCompany}-${personIndex}`;
+        setRevealedEmails(prev => new Set(prev).add(key));
+    };
+
+    const toggleMobileDIDReveal = (personIndex) => {
+        const key = `${selectedCompany}-${personIndex}`;
+        setRevealedMobileDIDs(prev => new Set(prev).add(key));
+    };
+
+    const isEmailRevealed = (personIndex) => {
+        return revealedEmails.has(`${selectedCompany}-${personIndex}`);
+    };
+
+    const isMobileDIDRevealed = (personIndex) => {
+        return revealedMobileDIDs.has(`${selectedCompany}-${personIndex}`);
     };
 
     const getCompanyPersons = () => {
@@ -516,6 +536,9 @@ const BuyingGroup = () => {
                                             linkedinUrl = `https://linkedin.com/in/${linkedinUrl}`;
                                         }
 
+                                        const emailRevealed = isEmailRevealed(index);
+                                        const mobileDIDRevealed = isMobileDIDRevealed(index);
+
                                         return (
                                             <div
                                                 key={index}
@@ -539,15 +562,35 @@ const BuyingGroup = () => {
                                                     )}
                                                 </div>
                                                 <div className="team-member-detail">
-                                                    <p className="team-member-detail-label">Email</p>
-                                                    <p className="team-member-detail-value team-member-email">
+                                                    <div className="team-member-detail-header">
+                                                        <p className="team-member-detail-label">Email</p>
+                                                        <button
+                                                            onClick={() => toggleEmailReveal(index)}
+                                                            className="reveal-button"
+                                                            title={emailRevealed ? "Email revealed" : "Click to reveal email"}
+                                                            disabled={emailRevealed}
+                                                        >
+                                                            <FaLock size={12} />
+                                                        </button>
+                                                    </div>
+                                                    <p className={`team-member-detail-value team-member-email ${emailRevealed ? 'revealed' : ''}`}>
                                                         {person.email}
                                                     </p>
                                                 </div>
                                                 {person.mobileDID && person.mobileDID !== '-' && (
                                                     <div className="team-member-detail">
-                                                        <p className="team-member-detail-label">Mobile DID</p>
-                                                        <p className="team-member-detail-value team-member-phone">
+                                                        <div className="team-member-detail-header">
+                                                            <p className="team-member-detail-label">Mobile DID</p>
+                                                            <button
+                                                                onClick={() => toggleMobileDIDReveal(index)}
+                                                                className="reveal-button"
+                                                                title={mobileDIDRevealed ? "Mobile DID revealed" : "Click to reveal mobile DID"}
+                                                                disabled={mobileDIDRevealed}
+                                                            >
+                                                                <FaLock size={12} />
+                                                            </button>
+                                                        </div>
+                                                        <p className={`team-member-detail-value team-member-phone ${mobileDIDRevealed ? 'revealed' : ''}`}>
                                                             {person.mobileDID}
                                                         </p>
                                                     </div>
