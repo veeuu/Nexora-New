@@ -103,6 +103,15 @@
   }
 }
 
+@keyframes typewriter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .chatbot-greeting {
   font-size: 15px;
   font-weight: 500;
@@ -126,19 +135,8 @@
   padding: 2px 0;
 }
 
-.chatbot-greeting {
-  font-size: 15px;
-  font-weight: 500;
-  color: #1f2937;
-  line-height: 1.6;
-  margin-bottom: 12px;
-  white-space: pre-wrap;
-}
-
-.chatbot-greeting-with-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.chatbot-message.user .chatbot-text-message {
+  color: white;
 }
 
 .chatbot-thinking {
@@ -195,6 +193,12 @@
   margin-top: 12px;
 }
 
+.chatbot-options-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .chatbot-option-btn {
   padding: 12px 16px;
   background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
@@ -215,6 +219,7 @@
   background: linear-gradient(135deg, #0050b3 0%, #003d82 100%);
   color: white;
   transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 80, 179, 0.3);
 }
 
 .chatbot-option-btn:active {
@@ -250,6 +255,7 @@
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .demo-company-btn:active {
@@ -294,6 +300,7 @@
   background: linear-gradient(135deg, #0050b3 0%, #003d82 100%);
   color: white;
   transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 80, 179, 0.3);
 }
 
 .chatbot-category-btn:active {
@@ -308,22 +315,31 @@
 .chatbot-demo-analysis {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 2px solid #3b82f6;
-  border-radius: 10px;
-  padding: 14px;
+  border-radius: 12px;
+  padding: 16px;
   margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
 }
 
 .demo-analysis-header {
   font-weight: 700;
   color: #1e293b;
-  font-size: 14px;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
+  font-size: 15px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-analysis-header::before {
+  content: '🔍';
+  font-size: 16px;
 }
 
 .demo-analysis-section {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .demo-analysis-section:last-child {
@@ -334,7 +350,10 @@
   font-weight: 700;
   color: #1e293b;
   font-size: 13px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .demo-predictions,
@@ -344,24 +363,29 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .demo-predictions li,
 .demo-signals li {
-  font-size: 12px;
-  color: #475569;
-  line-height: 1.5;
+  font-size: 13px;
+  color: #1e293b;
+  line-height: 1.6;
+  padding: 8px 10px;
+  background: white;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
 }
 
 .demo-insight {
-  font-size: 12px;
+  font-size: 13px;
   color: #1e293b;
   line-height: 1.6;
-  background: #dbeafe;
-  padding: 10px;
-  border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #0050b3;
+  font-weight: 500;
 }
 
 .chatbot-analysis-container {
@@ -376,7 +400,7 @@
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.2s;
 }
@@ -384,14 +408,15 @@
 .chatbot-analysis-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-color: #cbd5e1;
+  transform: translateY(-2px);
 }
 
 .analysis-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #cbd5e1;
 }
 
@@ -399,28 +424,32 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   background: linear-gradient(135deg, #0050b3 0%, #003d82 100%);
   color: white;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 12px;
   flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 80, 179, 0.3);
 }
 
 .analysis-company {
   font-weight: 700;
   color: #1e293b;
-  font-size: 13px;
+  font-size: 14px;
   flex: 1;
 }
 
 .analysis-details {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .detail-row {
@@ -428,7 +457,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .detail-label {
@@ -447,38 +476,38 @@
 }
 
 .detail-value.prediction {
-  color: #1e293b;
-  font-weight: 500;
+  color: #0050b3;
+  font-weight: 600;
 }
 
 .detail-value.probability {
-  color: #1e293b;
-  font-weight: 500;
+  color: #059669;
+  font-weight: 600;
 }
 
 .analysis-section {
   border-top: 1px solid #cbd5e1;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 .analysis-title {
   font-weight: 700;
   color: #1e293b;
-  font-size: 12px;
-  margin-bottom: 6px;
+  font-size: 13px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .analysis-text {
-  font-size: 11px;
+  font-size: 12px;
   color: #1e293b;
-  line-height: 1.5;
-  background: #dbeafe;
-  padding: 8px;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+  padding: 10px;
   border-radius: 6px;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid #0050b3;
 }
 
 .chatbot-message-card {
@@ -689,6 +718,7 @@
   background: linear-gradient(135deg, #0050b3 0%, #003d82 100%);
   color: white;
   transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 80, 179, 0.3);
 }
 
 .chatbot-suggested-company-btn:active {

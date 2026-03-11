@@ -8,13 +8,13 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
-      text: 'Hey! I\'m here to help you spot tech buying signals before your competitors do.\n\nWhat would you like to explore?',
+      text: 'Hey 👋 I\'m your NTP assistant. I spot tech buying signals before your competitors do.\n\nWhat would you like to do?',
       isGreeting: true,
       showOptions: true,
       options: [
-        { id: 'what-is-ntp', label: 'What is NTP®?' },
-        { id: 'see-demo', label: 'View a sample analysis' },
-        { id: 'analyze-company', label: 'Analyze a specific company' }
+        { id: 'what-is-ntp', label: 'What is NTP?' },
+        { id: 'see-demo', label: 'See a sample analysis' },
+        { id: 'analyze-company', label: 'Analyze a company' }
       ]
     }
   ]);
@@ -57,10 +57,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   }, [ntpData, tableData]);
 
   const demoCompanies = [
-    { name: 'Acme Corp', id: 'acme-corp' },
-    { name: 'TechFlow Inc', id: 'techflow-inc' },
-    { name: 'DataSync Solutions', id: 'datasync-solutions' },
-    { name: 'CloudBase Systems', id: 'cloudbase-systems' }
+    { name: 'XYZ Technologies', id: 'xyz-technologies' },
+    { name: 'ABC Systems', id: 'abc-systems' }
   ];
 
   const scrollToBottom = () => {
@@ -70,6 +68,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+
 
   // Show tooltip every 60 seconds
   useEffect(() => {
@@ -99,70 +99,145 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
 
   const handleAnalyzeDifferentCategory = () => {
     setConversationStage('category-input');
-    const categoriesWithAll = [
-      ...dynamicCategories,
-      { id: 'all', label: 'ALL' }
-    ];
+    
+    // Get company-specific categories instead of all categories
+    const data = ntpData || tableData;
+    if (!data || data.length === 0) {
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no data available.' }]);
+      return;
+    }
+    
+    // Get unique categories for this company only
+    const companyCategoriesSet = new Set();
+    data.forEach(row => {
+      if (String(row.companyName || '').toLowerCase() === selectedCompany.toLowerCase() &&
+          row.category !== 'Not Detected' &&
+          row.purchasePrediction !== 'Not Detected' &&
+          row.purchasePrediction !== 'NOT detected') {
+        companyCategoriesSet.add(row.category);
+      }
+    });
+    
+    const companyCategories = Array.from(companyCategoriesSet)
+      .map(cat => {
+        const catLower = cat.toLowerCase().replace(/\s+/g, '-');
+        const categoryMap = {
+          'database': 'Database',
+          'ai-ml': 'AI/ML',
+          'crm': 'CRM',
+          'cloud': 'Cloud',
+          'security': 'Security',
+          'analytics': 'Analytics',
+          'infrastructure': 'Infrastructure',
+          'devops': 'DevOps'
+        };
+        const label = categoryMap[catLower] || cat;
+        return { id: catLower, label: label, originalName: cat };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+    
+    // Add ALL option at the end
+    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+    
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `Got it! Which category interests you for ${selectedCompany}?`,
+      text: `Got it. ${selectedCompany} selected. What would you like to explore?`,
       showCategories: true,
-      categories: categoriesWithAll
+      categories: companyCategories
     }]);
   };
 
   const handleWhatIsNTP = () => {
     setConversationStage('info');
-    const botMessages = [
-      {
-        type: 'bot',
-        text: 'Next Tech Purchase (NTP) predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators.'
-      },
-      {
-        type: 'bot',
-        text: 'This means you can identify prospects at the exact moment they\'re ready to buy before your competitors do.'
-      },
-      {
-        type: 'bot',
-        text: 'Would you like to see a demo?',
-        showOptions: true,
-        options: [
-          { id: 'see-demo', label: 'View a sample analysis' },
-          { id: 'analyze-company', label: 'Analyze a specific company' }
-        ]
-      }
-    ];
     
-    setMessages(prev => [...prev, ...botMessages]);
+    // Show thinking message first
+    setMessages(prev => [...prev, {
+      type: 'bot',
+      text: 'Analyzing your question...',
+      isThinking: true
+    }]);
+    
+    // After thinking completes, show the response
+    setTimeout(() => {
+      setMessages(prev => {
+        // Remove thinking message and add response
+        const filtered = prev.filter(msg => !msg.isThinking);
+        return [...filtered,
+          {
+            type: 'bot',
+            text: 'Next Tech Purchase (NTP) predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators.'
+          },
+          {
+            type: 'bot',
+            text: 'This means you can identify prospects at the exact moment they\'re ready to buy before your competitors do.'
+          },
+          {
+            type: 'bot',
+            text: 'Would you like to see a demo?',
+            showOptions: true,
+            options: [
+              { id: 'see-demo', label: 'See a sample analysis' },
+              { id: 'analyze-company', label: 'Analyze a company' }
+            ]
+          }
+        ];
+      });
+    }, 1500);
   };
 
   const handleSeeDemoFlow = () => {
     setConversationStage('demo-selection');
-    const botMessages = [
-      {
-        type: 'bot',
-        text: 'I can show you a quick demo of how NTP® insights look.\n\nClick any company below to view its NTP® analysis:'
-      },
-      {
-        type: 'bot',
-        showDemoCompanies: true,
-        companies: demoCompanies
-      }
-    ];
     
-    setMessages(prev => [...prev, ...botMessages]);
+    // Show thinking message first
+    setMessages(prev => [...prev, {
+      type: 'bot',
+      text: 'Preparing demo analysis...',
+      isThinking: true
+    }]);
+    
+    // After thinking completes, show the response
+    setTimeout(() => {
+      setMessages(prev => {
+        // Remove thinking message and add response
+        const filtered = prev.filter(msg => !msg.isThinking);
+        return [...filtered,
+          {
+            type: 'bot',
+            text: 'Let me show you how this works. Pick a company to see real-world signals:'
+          },
+          {
+            type: 'bot',
+            showDemoCompanies: true,
+            companies: demoCompanies
+          }
+        ];
+      });
+    }, 1500);
   };
 
   const handleAnalyzeCompanyFlow = () => {
     setConversationStage('company-input');
-    const botMessages = [
-      {
-        type: 'bot',
-        text: 'I can help you analyze a company.\n\nFirst, what\'s the company name?'
-      }
-    ];
     
-    setMessages(prev => [...prev, ...botMessages]);
+    // Show thinking message first
+    setMessages(prev => [...prev, {
+      type: 'bot',
+      text: 'Preparing analysis tool...',
+      isThinking: true
+    }]);
+    
+    // After thinking completes, show the response
+    setTimeout(() => {
+      setMessages(prev => {
+        // Remove thinking message and add response
+        const filtered = prev.filter(msg => !msg.isThinking);
+        return [...filtered,
+          {
+            type: 'bot',
+            text: 'I can help you analyze a company. First, what\'s the company name?'
+          }
+        ];
+      });
+    }, 1500);
   };
 
   const handleSuggestedCompanyClick = (companyName) => {
@@ -205,7 +280,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       .sort((a, b) => a.label.localeCompare(b.label));
     
     // Add ALL option at the end
-    companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
+    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
     
     if (companyCategories.length === 1) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
@@ -216,7 +291,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `Got it! Which category interests you for ${companyName}?`,
+      text: `✅ Got it, ${companyName} it is 👍\n\nWhat would you like to explore?`,
       showCategories: true,
       categories: companyCategories
     }]);
@@ -243,7 +318,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         data = result.data || [];
       }
 
-      // Add thinking effect
+      // Add thinking message
       setMessages(prev => [...prev, { 
         type: 'bot', 
         text: 'Analyzing digital signals and technology indicators...',
@@ -272,7 +347,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           });
           
           setMessages(prev => [...prev, 
-            { type: 'bot', text: `Here's what the signals suggest for ${analysisResults[0].companyName}:` },
+            { type: 'bot', text: `Looking at ${analysisResults[0].companyName}...` },
             { type: 'bot', text: '', isFormatted: true, data: botMessage }
           ]);
           
@@ -280,7 +355,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           setTimeout(() => {
             setMessages(prev => [...prev, {
               type: 'bot',
-              text: 'Want to explore another sample, or analyze a company you\'re targeting?',
+              text: 'Want to explore another company or check a different category?',
               showOptions: true,
               options: [
                 { id: 'analyze-company', label: 'Analyze another company' },
@@ -289,9 +364,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               ]
             }]);
             
-            // Reset for next search
-            setSelectedCompany(null);
-            setConversationStage('greeting');
+            // Don't reset selectedCompany here - keep it for "View different category" option
+            setConversationStage('follow-up');
           }, 500);
         } else if (status === 'not-found') {
           setMessages(prev => [...prev, { type: 'bot', text: '', isFormatted: false, messageType: 'not-found', company: selectedCompany, category: categoryId }]);
@@ -309,7 +383,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         }
       }, 1500);
     } catch (error) {
-      setMessages(prev => prev.filter(msg => !msg.isThinking));
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP® Next Purchase analysis. Please try again.' }]);
     } finally {
       setLoading(false);
@@ -319,7 +392,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const handleDemoCompanyClick = (company) => {
     setMessages(prev => [...prev, { type: 'user', text: `Show me ${company.name}` }]);
     
-    // Add thinking effect
+    // Show thinking message
     setMessages(prev => [...prev, { 
       type: 'bot', 
       text: 'Analyzing digital signals and technology indicators...',
@@ -329,67 +402,69 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     // Simulate analysis delay
     setTimeout(() => {
       showDemoAnalysis(company);
-    }, 2000);
+    }, 1500);
   };
 
   const showDemoAnalysis = (company) => {
     const demoAnalyses = {
-      'techflow-inc': {
-        companyName: 'TechFlow Inc',
-        predictions: [
-          'Cloud Cost Optimization Tools',
-          'AI-powered Analytics Platforms',
-          'CRM Automation Enhancements'
-        ],
-        signals: [
-          'Increased cloud migration activity',
-          'Hiring for data engineering roles',
-          'Partnerships with AI solution providers'
-        ],
-        insight: 'TechFlow is likely preparing to scale data infrastructure and improve customer intelligence capabilities.'
-      },
-      'acme-corp': {
-        companyName: 'Acme Corp',
-        predictions: [
-          'Enterprise Security Solutions',
-          'Zero-Trust Architecture Tools',
-          'Identity & Access Management'
-        ],
-        signals: [
-          'Recent security audit initiatives',
-          'Hiring for security engineers',
-          'Compliance framework implementations'
-        ],
-        insight: 'Acme Corp is strengthening its security posture and preparing for enhanced compliance requirements.'
-      },
-      'datasync-solutions': {
-        companyName: 'DataSync Solutions',
-        predictions: [
-          'Data Integration Platforms',
-          'Real-time Analytics Tools',
-          'Data Governance Solutions'
-        ],
-        signals: [
-          'Expansion of data engineering team',
-          'Partnerships with data platforms',
-          'Investment in data infrastructure'
-        ],
-        insight: 'DataSync is scaling its data capabilities and preparing for enterprise-level data operations.'
-      },
-      'cloudbase-systems': {
-        companyName: 'CloudBase Systems',
-        predictions: [
-          'Kubernetes Management Tools',
-          'Container Orchestration Platforms',
-          'DevOps Automation Solutions'
-        ],
-        signals: [
-          'Increased containerization efforts',
-          'Hiring for DevOps specialists',
-          'Cloud infrastructure expansion'
-        ],
-        insight: 'CloudBase is modernizing its infrastructure and preparing for large-scale cloud operations.'
-      }
+      'xyz-technologies': [
+        {
+          companyName: 'XYZ Technologies',
+          domain: 'xyztech.com',
+          technology: 'AWS',
+          category: 'Cloud',
+          purchasePrediction: 'High',
+          purchaseProbability: '72%',
+          ntpAnalysis: 'XYZ Technologies shows strong signals for cloud infrastructure expansion. Recent hiring of DevOps engineers and published case studies on cloud migration indicate active infrastructure modernization. Multi-cloud strategy signals suggest evaluation of AWS alongside existing platforms.'
+        },
+        {
+          companyName: 'XYZ Technologies',
+          domain: 'xyztech.com',
+          technology: 'Kubernetes',
+          category: 'Cloud',
+          purchasePrediction: 'High',
+          purchaseProbability: '68%',
+          ntpAnalysis: 'Container adoption momentum is evident from XYZ Technologies\' infrastructure investments. The company is actively migrating workloads to containerized environments, indicating strong probability of Kubernetes adoption within 3-6 months.'
+        },
+        {
+          companyName: 'XYZ Technologies',
+          domain: 'xyztech.com',
+          technology: 'DataDog',
+          category: 'Cloud',
+          purchasePrediction: 'Medium',
+          purchaseProbability: '64%',
+          ntpAnalysis: 'Observability infrastructure is becoming critical as XYZ Technologies scales cloud operations. Signals indicate need for comprehensive monitoring and observability solutions to manage multi-cloud environments.'
+        }
+      ],
+      'abc-systems': [
+        {
+          companyName: 'ABC Systems',
+          domain: 'abcsystems.io',
+          technology: 'Okta',
+          category: 'Security',
+          purchasePrediction: 'High',
+          purchaseProbability: '78%',
+          ntpAnalysis: 'ABC Systems is actively modernizing identity infrastructure. Recent SOC 2 Type II audit completion and CISO hiring indicate strong focus on identity and access management solutions. Zero-trust architecture adoption is a priority.'
+        },
+        {
+          companyName: 'ABC Systems',
+          domain: 'abcsystems.io',
+          technology: 'CrowdStrike',
+          category: 'Security',
+          purchasePrediction: 'High',
+          purchaseProbability: '71%',
+          ntpAnalysis: 'Endpoint security is a key focus area for ABC Systems. Increased security certifications and compliance initiatives indicate strong demand for enterprise endpoint protection solutions.'
+        },
+        {
+          companyName: 'ABC Systems',
+          domain: 'abcsystems.io',
+          technology: 'HashiCorp Vault',
+          category: 'Security',
+          purchasePrediction: 'Medium',
+          purchaseProbability: '65%',
+          ntpAnalysis: 'Secrets management adoption is accelerating at ABC Systems. Infrastructure modernization efforts and security posture improvements suggest evaluation of centralized secrets management solutions.'
+        }
+      ]
     };
 
     const analysis = demoAnalyses[company.id];
@@ -397,18 +472,32 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     // Remove thinking message
     setMessages(prev => prev.filter(msg => !msg.isThinking));
     
-    // Add analysis
-    setMessages(prev => [...prev, {
-      type: 'bot',
-      isDemoAnalysis: true,
-      analysis: analysis
-    }]);
+    // Add analysis - use same format as real data
+    if (analysis && analysis.length > 0) {
+      const botMessage = analysis.map((result, idx) => {
+        return {
+          index: idx + 1,
+          companyName: result.companyName,
+          domain: result.domain || 'N/A',
+          technology: result.technology || 'N/A',
+          category: result.category || 'N/A',
+          purchasePrediction: result.purchasePrediction || 'N/A',
+          purchaseProbability: result.purchaseProbability || 'N/A',
+          analysis: result.ntpAnalysis || 'No analysis available'
+        };
+      });
+
+      setMessages(prev => [...prev, 
+        { type: 'bot', text: `Looking at ${analysis[0].companyName}...` },
+        { type: 'bot', text: '', isFormatted: true, data: botMessage }
+      ]);
+    }
 
     // Add follow-up
     setTimeout(() => {
       setMessages(prev => [...prev, {
         type: 'bot',
-        text: 'Here\'s what the signals suggest. Ready to analyze a company you\'re targeting?',
+        text: 'See how specific the signals are? Ready to analyze a company you\'re targeting?',
         showOptions: true,
         options: [
           { id: 'analyze-company', label: 'Analyze a company' },
@@ -498,8 +587,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         row.purchasePrediction !== 'NOT detected'
       );
 
-      // If company name is found directly (when in greeting or after completing a search), show category selection for that company
-      if (matchedCompany && (conversationStage === 'greeting' || conversationStage === 'company-input')) {
+      // If company name is found, show category selection for that company (works from any stage)
+      if (matchedCompany) {
         setSelectedCompany(userMessage);
         setConversationStage('category-input');
         
@@ -518,22 +607,22 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           .map(cat => {
             const catLower = cat.toLowerCase().replace(/\s+/g, '-');
             const categoryMap = {
-              'database': '🗄️ Database',
-              'ai-ml': '🤖 AI/ML',
-              'crm': '👥 CRM',
-              'cloud': '☁️ Cloud',
-              'security': '🔒 Security',
-              'analytics': '📊 Analytics',
-              'infrastructure': '🏗️ Infrastructure',
-              'devops': '⚙️ DevOps'
+              'database': 'Database',
+              'ai-ml': 'AI/ML',
+              'crm': 'CRM',
+              'cloud': 'Cloud',
+              'security': 'Security',
+              'analytics': 'Analytics',
+              'infrastructure': 'Infrastructure',
+              'devops': 'DevOps'
             };
-            const label = categoryMap[catLower] || `📌 ${cat}`;
+            const label = categoryMap[catLower] || cat;
             return { id: catLower, label: label, originalName: cat };
           })
           .sort((a, b) => a.label.localeCompare(b.label));
         
         // Add ALL option at the end
-        companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+        companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
         
         if (companyCategories.length === 1) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
@@ -544,15 +633,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         
         setMessages(prev => [...prev, {
           type: 'bot',
-          text: `✅ Got it! Which category interests you for ${userMessage}?`,
+          text: `✅ Got it, ${userMessage} it is 👍\n\nWhat would you like to explore?`,
           showCategories: true,
           categories: companyCategories
         }]);
         return;
       }
 
-      // If no exact match, suggest similar company names
-      if ((conversationStage === 'greeting' || conversationStage === 'company-input') && !matchedCompany) {
+      // If no exact match, suggest similar company names (works from any stage)
+      if (!matchedCompany) {
         const userMessageLower = userMessage.toLowerCase();
         
         // Get unique companies with valid data
@@ -587,59 +676,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           }]);
           return;
         }
-      }
-
-      // Step 1: Get company name (when in company-input stage)
-      if (conversationStage === 'company-input' && !selectedCompany) {
-        setSelectedCompany(userMessage);
-        setConversationStage('category-input');
-        
-        // Get unique categories for this company only
-        const companyCategoriesSet = new Set();
-        data.forEach(row => {
-          if (String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
-              row.category !== 'Not Detected' &&
-              row.purchasePrediction !== 'Not Detected' &&
-              row.purchasePrediction !== 'NOT detected') {
-            companyCategoriesSet.add(row.category);
-          }
-        });
-        
-        const companyCategories = Array.from(companyCategoriesSet)
-          .map(cat => {
-            const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-            const categoryMap = {
-              'database': '🗄️ Database',
-              'ai-ml': '🤖 AI/ML',
-              'crm': '👥 CRM',
-              'cloud': '☁️ Cloud',
-              'security': '🔒 Security',
-              'analytics': '📊 Analytics',
-              'infrastructure': '🏗️ Infrastructure',
-              'devops': '⚙️ DevOps'
-            };
-            const label = categoryMap[catLower] || `📌 ${cat}`;
-            return { id: catLower, label: label, originalName: cat };
-          })
-          .sort((a, b) => a.label.localeCompare(b.label));
-        
-        // Add ALL option at the end
-        companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
-        
-        if (companyCategories.length === 1) {
-          setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
-          setSelectedCompany(null);
-          setConversationStage('greeting');
-          return;
-        }
-        
-        setMessages(prev => [...prev, {
-          type: 'bot',
-          text: `✅ Got it! Which category interests you for ${userMessage}?`,
-          showCategories: true,
-          categories: companyCategories
-        }]);
-        return;
       }
     } catch (error) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
@@ -764,19 +800,22 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                       </div>
                     </div>
                   ) : msg.type === 'bot' && msg.showOptions && !msg.isGreeting ? (
-                    <div className="chatbot-options">
-                      {msg.options.map((option) => (
-                        <button
-                          key={option.id}
-                          className="chatbot-option-btn"
-                          onClick={() => {
-                            setMessages(prev => [...prev, { type: 'user', text: option.label }]);
-                            handleOptionClick(option.id);
-                          }}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
+                    <div className="chatbot-options-wrapper">
+                      <div className="chatbot-text-message">{msg.text}</div>
+                      <div className="chatbot-options">
+                        {msg.options.map((option) => (
+                          <button
+                            key={option.id}
+                            className="chatbot-option-btn"
+                            onClick={() => {
+                              setMessages(prev => [...prev, { type: 'user', text: option.label }]);
+                              handleOptionClick(option.id);
+                            }}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   ) : msg.type === 'bot' && msg.isFormatted && msg.data ? (
                     <div className="chatbot-analysis-container">
@@ -827,7 +866,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                       </div>
                     </div>
                   ) : msg.text ? (
-                    <div className="chatbot-text-message">{msg.text}</div>
+                    <div className="chatbot-text-message">{msg.displayedText !== undefined ? msg.displayedText : msg.text}</div>
                   ) : null}
                 </div>
               </div>
