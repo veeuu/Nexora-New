@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
-import heroImage from '../assets/Nexora Login Page Left with Clients.svg';
+import heroImage from '../assets/Nexora Login Page Left SEMI FINAL.svg';
 import proplusDataLogo from '../assets/unnamed (1).png';
 import '../styles/login.css';
 

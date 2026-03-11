@@ -1,0 +1,52 @@
+{
+  "columnDefinitions": [
+    {
+      "number": "2",
+      "columnName": "Product / Service ★",
+      "meaning": "The exact named product a buyer would purchase or subscribe to."
+    },
+    {
+      "number": "3",
+      "columnName": "Primary Category",
+      "meaning": "The broad market category this product belongs to."
+    },
+    {
+      "number": "4",
+      "columnName": "Secondary Keywords",
+      "meaning": "The specific tech features or sub-topics inside the category."
+    },
+    {
+      "number": "5",
+      "columnName": "First Detected",
+      "meaning": "The quarter & year this product first entered the market."
+    },
+    {
+      "number": "7",
+      "columnName": "Lifecycle Stage",
+      "meaning": "How mature this product is today on the adoption curve."
+    },
+    {
+      "number": "8",
+      "columnName": "Stage Rank",
+      "meaning": "A number from 1–4 showing maturity. 4 = most mature, 1 = newest."
+    }
+  ],
+  "lifecycleStages": [
+    {
+      "stage": "Dominant",
+      "meaning": "The category leader. Everyone else follows its lead. Switching away is costly."
+    },
+    {
+      "stage": "Established",
+      "meaning": "Widely used across companies. Proven, stable, with a healthy partner ecosystem."
+    },
+    {
+      "stage": "Scaling",
+      "meaning": "Growing fast and grabbing market share. Feature releases are frequent. Still maturing."
+    },
+    {
+      "stage": "Pioneering",
+      "meaning": "Brand new to the market. Exciting but unproven. Standards are not set yet."
+    }
+  ]
+}

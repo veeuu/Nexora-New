@@ -1,100 +1,100 @@
-Company,Products / Services,Primary Category (Products/Services Keywords),Secondary Category Keywords,First Detected (Timeline Start),Expansion Phase,Current Stage
-Microsoft,Azure Cloud Platform,Cloud Infrastructure,"IaaS, Kubernetes, Compute",Q1 2015,Enterprise cloud adoption,Mature
-Amazon,AWS Cloud Services,Cloud Infrastructure,"EC2, S3, Serverless",Q4 2014,Global cloud expansion,Mature
-Google,Google Cloud Platform,Cloud Infrastructure,"BigQuery, AI Platform",Q2 2017,Enterprise analytics adoption,Standardized
-Apple,Apple Pay,Digital Payments,Mobile Wallet,Q3 2016,Global payment ecosystem,Standardized
-Tesla,Tesla Autopilot,Artificial Intelligence,Autonomous Driving,Q2 2019,AI mobility innovation,Expansion
-Meta,Meta AI Infrastructure,Artificial Intelligence,"LLMs, AI compute",Q1 2023,AI platform expansion,Emerging
-Nvidia,CUDA AI Platform,AI Infrastructure,GPU computing,Q2 2018,AI acceleration adoption,Standardized
-Oracle,Oracle Cloud Infrastructure,Cloud Infrastructure,Database cloud,Q4 2018,Enterprise cloud migration,Standardized
-IBM,IBM Watson,Artificial Intelligence,"NLP, AI analytics",Q1 2019,Enterprise AI adoption,Expansion
-Salesforce,Salesforce CRM,CRM Platform,Sales automation,Q3 2016,Enterprise CRM adoption,Standardized
-SAP,SAP S/4HANA,ERP Platform,Finance ERP,Q2 2018,ERP modernization,Standardized
-Adobe,Adobe Experience Cloud,Marketing Technology,CX platform,Q3 2017,Customer experience digitalization,Standardized
-Cisco,Webex Collaboration,Collaboration Tools,Video conferencing,Q2 2020,Hybrid work enablement,Expansion
-ServiceNow,ServiceNow Platform,ITSM Platform,Workflow automation,Q1 2018,Enterprise automation,Standardized
-Atlassian,Jira Software,DevOps,Issue tracking,Q4 2016,Agile development adoption,Standardized
-Workday,Workday HCM,HR Technology,Workforce management,Q3 2017,Enterprise HR digitalization,Standardized
-Zoom,Zoom Video Platform,Collaboration Tools,Virtual meetings,Q1 2020,Remote collaboration growth,Expansion
-Stripe,Stripe Payments,Payment Gateway,Online payments,Q2 2018,Digital commerce expansion,Standardized
-Shopify,Shopify Commerce,Ecommerce Platform,Online storefronts,Q4 2017,SME digital commerce adoption,Standardized
-Square,Square POS,Payment Technology,POS payments,Q1 2017,SME payment infrastructure,Standardized
-Alibaba,Alibaba Cloud,Cloud Infrastructure,Cloud compute,Q2 2018,APAC cloud expansion,Standardized
-Tencent,Tencent Cloud,Cloud Infrastructure,AI cloud,Q3 2018,Enterprise cloud adoption,Standardized
-Samsung,Samsung Knox,Security Platform,Mobile security,Q4 2017,Enterprise device security,Standardized
-Sony,Sony PlayStation Network,Digital Platform,Gaming services,Q2 2016,Digital gaming ecosystem,Standardized
-Toyota,Toyota Connected Platform,IoT Platform,Connected vehicles,Q1 2020,Mobility ecosystem growth,Expansion
-Volkswagen,VW Cloud Platform,Cloud Infrastructure,Automotive cloud,Q2 2021,Automotive digital transformation,Expansion
-BMW,BMW ConnectedDrive,IoT Platform,Vehicle connectivity,Q3 2019,Automotive IoT adoption,Expansion
-Intel,Intel AI Software Stack,AI Infrastructure,AI frameworks,Q2 2019,AI ecosystem development,Expansion
-AMD,ROCm AI Platform,AI Infrastructure,GPU computing,Q1 2022,AI compute acceleration,Emerging
-HP,HP Workforce Solutions,Enterprise IT,Device management,Q3 2018,Hybrid workplace support,Standardized
-Dell,Dell Apex Cloud,Cloud Infrastructure,Hybrid cloud,Q2 2021,Hybrid cloud transformation,Expansion
-Lenovo,Lenovo TruScale,IT Infrastructure,Device-as-a-service,Q1 2021,Infrastructure subscription,Expansion
-PayPal,PayPal Commerce Platform,Payment Gateway,Online payments,Q3 2016,Global payment ecosystem,Standardized
-Mastercard,Mastercard Digital Gateway,Payment Technology,Payment processing,Q4 2017,Digital payment expansion,Standardized
-Visa,VisaNet Platform,Payment Infrastructure,Transaction network,Q2 2016,Digital payment scaling,Standardized
-JPMorgan Chase,JPMorgan Digital Banking,Fintech,Online banking,Q3 2019,Digital banking expansion,Expansion
-Goldman Sachs,Marcus Digital Bank,Fintech,Consumer banking,Q2 2020,Digital finance services,Expansion
-Wells Fargo,Wells Fargo Digital Platform,Fintech,Mobile banking,Q1 2019,Banking digitalization,Expansion
-HSBC,HSBC Digital Banking,Fintech,Mobile banking,Q3 2018,Global digital banking,Standardized
-Citibank,Citi Global Wallet,Fintech,Cross-border payments,Q2 2020,International payment infrastructure,Expansion
-Uber,Uber Platform,Mobility Platform,Ride sharing,Q2 2016,Global mobility ecosystem,Standardized
-Airbnb,Airbnb Platform,Travel Technology,Marketplace platform,Q3 2016,Digital travel marketplace,Standardized
-Netflix,Netflix Streaming Platform,Streaming Technology,Video streaming,Q4 2015,Global streaming ecosystem,Mature
-Spotify,Spotify Streaming,Streaming Technology,Music streaming,Q1 2016,Global music platform,Standardized
-TikTok,TikTok AI Recommendation Engine,Artificial Intelligence,Content personalization,Q2 2020,AI media distribution,Expansion
-ByteDance,ByteDance AI Platform,Artificial Intelligence,Recommendation algorithms,Q1 2020,AI media platform growth,Expansion
-Dropbox,Dropbox Cloud Storage,Cloud Storage,File sync,Q3 2016,Enterprise file collaboration,Standardized
-Box,Box Content Cloud,Content Management,Enterprise file management,Q4 2017,Digital content management,Standardized
-Snowflake,Snowflake Data Cloud,Data Platform,Cloud data warehouse,Q2 2019,Cloud data ecosystem,Expansion
-Databricks,Databricks Lakehouse,Data Platform,Data engineering,Q3 2020,AI data lake platform,Expansion
-Accenture,Accenture Cloud First,Cloud Services,Cloud transformation,Q2 2021,Enterprise cloud adoption,Expansion
-Deloitte,Deloitte AI Platform,Artificial Intelligence,Enterprise analytics,Q3 2021,AI consulting expansion,Expansion
-Capgemini,Capgemini Intelligent Industry,Digital Transformation,Industry 4.0,Q4 2020,Enterprise automation,Expansion
-Infosys,Infosys Cobalt,Cloud Platform,Multi-cloud services,Q2 2021,Cloud ecosystem expansion,Expansion
-Tata Consultancy Services,TCS BaNCS,Banking Platform,Digital banking,Q3 2019,Financial services digitization,Expansion
-Wipro,Wipro HOLMES AI,Artificial Intelligence,Automation platform,Q2 2018,Enterprise AI adoption,Standardized
-HCLTech,HCL CloudSmart,Cloud Services,Hybrid cloud,Q3 2020,Cloud transformation,Expansion
-Cognizant,Cognizant Neuro AI,Artificial Intelligence,AI analytics,Q1 2021,Enterprise automation,Expansion
-DXC Technology,DXC Platform X,Digital Platform,Enterprise modernization,Q2 2020,IT transformation,Expansion
-KPMG,KPMG Digital Gateway,Digital Transformation,Enterprise analytics,Q3 2021,Digital consulting growth,Expansion
-EY,EY Nexus Platform,Data Platform,Enterprise data integration,Q4 2021,Data-driven transformation,Expansion
-PwC,PwC Cloud & Digital,Cloud Services,Business modernization,Q2 2021,Enterprise digitalization,Expansion
-Ericsson,Ericsson 5G Core,Telecom Infrastructure,Network virtualization,Q1 2020,Global 5G deployment,Expansion
-Nokia,Nokia Digital Operations,Telecom Software,Network automation,Q2 2020,Telecom digitalization,Expansion
-Qualcomm,Qualcomm Snapdragon AI,AI Hardware,Edge AI,Q3 2021,AI mobile ecosystem,Expansion
-Broadcom,Broadcom VMware Solutions,Cloud Infrastructure,Virtualization,Q4 2022,Enterprise virtualization,Emerging
-Arm,Arm AI Compute Platform,AI Infrastructure,Semiconductor AI,Q2 2022,AI hardware ecosystem,Emerging
-Micron Technology,Micron AI Memory,Semiconductor,Data center memory,Q1 2023,AI infrastructure demand,Emerging
-Western Digital,WD Data Platform,Data Storage,Enterprise storage,Q3 2020,Data center expansion,Expansion
-Seagate,Seagate Lyve Cloud,Cloud Storage,Data management,Q2 2021,Enterprise data cloud,Expansion
-Electronic Arts,EA Play Platform,Gaming Platform,Game subscription,Q4 2019,Digital gaming growth,Expansion
-Ubisoft,Ubisoft Connect,Gaming Platform,Game ecosystem,Q3 2020,Gaming ecosystem expansion,Expansion
-Epic Games,Unreal Engine,Game Development,3D engine,Q1 2018,Gaming development platform,Standardized
-Riot Games,Riot Game Platform,Gaming Infrastructure,Online gaming,Q2 2019,Multiplayer ecosystem,Expansion
-Nintendo,Nintendo Online Services,Gaming Platform,Online gaming,Q3 2018,Gaming subscription growth,Standardized
-Booking Holdings,Booking Platform,Travel Technology,Travel marketplace,Q2 2017,Digital travel ecosystem,Standardized
-Expedia,Expedia Travel Platform,Travel Technology,Booking systems,Q3 2017,Global travel marketplace,Standardized
-Agoda,Agoda Booking Platform,Travel Technology,Hospitality booking,Q4 2018,Travel platform expansion,Standardized
-Grab,Grab SuperApp,Digital Platform,Mobility & payments,Q2 2020,Southeast Asia digital ecosystem,Expansion
-Gojek,Gojek SuperApp,Digital Platform,Mobility services,Q3 2019,Digital ecosystem growth,Expansion
-Klarna,Klarna Payment Platform,Fintech,Buy Now Pay Later,Q1 2021,Digital commerce payments,Expansion
-Adyen,Adyen Payment Platform,Payment Gateway,Global payment processing,Q2 2019,Digital payments expansion,Expansion
-Revolut,Revolut Digital Banking,Fintech,Mobile banking,Q3 2020,Fintech ecosystem,Expansion
-Nubank,Nubank Digital Bank,Fintech,Mobile banking,Q2 2021,Digital banking adoption,Expansion
-Robinhood,Robinhood Trading Platform,Fintech,Digital brokerage,Q4 2020,Retail investing platform,Expansion
-Coinbase,Coinbase Crypto Platform,Blockchain,Crypto exchange,Q1 2021,Digital asset ecosystem,Expansion
-Binance,Binance Exchange,Blockchain,Crypto trading,Q2 2019,Global crypto ecosystem,Expansion
-Ripple,RippleNet,Blockchain Payments,Cross-border payments,Q3 2018,Blockchain payments expansion,Standardized
-Circle,USDC Platform,Blockchain Payments,Stablecoin infrastructure,Q1 2021,Crypto financial infrastructure,Expansion
-Palantir,Palantir Foundry,Data Platform,Data analytics,Q2 2019,Enterprise data intelligence,Expansion
-Splunk,Splunk Observability Cloud,Data Analytics,Log analytics,Q4 2018,IT analytics platform,Standardized
-Elastic,Elastic Stack,Data Platform,Search analytics,Q3 2017,Enterprise search ecosystem,Standardized
-Datadog,Datadog Monitoring Platform,DevOps,Infrastructure monitoring,Q2 2019,Cloud monitoring growth,Expansion
-PagerDuty,PagerDuty Incident Platform,DevOps,Incident response,Q3 2018,DevOps automation,Standardized
-Okta,Okta Identity Cloud,Identity Security,IAM platform,Q1 2018,Enterprise identity management,Standardized
-CrowdStrike,Falcon Security Platform,Cybersecurity,Endpoint protection,Q2 2019,Enterprise security expansion,Expansion
-Zscaler,Zscaler Zero Trust Exchange,Cybersecurity,Zero trust networking,Q3 2020,Cloud security adoption,Expansion
-Fortinet,Fortinet Security Fabric,Cybersecurity,Network security,Q2 2018,Enterprise security platform,Standardized
-Palo Alto Networks,Prisma Cloud,Cloud Security,Cloud workload protection,Q3 2019,Cloud security expansion,Expansion
+Products / Services,Primary Category (Products/Services Keywords),Secondary Category Keywords,First Detected (Timeline Start),Expansion Phase,Current Stage,Company
+"Qualcomm Snapdragon AI","AI Hardware","Edge AI","Q3 2018","Scaling","2",""
+"CUDA AI Platform","AI Infrastructure","GPU computing","Q2 2007","Established","3",""
+"Intel AI Software Stack","AI Infrastructure","AI frameworks","Q2 2019","Scaling","2",""
+"ROCm AI Platform","AI Infrastructure","GPU computing","Q4 2016","Pioneering","1",""
+"Arm AI Compute Platform","AI Infrastructure","Semiconductor AI","Q3 2017","Pioneering","1",""
+"Wipro HOLMES AI","Artificial Intelligence","Automation platform","Q3 2016","Established","3",""
+"IBM Watson","Artificial Intelligence","NLP, AI analytics","Q1 2011","Scaling","2",""
+"Tesla Autopilot","Artificial Intelligence","Autonomous Driving","Q4 2015","Scaling","2",""
+"ByteDance AI Platform","Artificial Intelligence","Recommendation algorithms","Q1 2016","Scaling","2",""
+"TikTok AI Recommendation Engine","Artificial Intelligence","Content personalization","Q3 2016","Scaling","2",""
+"Cognizant Neuro AI","Artificial Intelligence","AI analytics","Q2 2016","Scaling","2",""
+"Deloitte AI Platform","Artificial Intelligence","Enterprise analytics","Q2 2017","Scaling","2",""
+"Meta AI Infrastructure","Artificial Intelligence","LLMs, AI compute","Q1 2013","Pioneering","1",""
+"TCS BaNCS","Banking Platform","Digital banking","Q2 2003","Scaling","2",""
+"Binance Exchange","Blockchain","Crypto trading","Q3 2017","Scaling","2",""
+"Coinbase Crypto Platform","Blockchain","Crypto exchange","Q2 2012","Scaling","2",""
+"RippleNet","Blockchain Payments","Cross-border payments","Q4 2012","Established","3",""
+"USDC Platform","Blockchain Payments","Stablecoin infrastructure","Q3 2018","Scaling","2",""
+"Salesforce CRM","CRM Platform","Sales automation","Q1 1999","Established","3",""
+"AWS Cloud Services","Cloud Infrastructure","EC2, S3, Serverless","Q1 2006","Dominant","4",""
+"Azure Cloud Platform","Cloud Infrastructure","IaaS, Kubernetes, Compute","Q1 2010","Dominant","4",""
+"Google Cloud Platform","Cloud Infrastructure","BigQuery, AI Platform","Q4 2008","Established","3",""
+"Alibaba Cloud","Cloud Infrastructure","Cloud compute","Q3 2009","Established","3",""
+"Tencent Cloud","Cloud Infrastructure","AI cloud","Q1 2013","Established","3",""
+"Oracle Cloud Infrastructure","Cloud Infrastructure","Database cloud","Q4 2016","Established","3",""
+"VW Cloud Platform","Cloud Infrastructure","Automotive cloud","Q2 2020","Scaling","2",""
+"Dell Apex Cloud","Cloud Infrastructure","Hybrid cloud","Q2 2021","Scaling","2",""
+"Broadcom VMware Solutions","Cloud Infrastructure","Virtualization","Q4 1998","Pioneering","1",""
+"Infosys Cobalt","Cloud Platform","Multi-cloud services","Q2 2021","Scaling","2",""
+"Prisma Cloud","Cloud Security","Cloud workload protection","Q3 2019","Scaling","2",""
+"HCL CloudSmart","Cloud Services","Hybrid cloud","Q3 2019","Scaling","2",""
+"Accenture Cloud First","Cloud Services","Cloud transformation","Q2 2020","Scaling","2",""
+"PwC Cloud & Digital","Cloud Services","Business modernization","Q2 2016","Scaling","2",""
+"Dropbox Cloud Storage","Cloud Storage","File sync","Q3 2007","Established","3",""
+"Seagate Lyve Cloud","Cloud Storage","Data management","Q2 2021","Scaling","2",""
+"Zoom Video Platform","Collaboration Tools","Virtual meetings","Q1 2013","Scaling","2",""
+"Webex Collaboration","Collaboration Tools","Video conferencing","Q4 1995","Scaling","2",""
+"Box Content Cloud","Content Management","Enterprise file management","Q3 2005","Established","3",""
+"Fortinet Security Fabric","Cybersecurity","Network security","Q1 2016","Established","3",""
+"Falcon Security Platform","Cybersecurity","Endpoint protection","Q1 2013","Scaling","2",""
+"Zscaler Zero Trust Exchange","Cybersecurity","Zero trust networking","Q4 2018","Scaling","2",""
+"Splunk Observability Cloud","Data Analytics","Log analytics","Q2 2019","Established","3",""
+"Elastic Stack","Data Platform","Search analytics","Q3 2010","Established","3",""
+"Snowflake Data Cloud","Data Platform","Cloud data warehouse","Q4 2014","Scaling","2",""
+"Palantir Foundry","Data Platform","Data analytics","Q3 2016","Scaling","2",""
+"Databricks Lakehouse","Data Platform","Data engineering","Q3 2020","Scaling","2",""
+"EY Nexus Platform","Data Platform","Enterprise data integration","Q2 2018","Scaling","2",""
+"WD Data Platform","Data Storage","Enterprise storage","Q3 2020","Scaling","2",""
+"Jira Software","DevOps","Issue tracking","Q1 2002","Established","3",""
+"PagerDuty Incident Platform","DevOps","Incident response","Q1 2010","Established","3",""
+"Datadog Monitoring Platform","DevOps","Infrastructure monitoring","Q3 2010","Scaling","2",""
+"Apple Pay","Digital Payments","Mobile Wallet","Q4 2014","Established","3",""
+"Sony PlayStation Network","Digital Platform","Gaming services","Q4 2006","Established","3",""
+"Gojek SuperApp","Digital Platform","Mobility services","Q1 2015","Scaling","2",""
+"DXC Platform X","Digital Platform","Enterprise modernization","Q2 2017","Scaling","2",""
+"Grab SuperApp","Digital Platform","Mobility & payments","Q1 2018","Scaling","2",""
+"Capgemini Intelligent Industry","Digital Transformation","Industry 4.0","Q4 2020","Scaling","2",""
+"KPMG Digital Gateway","Digital Transformation","Enterprise analytics","Q3 2019","Scaling","2",""
+"SAP S/4HANA","ERP Platform","Finance ERP","Q1 2015","Established","3",""
+"Shopify Commerce","Ecommerce Platform","Online storefronts","Q2 2006","Established","3",""
+"HP Workforce Solutions","Enterprise IT","Device management","Q3 2019","Established","3",""
+"HSBC Digital Banking","Fintech","Mobile banking","Q2 2015","Established","3",""
+"Wells Fargo Digital Platform","Fintech","Mobile banking","Q1 2014","Scaling","2",""
+"JPMorgan Digital Banking","Fintech","Online banking","Q1 2013","Scaling","2",""
+"Marcus Digital Bank","Fintech","Consumer banking","Q4 2016","Scaling","2",""
+"Citi Global Wallet","Fintech","Cross-border payments","Q3 2013","Scaling","2",""
+"Revolut Digital Banking","Fintech","Mobile banking","Q3 2015","Scaling","2",""
+"Robinhood Trading Platform","Fintech","Digital brokerage","Q4 2013","Scaling","2",""
+"Klarna Payment Platform","Fintech","Buy Now Pay Later","Q3 2005","Scaling","2",""
+"Nubank Digital Bank","Fintech","Mobile banking","Q3 2013","Scaling","2",""
+"Unreal Engine","Game Development","3D engine","Q2 1998","Established","3",""
+"Riot Game Platform","Gaming Infrastructure","Online gaming","Q4 2009","Scaling","2",""
+"Nintendo Online Services","Gaming Platform","Online gaming","Q3 2018","Established","3",""
+"EA Play Platform","Gaming Platform","Game subscription","Q3 2019","Scaling","2",""
+"Ubisoft Connect","Gaming Platform","Game ecosystem","Q4 2020","Scaling","2",""
+"Workday HCM","HR Technology","Workforce management","Q1 2006","Established","3",""
+"Lenovo TruScale","IT Infrastructure","Device-as-a-service","Q1 2020","Scaling","2",""
+"ServiceNow Platform","ITSM Platform","Workflow automation","Q1 2004","Established","3",""
+"Okta Identity Cloud","Identity Security","IAM platform","Q1 2009","Established","3",""
+"BMW ConnectedDrive","IoT Platform","Vehicle connectivity","Q1 2008","Scaling","2",""
+"Toyota Connected Platform","IoT Platform","Connected vehicles","Q1 2016","Scaling","2",""
+"Adobe Experience Cloud","Marketing Technology","CX platform","Q3 2016","Established","3",""
+"Uber Platform","Mobility Platform","Ride sharing","Q1 2009","Established","3",""
+"PayPal Commerce Platform","Payment Gateway","Online payments","Q4 1998","Established","3",""
+"Stripe Payments","Payment Gateway","Online payments","Q3 2011","Established","3",""
+"Adyen Payment Platform","Payment Gateway","Global payment processing","Q2 2006","Scaling","2",""
+"VisaNet Platform","Payment Infrastructure","Transaction network","Q2 1973","Established","3",""
+"Square POS","Payment Technology","POS payments","Q4 2009","Established","3",""
+"Mastercard Digital Gateway","Payment Technology","Payment processing","Q1 2013","Established","3",""
+"Samsung Knox","Security Platform","Mobile security","Q1 2013","Established","3",""
+"Micron AI Memory","Semiconductor","Data center memory","Q1 2023","Pioneering","1",""
+"Netflix Streaming Platform","Streaming Technology","Video streaming","Q1 2007","Dominant","4",""
+"Spotify Streaming","Streaming Technology","Music streaming","Q4 2008","Established","3",""
+"Ericsson 5G Core","Telecom Infrastructure","Network virtualization","Q1 2019","Scaling","2",""
+"Nokia Digital Operations","Telecom Software","Network automation","Q2 2018","Scaling","2",""
+"Airbnb Platform","Travel Technology","Marketplace platform","Q3 2008","Established","3",""
+"Booking Platform","Travel Technology","Travel marketplace","Q2 2014","Established","3",""
+"Expedia Travel Platform","Travel Technology","Booking systems","Q1 2015","Established","3",""
+"Agoda Booking Platform","Travel Technology","Hospitality booking","Q2 2005","Established","3",""

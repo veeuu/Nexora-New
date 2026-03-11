@@ -1076,5 +1076,21 @@ router.get('/keywords', async (req, res) => {
   }
 });
 
+router.get('/glossary', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const glossaryPath = require('path').join(__dirname, '../glossary.json');
+
+    if (!fs.existsSync(glossaryPath)) {
+      return res.status(404).json({ error: 'Glossary file not found', path: glossaryPath });
+    }
+
+    const glossaryData = JSON.parse(fs.readFileSync(glossaryPath, 'utf-8'));
+    res.json(glossaryData);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch glossary data', details: err.message });
+  }
+});
+
 module.exports = router;
 module.exports.generateSelectedOrgCharts = generateSelectedOrgCharts;
