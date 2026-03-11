@@ -8,14 +8,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
-      text: 'Hey 👋 I\'m your NTP assistant. I spot tech buying signals before your competitors do.\n\nWhat would you like to do?',
-      isGreeting: true,
-      showOptions: true,
-      options: [
-        { id: 'what-is-ntp', label: 'What is NTP?' },
-        { id: 'see-demo', label: 'See a sample analysis' },
-        { id: 'analyze-company', label: 'Analyze a company' }
-      ]
+      isThinking: true
     }
   ]);
   const [input, setInput] = useState('');
@@ -23,6 +16,12 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [conversationStage, setConversationStage] = useState('greeting');
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [dynamicCategories, setDynamicCategories] = useState([]);
+  const [expandedNTP, setExpandedNTP] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [typingMessageIndex, setTypingMessageIndex] = useState(null);
+  const [selectedOptionId, setSelectedOptionId] = useState(null);
+  const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
+  const [activeFlow, setActiveFlow] = useState(null);
   const messagesEndRef = useRef(null);
 
   // Get unique categories from data on mount
@@ -69,7 +68,45 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     scrollToBottom();
   }, [messages]);
 
-
+  // Remove thinking message after chatbot opens and add greeting messages with typewriter effect
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        const greetingMessages = [
+          { 
+            type: 'bot', 
+            text: 'Hey 👋',
+            isGreeting: true,
+            isGreetingBox: true
+          },
+          { 
+            type: 'bot', 
+            text: 'I\'m your NTP assistant.',
+            isGreeting: true,
+            isGreetingBox: true
+          },
+          { 
+            type: 'bot', 
+            text: 'What would you like to do?',
+            isGreeting: true,
+            isGreetingBox: true
+          },
+          { 
+            type: 'bot', 
+            showOptions: true,
+            options: [
+              { id: 'what-is-ntp', label: 'What is NTP?' },
+              { id: 'see-demo', label: 'See a sample analysis' },
+              { id: 'analyze-company', label: 'Analyze a company' }
+            ]
+          }
+        ];
+        
+        setMessages(greetingMessages);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Show tooltip every 60 seconds
   useEffect(() => {
@@ -85,11 +122,14 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   }, [isOpen]);
 
   const handleOptionClick = (optionId) => {
+    setSelectedOptionId(optionId);
     if (optionId === 'what-is-ntp') {
-      handleWhatIsNTP();
+      setExpandedNTP(true);
     } else if (optionId === 'see-demo') {
+      setActiveFlow('demo');
       handleSeeDemoFlow();
     } else if (optionId === 'analyze-company') {
+      setActiveFlow('analyze');
       setSelectedCompany(null);
       handleAnalyzeCompanyFlow();
     } else if (optionId === 'analyze-category') {
@@ -137,7 +177,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       .sort((a, b) => a.label.localeCompare(b.label));
     
     // Add ALL option at the end
-    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+    companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
     
     setMessages(prev => [...prev, {
       type: 'bot',
@@ -145,44 +185,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       showCategories: true,
       categories: companyCategories
     }]);
-  };
-
-  const handleWhatIsNTP = () => {
-    setConversationStage('info');
-    
-    // Show thinking message first
-    setMessages(prev => [...prev, {
-      type: 'bot',
-      text: 'Analyzing your question...',
-      isThinking: true
-    }]);
-    
-    // After thinking completes, show the response
-    setTimeout(() => {
-      setMessages(prev => {
-        // Remove thinking message and add response
-        const filtered = prev.filter(msg => !msg.isThinking);
-        return [...filtered,
-          {
-            type: 'bot',
-            text: 'Next Tech Purchase (NTP) predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators.'
-          },
-          {
-            type: 'bot',
-            text: 'This means you can identify prospects at the exact moment they\'re ready to buy before your competitors do.'
-          },
-          {
-            type: 'bot',
-            text: 'Would you like to see a demo?',
-            showOptions: true,
-            options: [
-              { id: 'see-demo', label: 'See a sample analysis' },
-              { id: 'analyze-company', label: 'Analyze a company' }
-            ]
-          }
-        ];
-      });
-    }, 1500);
   };
 
   const handleSeeDemoFlow = () => {
@@ -241,6 +243,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   };
 
   const handleSuggestedCompanyClick = (companyName) => {
+    setSelectedOptionId(companyName);
     setMessages(prev => [...prev, { type: 'user', text: companyName }]);
     
     // Treat it as if the user typed the company name
@@ -280,7 +283,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
       .sort((a, b) => a.label.localeCompare(b.label));
     
     // Add ALL option at the end
-    companyCategories.push({ id: 'all', label: '📊 ALL', originalName: 'ALL' });
+    companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
     
     if (companyCategories.length === 1) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
@@ -291,7 +294,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
     
     setMessages(prev => [...prev, {
       type: 'bot',
-      text: `✅ Got it, ${companyName} it is 👍\n\nWhat would you like to explore?`,
+      text: `Got it, ${companyName} selected. What would you like to explore?`,
       showCategories: true,
       categories: companyCategories
     }]);
@@ -390,6 +393,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   };
 
   const handleDemoCompanyClick = (company) => {
+    setSelectedOptionId(company.id);
     setMessages(prev => [...prev, { type: 'user', text: `Show me ${company.name}` }]);
     
     // Show thinking message
@@ -416,24 +420,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           purchasePrediction: 'High',
           purchaseProbability: '72%',
           ntpAnalysis: 'XYZ Technologies shows strong signals for cloud infrastructure expansion. Recent hiring of DevOps engineers and published case studies on cloud migration indicate active infrastructure modernization. Multi-cloud strategy signals suggest evaluation of AWS alongside existing platforms.'
-        },
-        {
-          companyName: 'XYZ Technologies',
-          domain: 'xyztech.com',
-          technology: 'Kubernetes',
-          category: 'Cloud',
-          purchasePrediction: 'High',
-          purchaseProbability: '68%',
-          ntpAnalysis: 'Container adoption momentum is evident from XYZ Technologies\' infrastructure investments. The company is actively migrating workloads to containerized environments, indicating strong probability of Kubernetes adoption within 3-6 months.'
-        },
-        {
-          companyName: 'XYZ Technologies',
-          domain: 'xyztech.com',
-          technology: 'DataDog',
-          category: 'Cloud',
-          purchasePrediction: 'Medium',
-          purchaseProbability: '64%',
-          ntpAnalysis: 'Observability infrastructure is becoming critical as XYZ Technologies scales cloud operations. Signals indicate need for comprehensive monitoring and observability solutions to manage multi-cloud environments.'
         }
       ],
       'abc-systems': [
@@ -445,24 +431,6 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
           purchasePrediction: 'High',
           purchaseProbability: '78%',
           ntpAnalysis: 'ABC Systems is actively modernizing identity infrastructure. Recent SOC 2 Type II audit completion and CISO hiring indicate strong focus on identity and access management solutions. Zero-trust architecture adoption is a priority.'
-        },
-        {
-          companyName: 'ABC Systems',
-          domain: 'abcsystems.io',
-          technology: 'CrowdStrike',
-          category: 'Security',
-          purchasePrediction: 'High',
-          purchaseProbability: '71%',
-          ntpAnalysis: 'Endpoint security is a key focus area for ABC Systems. Increased security certifications and compliance initiatives indicate strong demand for enterprise endpoint protection solutions.'
-        },
-        {
-          companyName: 'ABC Systems',
-          domain: 'abcsystems.io',
-          technology: 'HashiCorp Vault',
-          category: 'Security',
-          purchasePrediction: 'Medium',
-          purchaseProbability: '65%',
-          ntpAnalysis: 'Secrets management adoption is accelerating at ABC Systems. Infrastructure modernization efforts and security posture improvements suggest evaluation of centralized secrets management solutions.'
         }
       ]
     };
@@ -633,7 +601,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         
         setMessages(prev => [...prev, {
           type: 'bot',
-          text: `✅ Got it, ${userMessage} it is 👍\n\nWhat would you like to explore?`,
+          text: `Got it, ${userMessage} selected. What would you like to explore?`,
           showCategories: true,
           categories: companyCategories
         }]);
@@ -702,23 +670,79 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`chatbot-message-wrapper ${msg.type}`}>
                 <div className={`chatbot-message ${msg.type}`}>
-                  {msg.type === 'bot' && msg.isGreeting && msg.showOptions ? (
-                    <div className="chatbot-greeting-with-options">
+                  {msg.type === 'bot' && msg.isGreeting && msg.isGreetingBox ? (
+                    <div className="greeting-box">
                       <div className="chatbot-greeting">{msg.text}</div>
+                    </div>
+                  ) : msg.type === 'bot' && expandedNTP && msg.showOptions && msg.options?.some(opt => opt.id === 'what-is-ntp') ? (
+                    <div className="chatbot-ntp-expanded">
                       <div className="chatbot-options">
-                        {msg.options.map((option) => (
-                          <button
-                            key={option.id}
-                            className="chatbot-option-btn"
-                            onClick={() => {
-                              setMessages(prev => [...prev, { type: 'user', text: option.label }]);
-                              handleOptionClick(option.id);
-                            }}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
+                        {msg.options.map((option) => {
+                          if (option.id === 'what-is-ntp') {
+                            return (
+                              <div key={option.id} className="chatbot-ntp-description">
+                                <div className="ntp-description-header">
+                                  <div className="ntp-header-left">
+                                    <span className="ntp-icon">💡</span>
+                                    <span className="ntp-title">{option.label}</span>
+                                  </div>
+                                  <button 
+                                    className="ntp-collapse-btn"
+                                    onClick={() => setExpandedNTP(false)}
+                                    title="Close"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                                <div className="ntp-description-content">
+                                  <p>Next Tech Purchase (NTP) predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators.</p>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return (
+                            <button
+                              key={option.id}
+                              className="chatbot-option-btn"
+                              disabled={selectedOptionId !== null && selectedOptionId !== option.id}
+                              onClick={() => {
+                                setMessages(prev => [...prev, { type: 'user', text: option.label }]);
+                                setSelectedMessageIndex(idx);
+                                setSelectedOptionId(option.id);
+                                handleOptionClick(option.id);
+                              }}
+                            >
+                              {option.label}
+                            </button>
+                          );
+                        })}
                       </div>
+                    </div>
+                  ) : msg.type === 'bot' && msg.showOptions && !msg.isGreeting ? (
+                    <div className="chatbot-options">
+                      {msg.options.map((option) => (
+                        <button
+                          key={option.id}
+                          className="chatbot-option-btn"
+                          disabled={selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== option.id}
+                          onClick={() => {
+                            if (option.id === 'what-is-ntp') {
+                              handleOptionClick(option.id);
+                            } else {
+                              setMessages(prev => [...prev, { type: 'user', text: option.label }]);
+                              setSelectedMessageIndex(idx);
+                              setSelectedOptionId(option.id);
+                              handleOptionClick(option.id);
+                            }
+                          }}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : msg.type === 'bot' && msg.isGreeting && msg.isGreetingBox ? (
+                    <div className="greeting-box">
+                      <div className="chatbot-greeting">{msg.text}</div>
                     </div>
                   ) : msg.type === 'bot' && msg.isGreeting ? (
                     <div className="chatbot-greeting">{msg.text}</div>
@@ -763,7 +787,12 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                         <button
                           key={company.id}
                           className="demo-company-btn"
-                          onClick={() => handleDemoCompanyClick(company)}
+                          disabled={selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== company.id}
+                          onClick={() => {
+                            setSelectedMessageIndex(idx);
+                            setSelectedOptionId(company.id);
+                            handleDemoCompanyClick(company);
+                          }}
                         >
                           {company.name}
                         </button>
@@ -773,11 +802,16 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                     <div className="chatbot-suggested-companies">
                       <div className="chatbot-suggested-text">{msg.text}</div>
                       <div className="chatbot-suggested-buttons">
-                        {msg.suggestedCompanies.map((company, idx) => (
+                        {msg.suggestedCompanies.map((company, cidx) => (
                           <button
-                            key={idx}
+                            key={cidx}
                             className="chatbot-suggested-company-btn"
-                            onClick={() => handleSuggestedCompanyClick(company)}
+                            disabled={selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== company}
+                            onClick={() => {
+                              setSelectedMessageIndex(idx);
+                              setSelectedOptionId(company);
+                              handleSuggestedCompanyClick(company);
+                            }}
                           >
                             {company}
                           </button>
@@ -792,7 +826,12 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                           <button
                             key={cat.id}
                             className="chatbot-category-btn"
-                            onClick={() => handleCategorySelect(cat.id)}
+                            disabled={selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== cat.id}
+                            onClick={() => {
+                              setSelectedMessageIndex(idx);
+                              setSelectedOptionId(cat.id);
+                              handleCategorySelect(cat.id);
+                            }}
                           >
                             {cat.label}
                           </button>
@@ -807,8 +846,11 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                           <button
                             key={option.id}
                             className="chatbot-option-btn"
+                            disabled={selectedOptionId !== null && selectedOptionId !== option.id}
                             onClick={() => {
                               setMessages(prev => [...prev, { type: 'user', text: option.label }]);
+                              setSelectedMessageIndex(idx);
+                              setSelectedOptionId(option.id);
                               handleOptionClick(option.id);
                             }}
                           >

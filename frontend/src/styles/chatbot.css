@@ -48,13 +48,13 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
 }
 
 .chatbot-message-wrapper {
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   animation: slideIn 0.3s ease-out;
 }
 
@@ -77,13 +77,10 @@
 }
 
 .chatbot-message.user {
-  background-color: #0050b3;
+  background-color: transparent;
   color: white;
-  max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 80, 179, 0.3);
+  max-width: 100%;
+  padding: 0;
 }
 
 .chatbot-message.bot {
@@ -121,10 +118,21 @@
   white-space: pre-wrap;
 }
 
-.chatbot-greeting-with-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.greeting-box {
+  background-color: #e7f3ff;
+  padding: 10px 14px;
+  margin-bottom: 2px;
+  border-radius: 18px;
+  max-width: fit-content;
+  display: inline-block;
+}
+
+.greeting-box .chatbot-greeting {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2937;
+  line-height: 1.5;
 }
 
 .chatbot-text-message {
@@ -132,25 +140,34 @@
   line-height: 1.6;
   font-size: 14px;
   color: #1f2937;
-  padding: 2px 0;
+  padding: 10px 14px;
+  background-color: #e7f3ff;
+  border-radius: 18px;
+  max-width: 95%;
+  display: inline-block;
 }
 
 .chatbot-message.user .chatbot-text-message {
   color: white;
+  background-color: #0050b3;
+  max-width: 100%;
 }
 
 .chatbot-thinking {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 12px;
-  background-color: #f3f4f6;
+  background-color: transparent;
   border-radius: 8px;
   color: #6b7280;
+  min-height: 40px;
 }
 
 .thinking-text {
   font-size: 13px;
+  display: none;
 }
 
 .thinking-dots {
@@ -189,8 +206,9 @@
 .chatbot-options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 6px;
+  margin-top: 8px;
+  width: fit-content;
 }
 
 .chatbot-options-wrapper {
@@ -200,30 +218,32 @@
 }
 
 .chatbot-option-btn {
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
-  border: 2px solid #0050b3;
-  border-radius: 10px;
+  padding: 10px 14px;
+  background-color: white;
+  border: 1.5px solid #0050b3;
+  border-radius: 8px;
   color: #0050b3;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .chatbot-option-btn:hover {
-  background: linear-gradient(135deg, #0050b3 0%, #003d82 100%);
+  background-color: #0050b3;
   color: white;
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 80, 179, 0.3);
+  border-color: #0050b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 80, 179, 0.2);
 }
 
 .chatbot-option-btn:active {
-  transform: translateX(2px);
+  transform: translateY(0);
 }
 
 .chatbot-option-btn:focus {
@@ -231,24 +251,34 @@
   border-color: #8b5cf6;
 }
 
+.chatbot-option-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+
 .chatbot-demo-companies {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   margin-top: 12px;
+  width: fit-content;
 }
 
 .demo-company-btn {
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
   border: 2px solid #10b981;
   border-radius: 10px;
   color: #059669;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  white-space: nowrap;
 }
 
 .demo-company-btn:hover {
@@ -262,6 +292,14 @@
   transform: translateX(2px);
 }
 
+.demo-company-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+
 .chatbot-categories {
   display: flex;
   flex-direction: column;
@@ -272,21 +310,27 @@
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
+  padding: 10px 14px;
+  background-color: #e7f3ff;
+  border-radius: 18px;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
 .chatbot-category-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  width: fit-content;
 }
 
 .chatbot-category-btn {
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   border: 2px solid #0050b3;
   border-radius: 10px;
   color: #0050b3;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -294,6 +338,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .chatbot-category-btn:hover {
@@ -310,6 +355,14 @@
 .chatbot-category-btn:focus {
   outline: none;
   border-color: #f59e0b;
+}
+
+.chatbot-category-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #9ca3af;
+  border-color: #d1d5db;
 }
 
 .chatbot-demo-analysis {
@@ -585,10 +638,10 @@
 
 .chatbot-input {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
   font-family: inherit;
 }
@@ -599,13 +652,13 @@
 }
 
 .chatbot-send-btn {
-  padding: 8px 12px;
+  padding: 10px 14px;
   background-color: #0050b3;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   transition: all 0.2s;
 }
@@ -690,21 +743,27 @@
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
+  padding: 10px 14px;
+  background-color: #e7f3ff;
+  border-radius: 18px;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
 .chatbot-suggested-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  width: fit-content;
 }
 
 .chatbot-suggested-company-btn {
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   border: 2px solid #0050b3;
   border-radius: 10px;
   color: #0050b3;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -712,6 +771,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .chatbot-suggested-company-btn:hover {
@@ -728,4 +788,112 @@
 .chatbot-suggested-company-btn:focus {
   outline: none;
   border-color: #0ea5e9;
+}
+
+.chatbot-suggested-company-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+
+.chatbot-ntp-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.chatbot-ntp-description {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 80, 179, 0.08);
+}
+
+.ntp-description-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.ntp-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+}
+
+.ntp-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ntp-title {
+  font-weight: 600;
+  color: #0050b3;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.ntp-collapse-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.ntp-collapse-btn:hover {
+  color: #0050b3;
+  background-color: rgba(0, 80, 179, 0.08);
+}
+
+.ntp-collapse-btn:active {
+  transform: scale(0.95);
+}
+
+.ntp-description-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ntp-description-content p {
+  margin: 0;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+  }
 }
