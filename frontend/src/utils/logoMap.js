@@ -2,12 +2,6 @@ import * as SiIcons from 'react-icons/si';
 import { FaCloud, FaDatabase, FaQuestionCircle } from 'react-icons/fa';
 
 // Logo mapping - maps technology names to logo filenames
-// S3 Configuration
-const S3_BUCKET = 'amzn-s3-nexora';
-const S3_REGION = 'us-east-1';
-const S3_LOGO_FOLDER = 'nexora_products_logo';
-const S3_BASE_URL = `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${S3_LOGO_FOLDER}`;
-
 export const getLogoPath = (techName) => {
   if (!techName) return null;
   
@@ -43,7 +37,7 @@ export const getLogoPath = (techName) => {
   
   // Check AI/ML concepts first
   if (aimlConceptLogos[normalized]) {
-    return `${S3_BASE_URL}/${aimlConceptLogos[normalized]}`;
+    return `/src/logos/${aimlConceptLogos[normalized]}`;
   }
   
   const logoMap = {
@@ -516,7 +510,7 @@ export const getLogoPath = (techName) => {
   
   // Try exact match first
   if (logoMap[normalized]) {
-    return `${S3_BASE_URL}/${logoMap[normalized]}`;
+    return `/src/logos/${logoMap[normalized]}`;
   }
   
   // Try partial matches - check if any key is contained in the normalized text
@@ -524,7 +518,7 @@ export const getLogoPath = (techName) => {
   
   for (const key of sortedKeys) {
     if (normalized.includes(key) && key.length > 3) {
-      return `${S3_BASE_URL}/${logoMap[key]}`;
+      return `/src/logos/${logoMap[key]}`;
     }
   }
   
