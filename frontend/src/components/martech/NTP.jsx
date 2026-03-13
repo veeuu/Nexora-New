@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock, FaCopy } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
 import '../../styles/ntp.css';
 
@@ -201,6 +201,7 @@ const NTP = () => {
   const analysisScrollRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [revealedRows, setRevealedRows] = useState(new Set());
+  const [copiedCompany, setCopiedCompany] = useState(null);
   const rowsPerPage = 10;
 
   const handleTechScroll = (e) => {
@@ -434,6 +435,12 @@ const NTP = () => {
 
   const handleAnalysisClick = (analysis) => {
     setModalContent(analysis);
+  };
+
+  const handleCopyCompanyName = (companyName) => {
+    navigator.clipboard.writeText(companyName);
+    setCopiedCompany(companyName);
+    setTimeout(() => setCopiedCompany(null), 2000);
   };
 
   if (loading) {
@@ -1083,6 +1090,16 @@ const NTP = () => {
                           <div className="ntp-company-cell">
                             <div className="ntp-company-name">
                               {company.companyName}
+                              <button
+                                onClick={() => handleCopyCompanyName(company.companyName)}
+                                className="ntp-copy-btn"
+                                title="Copy company name"
+                              >
+                                <FaCopy size={14} />
+                              </button>
+                              {copiedCompany === company.companyName && (
+                                <span className="ntp-copy-feedback">Copied!</span>
+                              )}
                             </div>
                             <div className="ntp-company-links">
                               {company.domain && (
