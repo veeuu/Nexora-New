@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
 import '../../styles/keywords.css';
 
@@ -6,14 +6,8 @@ const Keywords = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({
-    lifecycleStage: []
-  });
-  const [showFilters, setShowFilters] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const [glossaryData, setGlossaryData] = useState(null);
-  const [activeFilterMenu, setActiveFilterMenu] = useState(null);
-  const filterRef = useRef(null);
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -48,42 +42,11 @@ const Keywords = () => {
       });
   }, []);
 
-  const handleFilterChange = (filterName, value) => {
-    setFilters(prev => {
-      const currentValues = prev[filterName];
-      if (currentValues.includes(value)) {
-        return { ...prev, [filterName]: currentValues.filter(v => v !== value) };
-      } else {
-        return { ...prev, [filterName]: [...currentValues, value] };
-      }
-    });
-  };
-
   const getUniqueOptions = (key) => {
     if (!tableData) return [];
     const allValues = tableData.map(item => item[key]);
     return [...new Set(allValues)].filter(v => v && v.trim()).sort();
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setActiveFilterMenu(null);
-        setShowFilters(false);
-      }
-    };
-
-    if (activeFilterMenu || showFilters) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [activeFilterMenu, showFilters]);
-
-  let filteredData = tableData;
-
-  if (filters.lifecycleStage.length > 0) {
-    filteredData = filteredData.filter(item => filters.lifecycleStage.includes(item['Expansion Phase']));
-  }
 
   if (loading) {
     return (
@@ -93,6 +56,7 @@ const Keywords = () => {
     );
   }
 
+  const filteredData = tableData;
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
@@ -145,35 +109,6 @@ const Keywords = () => {
 
       <div className="keywords-header">
         <h2>Keywords Surge</h2>
-      </div>
-
-      <div className="keywords-divider" />
-
-      <div className="keywords-controls">
-        <div style={{ position: 'relative' }} ref={filterRef}>
-          <button onClick={() => setShowFilters(!showFilters)} className="filter-button">
-            <span>+ Filter</span>
-          </button>
-
-          {showFilters && (
-            <div className="filter-menu">
-              {[{ label: 'Lifecycle Stage', key: 'lifecycleStage', mandatory: false }].map((filterOption) => (
-                <div
-                  key={filterOption.key}
-                  onClick={() => {
-                    setActiveFilterMenu(filterOption.key);
-                    setShowFilters(false);
-                  }}
-                  className="filter-menu-item"
-                >
-                  {filterOption.label}
-                  {filterOption.mandatory && <span className="filter-menu-item mandatory-indicator">*</span>}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         <button className="view-summary-button" onClick={() => setShowGlossary(true)}>
           <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -181,75 +116,21 @@ const Keywords = () => {
           </svg>
           Glossary
         </button>
+      </div>
 
-        {activeFilterMenu === 'lifecycleStage' && (
-          <div className="filter-dropdown-wrapper">
-            <div className="filter-dropdown-label">
-              <span>Lifecycle Stage {Array.isArray(filters.lifecycleStage) && filters.lifecycleStage.length > 0 && `(${filters.lifecycleStage.length})`}</span>
-              <button
-                onClick={() => {
-                  setActiveFilterMenu(null);
-                  setFilters(prev => ({ ...prev, lifecycleStage: [] }));
-                }}
-                className="filter-close-button"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="filter-dropdown-content">
-              <div
-                onClick={() => {
-                  if (Array.isArray(filters.lifecycleStage) && filters.lifecycleStage.length === getUniqueOptions('Expansion Phase').length && getUniqueOptions('Expansion Phase').length > 0) {
-                    setFilters(prev => ({ ...prev, lifecycleStage: [] }));
-                  } else {
-                    setFilters(prev => ({ ...prev, lifecycleStage: getUniqueOptions('Expansion Phase') }));
-                  }
-                }}
-                className="filter-option"
-              >
-                <input
-                  type="checkbox"
-                  checked={Array.isArray(filters.lifecycleStage) && filters.lifecycleStage.length === getUniqueOptions('Expansion Phase').length && getUniqueOptions('Expansion Phase').length > 0}
-                  onChange={() => {}}
-                  className="filter-option-checkbox"
-                />
-                All
-              </div>
-              {getUniqueOptions('Expansion Phase').map((option, idx) => {
-                const isSelected = Array.isArray(filters.lifecycleStage) && filters.lifecycleStage.includes(option);
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => handleFilterChange('lifecycleStage', option)}
-                    className={`filter-option ${isSelected ? 'selected' : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => {}}
-                      className="filter-option-checkbox"
-                    />
-                    <span style={{ color: '#1f2937' }}>{option}</span>
-                  </div>
-                );
-              })}
+      <div className="keywords-divider" />
 
-              <div className="filter-dropdown-footer">
-                <button onClick={() => setActiveFilterMenu(null)} className="filter-save-button">Save</button>
-              </div>
-            </div>
-          </div>
-        )}
+      <div className="keywords-controls">
       </div>
 
       <div className="table-wrapper">
         <table className="keywords-table">
           <thead>
             <tr className="table-master-header">
-              <th colSpan="6" className="table-master-header-cell">PRODUCTS & SERVICES MASTER TABLE — 100 Products · Renamed Lifecycle Stages · Deep Metadata</th>
+              {/* <th colSpan="6" className="table-master-header-cell">PRODUCTS & SERVICES MASTER TABLE — 100 Products · Renamed Lifecycle Stages · Deep Metadata</th> */}
             </tr>
             <tr className="table-column-headers">
-              <th>PRODUCT / SERVICE ★</th>
+              <th>PRODUCT / SERVICE</th>
               <th>PRIMARY CATEGORY</th>
               <th>SECONDARY CATEGORY</th>
               <th>FIRST DETECTED</th>

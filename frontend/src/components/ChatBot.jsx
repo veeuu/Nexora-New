@@ -22,6 +22,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [selectedMessageIndex, setSelectedMessageIndex] = useState(null);
   const [activeFlow, setActiveFlow] = useState(null);
+  const [demoViewed, setDemoViewed] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Get unique categories from data on mount
@@ -96,7 +97,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
             showOptions: true,
             options: [
               { id: 'what-is-ntp', label: 'What is NTP?' },
-              { id: 'see-demo', label: 'See a sample analysis' },
+              ...(demoViewed ? [] : [{ id: 'see-demo', label: 'See a sample analysis' }]),
               { id: 'analyze-company', label: 'Analyze a company' }
             ]
           }
@@ -189,6 +190,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
 
   const handleSeeDemoFlow = () => {
     setConversationStage('demo-selection');
+    setDemoViewed(true);
     
     // Show thinking message first
     setMessages(prev => [...prev, {
@@ -363,7 +365,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               options: [
                 { id: 'analyze-company', label: 'Analyze another company' },
                 { id: 'analyze-category', label: 'View different category' },
-                { id: 'see-demo', label: 'View a sample' }
+                ...(demoViewed ? [] : [{ id: 'see-demo', label: 'View a sample' }])
               ]
             }]);
             
@@ -468,8 +470,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         text: 'See how specific the signals are? Ready to analyze a company you\'re targeting?',
         showOptions: true,
         options: [
-          { id: 'analyze-company', label: 'Analyze a company' },
-          { id: 'see-demo', label: 'View another sample' }
+          { id: 'analyze-company', label: 'Analyze a company' }
         ]
       }]);
     }, 500);

@@ -2,7 +2,7 @@
   "columnDefinitions": [
     {
       "number": "2",
-      "columnName": "Product / Service ★",
+      "columnName": "Product / Service",
       "meaning": "The exact named product a buyer would purchase or subscribe to."
     },
     {
