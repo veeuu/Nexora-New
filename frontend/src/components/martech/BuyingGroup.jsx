@@ -30,8 +30,8 @@ const BuyingGroup = () => {
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
-                    // Check if "3F Oil Palm Private Limited" exists in the list
-                    const targetCompany = data.companies.find(company => company === '3F Oil Palm Private Limited');
+                    // Check if "AT&T" exists in the list
+                    const targetCompany = data.companies.find(company => company === 'AT&T');
                     setSelectedCompany(targetCompany || data.companies[0]);
                 }
             } catch (err) {
