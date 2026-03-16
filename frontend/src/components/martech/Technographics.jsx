@@ -564,7 +564,7 @@ const employeeSizeRanges = [
 ];
 
 const revenueRanges = [
-  { label: '$0–$1M', min: 0, max: 1000000 },
+  { label: '<$1M', min: 0, max: 1000000 },
   { label: '$1M–$5M', min: 1000000, max: 5000000 },
   { label: '$5M–$10M', min: 5000000, max: 10000000 },
   { label: '$10M–$25M', min: 10000000, max: 25000000 },
@@ -1737,7 +1737,7 @@ const Technographics = () => {
                   e.target.style.borderColor = '#d1d5db';
                 }}
               >
-                <span>Company Name {Array.isArray(filters.companyName) && filters.companyName.length > 0 && `(${filters.companyName.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Company Name <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
             </div>
           )}
@@ -1770,7 +1770,7 @@ const Technographics = () => {
                   e.target.style.borderColor = '#d1d5db';
                 }}
               >
-                <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
             </div>
           )}
@@ -2185,7 +2185,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('region')}
             >
-              <span>Region ({filters.region.length})</span>
+              <span>Region</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2580,7 +2580,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('industry')}
             >
-              <span>Industry ({filters.industry.length})</span>
+              <span>Industry</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2790,7 +2790,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('employeeSize')}
             >
-              <span>Employee Size ({filters.employeeSize.length})</span>
+              <span>Employee Size</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -2997,7 +2997,7 @@ const Technographics = () => {
             }}
             onClick={() => setActiveFilterMenu('revenue')}
             >
-              <span>Revenue ({filters.revenue.length})</span>
+              <span>Revenue</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3215,9 +3215,12 @@ const Technographics = () => {
               color: '#1e40af',
               cursor: 'pointer'
             }}
-            onClick={() => setActiveFilterMenu('technology')}
+            onClick={() => {
+              setActiveFilterMenu('technology');
+              setOpenFilterDropdown('technology');
+            }}
             >
-              <span>Technology ({filters.technology.length})</span>
+              <span>Technology</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3237,6 +3240,42 @@ const Technographics = () => {
                 }}
               >
                 ✕
+              </button>
+            </div>
+          )}
+
+          {}
+          {filters.technology.length === 0 && activeFilterMenu !== 'technology' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => {
+                  setActiveFilterMenu('technology');
+                  setOpenFilterDropdown('technology');
+                }}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: 'white',
+                  color: '#3b82f6',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f3f4f6';
+                  e.target.style.borderColor = '#3b82f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'white';
+                  e.target.style.borderColor = '#d1d5db';
+                }}
+              >
+                <span>Technology</span>
               </button>
             </div>
           )}

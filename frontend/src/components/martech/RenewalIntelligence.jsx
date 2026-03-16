@@ -1046,7 +1046,7 @@ if (aQtr.year !== bQtr.year) {
                       e.target.style.borderColor = '#d1d5db';
                     }}
                   >
-                    <span>Renewal Timelines {Array.isArray(filters.qtr) && filters.qtr.length > 0 && `(${filters.qtr.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                    <span>Renewal Timelines <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                   </button>
                 </div>
               )}
@@ -1065,7 +1065,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Company Name ({filters.companyName.length})</span>
+                      <span>Company Name</span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1256,7 +1256,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Category ({filters.category.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1421,7 +1421,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Product ({filters.product.length})</span>
+                      <span>Product</span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1588,7 +1588,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Renewal Timelines ({filters.qtr.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                      <span>Renewal Timelines <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1754,7 +1754,7 @@ if (aQtr.year !== bQtr.year) {
                       gap: '8px',
                       color: '#1e40af'
                     }}>
-                      <span>Renewal Tracker ({filters.renewalProximity.length})</span>
+                      <span>Renewal Tracker</span>
                       <button
                         onClick={() => {
                           setActiveFilterMenu(null);
@@ -1921,7 +1921,7 @@ if (aQtr.year !== bQtr.year) {
                   onClick={() => setActiveFilterMenu('companyName')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Company Name ({filters.companyName.length})
+                      Company Name
                     </span>
                     <button
                       onClick={(e) => {
@@ -1960,7 +1960,7 @@ if (aQtr.year !== bQtr.year) {
                   onClick={() => setActiveFilterMenu('category')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Category ({filters.category.length}) <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
+                      Category <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span>
                     </span>
                     <button
                       onClick={(e) => {
@@ -1999,7 +1999,7 @@ if (aQtr.year !== bQtr.year) {
                   onClick={() => setActiveFilterMenu('product')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Product ({filters.product.length})
+                      Product
                     </span>
                     <button
                       onClick={(e) => {
@@ -2038,7 +2038,7 @@ if (aQtr.year !== bQtr.year) {
                   onClick={() => setActiveFilterMenu('renewalProximity')}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Renewal Tracker ({filters.renewalProximity.length})
+                      Renewal Tracker
                     </span>
                     <button
                       onClick={(e) => {

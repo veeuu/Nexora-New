@@ -464,7 +464,7 @@ useEffect(() => {
                 onClick={() => setActiveFilterMenu('intentStatus')}
                 className="filter-button"
               >
-                <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
             </div>
           )}
@@ -473,7 +473,7 @@ useEffect(() => {
           {activeFilterMenu === 'accountName' && (
             <div className="filter-dropdown-wrapper">
               <div className="filter-dropdown-label">
-                <span>Company Name {Array.isArray(filters.accountName) && filters.accountName.length > 0 && `(${filters.accountName.length})`}</span>
+                <span>Company Name</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
@@ -561,7 +561,7 @@ useEffect(() => {
           {activeFilterMenu === 'intentStatus' && (
             <div className="filter-dropdown-wrapper">
               <div className="filter-dropdown-label active">
-                <span>Intent Status {Array.isArray(filters.intentStatus) && filters.intentStatus.length > 0 && `(${filters.intentStatus.length})`} <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);

@@ -559,7 +559,7 @@ const NTP = () => {
                 onClick={() => setActiveFilterMenu('purchasePrediction')}
                 className="ntp-filter-button"
               >
-                <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span className="ntp-filter-required-badge">*</span></span>
+                <span>Purchase Prediction <span className="ntp-filter-required-badge">*</span></span>
               </button>
             </div>
           )}
@@ -567,7 +567,7 @@ const NTP = () => {
           {activeFilterMenu === 'companyName' && (
             <div className="ntp-filter-button-wrapper">
               <div className="ntp-filter-active-badge">
-                <span>Company Name {Array.isArray(filters.companyName) && filters.companyName.length > 0 && `(${filters.companyName.length})`}</span>
+                <span>Company Name</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
@@ -640,7 +640,7 @@ const NTP = () => {
           {activeFilterMenu === 'purchasePrediction' && (
             <div className="ntp-filter-button-wrapper">
               <div className="ntp-filter-active-badge selected">
-                <span>Purchase Prediction {Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0 && `(${filters.purchasePrediction.length})`} <span className="ntp-filter-required-badge">*</span></span>
+                <span>Purchase Prediction <span className="ntp-filter-required-badge">*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
@@ -728,7 +728,7 @@ const NTP = () => {
                 onClick={() => setActiveFilterMenu('category')}
                 className="ntp-filter-button"
               >
-                <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span className="ntp-filter-required-badge">*</span></span>
+                <span>Category <span className="ntp-filter-required-badge">*</span></span>
               </button>
             </div>
           )}
@@ -737,7 +737,7 @@ const NTP = () => {
           {activeFilterMenu === 'category' && (
             <div className="ntp-filter-button-wrapper">
               <div className="ntp-filter-active-badge selected">
-                <span>Category {Array.isArray(filters.category) && filters.category.length > 0 && `(${filters.category.length})`} <span className="ntp-filter-required-badge">*</span></span>
+                <span>Category <span className="ntp-filter-required-badge">*</span></span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
@@ -846,7 +846,7 @@ const NTP = () => {
           {activeFilterMenu === 'technology' && (
             <div className="ntp-filter-button-wrapper">
               <div className="ntp-filter-active-badge">
-                <span>Technology {Array.isArray(filters.technology) && filters.technology.length > 0 && `(${filters.technology.length})`}</span>
+                <span>Technology</span>
                 <button
                   onClick={() => {
                     setActiveFilterMenu(null);
