@@ -15,6 +15,9 @@ dist
 dist-ssr
 build
 
+# Generated logo copies (copied from src/logos by copy-logos.js)
+public/logos/
+
 # Environment variables
 .env
 .env.local

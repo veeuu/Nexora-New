@@ -37,7 +37,7 @@ export const getLogoPath = (techName) => {
   
   // Check AI/ML concepts first
   if (aimlConceptLogos[normalized]) {
-    return `/src/logos/${aimlConceptLogos[normalized]}`;
+    return `/logos/${aimlConceptLogos[normalized]}`;
   }
   
   const logoMap = {
@@ -510,7 +510,7 @@ export const getLogoPath = (techName) => {
   
   // Try exact match first
   if (logoMap[normalized]) {
-    return `/src/logos/${logoMap[normalized]}`;
+    return `/logos/${logoMap[normalized]}`;
   }
   
   // Try partial matches - check if any key is contained in the normalized text
@@ -518,7 +518,7 @@ export const getLogoPath = (techName) => {
   
   for (const key of sortedKeys) {
     if (normalized.includes(key) && key.length > 3) {
-      return `/src/logos/${logoMap[key]}`;
+      return `/logos/${logoMap[key]}`;
     }
   }
   
