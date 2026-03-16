@@ -1985,15 +1985,15 @@ if (aQtr.year !== bQtr.year) {
                 {}
                 {filters.product.length > 0 && activeFilterMenu !== 'product' && (
                   <div style={{
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fcd34d',
+                    backgroundColor: '#dbeafe',
+                    border: '1px solid #93c5fd',
                     padding: '6px 12px',
                     borderRadius: '6px',
                     fontSize: '13px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    color: '#92400e',
+                    color: '#1e40af',
                     cursor: 'pointer'
                   }}
                   onClick={() => setActiveFilterMenu('product')}
