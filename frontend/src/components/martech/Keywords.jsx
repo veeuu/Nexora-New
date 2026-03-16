@@ -12,33 +12,21 @@ const Keywords = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/keywords')
+    fetch('/api/keywords-data')
       .then(res => res.json())
       .then(data => {
-        const normalizedData = (data.data || []).map(row => {
-          const normalized = {};
-          Object.keys(row).forEach(key => {
-            normalized[key.trim()] = row[key];
-          });
-          return normalized;
-        });
-        setTableData(normalizedData);
+        if (data.success && data.data) {
+          setTableData(data.data.masterTable || []);
+          setGlossaryData(data.data.glossary || null);
+        } else {
+          setTableData([]);
+        }
       })
       .catch(() => {
         setTableData([]);
       })
       .finally(() => {
         setLoading(false);
-      });
-
-    // Fetch glossary data
-    fetch('/api/glossary')
-      .then(res => res.json())
-      .then(data => {
-        setGlossaryData(data);
-      })
-      .catch(err => {
-        console.error('Failed to fetch glossary:', err);
       });
   }, []);
 

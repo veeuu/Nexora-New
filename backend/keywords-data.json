@@ -1,0 +1,792 @@
+{
+  "masterTable": [
+    {
+      "Products / Services": "Qualcomm Snapdragon AI",
+      "Primary Category (Products/Services Keywords)": "AI Hardware",
+      "Secondary Category Keywords": "Edge AI",
+      "First Detected (Timeline Start)": "Q1 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "CUDA AI Platform",
+      "Primary Category (Products/Services Keywords)": "AI Infrastructure",
+      "Secondary Category Keywords": "GPU computing",
+      "First Detected (Timeline Start)": "Q2 2007",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Intel AI Software Stack",
+      "Primary Category (Products/Services Keywords)": "AI Infrastructure",
+      "Secondary Category Keywords": "AI frameworks",
+      "First Detected (Timeline Start)": "Q2 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "ROCm AI Platform",
+      "Primary Category (Products/Services Keywords)": "AI Infrastructure",
+      "Secondary Category Keywords": "GPU computing",
+      "First Detected (Timeline Start)": "Q4 2016",
+      "Expansion Phase": "Pioneering",
+      "Current Stage": 1
+    },
+    {
+      "Products / Services": "Arm AI Compute Platform",
+      "Primary Category (Products/Services Keywords)": "AI Infrastructure",
+      "Secondary Category Keywords": "Semiconductor AI",
+      "First Detected (Timeline Start)": "Q2 2017",
+      "Expansion Phase": "Pioneering",
+      "Current Stage": 1
+    },
+    {
+      "Products / Services": "Wipro HOLMES AI",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "Automation platform",
+      "First Detected (Timeline Start)": "Q2 2016",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "IBM Watson",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "NLP, AI analytics",
+      "First Detected (Timeline Start)": "Q1 2011",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Tesla Autopilot",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "Autonomous Driving",
+      "First Detected (Timeline Start)": "Q4 2015",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "ByteDance AI Platform",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "Recommendation algorithms",
+      "First Detected (Timeline Start)": "Q1 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "TikTok AI Recommendation Engine",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "Content personalization",
+      "First Detected (Timeline Start)": "Q3 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Cognizant Neuro AI",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "AI analytics",
+      "First Detected (Timeline Start)": "Q2 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Deloitte AI Platform",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "Enterprise analytics",
+      "First Detected (Timeline Start)": "Q2 2017",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Meta AI Infrastructure",
+      "Primary Category (Products/Services Keywords)": "Artificial Intelligence",
+      "Secondary Category Keywords": "LLMs, AI compute",
+      "First Detected (Timeline Start)": "Q4 2013",
+      "Expansion Phase": "Pioneering",
+      "Current Stage": 1
+    },
+    {
+      "Products / Services": "Binance Exchange",
+      "Primary Category (Products/Services Keywords)": "Blockchain",
+      "Secondary Category Keywords": "Crypto trading",
+      "First Detected (Timeline Start)": "Q3 2017",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Coinbase Crypto Platform",
+      "Primary Category (Products/Services Keywords)": "Blockchain",
+      "Secondary Category Keywords": "Crypto exchange",
+      "First Detected (Timeline Start)": "Q2 2012",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "RippleNet",
+      "Primary Category (Products/Services Keywords)": "Blockchain Payments",
+      "Secondary Category Keywords": "Cross-border payments",
+      "First Detected (Timeline Start)": "Q4 2012",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "USDC Platform",
+      "Primary Category (Products/Services Keywords)": "Blockchain Payments",
+      "Secondary Category Keywords": "Stablecoin infrastructure",
+      "First Detected (Timeline Start)": "Q3 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Salesforce CRM",
+      "Primary Category (Products/Services Keywords)": "CRM Platform",
+      "Secondary Category Keywords": "Sales automation",
+      "First Detected (Timeline Start)": "Q1 1999",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "AWS Cloud Services",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "EC2, S3, Serverless",
+      "First Detected (Timeline Start)": "Q1 2006",
+      "Expansion Phase": "Dominant",
+      "Current Stage": 4
+    },
+    {
+      "Products / Services": "Azure Cloud Platform",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "IaaS, Kubernetes, Compute",
+      "First Detected (Timeline Start)": "Q1 2010",
+      "Expansion Phase": "Dominant",
+      "Current Stage": 4
+    },
+    {
+      "Products / Services": "Google Cloud Platform",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "BigQuery, AI Platform",
+      "First Detected (Timeline Start)": "Q2 2008",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Alibaba Cloud",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "Cloud compute",
+      "First Detected (Timeline Start)": "Q3 2009",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Tencent Cloud",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "AI cloud",
+      "First Detected (Timeline Start)": "Q1 2013",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Oracle Cloud Infrastructure",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "Database cloud",
+      "First Detected (Timeline Start)": "Q4 2016",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "VW Cloud Platform",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "Automotive cloud",
+      "First Detected (Timeline Start)": "Q2 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Dell Apex Cloud",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "Hybrid cloud",
+      "First Detected (Timeline Start)": "Q2 2021",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Broadcom VMware Solutions",
+      "Primary Category (Products/Services Keywords)": "Cloud Infrastructure",
+      "Secondary Category Keywords": "Virtualization",
+      "First Detected (Timeline Start)": "Q4 1998",
+      "Expansion Phase": "Pioneering",
+      "Current Stage": 1
+    },
+    {
+      "Products / Services": "Infosys Cobalt",
+      "Primary Category (Products/Services Keywords)": "Cloud Platform",
+      "Secondary Category Keywords": "Multi-cloud services",
+      "First Detected (Timeline Start)": "Q2 2021",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Prisma Cloud",
+      "Primary Category (Products/Services Keywords)": "Cloud Security",
+      "Secondary Category Keywords": "Cloud workload protection",
+      "First Detected (Timeline Start)": "Q3 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "HCL CloudSmart",
+      "Primary Category (Products/Services Keywords)": "Cloud Services",
+      "Secondary Category Keywords": "Hybrid cloud",
+      "First Detected (Timeline Start)": "Q3 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Accenture Cloud First",
+      "Primary Category (Products/Services Keywords)": "Cloud Services",
+      "Secondary Category Keywords": "Cloud transformation",
+      "First Detected (Timeline Start)": "Q2 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "PwC Cloud & Digital",
+      "Primary Category (Products/Services Keywords)": "Cloud Services",
+      "Secondary Category Keywords": "Business modernization",
+      "First Detected (Timeline Start)": "Q2 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Dropbox Cloud Storage",
+      "Primary Category (Products/Services Keywords)": "Cloud Storage",
+      "Secondary Category Keywords": "File sync",
+      "First Detected (Timeline Start)": "Q3 2007",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Seagate Lyve Cloud",
+      "Primary Category (Products/Services Keywords)": "Cloud Storage",
+      "Secondary Category Keywords": "Data management",
+      "First Detected (Timeline Start)": "Q2 2021",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Zoom Video Platform",
+      "Primary Category (Products/Services Keywords)": "Collaboration Tools",
+      "Secondary Category Keywords": "Virtual meetings",
+      "First Detected (Timeline Start)": "Q1 2013",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Webex Collaboration",
+      "Primary Category (Products/Services Keywords)": "Collaboration Tools",
+      "Secondary Category Keywords": "Video conferencing",
+      "First Detected (Timeline Start)": "Q4 1995",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Box Content Cloud",
+      "Primary Category (Products/Services Keywords)": "Content Management",
+      "Secondary Category Keywords": "Enterprise file management",
+      "First Detected (Timeline Start)": "Q3 2005",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Fortinet Security Fabric",
+      "Primary Category (Products/Services Keywords)": "Cybersecurity",
+      "Secondary Category Keywords": "Network security",
+      "First Detected (Timeline Start)": "Q1 2016",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Falcon Security Platform",
+      "Primary Category (Products/Services Keywords)": "Cybersecurity",
+      "Secondary Category Keywords": "Endpoint protection",
+      "First Detected (Timeline Start)": "Q1 2013",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Zscaler Zero Trust Exchange",
+      "Primary Category (Products/Services Keywords)": "Cybersecurity",
+      "Secondary Category Keywords": "Zero trust networking",
+      "First Detected (Timeline Start)": "Q4 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Splunk Observability Cloud",
+      "Primary Category (Products/Services Keywords)": "Data Analytics",
+      "Secondary Category Keywords": "Log analytics",
+      "First Detected (Timeline Start)": "Q2 2019",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Elastic Stack",
+      "Primary Category (Products/Services Keywords)": "Data Platform",
+      "Secondary Category Keywords": "Search analytics",
+      "First Detected (Timeline Start)": "Q3 2010",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Snowflake Data Cloud",
+      "Primary Category (Products/Services Keywords)": "Data Platform",
+      "Secondary Category Keywords": "Cloud data warehouse",
+      "First Detected (Timeline Start)": "Q4 2014",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Palantir Foundry",
+      "Primary Category (Products/Services Keywords)": "Data Platform",
+      "Secondary Category Keywords": "Data analytics",
+      "First Detected (Timeline Start)": "Q3 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Databricks Lakehouse",
+      "Primary Category (Products/Services Keywords)": "Data Platform",
+      "Secondary Category Keywords": "Data engineering",
+      "First Detected (Timeline Start)": "Q3 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "EY Nexus Platform",
+      "Primary Category (Products/Services Keywords)": "Data Platform",
+      "Secondary Category Keywords": "Enterprise data integration",
+      "First Detected (Timeline Start)": "Q2 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "WD Data Platform",
+      "Primary Category (Products/Services Keywords)": "Data Storage",
+      "Secondary Category Keywords": "Enterprise storage",
+      "First Detected (Timeline Start)": "Q3 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Jira Software",
+      "Primary Category (Products/Services Keywords)": "DevOps",
+      "Secondary Category Keywords": "Issue tracking",
+      "First Detected (Timeline Start)": "Q1 2002",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "PagerDuty Incident Platform",
+      "Primary Category (Products/Services Keywords)": "DevOps",
+      "Secondary Category Keywords": "Incident response",
+      "First Detected (Timeline Start)": "Q1 2010",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Datadog Monitoring Platform",
+      "Primary Category (Products/Services Keywords)": "DevOps",
+      "Secondary Category Keywords": "Infrastructure monitoring",
+      "First Detected (Timeline Start)": "Q3 2010",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Apple Pay",
+      "Primary Category (Products/Services Keywords)": "Digital Payments",
+      "Secondary Category Keywords": "Mobile Wallet",
+      "First Detected (Timeline Start)": "Q4 2014",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Sony PlayStation Network",
+      "Primary Category (Products/Services Keywords)": "Digital Platform",
+      "Secondary Category Keywords": "Gaming services",
+      "First Detected (Timeline Start)": "Q4 2006",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Gojek SuperApp",
+      "Primary Category (Products/Services Keywords)": "Digital Platform",
+      "Secondary Category Keywords": "Mobility services",
+      "First Detected (Timeline Start)": "Q1 2015",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "DXC Platform X",
+      "Primary Category (Products/Services Keywords)": "Digital Platform",
+      "Secondary Category Keywords": "Enterprise modernization",
+      "First Detected (Timeline Start)": "Q2 2017",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Grab SuperApp",
+      "Primary Category (Products/Services Keywords)": "Digital Platform",
+      "Secondary Category Keywords": "Mobility & payments",
+      "First Detected (Timeline Start)": "Q1 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Capgemini Intelligent Industry",
+      "Primary Category (Products/Services Keywords)": "Digital Transformation",
+      "Secondary Category Keywords": "Industry 4.0",
+      "First Detected (Timeline Start)": "Q4 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "KPMG Digital Gateway",
+      "Primary Category (Products/Services Keywords)": "Digital Transformation",
+      "Secondary Category Keywords": "Enterprise analytics",
+      "First Detected (Timeline Start)": "Q3 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "SAP S/4HANA",
+      "Primary Category (Products/Services Keywords)": "ERP Platform",
+      "Secondary Category Keywords": "Finance ERP",
+      "First Detected (Timeline Start)": "Q1 2015",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Shopify Commerce",
+      "Primary Category (Products/Services Keywords)": "Ecommerce Platform",
+      "Secondary Category Keywords": "Online storefronts",
+      "First Detected (Timeline Start)": "Q2 2006",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "HP Workforce Solutions",
+      "Primary Category (Products/Services Keywords)": "Enterprise IT",
+      "Secondary Category Keywords": "Device management",
+      "First Detected (Timeline Start)": "Q3 2019",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Citi Global Wallet",
+      "Primary Category (Products/Services Keywords)": "Fintech",
+      "Secondary Category Keywords": "Cross-border payments",
+      "First Detected (Timeline Start)": "Q3 2013",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Robinhood Trading Platform",
+      "Primary Category (Products/Services Keywords)": "Fintech",
+      "Secondary Category Keywords": "Digital brokerage",
+      "First Detected (Timeline Start)": "Q4 2013",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Klarna Payment Platform",
+      "Primary Category (Products/Services Keywords)": "Fintech",
+      "Secondary Category Keywords": "Buy Now Pay Later",
+      "First Detected (Timeline Start)": "Q3 2005",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Unreal Engine",
+      "Primary Category (Products/Services Keywords)": "Game Development",
+      "Secondary Category Keywords": "3D engine",
+      "First Detected (Timeline Start)": "Q2 1998",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Riot Game Platform",
+      "Primary Category (Products/Services Keywords)": "Gaming Infrastructure",
+      "Secondary Category Keywords": "Online gaming",
+      "First Detected (Timeline Start)": "Q4 2009",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Nintendo Online Services",
+      "Primary Category (Products/Services Keywords)": "Gaming Platform",
+      "Secondary Category Keywords": "Online gaming",
+      "First Detected (Timeline Start)": "Q3 2018",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "EA Play Platform",
+      "Primary Category (Products/Services Keywords)": "Gaming Platform",
+      "Secondary Category Keywords": "Game subscription",
+      "First Detected (Timeline Start)": "Q3 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Ubisoft Connect",
+      "Primary Category (Products/Services Keywords)": "Gaming Platform",
+      "Secondary Category Keywords": "Game ecosystem",
+      "First Detected (Timeline Start)": "Q4 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Workday HCM",
+      "Primary Category (Products/Services Keywords)": "HR Technology",
+      "Secondary Category Keywords": "Workforce management",
+      "First Detected (Timeline Start)": "Q1 2006",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Lenovo TruScale",
+      "Primary Category (Products/Services Keywords)": "IT Infrastructure",
+      "Secondary Category Keywords": "Device-as-a-service",
+      "First Detected (Timeline Start)": "Q1 2020",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "ServiceNow Platform",
+      "Primary Category (Products/Services Keywords)": "ITSM Platform",
+      "Secondary Category Keywords": "Workflow automation",
+      "First Detected (Timeline Start)": "Q1 2004",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Okta Identity Cloud",
+      "Primary Category (Products/Services Keywords)": "Identity Security",
+      "Secondary Category Keywords": "IAM platform",
+      "First Detected (Timeline Start)": "Q1 2009",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "BMW ConnectedDrive",
+      "Primary Category (Products/Services Keywords)": "IoT Platform",
+      "Secondary Category Keywords": "Vehicle connectivity",
+      "First Detected (Timeline Start)": "Q1 2008",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Toyota Connected Platform",
+      "Primary Category (Products/Services Keywords)": "IoT Platform",
+      "Secondary Category Keywords": "Connected vehicles",
+      "First Detected (Timeline Start)": "Q1 2016",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Adobe Experience Cloud",
+      "Primary Category (Products/Services Keywords)": "Marketing Technology",
+      "Secondary Category Keywords": "CX platform",
+      "First Detected (Timeline Start)": "Q3 2016",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Uber Platform",
+      "Primary Category (Products/Services Keywords)": "Mobility Platform",
+      "Secondary Category Keywords": "Ride sharing",
+      "First Detected (Timeline Start)": "Q1 2009",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "PayPal Commerce Platform",
+      "Primary Category (Products/Services Keywords)": "Payment Gateway",
+      "Secondary Category Keywords": "Online payments",
+      "First Detected (Timeline Start)": "Q4 1998",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Stripe Payments",
+      "Primary Category (Products/Services Keywords)": "Payment Gateway",
+      "Secondary Category Keywords": "Online payments",
+      "First Detected (Timeline Start)": "Q3 2011",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Adyen Payment Platform",
+      "Primary Category (Products/Services Keywords)": "Payment Gateway",
+      "Secondary Category Keywords": "Global payment processing",
+      "First Detected (Timeline Start)": "Q2 2006",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "VisaNet Platform",
+      "Primary Category (Products/Services Keywords)": "Payment Infrastructure",
+      "Secondary Category Keywords": "Transaction network",
+      "First Detected (Timeline Start)": "Q2 1973",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Square POS",
+      "Primary Category (Products/Services Keywords)": "Payment Technology",
+      "Secondary Category Keywords": "POS payments",
+      "First Detected (Timeline Start)": "Q4 2009",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Mastercard Digital Gateway",
+      "Primary Category (Products/Services Keywords)": "Payment Technology",
+      "Secondary Category Keywords": "Payment processing",
+      "First Detected (Timeline Start)": "Q1 2013",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Samsung Knox",
+      "Primary Category (Products/Services Keywords)": "Security Platform",
+      "Secondary Category Keywords": "Mobile security",
+      "First Detected (Timeline Start)": "Q1 2013",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Micron AI Memory",
+      "Primary Category (Products/Services Keywords)": "Semiconductor",
+      "Secondary Category Keywords": "Data center memory",
+      "First Detected (Timeline Start)": "Q1 2023",
+      "Expansion Phase": "Pioneering",
+      "Current Stage": 1
+    },
+    {
+      "Products / Services": "Netflix Streaming Platform",
+      "Primary Category (Products/Services Keywords)": "Streaming Technology",
+      "Secondary Category Keywords": "Video streaming",
+      "First Detected (Timeline Start)": "Q1 2007",
+      "Expansion Phase": "Dominant",
+      "Current Stage": 4
+    },
+    {
+      "Products / Services": "Spotify Streaming",
+      "Primary Category (Products/Services Keywords)": "Streaming Technology",
+      "Secondary Category Keywords": "Music streaming",
+      "First Detected (Timeline Start)": "Q4 2008",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Ericsson 5G Core",
+      "Primary Category (Products/Services Keywords)": "Telecom Infrastructure",
+      "Secondary Category Keywords": "Network virtualization",
+      "First Detected (Timeline Start)": "Q1 2019",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Nokia Digital Operations",
+      "Primary Category (Products/Services Keywords)": "Telecom Software",
+      "Secondary Category Keywords": "Network automation",
+      "First Detected (Timeline Start)": "Q2 2018",
+      "Expansion Phase": "Scaling",
+      "Current Stage": 2
+    },
+    {
+      "Products / Services": "Airbnb Platform",
+      "Primary Category (Products/Services Keywords)": "Travel Technology",
+      "Secondary Category Keywords": "Marketplace platform",
+      "First Detected (Timeline Start)": "Q3 2008",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Booking Platform",
+      "Primary Category (Products/Services Keywords)": "Travel Technology",
+      "Secondary Category Keywords": "Travel marketplace",
+      "First Detected (Timeline Start)": "Q2 2014",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Expedia Travel Platform",
+      "Primary Category (Products/Services Keywords)": "Travel Technology",
+      "Secondary Category Keywords": "Booking systems",
+      "First Detected (Timeline Start)": "Q1 2015",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    },
+    {
+      "Products / Services": "Agoda Booking Platform",
+      "Primary Category (Products/Services Keywords)": "Travel Technology",
+      "Secondary Category Keywords": "Hospitality booking",
+      "First Detected (Timeline Start)": "Q2 2005",
+      "Expansion Phase": "Established",
+      "Current Stage": 3
+    }
+  ],
+  "glossary": {
+    "columnDefinitions": [
+      {
+        "number": "2",
+        "columnName": "Product / Service",
+        "meaning": "The exact named product a buyer would purchase or subscribe to."
+      },
+      {
+        "number": "3",
+        "columnName": "Primary Category",
+        "meaning": "The broad market category this product belongs to."
+      },
+      {
+        "number": "4",
+        "columnName": "Secondary Category",
+        "meaning": "The specific tech features or sub-topics inside the category."
+      },
+      {
+        "number": "5",
+        "columnName": "First Detected",
+        "meaning": "The quarter & year this product first entered the market."
+      },
+      {
+        "number": "7",
+        "columnName": "Lifecycle Stage",
+        "meaning": "How mature this product is today on the adoption curve."
+      },
+      {
+        "number": "8",
+        "columnName": "Stage Rank",
+        "meaning": "A number from 1–4 showing maturity. 4 = most mature, 1 = newest."
+      }
+    ],
+    "lifecycleStages": [
+      {
+        "stage": "Dominant",
+        "meaning": "The clear market leader with widespread adoption and high switching costs."
+      },
+      {
+        "stage": "Established",
+        "meaning": "A proven and widely adopted technology with a stable ecosystem."
+      },
+      {
+        "stage": "Scaling",
+        "meaning": "A fast-growing technology gaining market traction but still evolving."
+      },
+      {
+        "stage": "Pioneering",
+        "meaning": "A new and emerging technology with high potential but limited adoption."
+      }
+    ]
+  }
+}

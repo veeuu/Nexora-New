@@ -1092,5 +1092,34 @@ router.get('/glossary', async (req, res) => {
   }
 });
 
+// ============================================
+// GET /api/keywords-data - Get master table and glossary data
+// ============================================
+router.get('/keywords-data', (req, res) => {
+  try {
+    const keywordsDataPath = path.join(__dirname, '../keywords-data.json');
+    const fs = require('fs');
+    
+    if (!fs.existsSync(keywordsDataPath)) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Keywords data not found. Please run extractMasterTable.js first.' 
+      });
+    }
+    
+    const keywordsData = JSON.parse(fs.readFileSync(keywordsDataPath, 'utf8'));
+    res.json({
+      success: true,
+      data: keywordsData
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch keywords data', 
+      details: err.message 
+    });
+  }
+});
+
 module.exports = router;
 module.exports.generateSelectedOrgCharts = generateSelectedOrgCharts;

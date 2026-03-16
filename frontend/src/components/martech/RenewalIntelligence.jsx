@@ -122,9 +122,9 @@ const RenewalMeter = ({ renewalDate }) => {
   };
 
   const getStatusLabel = (proximity) => {
-    if (proximity >= 86) return 'Immediate ';
-    if (proximity >= 46) return 'Mid-Term ';
-    return 'Long-Term ';
+    if (proximity >= 86) return '<1 year';
+    if (proximity >= 46) return '1–2 years';
+    return '2+ years';
   };
 
   const proximity = calculateProximity();
@@ -599,7 +599,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['Immediate ', 'Mid-Term ', 'Long-Term '];
+        return ['<1 year', '1–2 years', '2+ years'];
     };
 
     const getUniqueCategories = () => {
@@ -693,7 +693,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['Immediate ', 'Mid-Term ', 'Long-Term '];
+            const statusLabels = ['<1 year', '1–2 years', '2+ years'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
