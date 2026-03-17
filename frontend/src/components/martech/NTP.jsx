@@ -202,6 +202,8 @@ const NTP = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [revealedRows, setRevealedRows] = useState(new Set());
   const [copiedCompany, setCopiedCompany] = useState(null);
+  const [chatbotOpen, setChatbotOpen] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const rowsPerPage = 10;
 
   const handleTechScroll = (e) => {
@@ -221,6 +223,13 @@ const NTP = () => {
     if (techScrollRef.current) techScrollRef.current.scrollTop = scrollTop;
     if (propensityScrollRef.current) propensityScrollRef.current.scrollTop = scrollTop;
   };
+
+  // Track when chatbot is closed for the first time
+  useEffect(() => {
+    if (!chatbotOpen && isFirstLoad) {
+      setIsFirstLoad(false);
+    }
+  }, [chatbotOpen, isFirstLoad]);
 
   const renderTechLogo = (techName) => {
     if (!techName) return null;
@@ -491,7 +500,8 @@ const NTP = () => {
   }
 
   return (
-    <div className="ntp-container">
+    <div className="ntp-page-wrapper">
+      <div className={`ntp-container ${chatbotOpen && isFirstLoad ? 'ntp-blur-active' : ''}`}>
       {}
       {error && (
         <div className="ntp-error-container">
@@ -1354,7 +1364,8 @@ const NTP = () => {
         </div>
       )}
 
-      <ChatBot isAuthenticated={true} revealedRows={revealedRows} tableData={tableData} />
+      </div>
+      <ChatBot isAuthenticated={true} revealedRows={revealedRows} tableData={tableData} isOpen={chatbotOpen} setIsOpen={setChatbotOpen} />
     </div>
   );
 };

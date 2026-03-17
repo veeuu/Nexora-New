@@ -1,10 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaMinus } from 'react-icons/fa';
 import '../styles/chatbot.css';
 
-const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
+  const [isOpenLocal, setIsOpenLocal] = useState(false);
+  
+  // Use external state if provided (from NTP), otherwise use local state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : isOpenLocal;
+  const setIsOpen = (value) => {
+    if (externalSetIsOpen) {
+      externalSetIsOpen(value);
+    } else {
+      setIsOpenLocal(value);
+    }
+  };
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
@@ -71,43 +82,49 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
 
   // Remove thinking message after chatbot opens and add greeting messages with typewriter effect
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        const greetingMessages = [
-          { 
-            type: 'bot', 
-            text: 'Hey 👋',
-            isGreeting: true,
-            isGreetingBox: true
-          },
-          { 
-            type: 'bot', 
-            text: 'I\'m your NTP assistant.',
-            isGreeting: true,
-            isGreetingBox: true
-          },
-          { 
-            type: 'bot', 
-            text: 'What would you like to do?',
-            isGreeting: true,
-            isGreetingBox: true
-          },
-          { 
-            type: 'bot', 
-            showOptions: true,
-            options: [
-              { id: 'what-is-ntp', label: 'What is NTP?' },
-              ...(demoViewed ? [] : [{ id: 'see-demo', label: 'See a sample analysis' }]),
-              { id: 'analyze-company', label: 'Analyze a company' }
-            ]
-          }
-        ];
-        
-        setMessages(greetingMessages);
-      }, 1500);
-      return () => clearTimeout(timer);
+    if (isOpen && !isMinimized) {
+      // Only show greeting if not reopening from minimized state
+      // Check if messages only contain the initial thinking state
+      const isInitialState = messages.length === 1 && messages[0].isThinking;
+      
+      if (isInitialState) {
+        const timer = setTimeout(() => {
+          const greetingMessages = [
+            { 
+              type: 'bot', 
+              text: 'Hey 👋',
+              isGreeting: true,
+              isGreetingBox: true
+            },
+            { 
+              type: 'bot', 
+              text: 'I\'m your NTP assistant.',
+              isGreeting: true,
+              isGreetingBox: true
+            },
+            { 
+              type: 'bot', 
+              text: 'What would you like to do?',
+              isGreeting: true,
+              isGreetingBox: true
+            },
+            { 
+              type: 'bot', 
+              showOptions: true,
+              options: [
+                { id: 'what-is-ntp', label: 'What is NTP?' },
+                ...(demoViewed ? [] : [{ id: 'see-demo', label: 'See a sample analysis' }]),
+                { id: 'analyze-company', label: 'Analyze a company' }
+              ]
+            }
+          ];
+          
+          setMessages(greetingMessages);
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, isMinimized, demoViewed, messages]);
 
   // Show tooltip every 60 seconds
   useEffect(() => {
@@ -237,7 +254,9 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         return [...filtered,
           {
             type: 'bot',
-            text: 'I can help you analyze a company. First, what\'s the company name?'
+            text: 'I can help you analyze a company. First, what\'s the company name?',
+            hasSubtext: true,
+            subtext: '💡 Tip: Minimize me to view the company table!'
           }
         ];
       });
@@ -659,12 +678,29 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
         <div className="chatbot-window">
           <div className="chatbot-header">
             <h3>Your Next Purchase</h3>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="chatbot-close-btn"
-            >
-              <FaTimes size={18} />
-            </button>
+            <div className="chatbot-header-buttons">
+              <button
+                onClick={() => {
+                  setIsMinimized(true);
+                  setIsOpen(false);
+                }}
+                className="chatbot-minimize-btn"
+                title="Minimize"
+              >
+                <FaMinus size={16} />
+              </button>
+              <button
+                onClick={() => {
+                  setIsMinimized(false);
+                  setIsOpen(false);
+                  setMessages([{ type: 'bot', isThinking: true }]);
+                }}
+                className="chatbot-close-btn"
+                title="Close"
+              >
+                <FaTimes size={18} />
+              </button>
+            </div>
           </div>
 
           <div className="chatbot-messages">
@@ -705,7 +741,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                             <button
                               key={option.id}
                               className="chatbot-option-btn"
-                              disabled={selectedOptionId !== null && selectedOptionId !== option.id}
+                              disabled={option.id !== 'what-is-ntp' && selectedOptionId !== null && selectedOptionId !== option.id && selectedOptionId !== 'what-is-ntp'}
                               onClick={() => {
                                 setMessages(prev => [...prev, { type: 'user', text: option.label }]);
                                 setSelectedMessageIndex(idx);
@@ -725,7 +761,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                         <button
                           key={option.id}
                           className="chatbot-option-btn"
-                          disabled={selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== option.id}
+                          disabled={option.id !== 'what-is-ntp' && selectedMessageIndex === idx && selectedOptionId !== null && selectedOptionId !== option.id && selectedOptionId !== 'what-is-ntp'}
                           onClick={() => {
                             if (option.id === 'what-is-ntp') {
                               handleOptionClick(option.id);
@@ -847,7 +883,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                           <button
                             key={option.id}
                             className="chatbot-option-btn"
-                            disabled={selectedOptionId !== null && selectedOptionId !== option.id}
+                            disabled={option.id !== 'what-is-ntp' && selectedOptionId !== null && selectedOptionId !== option.id && selectedOptionId !== 'what-is-ntp'}
                             onClick={() => {
                               setMessages(prev => [...prev, { type: 'user', text: option.label }]);
                               setSelectedMessageIndex(idx);
@@ -908,8 +944,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
                         </div>
                       </div>
                     </div>
+                  ) : msg.isNote ? (
+                    <div className="chatbot-text-message note">{msg.text}</div>
                   ) : msg.text ? (
-                    <div className="chatbot-text-message">{msg.displayedText !== undefined ? msg.displayedText : msg.text}</div>
+                    <div>
+                      <div className="chatbot-text-message">{msg.displayedText !== undefined ? msg.displayedText : msg.text}</div>
+                      {msg.hasSubtext && (
+                        <div className="chatbot-subtext">{msg.subtext}</div>
+                      )}
+                    </div>
                   ) : null}
                 </div>
               </div>
@@ -942,6 +985,20 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData }) => {
               Send
             </button>
           </div>
+        </div>
+      ) : isMinimized ? (
+        <div className="chatbot-minimized">
+          <button
+            onClick={() => {
+              setIsMinimized(false);
+              setIsOpen(true);
+            }}
+            className="chatbot-minimized-btn"
+            title="Open chatbot"
+          >
+            <span className="minimized-icon">💬</span>
+            <span className="minimized-text">Chat</span>
+          </button>
         </div>
       ) : (
         <div style={{ position: 'relative' }}>
