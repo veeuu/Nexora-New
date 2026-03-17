@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaTimes, FaMinus } from 'react-icons/fa';
 import '../styles/chatbot.css';
+// import chatbotVideo from '../video/Video_Generation_For_Chatbot (online-video-cutter,com)-Picsart-BackgroundRemover.mp4';
 
 const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
   const [isOpenLocal, setIsOpenLocal] = useState(false);
@@ -16,6 +17,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
   };
   const [showTooltip, setShowTooltip] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const videoRef = useRef(null);
   const [messages, setMessages] = useState([
     { 
       type: 'bot', 
@@ -113,8 +115,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
               showOptions: true,
               options: [
                 { id: 'what-is-ntp', label: 'What is NTP?' },
-                ...(demoViewed ? [] : [{ id: 'see-demo', label: 'See a sample analysis' }]),
-                { id: 'analyze-company', label: 'Analyze a company' }
+                ...(demoViewed ? [] : [{ id: 'see-demo', label: 'Show me a sample justification' }]),
+                { id: 'analyze-company', label: 'Let\'s analyze a company' }
               ]
             }
           ];
@@ -138,6 +140,18 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
       return () => clearInterval(interval);
     }
   }, [isOpen]);
+
+  // Handle video looping every 30 seconds when chatbot is closed
+  // useEffect(() => {
+  //   if (!isOpen && videoRef.current) {
+  //     const interval = setInterval(() => {
+  //       videoRef.current.currentTime = 0;
+  //       videoRef.current.play();
+  //     }, 30000);
+
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [isOpen]);
 
   const handleOptionClick = (optionId) => {
     setSelectedOptionId(optionId);
@@ -254,7 +268,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         return [...filtered,
           {
             type: 'bot',
-            text: 'I can help you analyze a company. First, what\'s the company name?',
+            text: 'I\'m ready. Drop the company name below, and I\'ll pull their predictive data and analysis',
             hasSubtext: true,
             subtext: '💡 Tip: Minimize me to view the company table!'
           }
@@ -489,7 +503,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         text: 'See how specific the signals are? Ready to analyze a company you\'re targeting?',
         showOptions: true,
         options: [
-          { id: 'analyze-company', label: 'Analyze a company' }
+          { id: 'analyze-company', label: 'Let\'s analyze a company' }
         ]
       }]);
     }, 500);
@@ -1001,7 +1015,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
           </button>
         </div>
       ) : (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
           {showTooltip && (
             <div style={{
               position: 'absolute',
@@ -1027,6 +1041,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
               <span style={{ fontSize: '18px' }}>🔍</span>
             </div>
           )}
+          {/* <video
+            ref={videoRef}
+            className="chatbot-video-display"
+            autoPlay
+            loop
+            muted
+            playsInline
+            src={chatbotVideo}
+          /> */}
           <button
             onClick={() => {
               setIsOpen(true);
