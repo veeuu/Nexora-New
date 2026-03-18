@@ -38,35 +38,43 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
   const [demoViewed, setDemoViewed] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Get unique categories from data on mount
+  // Get unique categories from summary on mount
   useEffect(() => {
-    const getUniqueCategories = () => {
-      const data = ntpData || tableData;
-      if (!data || data.length === 0) return [];
-      
-      const uniqueCats = [...new Set(data.map(item => item.category))].filter(cat => cat && cat !== 'Not Detected').sort();
-      
-      // Map categories to display format
-      const categoryMap = {
-        'database': 'Database',
-        'ai-ml': 'AI/ML',
-        'crm': 'CRM',
-        'cloud': 'Cloud',
-        'security': 'Security',
-        'analytics': 'Analytics',
-        'infrastructure': 'Infrastructure',
-        'devops': 'DevOps'
-      };
-      
-      return uniqueCats.map(cat => {
-        const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-        const label = categoryMap[catLower] || cat;
-        return { id: catLower, label: label, originalName: cat };
-      });
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/ntp/summary');
+        const summary = await response.json();
+        const uniqueCats = (summary.categories || [])
+          .map(item => item.label)
+          .filter(cat => cat && cat !== 'Not Detected')
+          .sort();
+
+        const categoryMap = {
+          'database': 'Database',
+          'ai-ml': 'AI/ML',
+          'crm': 'CRM',
+          'cloud': 'Cloud',
+          'security': 'Security',
+          'analytics': 'Analytics',
+          'infrastructure': 'Infrastructure',
+          'devops': 'DevOps'
+        };
+        
+        const cats = uniqueCats.map(cat => {
+          const catLower = cat.toLowerCase().replace(/\s+/g, '-');
+          const label = categoryMap[catLower] || cat;
+          return { id: catLower, label: label, originalName: cat };
+        });
+        setDynamicCategories(cats);
+      } catch (err) {
+        const data = ntpData || tableData;
+        if (!data || data.length === 0) return;
+        const uniqueCats = [...new Set(data.map(item => item.category))].filter(cat => cat && cat !== 'Not Detected').sort();
+        setDynamicCategories(uniqueCats.map(cat => ({ id: cat.toLowerCase().replace(/\s+/g, '-'), label: cat, originalName: cat })));
+      }
     };
-    
-    const cats = getUniqueCategories();
-    setDynamicCategories(cats);
+
+    loadCategories();
   }, [ntpData, tableData]);
 
   const demoCompanies = [
@@ -350,8 +358,12 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
 
     try {
       let data = ntpData || tableData;
-      if (!data) {
-        const response = await fetch('/api/ntp/all');
+      if (!data || data.length === 0) {
+        const params = new URLSearchParams();
+        params.append('companyName', selectedCompany);
+        params.append('page', '1');
+        params.append('limit', '500');
+        const response = await fetch(`/api/ntp?${params.toString()}`);
         const result = await response.json();
         data = result.data || [];
       }

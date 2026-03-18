@@ -2,9 +2,12 @@ const express = require('express');
 const router = express.Router();
 const BuyingGroup = require('../models/BuyingGroup');
 const { generateOrgChartHTML } = require('../org_chart');
+const { cacheResponse } = require('../middleware/redisCache');
 const { 
   uploadOrgChartToS3
 } = require('../config/s3');
+
+const MONGO_MAX_TIME_MS = Number(process.env.MONGO_MAX_TIME_MS || 1000);
 
 // Helper function to sanitize filename
 function sanitizeFilename(name) {
@@ -17,7 +20,7 @@ function sanitizeFilename(name) {
 // ============================================
 // GET /api/buying-groups - Get all companies
 // ============================================
-router.get('/', async (req, res) => {
+router.get('/', cacheResponse(300), async (req, res) => {
   try {
     const buyingGroups = await BuyingGroup.find({}, {
       companyName: 1,
@@ -34,7 +37,10 @@ router.get('/', async (req, res) => {
       domain: 1,
       'orgChart.s3Url': 1,
       'orgChart.generatedAt': 1
-    }).sort({ companyName: 1 });
+    })
+      .sort({ companyName: 1 })
+      .maxTimeMS(MONGO_MAX_TIME_MS)
+      .lean();
 
     res.json({
       success: true,
@@ -52,10 +58,12 @@ router.get('/', async (req, res) => {
 // ============================================
 // GET /api/buying-groups/companies - Get company names only from MongoDB
 // ============================================
-router.get('/companies', async (req, res) => {
+router.get('/companies', cacheResponse(300), async (req, res) => {
   try {
-    const companies = await BuyingGroup.find({}, { companyName: 1 })
-      .sort({ companyName: 1 });
+    const companies = await BuyingGroup.find({}, { companyName: 1, _id: 0 })
+      .sort({ companyName: 1 })
+      .maxTimeMS(MONGO_MAX_TIME_MS)
+      .lean();
 
     const companyNames = companies.map(bg => bg.companyName);
 
@@ -74,25 +82,20 @@ router.get('/companies', async (req, res) => {
 // ============================================
 // GET /api/buying-groups/categories - Get all unique categories from MongoDB
 // ============================================
-router.get('/categories', async (req, res) => {
+router.get('/categories', cacheResponse(300), async (req, res) => {
   try {
-    const buyingGroups = await BuyingGroup.find({}, { employees: 1 });
+    const result = await BuyingGroup.aggregate([
+      { $unwind: '$employees' },
+      { $match: { 'employees.category': { $exists: true, $ne: null, $ne: '' } } },
+      { $project: { categories: { $split: ['$employees.category', ','] } } },
+      { $unwind: '$categories' },
+      { $project: { category: { $trim: { input: '$categories' } } } },
+      { $match: { category: { $ne: '' } } },
+      { $group: { _id: null, categories: { $addToSet: '$category' } } },
+      { $project: { _id: 0, categories: 1 } }
+    ]).option({ maxTimeMS: MONGO_MAX_TIME_MS });
 
-    const categoriesSet = new Set();
-    
-    buyingGroups.forEach(bg => {
-      if (bg.employees && Array.isArray(bg.employees)) {
-        bg.employees.forEach(emp => {
-          if (emp.category) {
-            emp.category.split(',').forEach(cat => {
-              categoriesSet.add(cat.trim());
-            });
-          }
-        });
-      }
-    });
-
-    const categories = Array.from(categoriesSet).sort();
+    const categories = (result[0]?.categories || []).sort();
 
     res.json({
       success: true,
@@ -109,10 +112,26 @@ router.get('/categories', async (req, res) => {
 // ============================================
 // GET /api/buying-groups/person-details - Get all employee details from MongoDB
 // ============================================
-router.get('/person-details', async (req, res) => {
+router.get('/person-details', cacheResponse(120), async (req, res) => {
   try {
     // Get all buying groups with nested employees structure using .lean()
-    const buyingGroups = await BuyingGroup.find({}).lean();
+    const buyingGroups = await BuyingGroup.find({}, {
+      companyName: 1,
+      employees: 1,
+      companyDescription: 1,
+      employeeSize: 1,
+      employeeCount: 1,
+      country: 1,
+      location: 1,
+      revenue: 1,
+      industry: 1,
+      companyPhone: 1,
+      domain: 1,
+      website: 1,
+      linkedinProfile: 1
+    })
+      .maxTimeMS(MONGO_MAX_TIME_MS)
+      .lean();
 
     const companiesMap = {};
     
@@ -169,7 +188,7 @@ router.get('/:companyName', async (req, res) => {
     
     const buyingGroup = await BuyingGroup.findOne({ 
       companyName: decodedCompanyName 
-    });
+    }).maxTimeMS(MONGO_MAX_TIME_MS);
 
     if (!buyingGroup) {
       return res.status(404).json({ 
@@ -200,7 +219,9 @@ router.get('/:companyName/org-chart', async (req, res) => {
     
     const buyingGroup = await BuyingGroup.findOne({ 
       companyName: decodedCompanyName 
-    }).lean();
+    })
+      .maxTimeMS(MONGO_MAX_TIME_MS)
+      .lean();
 
     if (!buyingGroup) {
       return res.status(404).json({ 
@@ -268,7 +289,7 @@ router.post('/:companyName/regenerate-chart', async (req, res) => {
     
     const buyingGroup = await BuyingGroup.findOne({ 
       companyName: decodedCompanyName 
-    }).lean();
+    }).maxTimeMS(MONGO_MAX_TIME_MS);
 
     if (!buyingGroup) {
       return res.status(404).json({ 

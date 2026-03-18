@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+const BuyingGroup = require('./models/BuyingGroup');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nexora';
 
@@ -12,6 +13,11 @@ async function createIndexes() {
 
     const db = mongoose.connection.db;
     const dataCollection = db.collection('data');
+    const renewalCollection = db.collection('renewal_intel');
+    const intentCollection = db.collection('intent_data');
+    const dataDictionaryCollection = db.collection('tech_data_dictionary');
+    const ntpFlatCollection = db.collection('ntp_flat');
+    const technographicsFlatCollection = db.collection('technographics_flat');
 
     console.log('\n📊 Creating indexes on "data" collection...\n');
 
@@ -46,6 +52,10 @@ async function createIndexes() {
     await dataCollection.createIndex({ 'NTP.Purchase Prediction': 1 });
     console.log('✓ Index created: NTP.Purchase Prediction');
 
+    console.log('Creating index on "NTP.Purchase Probability (%)"...');
+    await dataCollection.createIndex({ 'NTP.Purchase Probability (%)': 1 });
+    console.log('✓ Index created: NTP.Purchase Probability (%)');
+
     // Index for Firmographics fields (used in filters and projections)
     console.log('Creating index on "Firmographics.Location.Country"...');
     await dataCollection.createIndex({ 'Firmographics.Location.Country': 1 });
@@ -73,6 +83,45 @@ async function createIndexes() {
       'NTP.Category': 1 
     });
     console.log('✓ Compound index created: Company Name + NTP.Category');
+
+    console.log('\nCreating indexes on "renewal_intel" collection...\n');
+    await renewalCollection.createIndex({ 'Company Name': 1 });
+    await renewalCollection.createIndex({ Category: 1 });
+    await renewalCollection.createIndex({ Keyword: 1 });
+    await renewalCollection.createIndex({ 'Renewal Date': 1 });
+    console.log('✓ Indexes created: renewal_intel');
+
+    console.log('\nCreating indexes on "intent_data" collection...\n');
+    await intentCollection.createIndex({ 'Company Name': 1 });
+    await intentCollection.createIndex({ 'Intent Status': 1 });
+    console.log('✓ Indexes created: intent_data');
+
+    console.log('\nCreating indexes on "tech_data_dictionary" collection...\n');
+    await dataDictionaryCollection.createIndex({ 'Data Attribute': 1 });
+    console.log('✓ Indexes created: tech_data_dictionary');
+
+    console.log('\nEnsuring indexes on "buyinggroups" collection...\n');
+    await BuyingGroup.collection.createIndex({ companyName: 1 }, { unique: true });
+    await BuyingGroup.collection.createIndex({ 'employees.category': 1 });
+    await BuyingGroup.collection.createIndex({ 'employees.hierarchy': 1 });
+    await BuyingGroup.collection.createIndex({ location: 1 });
+    console.log('✓ Indexes created: buyinggroups');
+
+    console.log('\nCreating indexes on "ntp_flat" collection...\n');
+    await ntpFlatCollection.createIndex({ companyName: 1 });
+    await ntpFlatCollection.createIndex({ category: 1 });
+    await ntpFlatCollection.createIndex({ technology: 1 });
+    await ntpFlatCollection.createIndex({ purchasePrediction: 1 });
+    await ntpFlatCollection.createIndex({ latestDetectedDate: 1 });
+    console.log('✓ Indexes created: ntp_flat');
+
+    console.log('\nCreating indexes on "technographics_flat" collection...\n');
+    await technographicsFlatCollection.createIndex({ companyName: 1 });
+    await technographicsFlatCollection.createIndex({ category: 1 });
+    await technographicsFlatCollection.createIndex({ technology: 1 });
+    await technographicsFlatCollection.createIndex({ region: 1 });
+    await technographicsFlatCollection.createIndex({ industry: 1 });
+    console.log('✓ Indexes created: technographics_flat');
 
     console.log('\n✅ All indexes created successfully!');
     console.log('\n📋 Listing all indexes on "data" collection:');

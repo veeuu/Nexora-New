@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
@@ -283,6 +283,10 @@ const RenewalIntelligence = () => {
     });
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [metadata, setMetadata] = useState(null);
+    const [companyDetailsMap, setCompanyDetailsMap] = useState(null);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
     const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0, isRevealed: true });
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
@@ -480,49 +484,45 @@ const iconName = getProductIcon(productName);
     };
 
 useEffect(() => {
-        setLoading(true);
-
-        const fetchRenewalData = async () => {
+        const fetchMetadataAndDetails = async () => {
             try {
                 setLoading(true);
 
-                const [renewalResponse, companyDetailsResponse, metadataResponse] = await Promise.all([
-                    fetch('/api/renewal-intelligence?page=1&limit=500'),
+                const [companyDetailsResponse, metadataResponse] = await Promise.all([
                     fetch('/api/company-details'),
                     fetch('/api/renewal-intelligence/metadata')
                 ]);
 
-                const renewalData = await renewalResponse.json();
-                const companyDetailsMap = await companyDetailsResponse.json();
-                const metadata = await metadataResponse.json();
+                const companyDetails = await companyDetailsResponse.json();
+                const meta = await metadataResponse.json();
 
-                const data = renewalData.data || renewalData;
-
-const uniqueCategories = metadata.categories || [];
-                const uniqueProducts = metadata.products || [];
-
-                setCategories(uniqueCategories);
-                setProducts(uniqueProducts);
-
-const dataWithDetails = data.map(row => {
-                    const companyDetails = companyDetailsMap[row.companyName] || {};
-                    return {
-                        ...row,
-                        domain: companyDetails.domain || 'N/A',
-                        linkedinUrl: companyDetails.linkedinUrl || ''
-                    };
-                });
-
-                setTableData(dataWithDetails);
+                setCompanyDetailsMap(companyDetails);
+                setMetadata(meta);
+                setCategories(meta.categories || []);
+                setProducts(meta.products || []);
             } catch (error) {
-
                 setTableData([]);
             } finally {
                 setLoading(false);
             }
         };
-        fetchRenewalData();
+        fetchMetadataAndDetails();
     }, []);
+
+    useEffect(() => {
+        if (!metadata || !companyDetailsMap) return;
+
+        const fetchPage = async () => {
+            try {
+                setLoading(true);
+                await fetchRenewalPage(currentPage, companyDetailsMap, metadata);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPage();
+    }, [metadata, companyDetailsMap, currentPage, filters]);
 
 useEffect(() => {
         const handleClickOutside = (event) => {
@@ -580,19 +580,113 @@ useEffect(() => {
         document.body.removeChild(link);
     };
 
+    const buildQtrFilter = (meta) => {
+        const hasQtrFilter = filters.qtr.length > 0;
+        const hasProximityFilter = filters.renewalProximity.length > 0;
+
+        if (!hasQtrFilter && !hasProximityFilter) {
+            return [];
+        }
+
+        let qtrs = (meta?.quarters || []).filter(Boolean);
+
+        if (hasQtrFilter) {
+            qtrs = qtrs.filter(q => filters.qtr.includes(q));
+        }
+
+        if (hasProximityFilter) {
+            const statusLabels = getUniqueRenewalProximity();
+            const allowed = new Set();
+
+            qtrs.forEach(qtr => {
+                const proximity = getProximityValue(qtr);
+                const status = getRenewalStatus(proximity);
+                const label = statusLabels[status];
+                if (filters.renewalProximity.includes(label)) {
+                    allowed.add(qtr);
+                }
+            });
+
+            qtrs = Array.from(allowed);
+        }
+
+        return qtrs;
+    };
+
+    const fetchRenewalPage = async (pageNum, detailsMap = companyDetailsMap, meta = metadata, retries = 3, delay = 500) => {
+        try {
+            const queryParams = new URLSearchParams();
+            queryParams.append('page', pageNum);
+            queryParams.append('limit', rowsPerPage);
+
+            if (filters.companyName.length > 0) {
+                filters.companyName.forEach(name => queryParams.append('companyName', name));
+            }
+            if (filters.category.length > 0) {
+                filters.category.forEach(cat => queryParams.append('category', cat));
+            }
+            if (filters.product.length > 0) {
+                filters.product.forEach(prod => queryParams.append('product', prod));
+            }
+
+            const qtrFilter = buildQtrFilter(meta);
+            if (qtrFilter.length > 0) {
+                qtrFilter.forEach(qtr => queryParams.append('qtr', qtr));
+            }
+
+            const response = await fetch(`/api/renewal-intelligence?${queryParams.toString()}`);
+            const data = await response.json();
+
+            if (response.status === 503 && retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return fetchRenewalPage(pageNum, detailsMap, meta, retries - 1, Math.min(delay * 1.5, 5000));
+            }
+
+            const pageData = data.data || data || [];
+            const total = data.total ?? pageData.length;
+            const pages = data.pages ?? Math.ceil(total / rowsPerPage);
+
+            const map = detailsMap || {};
+            const dataWithDetails = pageData.map(row => {
+                const companyDetails = map[row.companyName] || {};
+                return {
+                    ...row,
+                    domain: companyDetails.domain || 'N/A',
+                    linkedinUrl: companyDetails.linkedinUrl || ''
+                };
+            });
+
+            setTableData(dataWithDetails);
+            setTotalRecords(total);
+            setTotalPages(pages);
+            setSelectedRows(new Set());
+            setRevealedRows(new Set());
+
+            return data;
+        } catch (error) {
+            setTableData([]);
+            setTotalRecords(0);
+            setTotalPages(0);
+            return null;
+        }
+    };
+
     const getUniqueCompanies = () => {
+        if (metadata?.companies?.length) return metadata.companies;
         if (!tableData) return [];
         const allCompanies = tableData.map(item => item.companyName);
         return [...new Set(allCompanies)].sort();
     };
 
     const getUniqueProducts = () => {
+        if (metadata?.products?.length) return metadata.products;
         if (!tableData) return [];
         const allProducts = tableData.map(item => item.product);
         return [...new Set(allProducts)].sort();
     };
 
     const getUniqueQtrs = () => {
+        if (metadata?.quarters?.length) return metadata.quarters;
         if (!tableData) return [];
         const allQtrs = tableData.map(item => item.qtr);
         return [...new Set(allQtrs)].sort();
@@ -603,6 +697,7 @@ useEffect(() => {
     };
 
     const getUniqueCategories = () => {
+        if (metadata?.categories?.length) return metadata.categories;
         if (!tableData) return [];
         const allCategories = tableData.map(item => item.category);
         return [...new Set(allCategories)].sort();
@@ -616,7 +711,46 @@ const getProductsByCategory = (category) => {
         return [...new Set(products)].sort();
     };
 
+const categoryCountMap = useMemo(() => {
+        const map = new Map();
+        (metadata?.categoryCounts || []).forEach((item) => {
+            if (!item) return;
+            const label = item.label ?? item.category ?? item.name ?? item._id;
+            if (label !== undefined && label !== null) {
+                map.set(label, item.value ?? item.count ?? 0);
+            }
+        });
+        return map;
+    }, [metadata]);
+
+const productCountMap = useMemo(() => {
+        const map = new Map();
+        (metadata?.productCounts || []).forEach((item) => {
+            if (!item) return;
+            const label = item.label ?? item.product ?? item.name ?? item._id;
+            if (label !== undefined && label !== null) {
+                map.set(label, item.value ?? item.count ?? 0);
+            }
+        });
+        return map;
+    }, [metadata]);
+
+const qtrCountMap = useMemo(() => {
+        const map = new Map();
+        (metadata?.quarterCounts || []).forEach((item) => {
+            if (!item) return;
+            const label = item.label ?? item.qtr ?? item.name ?? item._id;
+            if (label !== undefined && label !== null) {
+                map.set(label, item.value ?? item.count ?? 0);
+            }
+        });
+        return map;
+    }, [metadata]);
+
 const getAccountCountByCategory = (category) => {
+        if (categoryCountMap && categoryCountMap.size > 0) {
+            return categoryCountMap.get(category) || 0;
+        }
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -628,6 +762,9 @@ const getAccountCountByCategory = (category) => {
     };
 
 const getAccountCountByProduct = (product) => {
+        if (productCountMap && productCountMap.size > 0) {
+            return productCountMap.get(product) || 0;
+        }
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -639,6 +776,9 @@ const getAccountCountByProduct = (product) => {
     };
 
 const getAccountCountByQtr = (qtr) => {
+        if (qtrCountMap && qtrCountMap.size > 0) {
+            return qtrCountMap.get(qtr) || 0;
+        }
         if (!tableData) return 0;
         const uniqueAccounts = new Set();
         tableData.forEach(row => {
@@ -2096,23 +2236,18 @@ if (aQtr.year !== bQtr.year) {
                                           <input
                                             type="checkbox"
                                             checked={(() => {
-                                              const startIndex = (currentPage - 1) * rowsPerPage;
-                                              const endIndex = startIndex + rowsPerPage;
-                                              const currentPageRows = filteredData.slice(startIndex, endIndex);
-                                              return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
+                                              const currentPageRows = filteredData;
+                                              return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(idx));
                                             })()}
                                             onChange={(e) => {
-                                              const startIndex = (currentPage - 1) * rowsPerPage;
-                                              const endIndex = startIndex + rowsPerPage;
-                                              const currentPageRows = filteredData.slice(startIndex, endIndex);
-                                              
+                                              const currentPageRows = filteredData;
                                               if (e.target.checked) {
                                                 const newSelected = new Set(selectedRows);
-                                                currentPageRows.forEach((_, idx) => newSelected.add(startIndex + idx));
+                                                currentPageRows.forEach((_, idx) => newSelected.add(idx));
                                                 setSelectedRows(newSelected);
                                               } else {
                                                 const newSelected = new Set(selectedRows);
-                                                currentPageRows.forEach((_, idx) => newSelected.delete(startIndex + idx));
+                                                currentPageRows.forEach((_, idx) => newSelected.delete(idx));
                                                 setSelectedRows(newSelected);
                                               }
                                             }}
@@ -2128,9 +2263,6 @@ if (aQtr.year !== bQtr.year) {
                                               }
                                               setRevealedRows(prev => {
                                                 const newSet = new Set(prev);
-                                                const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-                                                const startIndex = (currentPage - 1) * rowsPerPage;
-                                                
                                                 selectedRows.forEach(rowIndex => {
                                                   const rowData = filteredData[rowIndex];
                                                   if (rowData) {
@@ -2183,13 +2315,10 @@ if (aQtr.year !== bQtr.year) {
                                         </tr>
                                     ) : (
                                         (() => {
-                                            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-                                            const startIndex = (currentPage - 1) * rowsPerPage;
-                                            const endIndex = startIndex + rowsPerPage;
-                                            const paginatedData = filteredData.slice(startIndex, endIndex);
+                                            const paginatedData = filteredData;
 
                                             return paginatedData.map((row, index) => {
-                                                const actualIndex = startIndex + index;
+                                                const actualIndex = index;
                                                 const rowKey = `${actualIndex}-${row.companyName}`;
                                                 const isRevealed = revealedRows.has(rowKey);
 
@@ -2362,13 +2491,10 @@ if (aQtr.year !== bQtr.year) {
                                         </tr>
                                     ) : (
                                         (() => {
-                                            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-                                            const startIndex = (currentPage - 1) * rowsPerPage;
-                                            const endIndex = startIndex + rowsPerPage;
-                                            const paginatedData = filteredData.slice(startIndex, endIndex);
+                                            const paginatedData = filteredData;
 
                                             return paginatedData.map((row, index) => {
-                                                const actualIndex = startIndex + index;
+                                                const actualIndex = index;
                                                 const rowKey = `${actualIndex}-${row.companyName}`;
                                                 const isRevealed = revealedRows.has(rowKey);
 
@@ -2520,7 +2646,7 @@ if (aQtr.year !== bQtr.year) {
                     )}
 
                     {}
-                    {shouldShowTable && filteredData.length > rowsPerPage && (
+                    {shouldShowTable && totalPages > 1 && (
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',
@@ -2535,7 +2661,7 @@ if (aQtr.year !== bQtr.year) {
                             color: '#1f2937',
                             fontWeight: '600'
                         }}>
-                            Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
+                            Page {currentPage} of {totalPages.toLocaleString()}
                         </div>
 
                         {}
@@ -2546,17 +2672,17 @@ if (aQtr.year !== bQtr.year) {
                             gap: '8px'
                         }}>
                             {(() => {
-                                const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+                                const totalPagesCount = totalPages;
                                 const maxPagesToShow = 5;
                                 let startPage = 1;
-                                let endPage = Math.min(maxPagesToShow, totalPages);
+                                let endPage = Math.min(maxPagesToShow, totalPagesCount);
 
                                 if (currentPage > maxPagesToShow) {
                                     startPage = currentPage - Math.floor(maxPagesToShow / 2);
                                     endPage = startPage + maxPagesToShow - 1;
 
-                                    if (endPage > totalPages) {
-                                        endPage = totalPages;
+                                    if (endPage > totalPagesCount) {
+                                        endPage = totalPagesCount;
                                         startPage = Math.max(1, endPage - maxPagesToShow + 1);
                                     }
                                 }
@@ -2698,12 +2824,12 @@ if (aQtr.year !== bQtr.year) {
                                             </button>
                                         ))}
 
-                                        {endPage < totalPages && (
+                                        {endPage < totalPagesCount && (
                                             <>
-                                                {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                                                {endPage < totalPagesCount - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
                                                 <button
-                                                    key={totalPages}
-                                                    onClick={() => setCurrentPage(totalPages)}
+                                                    key={totalPagesCount}
+                                                    onClick={() => setCurrentPage(totalPagesCount)}
                                                     style={{
                                                         padding: '8px 12px',
                                                         border: '1px solid #d1d5db',
@@ -2725,7 +2851,7 @@ if (aQtr.year !== bQtr.year) {
                                                         e.target.style.borderColor = '#d1d5db';
                                                     }}
                                                 >
-                                                    {totalPages}
+                                                    {totalPagesCount}
                                                 </button>
                                             </>
                                         )}
@@ -2733,28 +2859,28 @@ if (aQtr.year !== bQtr.year) {
                                         {}
                                         <button
                                             key="next"
-                                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(Math.min(totalPagesCount, currentPage + 1))}
+                                            disabled={currentPage === totalPagesCount}
                                             style={{
                                                 padding: '8px 12px',
                                                 border: '1px solid #d1d5db',
                                                 borderRadius: '6px',
-                                                backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                                backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
+                                                cursor: currentPage === totalPagesCount ? 'not-allowed' : 'pointer',
                                                 fontSize: '16px',
-                                                color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                                                color: currentPage === totalPagesCount ? '#d1d5db' : '#6b7280',
                                                 fontWeight: '600',
                                                 transition: 'all 0.2s',
-                                                opacity: currentPage === totalPages ? 0.5 : 1
+                                                opacity: currentPage === totalPagesCount ? 0.5 : 1
                                             }}
                                             onMouseEnter={(e) => {
-                                                if (currentPage < totalPages) {
+                                                if (currentPage < totalPagesCount) {
                                                     e.target.style.backgroundColor = '#f9fafb';
                                                     e.target.style.borderColor = '#9ca3af';
                                                 }
                                             }}
                                             onMouseLeave={(e) => {
-                                                if (currentPage < totalPages) {
+                                                if (currentPage < totalPagesCount) {
                                                     e.target.style.backgroundColor = 'white';
                                                     e.target.style.borderColor = '#d1d5db';
                                                 }
@@ -2767,28 +2893,28 @@ if (aQtr.year !== bQtr.year) {
                                         {}
                                         <button
                                             key="last"
-                                            onClick={() => setCurrentPage(totalPages)}
-                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(totalPagesCount)}
+                                            disabled={currentPage === totalPagesCount}
                                             style={{
                                                 padding: '8px 12px',
                                                 border: '1px solid #d1d5db',
                                                 borderRadius: '6px',
-                                                backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                                backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
+                                                cursor: currentPage === totalPagesCount ? 'not-allowed' : 'pointer',
                                                 fontSize: '16px',
-                                                color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                                                color: currentPage === totalPagesCount ? '#d1d5db' : '#6b7280',
                                                 fontWeight: '600',
                                                 transition: 'all 0.2s',
-                                                opacity: currentPage === totalPages ? 0.5 : 1
+                                                opacity: currentPage === totalPagesCount ? 0.5 : 1
                                             }}
                                             onMouseEnter={(e) => {
-                                                if (currentPage < totalPages) {
+                                                if (currentPage < totalPagesCount) {
                                                     e.target.style.backgroundColor = '#f9fafb';
                                                     e.target.style.borderColor = '#9ca3af';
                                                 }
                                             }}
                                             onMouseLeave={(e) => {
-                                                if (currentPage < totalPages) {
+                                                if (currentPage < totalPagesCount) {
                                                     e.target.style.backgroundColor = 'white';
                                                     e.target.style.borderColor = '#d1d5db';
                                                 }
@@ -2807,7 +2933,7 @@ if (aQtr.year !== bQtr.year) {
                             color: '#6b7280',
                             fontWeight: '500'
                         }}>
-                            Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length.toLocaleString()} results
+                            Showing {totalRecords === 0 ? 0 : ((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, totalRecords)} of {totalRecords.toLocaleString()} results
                         </div>
                     </div>
                     )}

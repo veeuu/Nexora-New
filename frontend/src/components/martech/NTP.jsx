@@ -183,6 +183,20 @@ const NTP = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [metadata, setMetadata] = useState({
+    categories: [],
+    technologies: [],
+    predictions: [],
+    companies: [],
+    totalRecords: 0
+  });
+  const [summary, setSummary] = useState({
+    categories: [],
+    technologies: [],
+    predictions: [],
+    companies: [],
+    totalRecords: 0
+  });
   const [filters, setFilters] = useState({
     companyName: [],
     technology: [],
@@ -204,7 +218,9 @@ const NTP = () => {
   const [copiedCompany, setCopiedCompany] = useState(null);
   const [chatbotOpen, setChatbotOpen] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const rowsPerPage = 10;
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const rowsPerPage = 100;
 
   const handleTechScroll = (e) => {
     const scrollTop = e.target.scrollTop;
@@ -278,39 +294,124 @@ const NTP = () => {
     setCurrentPage(1); 
   };
 
-  const handleDownloadCSV = (dataToDownload) => {
-    // Filter to only include revealed companies
-    const revealedData = dataToDownload.filter((row, index) => {
-      const rowKey = `${index}-${row.companyName}`;
-      return revealedRows.has(rowKey);
-    });
+  const handleDownloadCSV = async () => {
+    try {
+      const revealedRowKeys = new Set();
+      filteredData.forEach((row, index) => {
+        const rowKey = `${index}-${row.companyName}`;
+        if (revealedRows.has(rowKey)) {
+          const key = `${row.companyName}|${row.category}|${row.technology}|${row.purchasePrediction}`;
+          revealedRowKeys.add(key);
+        }
+      });
 
-    if (revealedData.length === 0) {
-      alert('No revealed companies to download. Please reveal company details first.');
-      return;
+      if (revealedRowKeys.size === 0) {
+        alert('No revealed companies to download. Please reveal company details first.');
+        return;
+      }
+
+      const queryParams = new URLSearchParams();
+      if (filters.companyName.length > 0) {
+        filters.companyName.forEach(name => queryParams.append('companyName', name));
+      }
+      if (filters.technology.length > 0) {
+        filters.technology.forEach(tech => queryParams.append('technology', tech));
+      }
+      if (filters.purchasePrediction.length > 0) {
+        filters.purchasePrediction.forEach(pred => queryParams.append('prediction', pred));
+      }
+      if (filters.category.length > 0) {
+        filters.category.forEach(cat => queryParams.append('category', cat));
+      }
+
+      const response = await fetch(`/api/ntp/export?${queryParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to export ntp');
+      }
+      const text = await response.text();
+
+      const rows = text
+        .split('\n')
+        .filter(Boolean)
+        .map(line => {
+          try {
+            return JSON.parse(line);
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      const revealedData = rows.filter(row => {
+        const key = `${row.companyName}|${row.category}|${row.technology}|${row.purchasePrediction}`;
+        return revealedRowKeys.has(key);
+      });
+
+      if (revealedData.length === 0) {
+        alert('No revealed companies to download. Please reveal company details first.');
+        return;
+      }
+
+      const headers = [
+        'companyName', 'domain', 'category', 'technology',
+        'purchaseProbability', 'purchasePrediction'
+      ];
+
+      const csvContent = [
+        headers.join(','),
+        ...revealedData.map(row =>
+          headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
+        )
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'ntp_data.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert('Failed to export NTP. Please try again.');
     }
+  };
 
-    const headers = [
-      'companyName', 'domain', 'category', 'technology',
-      'purchaseProbability', 'purchasePrediction'
-    ];
+  const fetchPage = async (pageNum, retries = 3, delay = 500) => {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', pageNum);
+      queryParams.append('limit', rowsPerPage);
 
-    const csvContent = [
-      headers.join(','),
-      ...revealedData.map(row =>
-        headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
-      )
-    ].join('\n');
+      if (filters.companyName.length > 0) {
+        filters.companyName.forEach(name => queryParams.append('companyName', name));
+      }
+      if (filters.technology.length > 0) {
+        filters.technology.forEach(tech => queryParams.append('technology', tech));
+      }
+      if (filters.purchasePrediction.length > 0) {
+        filters.purchasePrediction.forEach(pred => queryParams.append('prediction', pred));
+      }
+      if (filters.category.length > 0) {
+        filters.category.forEach(cat => queryParams.append('category', cat));
+      }
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'ntp_data.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const response = await fetch(`/api/ntp?${queryParams.toString()}`);
+      const data = await response.json();
+
+      if (response.status === 503 && retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000));
+      }
+
+      setTableData(data.data || []);
+      setTotalRecords(data.total || 0);
+      setTotalPages(data.pages || 0);
+      return data;
+    } catch (err) {
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -319,32 +420,18 @@ const NTP = () => {
         setLoading(true);
         setError(null);
 
-        const metadataResponse = await fetch('/api/ntp/metadata');
-        await metadataResponse.json();
+        const [metadataResponse, summaryResponse] = await Promise.all([
+          fetch('/api/ntp/metadata'),
+          fetch('/api/ntp/summary')
+        ]);
 
-        let allData = null;
-        let retries = 10;
-        
-        while (!allData && retries > 0) {
-          const allDataResponse = await fetch('/api/ntp/all');
-          
-          if (allDataResponse.status === 503) {
-            
-            const delay = Math.min(500 * Math.pow(1.5, 10 - retries), 5000);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            retries--;
-          } else if (allDataResponse.ok) {
-            allData = await allDataResponse.json();
-          } else {
-            throw new Error(`HTTP error! status: ${allDataResponse.status}`);
-          }
-        }
-        
-        if (!allData) {
-          throw new Error('Failed to fetch all data after retries');
-        }
-        
-        setTableData(allData.data || []);
+        const metadataData = await metadataResponse.json();
+        const summaryData = await summaryResponse.json();
+
+        setMetadata(metadataData);
+        setSummary(summaryData);
+
+        await fetchPage(1);
       } catch (e) {
         setError(e.message);
         setTableData([]);
@@ -355,6 +442,16 @@ const NTP = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (currentPage === 1) return;
+    fetchPage(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchPage(1);
+  }, [filters]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -371,43 +468,24 @@ const NTP = () => {
   }, [activeFilterMenu, showFilters]);
 
   const getUniqueOptions = (key) => {
+    if (key === 'companyName') return summary.companies || [];
+    if (key === 'technology') return (summary.technologies || []).map(t => t.label);
+    if (key === 'category') return (summary.categories || []).map(c => c.label);
+    if (key === 'purchasePrediction') return (summary.predictions || []).map(p => p.label);
+
     if (!tableData) return [];
     const allValues = tableData.map(item => item[key]);
     return [...new Set(allValues)].sort();
   };
 
-  const getCompanyCountByCategory = (category) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.category === category) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
+  const getCountFromSummary = (list, label) => {
+    const match = (list || []).find(item => item.label === label);
+    return match ? match.value : 0;
   };
 
-  const getCompanyCountByTechnology = (technology) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.technology === technology) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
-
-  const getCompanyCountByPurchasePrediction = (prediction) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.purchasePrediction === prediction) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
+  const getCompanyCountByCategory = (category) => getCountFromSummary(summary.categories, category);
+  const getCompanyCountByTechnology = (technology) => getCountFromSummary(summary.technologies, technology);
+  const getCompanyCountByPurchasePrediction = (prediction) => getCountFromSummary(summary.predictions, prediction);
 
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
@@ -975,7 +1053,7 @@ const NTP = () => {
           </div>
           
           {}
-          <button className="download-csv-button" onClick={() => handleDownloadCSV(filteredData)}>
+          <button className="download-csv-button" onClick={handleDownloadCSV}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -1215,30 +1293,14 @@ const NTP = () => {
 
       {}
       {filteredData.length > 0 && (() => {
-        const groupedData = {};
-        const uniqueCompanies = new Set();
-        
-        filteredData.forEach(row => {
-          const key = `${row.category}|${row.purchasePrediction}`;
-          if (!groupedData[key]) {
-            groupedData[key] = { companies: new Map() };
-          }
-          if (!groupedData[key].companies.has(row.companyName)) {
-            groupedData[key].companies.set(row.companyName, true);
-          }
-          // Add to unique companies set
-          uniqueCompanies.add(row.companyName);
-        });
-        
-        const totalCompanies = uniqueCompanies.size;
-        const totalPages = Math.ceil(totalCompanies / rowsPerPage);
+        const totalPagesCount = Math.max(1, totalPages || Math.ceil((totalRecords || 0) / rowsPerPage));
         const startIndex = (currentPage - 1) * rowsPerPage + 1;
-        const endIndex = Math.min(currentPage * rowsPerPage, totalCompanies);
+        const endIndex = Math.min(currentPage * rowsPerPage, totalRecords || 0);
 
-        return totalPages > 1 ? (
+        return totalPagesCount > 1 ? (
           <div className="ntp-pagination-wrapper">
             <div className="ntp-pagination-info">
-              Page {currentPage} of {totalPages.toLocaleString()}
+              Page {currentPage} of {totalPagesCount.toLocaleString()}
             </div>
 
             {}
@@ -1246,14 +1308,14 @@ const NTP = () => {
               {(() => {
                 const maxPagesToShow = 5;
                 let startPage = 1;
-                let endPage = Math.min(maxPagesToShow, totalPages);
+                let endPage = Math.min(maxPagesToShow, totalPagesCount);
 
                 if (currentPage > maxPagesToShow) {
                   startPage = currentPage - Math.floor(maxPagesToShow / 2);
                   endPage = startPage + maxPagesToShow - 1;
 
-                  if (endPage > totalPages) {
-                    endPage = totalPages;
+                  if (endPage > totalPagesCount) {
+                    endPage = totalPagesCount;
                     startPage = Math.max(1, endPage - maxPagesToShow + 1);
                   }
                 }
@@ -1306,15 +1368,15 @@ const NTP = () => {
                       </button>
                     ))}
 
-                    {endPage < totalPages && (
+                    {endPage < totalPagesCount && (
                       <>
-                        {endPage < totalPages - 1 && <span className="ntp-pagination-ellipsis">...</span>}
+                        {endPage < totalPagesCount - 1 && <span className="ntp-pagination-ellipsis">...</span>}
                         <button
-                          key={totalPages}
-                          onClick={() => setCurrentPage(totalPages)}
+                          key={totalPagesCount}
+                          onClick={() => setCurrentPage(totalPagesCount)}
                           className="ntp-pagination-last-button"
                         >
-                          {totalPages}
+                          {totalPagesCount}
                         </button>
                       </>
                     )}
@@ -1322,8 +1384,8 @@ const NTP = () => {
                     {}
                     <button
                       key="next"
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(Math.min(totalPagesCount, currentPage + 1))}
+                      disabled={currentPage === totalPagesCount}
                       className="ntp-pagination-button"
                       title="Next page"
                     >
@@ -1333,8 +1395,8 @@ const NTP = () => {
                     {}
                     <button
                       key="last"
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPagesCount)}
+                      disabled={currentPage === totalPagesCount}
                       className="ntp-pagination-button"
                       title="Last page"
                     >
@@ -1346,7 +1408,7 @@ const NTP = () => {
             </div>
 
             <div className="ntp-pagination-results">
-              Showing {startIndex}-{endIndex} of {totalCompanies.toLocaleString()} results
+              Showing {startIndex}-{endIndex} of {(totalRecords || 0).toLocaleString()} results
             </div>
           </div>
         ) : null;

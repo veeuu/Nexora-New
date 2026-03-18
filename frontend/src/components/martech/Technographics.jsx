@@ -1,4 +1,4 @@
-ï»¿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -565,15 +565,15 @@ const employeeSizeRanges = [
 
 const revenueRanges = [
   { label: '<$1M', min: 0, max: 1000000 },
-  { label: '$1Mâ€“$5M', min: 1000000, max: 5000000 },
-  { label: '$5Mâ€“$10M', min: 5000000, max: 10000000 },
-  { label: '$10Mâ€“$25M', min: 10000000, max: 25000000 },
-  { label: '$25Mâ€“$50M', min: 25000000, max: 50000000 },
-  { label: '$50Mâ€“$100M', min: 50000000, max: 100000000 },
-  { label: '$100Mâ€“$250M', min: 100000000, max: 250000000 },
-  { label: '$250Mâ€“$500M', min: 250000000, max: 500000000 },
-  { label: '$500Mâ€“$1B', min: 500000000, max: 1000000000 },
-  { label: '$1Bâ€“$10B', min: 1000000000, max: 10000000000 },
+  { label: '$1M–$5M', min: 1000000, max: 5000000 },
+  { label: '$5M–$10M', min: 5000000, max: 10000000 },
+  { label: '$10M–$25M', min: 10000000, max: 25000000 },
+  { label: '$25M–$50M', min: 25000000, max: 50000000 },
+  { label: '$50M–$100M', min: 50000000, max: 100000000 },
+  { label: '$100M–$250M', min: 100000000, max: 250000000 },
+  { label: '$250M–$500M', min: 250000000, max: 500000000 },
+  { label: '$500M–$1B', min: 500000000, max: 1000000000 },
+  { label: '$1B–$10B', min: 1000000000, max: 10000000000 },
   { label: '$10B+', min: 10000000000, max: Infinity }
 ];
 
@@ -581,7 +581,7 @@ const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
 
   const strValue = String(value);
-  if (strValue.includes('+') || strValue.includes('â€“') || strValue.includes('-') || strValue.includes(',')) {
+  if (strValue.includes('+') || strValue.includes('–') || strValue.includes('-') || strValue.includes(',')) {
     return strValue;
   }
   
@@ -762,6 +762,26 @@ const Technographics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { setIndustryData, setTechnologyData, setAvailableRegions } = useIndustry();
+  const [metadata, setMetadata] = useState({
+    regions: [],
+    industries: [],
+    categories: [],
+    employeeSizes: [],
+    revenues: [],
+    totalRecords: 0
+  });
+  const [summary, setSummary] = useState({
+    regions: [],
+    industries: [],
+    categories: [],
+    employeeSizes: [],
+    revenues: [],
+    technologies: [],
+    companies: [],
+    regionCategoryCounts: {},
+    totalRecords: 0
+  });
+  const [filterOptions, setFilterOptions] = useState([]);
   const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
   const [filters, setFilters] = useState({
     companyName: [],
@@ -779,7 +799,7 @@ const Technographics = () => {
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const filterRef = useRef(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [ntpData, setNtpData] = useState([]);
+  const [ntpDataByCompany, setNtpDataByCompany] = useState({});
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1); 
   const [revealedRows, setRevealedRows] = useState(new Set()); 
@@ -789,8 +809,27 @@ const Technographics = () => {
   const [pageLoading, setPageLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0); 
   const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); 
-  const rowsPerPage = 10;
+  const rowsPerPage = 100;
   const scrollRefsMap = useRef(new Map()); 
+
+  const normalizeKey = (value) => String(value || '').trim().toLowerCase();
+
+  const categoryTechMap = useMemo(() => {
+    const map = new Map();
+    (filterOptions || []).forEach((item) => {
+      const categoryRaw = item?.Category ?? item?.category;
+      const techRaw = item?.['Normalized Keyword'] ?? item?.normalizedKeyword ?? item?.normalized_keyword ?? item?.normalized;
+      const categoryKey = normalizeKey(categoryRaw);
+      const techKey = normalizeKey(techRaw);
+      if (!categoryKey || !techKey) return;
+
+      if (!map.has(categoryKey)) {
+        map.set(categoryKey, new Set());
+      }
+      map.get(categoryKey).add(techKey);
+    });
+    return map;
+  }, [filterOptions]);
 
   const renderTechLogo = (techName) => {
     if (!techName) return null;
@@ -803,7 +842,7 @@ const Technographics = () => {
     }
     
     const logoPath = getLogoPath(techName);
-    console.log(`ðŸ–¼ï¸ renderTechLogo called for "${techName}":`, logoPath ? 'âœ… Logo found' : 'âŒ No logo');
+    console.log(`??? renderTechLogo called for "${techName}":`, logoPath ? '? Logo found' : '? No logo');
 
     if (logoPath) {
       return (
@@ -820,11 +859,11 @@ const Technographics = () => {
             objectFit: 'contain'
           }}
           onError={(e) => {
-            console.error(`âŒ Failed to load logo image for "${techName}":`, logoPath);
+            console.error(`? Failed to load logo image for "${techName}":`, logoPath);
             e.target.style.display = 'none';
           }}
           onLoad={() => {
-            console.log(`âœ… Logo image loaded successfully for "${techName}"`);
+            console.log(`? Logo image loaded successfully for "${techName}"`);
           }}
         />
       );
@@ -833,7 +872,7 @@ const Technographics = () => {
     const iconData = getTechIcon(techName);
     if (iconData) {
       const { component: IconComponent, color } = iconData;
-      console.log(`ðŸ“Œ Using icon for "${techName}"`);
+      console.log(`?? Using icon for "${techName}"`);
       return (
         <IconComponent
           size={16}
@@ -850,7 +889,7 @@ const Technographics = () => {
       );
     }
     
-    console.warn(`âš ï¸ No logo or icon available for "${techName}"`);
+    console.warn(`?? No logo or icon available for "${techName}"`);
     return null;
   };
 
@@ -877,16 +916,88 @@ const Technographics = () => {
     setTotalRecords(0); 
   };
 
-  const handleDownloadCSV = () => {
-    let dataToDownload = selectedRows.size > 0 
-      ? groupedDataArray.filter((_, index) => selectedRows.has(index))
-      : groupedDataArray;
+  const handleDownloadCSV = async () => {
+    try {
+      const selectedCompanyNames = new Set(
+        selectedRows.size > 0
+          ? groupedDataArray.filter((_, index) => selectedRows.has(index)).map(row => row.companyName)
+          : []
+      );
 
-    // Filter to only include revealed companies
-    dataToDownload = dataToDownload.filter((row, index) => {
-      const rowKey = `${index}-${row.companyName}`;
-      return revealedRows.has(rowKey);
+      const revealedCompanyNames = new Set();
+      groupedDataArray.forEach((row, index) => {
+        const rowKey = `${index}-${row.companyName}`;
+        if (revealedRows.has(rowKey)) {
+          revealedCompanyNames.add(row.companyName);
+        }
+      });
+
+      if (revealedCompanyNames.size === 0) {
+        alert('No revealed companies to download. Please reveal company details first.');
+        return;
+      }
+
+      const exportCompanyNames = selectedCompanyNames.size > 0
+        ? Array.from(selectedCompanyNames)
+        : Array.from(revealedCompanyNames);
+
+      const queryParams = new URLSearchParams();
+      if (exportCompanyNames.length > 0) {
+        exportCompanyNames.forEach(name => queryParams.append('companyName', name));
+      } else if (filters.companyName.length > 0) {
+        filters.companyName.forEach(name => queryParams.append('companyName', name));
+      }
+      if (filters.region.length > 0) filters.region.forEach(region => queryParams.append('region', region));
+      if (filters.technology.length > 0) filters.technology.forEach(tech => queryParams.append('technology', tech));
+      if (filters.category.length > 0) filters.category.forEach(cat => queryParams.append('category', cat));
+      if (filters.industry.length > 0) filters.industry.forEach(ind => queryParams.append('industry', ind));
+      if (filters.employeeSize.length > 0) filters.employeeSize.forEach(size => queryParams.append('employeeSize', size));
+      if (filters.revenue.length > 0) filters.revenue.forEach(rev => queryParams.append('revenue', rev));
+
+      const response = await fetch(`/api/technographics/export?${queryParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to export technographics');
+      }
+      const text = await response.text();
+
+    const rows = text
+      .split('\n')
+      .filter(Boolean)
+      .map(line => {
+        try {
+          return JSON.parse(line);
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    const grouped = {};
+    rows.forEach(row => {
+      const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          companyName: row.companyName,
+          domain: row.domain,
+          industry: row.industry,
+          region: row.region,
+          employeeSize: row.employeeSize,
+          revenue: row.revenue,
+          technologies: []
+        };
+      }
+      if (row.technology && !grouped[key].technologies.includes(row.technology)) {
+        grouped[key].technologies.push(row.technology);
+      }
     });
+
+    let dataToDownload = Object.values(grouped);
+    if (selectedCompanyNames.size > 0) {
+      dataToDownload = dataToDownload.filter(row => selectedCompanyNames.has(row.companyName));
+    }
+    if (revealedCompanyNames.size > 0) {
+      dataToDownload = dataToDownload.filter(row => revealedCompanyNames.has(row.companyName));
+    }
 
     if (dataToDownload.length === 0) {
       alert('No revealed companies to download. Please reveal company details first.');
@@ -907,15 +1018,18 @@ const Technographics = () => {
       )
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'technographics_data.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'technographics_data.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert('Failed to export technographics. Please try again.');
+    }
   };
 
   useEffect(() => {
@@ -945,16 +1059,19 @@ const Technographics = () => {
     }
   }, [openFilterDropdown, showFilters]);
 
-  const fetchPage = async (pageNum, retries = 5, delay = 500) => {
-    if (pageCache[pageNum]) {
-      return pageCache[pageNum];
+  const fetchPage = async (pageNum, retries = 3, delay = 500) => {
+    const cached = pageCache[pageNum];
+    if (cached) {
+      setTableData(cached.data || []);
+      setTotalRecords(cached.total || 0);
+      setTotalPages(cached.pages || 0);
+      return cached;
     }
 
     try {
-      
       const queryParams = new URLSearchParams();
       queryParams.append('page', pageNum);
-      queryParams.append('limit', 500);
+      queryParams.append('limit', rowsPerPage);
 
       if (filters.companyName.length > 0) {
         filters.companyName.forEach(name => queryParams.append('companyName', name));
@@ -971,6 +1088,12 @@ const Technographics = () => {
       if (filters.industry.length > 0) {
         filters.industry.forEach(ind => queryParams.append('industry', ind));
       }
+      if (filters.employeeSize.length > 0) {
+        filters.employeeSize.forEach(size => queryParams.append('employeeSize', size));
+      }
+      if (filters.revenue.length > 0) {
+        filters.revenue.forEach(rev => queryParams.append('revenue', rev));
+      }
 
       const response = await fetch(`/api/technographics?${queryParams.toString()}`);
       const data = await response.json();
@@ -980,15 +1103,15 @@ const Technographics = () => {
         return fetchPage(pageNum, retries - 1, Math.min(delay * 1.5, 5000)); 
       }
 
-      if (!data.data || data.data.length === 0) {
-        return data;
-      }
-      
+      setTableData(data.data || []);
+      setTotalRecords(data.total || 0);
+      setTotalPages(data.pages || 0);
+
       setPageCache(prev => ({
         ...prev,
         [pageNum]: data
       }));
-      
+
       return data;
     } catch (err) {
       return null;
@@ -1014,103 +1137,42 @@ const Technographics = () => {
         setLoading(true);
         setError(null);
 
-        const metadataResponse = await fetch('/api/technographics/metadata');
-        const metadata = await metadataResponse.json();
+        const [metadataResponse, summaryResponse, filterOptionsResponse] = await Promise.all([
+          fetch('/api/technographics/metadata'),
+          fetch('/api/technographics/summary'),
+          fetch('/api/technographics/filter-options')
+        ]);
 
-        let allData = null;
-        let retries = 10;
-        let delay = 500;
-        
-        while (!allData && retries > 0) {
-          const allDataResponse = await fetch('/api/technographics/all');
-          
-          if (allDataResponse.status === 503) {
-            await new Promise(resolve => setTimeout(resolve, delay));
-            delay = Math.min(delay * 1.5, 5000); 
-            retries--;
-          } else {
-            allData = await allDataResponse.json();
-            break;
-          }
+        const metadataData = await metadataResponse.json();
+        const summaryData = await summaryResponse.json();
+        let filterOptionsData = [];
+        if (filterOptionsResponse && filterOptionsResponse.ok) {
+          const raw = await filterOptionsResponse.json();
+          filterOptionsData = Array.isArray(raw) ? raw : (raw?.data || []);
         }
 
-        let ntpAllData = null;
-        let ntpRetries = 10;
-        let ntpDelay = 500;
-        
-        while (!ntpAllData && ntpRetries > 0) {
-          const ntpResponse = await fetch('/api/ntp/all');
-          
-          if (ntpResponse.status === 503) {
-            await new Promise(resolve => setTimeout(resolve, ntpDelay));
-            ntpDelay = Math.min(ntpDelay * 1.5, 5000);
-            ntpRetries--;
-          } else if (ntpResponse.ok) {
-            ntpAllData = await ntpResponse.json();
-            break;
-          }
-        }
-        
-        if (!allData) {
-          throw new Error('Failed to fetch all data after multiple retries');
-        }
+        setMetadata(metadataData);
+        setSummary(summaryData);
+        setFilterOptions(filterOptionsData);
 
-        const data = allData.data || [];
+        setIndustryData(summaryData.industries || []);
 
-        const industryCounts = {};
-        metadata.industries.forEach(industry => {
-          industryCounts[industry] = 0;
-        });
-
-        data.forEach(row => {
-          const industry = row.industry || 'Other';
-          industryCounts[industry] = (industryCounts[industry] || 0) + 1;
-        });
-
-        const industryArray = Object.entries(industryCounts).map(([label, value]) => ({
-          label,
-          value
-        }));
-
-        const techByRegion = {};
-        const regions = new Set();
-
-        data.forEach(row => {
-          const region = row.region || 'Unknown';
-          const category = row.category || 'Other';
-
-          regions.add(region);
-
-          if (!techByRegion[region]) {
-            techByRegion[region] = {};
-          }
-
-          if (!techByRegion[region][category]) {
-            techByRegion[region][category] = 0;
-          }
-
-          techByRegion[region][category]++;
-        });
-
+        const regionCategoryCounts = summaryData.regionCategoryCounts || {};
         const techDataWithPercentages = {};
-        Object.keys(techByRegion).forEach(region => {
-          const total = Object.values(techByRegion[region]).reduce((sum, count) => sum + count, 0);
+        Object.keys(regionCategoryCounts).forEach(region => {
+          const total = Object.values(regionCategoryCounts[region]).reduce((sum, count) => sum + count, 0);
           techDataWithPercentages[region] = {};
-
-          Object.keys(techByRegion[region]).forEach(category => {
-            const percentage = total > 0 ? Math.round((techByRegion[region][category] / total) * 100) : 0;
+          Object.keys(regionCategoryCounts[region]).forEach(category => {
+            const percentage = total > 0 ? Math.round((regionCategoryCounts[region][category] / total) * 100) : 0;
             techDataWithPercentages[region][category] = percentage;
           });
         });
 
-        setTableData(data);
-        setIndustryData(industryArray);
         setTechnologyData(techDataWithPercentages);
-        setAvailableRegions(Array.from(regions).sort());
+        const regionList = (summaryData.regions || []).map(r => r.label).filter(Boolean);
+        setAvailableRegions(regionList.length > 0 ? regionList : (metadataData.regions || []));
 
-        if (ntpAllData && ntpAllData.data) {
-          setNtpData(ntpAllData.data);
-        }
+        await fetchPage(1);
       } catch (e) {
         setError(e.message);
         setTableData([]);
@@ -1123,58 +1185,71 @@ const Technographics = () => {
   }, [setIndustryData, setTechnologyData, setAvailableRegions]);
 
   useEffect(() => {
-    if (Object.keys(pageCache).length > 0) {
-      
-      const reloadAllData = async () => {
-        try {
-          setPageLoading(true);
-
-          const queryParams = new URLSearchParams();
-
-          if (filters.companyName.length > 0) {
-            filters.companyName.forEach(name => queryParams.append('companyName', name));
-          }
-          if (filters.region.length > 0) {
-            filters.region.forEach(region => queryParams.append('region', region));
-          }
-          if (filters.technology.length > 0) {
-            filters.technology.forEach(tech => queryParams.append('technology', tech));
-          }
-          if (filters.category.length > 0) {
-            filters.category.forEach(cat => queryParams.append('category', cat));
-          }
-          if (filters.industry.length > 0) {
-            filters.industry.forEach(ind => queryParams.append('industry', ind));
-          }
-
-          const response = await fetch(`/api/technographics/all?${queryParams.toString()}`);
-          const allData = await response.json();
-          
-          if (allData && allData.data) {
-            setTableData(allData.data || []);
-            setTotalRecords(allData.total || 0);
-          }
-        } catch (err) {
-        } finally {
-          setPageLoading(false);
-        }
-      };
-      reloadAllData();
-    }
+    setPageCache({});
+    setCurrentPage(1);
+    setPageLoading(true);
+    fetchPage(1).finally(() => setPageLoading(false));
   }, [filters]);
 
+  useEffect(() => {
+    if (currentPage === 1) return;
+    setPageLoading(true);
+    fetchPage(currentPage).finally(() => setPageLoading(false));
+  }, [currentPage]);
+
+  const getAvailableTechnologies = () => {
+    const summaryTechs = (summary.technologies || []).map(t => t.label).filter(Boolean);
+    const fallbackTechs = (filterOptions || [])
+      .map(item => item?.['Normalized Keyword'] ?? item?.normalizedKeyword ?? item?.normalized_keyword ?? item?.normalized)
+      .filter(Boolean);
+    const allTechs = summaryTechs.length > 0 ? summaryTechs : Array.from(new Set(fallbackTechs));
+
+    if (!filterOptions || filterOptions.length === 0) return allTechs;
+    if (!filters.category || filters.category.length === 0) return allTechs;
+
+    const allowed = new Set();
+    filters.category.forEach((cat) => {
+      const set = categoryTechMap.get(normalizeKey(cat));
+      if (set) {
+        set.forEach(t => allowed.add(t));
+      }
+    });
+
+    if (allowed.size === 0) return [];
+    return allTechs.filter(tech => allowed.has(normalizeKey(tech)));
+  };
+
+  useEffect(() => {
+    if (!filters.category || filters.category.length === 0) return;
+    const available = getAvailableTechnologies();
+    const allowed = new Set(available.map(t => normalizeKey(t)));
+    const nextTech = filters.technology.filter(t => allowed.has(normalizeKey(t)));
+    if (nextTech.length !== filters.technology.length) {
+      setFilters(prev => ({ ...prev, technology: nextTech }));
+      setCurrentPage(1);
+      setPageCache({});
+      setTotalRecords(0);
+    }
+  }, [filters.category, filters.technology, filterOptions, summary.technologies, categoryTechMap]);
+
   const getUniqueOptions = (key) => {
+    if (key === 'companyName') return summary.companies || [];
+    if (key === 'region') return (summary.regions || []).map(r => r.label);
+    if (key === 'category') return (summary.categories || []).map(c => c.label);
+    if (key === 'industry') return (summary.industries || []).map(i => i.label);
+    if (key === 'technology') return getAvailableTechnologies();
+    if (key === 'employeeSize') return (summary.employeeSizes || []).map(e => e.label);
+    if (key === 'revenue') return (summary.revenues || []).map(r => r.label);
+
     if (!tableData || tableData.length === 0) {
       return [];
     }
-    
+
     const allValues = tableData
       .map(item => item[key])
       .filter(val => val !== undefined && val !== null);
-    
-    const uniqueValues = [...new Set(allValues)].sort();
 
-    return uniqueValues;
+    return [...new Set(allValues)].sort();
   };
 
   // Get available categories for selected companies
@@ -1193,83 +1268,24 @@ const Technographics = () => {
     return Array.from(availableCategories).sort();
   };
 
-  const getCompanyCountByCategory = (category) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.category === category) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
+  const getCountFromSummary = (list, label) => {
+    const match = (list || []).find(item => item.label === label);
+    return match ? match.value : 0;
   };
 
-  const getCompanyCountByRegion = (region) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.region === region) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
-
-  const getCompanyCountByIndustry = (industry) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.industry === industry) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
-
-  const getCompanyCountByRevenue = (revenue) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.revenue === revenue) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
-
-  const getCompanyCountByTechnology = (technology) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (row.technology === technology) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
-
-  const getCompanyCountByEmployeeSize = (rangeLabel) => {
-    if (!tableData) return 0;
-    const uniqueCompanies = new Set();
-    tableData.forEach(row => {
-      if (isEmployeeSizeInRange(row.employeeSize, rangeLabel)) {
-        uniqueCompanies.add(row.companyName);
-      }
-    });
-    return uniqueCompanies.size;
-  };
+  const getCompanyCountByCategory = (category) => getCountFromSummary(summary.categories, category);
+  const getCompanyCountByRegion = (region) => getCountFromSummary(summary.regions, region);
+  const getCompanyCountByIndustry = (industry) => getCountFromSummary(summary.industries, industry);
+  const getCompanyCountByRevenue = (revenue) => getCountFromSummary(summary.revenues, revenue);
+  const getCompanyCountByTechnology = (technology) => getCountFromSummary(summary.technologies, technology);
+  const getCompanyCountByEmployeeSize = (rangeLabel) => getCountFromSummary(summary.employeeSizes, rangeLabel);
 
   const getNtpDataForCompany = (companyName) => {
-    if (!companyName || !ntpData || ntpData.length === 0) {
+    if (!companyName) {
       return [];
     }
 
-    const normalizedCompanyName = String(companyName).trim().toLowerCase();
-    
-    let data = ntpData.filter(row => {
-      const rowCompanyName = String(row.companyName || '').trim().toLowerCase();
-      return rowCompanyName === normalizedCompanyName;
-    });
+    let data = ntpDataByCompany[companyName] || [];
 
     if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
       data = data.filter(row => {
@@ -1280,6 +1296,31 @@ const Technographics = () => {
     
     return data;
   };
+
+  useEffect(() => {
+    if (!selectedCompany) return;
+    if (ntpDataByCompany[selectedCompany]) return;
+
+    const fetchCompanyNtp = async () => {
+      try {
+        const params = new URLSearchParams();
+        params.append('companyName', selectedCompany);
+        params.append('page', '1');
+        params.append('limit', '500');
+
+        const response = await fetch(`/api/ntp?${params.toString()}`);
+        const result = await response.json();
+
+        setNtpDataByCompany(prev => ({
+          ...prev,
+          [selectedCompany]: result.data || []
+        }));
+      } catch (err) {
+      }
+    };
+
+    fetchCompanyNtp();
+  }, [selectedCompany, ntpDataByCompany]);
 
   const rowMatchesSearch = (row) => {
     if (!searchTerm) return false;
@@ -1429,10 +1470,10 @@ const Technographics = () => {
 
   useEffect(() => {
     setTotalGroupedRecords(groupedDataArray.length);
-    
-    const calculatedPages = Math.ceil(groupedDataArray.length / rowsPerPage);
+
+    const calculatedPages = Math.ceil((totalRecords || 0) / rowsPerPage);
     setTotalPages(calculatedPages);
-  }, [groupedDataArray.length]);
+  }, [groupedDataArray.length, totalRecords, rowsPerPage]);
 
   if (loading) {
     return (
@@ -1586,7 +1627,7 @@ const Technographics = () => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            âš 
+            ?
           </div>
           <div style={{
             fontSize: '14px',
@@ -1608,7 +1649,7 @@ const Technographics = () => {
               lineHeight: '1'
             }}
           >
-            âœ•
+            ?
           </button>
         </div>
       )}
@@ -1806,7 +1847,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -2021,7 +2062,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -2204,7 +2245,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ?
               </button>
             </div>
           )}
@@ -2238,7 +2279,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               <div style={{
@@ -2420,7 +2461,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -2599,7 +2640,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ?
               </button>
             </div>
           )}
@@ -2636,7 +2677,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -2809,7 +2850,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ?
               </button>
             </div>
           )}
@@ -2846,7 +2887,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -3016,7 +3057,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ?
               </button>
             </div>
           )}
@@ -3053,7 +3094,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
               
@@ -3239,7 +3280,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                âœ•
+                ?
               </button>
             </div>
           )}
@@ -3288,7 +3329,7 @@ const Technographics = () => {
           </div>
           
           {}
-          <button className="download-csv-button" onClick={() => handleDownloadCSV(groupedDataArray)} style={{ flexShrink: 0, marginLeft: 'auto' }}>
+          <button className="download-csv-button" onClick={handleDownloadCSV} style={{ flexShrink: 0, marginLeft: 'auto' }}>
             <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
@@ -3309,14 +3350,14 @@ const Technographics = () => {
                 <input
                   type="checkbox"
                   checked={(() => {
-                    const rowsPerPageConst = 10;
+                    const rowsPerPageConst = rowsPerPage;
                     const startIndex = (currentPage - 1) * rowsPerPageConst;
                     const endIndex = startIndex + rowsPerPageConst;
                     const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
                     return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
                   })()}
                   onChange={(e) => {
-                    const rowsPerPageConst = 10;
+                    const rowsPerPageConst = rowsPerPage;
                     const startIndex = (currentPage - 1) * rowsPerPageConst;
                     const endIndex = startIndex + rowsPerPageConst;
                     const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
@@ -3400,12 +3441,11 @@ const Technographics = () => {
             {groupedDataArray.length > 0 ? (
               (() => {
                 
-                const rowsPerPageConst = 10;
+                const rowsPerPageConst = rowsPerPage;
                 const pageNum = currentPage || 1;
                 const startIndex = (pageNum - 1) * rowsPerPageConst;
-                const endIndex = startIndex + rowsPerPageConst;
-                const paginatedData = groupedDataArray.slice(startIndex, endIndex);
-                const totalPagesCount = Math.ceil(groupedDataArray.length / rowsPerPageConst);
+                const paginatedData = groupedDataArray;
+                const totalPagesCount = totalPages || Math.ceil((totalRecords || 0) / rowsPerPageConst);
 
                 return paginatedData.map((row, index) => {
                     const actualIndex = startIndex + index;
@@ -3602,10 +3642,10 @@ const Technographics = () => {
                             <>
                               <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <FaLock size={14} style={{ color: '#6b7280', filter: 'blur(0px)' }} />
-                                <span>â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢</span>
+                                <span>••••••••••••••••••</span>
                               </div>
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
-                                <span>â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢</span>
+                                <span>••••••••••</span>
                               </div>
                             </>
                           )}
@@ -3722,24 +3762,24 @@ const Technographics = () => {
 
       {}
       {groupedDataArray.length > 0 && (() => {
-        const rowsPerPageConst = 10;
-        const totalPages = Math.ceil(groupedDataArray.length / rowsPerPageConst);
+        const rowsPerPageConst = rowsPerPage;
+        const totalPagesCount = Math.max(1, totalPages || Math.ceil((totalRecords || 0) / rowsPerPageConst));
         const maxPagesToShow = 5;
         let startPage = 1;
-        let endPage = Math.min(maxPagesToShow, totalPages);
+        let endPage = Math.min(maxPagesToShow, totalPagesCount);
 
         if (currentPage > maxPagesToShow) {
           startPage = currentPage - Math.floor(maxPagesToShow / 2);
           endPage = startPage + maxPagesToShow - 1;
 
-          if (endPage > totalPages) {
-            endPage = totalPages;
+          if (endPage > totalPagesCount) {
+            endPage = totalPagesCount;
             startPage = Math.max(1, endPage - maxPagesToShow + 1);
           }
         }
 
         const startIndex = (currentPage - 1) * rowsPerPageConst;
-        const endIndex = Math.min(startIndex + rowsPerPageConst, groupedDataArray.length);
+        const endIndex = Math.min(startIndex + rowsPerPageConst, totalRecords || 0);
 
         return (
           <div style={{
@@ -3756,7 +3796,7 @@ const Technographics = () => {
               color: '#1f2937',
               fontWeight: '600'
             }}>
-              Page {currentPage} of {totalPages.toLocaleString()}
+              Page {currentPage} of {totalPagesCount.toLocaleString()}
             </div>
 
             {}
@@ -3800,7 +3840,7 @@ const Technographics = () => {
                       }}
                       title="First page"
                     >
-                      â‰ª
+                      «
                     </button>
 
                     {}
@@ -3834,7 +3874,7 @@ const Technographics = () => {
                       }}
                       title="Previous page"
                     >
-                      â€¹
+                      ‹
                     </button>
 
                     {}
@@ -3904,12 +3944,12 @@ const Technographics = () => {
                       </button>
                     ))}
 
-                    {endPage < totalPages && (
+                    {endPage < totalPagesCount && (
                       <>
-                        {endPage < totalPages - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
+                        {endPage < totalPagesCount - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
                         <button
-                          key={totalPages}
-                          onClick={() => setCurrentPage(totalPages)}
+                          key={totalPagesCount}
+                          onClick={() => setCurrentPage(totalPagesCount)}
                           style={{
                             padding: '8px 12px',
                             border: '1px solid #d1d5db',
@@ -3931,7 +3971,7 @@ const Technographics = () => {
                             e.target.style.borderColor = '#d1d5db';
                           }}
                         >
-                          {totalPages}
+                          {totalPagesCount}
                         </button>
                       </>
                     )}
@@ -3939,69 +3979,69 @@ const Technographics = () => {
                     {}
                     <button
                       key="next"
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(Math.min(totalPagesCount, currentPage + 1))}
+                      disabled={currentPage === totalPagesCount}
                       style={{
                         padding: '8px 12px',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPagesCount ? 'not-allowed' : 'pointer',
                         fontSize: '16px',
-                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        color: currentPage === totalPagesCount ? '#d1d5db' : '#6b7280',
                         fontWeight: '600',
                         transition: 'all 0.2s',
-                        opacity: currentPage === totalPages ? 0.5 : 1
+                        opacity: currentPage === totalPagesCount ? 0.5 : 1
                       }}
                       onMouseEnter={(e) => {
-                        if (currentPage < totalPages) {
+                        if (currentPage < totalPagesCount) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (currentPage < totalPages) {
+                        if (currentPage < totalPagesCount) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
                         }
                       }}
                       title="Next page"
                     >
-                      â€º
+                      ›
                     </button>
 
                     {}
                     <button
                       key="last"
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPagesCount)}
+                      disabled={currentPage === totalPagesCount}
                       style={{
                         padding: '8px 12px',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        backgroundColor: currentPage === totalPages ? '#f3f4f6' : 'white',
-                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
+                        cursor: currentPage === totalPagesCount ? 'not-allowed' : 'pointer',
                         fontSize: '16px',
-                        color: currentPage === totalPages ? '#d1d5db' : '#6b7280',
+                        color: currentPage === totalPagesCount ? '#d1d5db' : '#6b7280',
                         fontWeight: '600',
                         transition: 'all 0.2s',
-                        opacity: currentPage === totalPages ? 0.5 : 1
+                        opacity: currentPage === totalPagesCount ? 0.5 : 1
                       }}
                       onMouseEnter={(e) => {
-                        if (currentPage < totalPages) {
+                        if (currentPage < totalPagesCount) {
                           e.target.style.backgroundColor = '#f9fafb';
                           e.target.style.borderColor = '#9ca3af';
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (currentPage < totalPages) {
+                        if (currentPage < totalPagesCount) {
                           e.target.style.backgroundColor = 'white';
                           e.target.style.borderColor = '#d1d5db';
                         }
                       }}
                       title="Last page"
                     >
-                      â‰«
+                      »
                     </button>
                   </>
                 );
@@ -4013,7 +4053,7 @@ const Technographics = () => {
               color: '#6b7280',
               fontWeight: '500'
             }}>
-              Showing {startIndex + 1}-{endIndex} of {groupedDataArray.length.toLocaleString()} results
+              Showing {startIndex + 1}-{endIndex} of {(totalRecords || 0).toLocaleString()} results
             </div>
           </div>
         );
@@ -4047,7 +4087,7 @@ const Technographics = () => {
           </div>
           {tooltip.hint && (
             <div style={{ fontSize: '11px', color: 'rgb(0, 102, 204)', fontWeight: '400', fontStyle: 'italic' }}>
-              ðŸ’¡ {tooltip.hint}
+              ?? {tooltip.hint}
             </div>
           )}
           <div
@@ -4111,7 +4151,7 @@ const Technographics = () => {
                     color: '#666'
                   }}
                 >
-                  âœ•
+                  ?
                 </button>
               </div>
             </div>

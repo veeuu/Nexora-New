@@ -1,0 +1,1238 @@
+[
+  {
+    "Normalized Keyword": "Adobe Sensei",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AI Cloud Platform",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AI Orchestration",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AlphaFold",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Amazon Q",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Amazon Bedrock",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AWS SageMaker",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Generative AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Azure ML",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Azure OpenAI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Azure Cognitive Services",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Google AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Google Gemini",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Apache Airflow",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Prefect",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ML flow",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ML Ops",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Feature Store",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Model Serving",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Inference Engine",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "LLM",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ML",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "NLP",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "RAG",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Transformers",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "PyTorch",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "TensorFlow",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Keras",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "JAX",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ONNX",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "XGBoost",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Hugging Face",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "H2O.ai",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "DataRobot",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Databricks",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Replicate",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Cohere",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "DeepSeek",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Mid journey",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Mistral AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Jasper AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Perplexity AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Grok",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "OpenAI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ChatGPT",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Whisper",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Anthropic",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Claude",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Oracle AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "IBM Watson ML",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "watsonx",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "SAP AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Salesforce Einstein",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Pinecone",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Chroma",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Vectara",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Vector Database",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Cisco AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Explainable AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "LangChain",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Meta AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Microsoft Copilot",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Scikit-learn",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Splunk AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Stable Diffusion",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Fastai",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "PyTorch Lightning",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Kubeflow",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "ServiceNow AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Transfer Learning",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Notion AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Meta Llama 3",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Leena AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Apache MXNet",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "LlamaIndex",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Nvidia HGX",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Large Language Models",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Meta",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Workday",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Model Inference",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Perplexity",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "OpenCV",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "Cursor AI",
+    "Category": "AI/ML"
+  },
+  {
+    "Normalized Keyword": "AI Infrastructure",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Akamai",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AWS Lambda",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AWS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon S3",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon CloudFront",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon EC2",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon EKS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon EBS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon VPC",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Government Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure App Service",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure DevOps",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure Functions",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure Data Lake Storage",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure Synapse Analytics",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Google Cloud Run",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "GCP",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Cloudflare",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "CoreWeave",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "DigitalOcean",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Linode",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Vultr",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Heroku",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "IBM Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Oracle Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Nutanix",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "VMware",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "VMware vSphere",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "OpenStack",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "OpenShift",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Hyperconverged Infrastructure",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "GPU Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "ITAR",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "FedRAMP",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Virtual Private Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Managed Database Services",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Apache Kafka",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Docker",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Kubernetes",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Terraform",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Application Platform",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Edge Computing",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "ServiceNow",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Microsoft Fabric",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon ECS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Workday",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Cloudflare CDN",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "VMware vCloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Microsoft Azure",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Microsoft Azure Kubernetes Service",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Cloudflare Workers",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Heroku Dynos",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Google Cloud Storage",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Amazon Elastic File System",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Google Cloud Spanner",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "GCP SQL",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Azure VM",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Google BigQuery",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AWS EFS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AWS EBS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Alibaba Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Hetzner",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "OVH Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Exabytes",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Leaseweb",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Rackspace Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Huawei",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Liquid Web",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "On-Premises CRM",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Lumen",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "StatusHub",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Data Foundry",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "E2E Networks",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Tencent",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Hotjar",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Iver",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Aruba",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "iseek",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "TM One Cloud Alpha",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Clara",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Engagebay",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "CMC",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AIS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Triblio",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "INAP",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "KT Cloud",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "IONOS",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Nexon",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "AIS Business",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Lyve",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Open Telekom",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "RackCorp Secure",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "SiteHost",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "Shinjiru",
+    "Category": "Cloud"
+  },
+  {
+    "Normalized Keyword": "HubSpot",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Salesforce",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Salesforce Lightning",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Zoho CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "NetSuite CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "CRMNext",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "LeadSquared",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "SuiteCRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "SAP CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "SAP Customer Experience",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Real Estate CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Healthcare CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Customer Engagement Platform",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Microsoft Dynamics 365",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Open Source CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Sage CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Sprinklr",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Oracle CX Cloud",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Oracle CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "On-Premise CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Zoho One",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Unified Customer View",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "SAP Sales Cloud",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Zoho Desk",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Whatsapp CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Oracle CX",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Zendesk CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Sugar CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "On-Premises CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Oracle Siebel CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Odoo CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Jetpack CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Bitrix24 CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Tableau CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Aeon CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Pipedrive CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Freshworks CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Insightly CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Veeva CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "BASIX CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Converse CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Got Sales CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Bigin CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Ensivo CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Focus CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Agile CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "MailChimp",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "monday.com CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Vtiger CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Intuit CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "AIM CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Kapture CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "LOZICS CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Magenta CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Oracle NetSuite CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "LeadSquared Sales CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "DealerSocket CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Backstop CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Panda CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Bespoke CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "SCALE CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Ezee CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Ecollat CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Brokadesk MT4 CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Brevo CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "DAXRM CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Bloomtools CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "POCO CRM",
+    "Category": "CRM"
+  },
+  {
+    "Normalized Keyword": "Amazon Aurora",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon DynamoDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon RDS",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon ElastiCache",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon Redshift",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Azure Cosmos DB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Azure SQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Google BigQuery",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Google Cloud Spanner",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Google Bigtable",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "GCP SQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Firebase",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Firestore",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "PostgreSQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "PostGIS",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "MongoDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "MySQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "MariaDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Oracle Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "SQL Server",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Teradata",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Snowflake",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Redis",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "NoSQL Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Apache Cassandra",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "ClickHouse",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Couchbase",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Neo4j",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Graph Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Apache Hive",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Data Warehouse",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "DAX",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "IBM Db2",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon OpenSearch",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Elastic search",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Amazon DocumentDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "In-Memory Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "TimescaleDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Teradata Vantage",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Qdrant",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Oracle Autonomous Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "BSON",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Weaviate",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Oracle Corporation Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Milvus",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Oracle Big Data SQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Google Cloud SQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "MarkLogic",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Heroku Postgres",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "AWS Aurora PostgreSQL",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "AWS Aurora",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Key-Value Database",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "AWS RDS",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "SQLite",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "InfluxDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Sybase",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "Cassandra",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "RavenDB",
+    "Category": "Database"
+  },
+  {
+    "Normalized Keyword": "MaxDB",
+    "Category": "Database"
+  }
+]

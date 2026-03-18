@@ -3,6 +3,9 @@ const router = express.Router();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
+const fsp = fs.promises;
+const { cacheResponse } = require('../middleware/redisCache');
 
 const Company = require('../models/Company');
 const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
@@ -123,6 +126,87 @@ const getDataCollection = () => {
 // Query-level caching for repeated requests (5-minute TTL)
 const queryCache = new Map();
 const QUERY_CACHE_DURATION = 5 * 60 * 1000;
+const QUERY_CACHE_MAX = 200;
+
+const MONGO_MAX_TIME_MS = Number(process.env.MONGO_MAX_TIME_MS || 1000);
+const SLOW_QUERY_MS = Number(process.env.SLOW_QUERY_MS || 200);
+const USE_FLAT_COLLECTIONS = process.env.USE_FLAT_COLLECTIONS !== 'false';
+
+const FILE_CACHE_DURATION = 5 * 60 * 1000;
+const FILE_CACHE_MAX = 50;
+const fileCache = new Map();
+
+const FLAT_COLLECTIONS_CACHE_DURATION = 5 * 60 * 1000;
+let flatCollectionsCache = { timestamp: 0, ntp: false, technographics: false };
+
+function pruneCache(map, maxSize, ttlMs) {
+  const now = Date.now();
+  for (const [key, value] of map.entries()) {
+    if (now - value.timestamp > ttlMs) {
+      map.delete(key);
+    }
+  }
+  while (map.size > maxSize) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+}
+
+function setCachedFile(key, data) {
+  pruneCache(fileCache, FILE_CACHE_MAX, FILE_CACHE_DURATION);
+  fileCache.set(key, { data, timestamp: Date.now() });
+}
+
+function getCachedFile(key) {
+  const cached = fileCache.get(key);
+  if (cached && (Date.now() - cached.timestamp) < FILE_CACHE_DURATION) {
+    return cached.data;
+  }
+  return null;
+}
+
+async function readJsonCached(filePath) {
+  const cacheKey = `json:${filePath}`;
+  const cached = getCachedFile(cacheKey);
+  if (cached) return cached;
+
+  const raw = await fsp.readFile(filePath, 'utf8');
+  const data = JSON.parse(raw);
+  setCachedFile(cacheKey, data);
+  return data;
+}
+
+async function readTextCached(filePath) {
+  const cacheKey = `text:${filePath}`;
+  const cached = getCachedFile(cacheKey);
+  if (cached) return cached;
+
+  const data = await fsp.readFile(filePath, 'utf8');
+  setCachedFile(cacheKey, data);
+  return data;
+}
+
+function readCsvFile(filePath) {
+  const csv = require('csv-parser');
+  return new Promise((resolve, reject) => {
+    const data = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (row) => data.push(row))
+      .on('end', () => resolve(data))
+      .on('error', reject);
+  });
+}
+
+async function readCsvCached(filePath) {
+  const cacheKey = `csv:${filePath}`;
+  const cached = getCachedFile(cacheKey);
+  if (cached) return cached;
+
+  const data = await readCsvFile(filePath);
+  setCachedFile(cacheKey, data);
+  return data;
+}
 
 function getCachedQuery(key) {
   const cached = queryCache.get(key);
@@ -133,14 +217,85 @@ function getCachedQuery(key) {
 }
 
 function setCachedQuery(key, data) {
+  pruneCache(queryCache, QUERY_CACHE_MAX, QUERY_CACHE_DURATION);
   queryCache.set(key, { data, timestamp: Date.now() });
+}
+
+async function timed(label, fn) {
+  const start = Date.now();
+  try {
+    return await fn();
+  } finally {
+    const duration = Date.now() - start;
+    if (duration > SLOW_QUERY_MS) {
+      console.warn(`[slow-query] ${label} ${duration}ms`);
+    }
+  }
+}
+
+async function aggregateTimed(collection, pipeline, options, label) {
+  const mergedOptions = { ...(options || {}), maxTimeMS: MONGO_MAX_TIME_MS };
+  return timed(label, async () => collection.aggregate(pipeline, mergedOptions).toArray());
+}
+
+async function findTimed(collection, query, options, label) {
+  const mergedOptions = { ...(options || {}), maxTimeMS: MONGO_MAX_TIME_MS };
+  return timed(label, async () => collection.find(query, mergedOptions).toArray());
+}
+
+async function getFlatCollectionsAvailability() {
+  const now = Date.now();
+  if ((now - flatCollectionsCache.timestamp) < FLAT_COLLECTIONS_CACHE_DURATION) {
+    return { ntp: flatCollectionsCache.ntp, technographics: flatCollectionsCache.technographics };
+  }
+
+  try {
+    const collections = await mongoose.connection.db.listCollections({}, { nameOnly: true }).toArray();
+    const names = new Set(collections.map(c => c.name));
+    flatCollectionsCache = {
+      timestamp: now,
+      ntp: names.has('ntp_flat'),
+      technographics: names.has('technographics_flat')
+    };
+  } catch (err) {
+    flatCollectionsCache = { timestamp: now, ntp: false, technographics: false };
+  }
+
+  return { ntp: flatCollectionsCache.ntp, technographics: flatCollectionsCache.technographics };
+}
+
+async function streamCursorAsNdjson(res, cursor) {
+  res.setHeader('Content-Type', 'application/x-ndjson');
+  res.flushHeaders();
+
+  let closed = false;
+  res.on('close', () => {
+    closed = true;
+    if (typeof cursor.close === 'function') {
+      cursor.close().catch(() => {});
+    }
+  });
+
+  try {
+    for await (const doc of cursor) {
+      if (closed || res.writableEnded) break;
+      const line = `${JSON.stringify(doc)}\n`;
+      if (!res.write(line)) {
+        await new Promise(resolve => res.once('drain', resolve));
+      }
+    }
+  } finally {
+    if (!res.writableEnded) {
+      res.end();
+    }
+  }
 }
 
 // ============================================
 // NTP ROUTES - Query data collection directly
 // ============================================
 
-router.get('/ntp/metadata', async (req, res) => {
+router.get('/ntp/metadata', cacheResponse(300), async (req, res) => {
   try {
     const startTime = Date.now();
     
@@ -151,8 +306,32 @@ router.get('/ntp/metadata', async (req, res) => {
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const useFlat = availability.ntp;
 
-    const result = await dataCollection.aggregate([
+    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const pipeline = useFlat ? [
+      {
+        $group: {
+          _id: null,
+          categories: { $addToSet: '$category' },
+          technologies: { $addToSet: '$technology' },
+          predictions: { $addToSet: '$purchasePrediction' },
+          companies: { $addToSet: '$companyName' },
+          totalRecords: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          categories: { $sortArray: { input: '$categories', sortBy: 1 } },
+          technologies: { $sortArray: { input: '$technologies', sortBy: 1 } },
+          predictions: { $sortArray: { input: '$predictions', sortBy: 1 } },
+          companies: { $sortArray: { input: '$companies', sortBy: 1 } },
+          totalRecords: 1
+        }
+      }
+    ] : [
       { $unwind: '$NTP' },
       {
         $group: {
@@ -174,7 +353,14 @@ router.get('/ntp/metadata', async (req, res) => {
           totalRecords: 1
         }
       }
-    ], { allowDiskUse: true }).toArray();
+    ];
+
+    const result = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'ntp_flat.metadata' : 'data.ntp.metadata'
+    );
 
     const metadata = result[0] || {
       categories: [],
@@ -191,7 +377,82 @@ router.get('/ntp/metadata', async (req, res) => {
   }
 });
 
-router.get('/ntp', async (req, res) => {
+// ============================================
+// NTP SUMMARY - Aggregations for charts & filters
+// ============================================
+router.get('/ntp/summary', cacheResponse(300), async (req, res) => {
+  try {
+    const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const useFlat = availability.ntp;
+
+    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+
+    const baseProject = useFlat ? {
+      $project: {
+        _id: 0,
+        companyName: 1,
+        category: 1,
+        technology: 1,
+        purchasePrediction: 1
+      }
+    } : {
+      $project: {
+        _id: 0,
+        companyName: '$Company Name',
+        category: '$NTP.Category',
+        technology: '$NTP.Technology',
+        purchasePrediction: '$NTP.Purchase Prediction'
+      }
+    };
+
+    const countFacet = (field) => ([
+      { $match: { [field]: { $exists: true, $ne: null, $ne: '' } } },
+      { $group: { _id: `$${field}`, value: { $sum: 1 } } },
+      { $project: { _id: 0, label: '$_id', value: 1 } },
+      { $sort: { label: 1 } }
+    ]);
+
+    const pipeline = [
+      ...(useFlat ? [] : [{ $unwind: '$NTP' }]),
+      baseProject,
+      {
+        $facet: {
+          categories: countFacet('category'),
+          technologies: countFacet('technology'),
+          predictions: countFacet('purchasePrediction'),
+          companies: [
+            { $match: { companyName: { $exists: true, $ne: null, $ne: '' } } },
+            { $group: { _id: '$companyName' } },
+            { $sort: { _id: 1 } }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ];
+
+    const [result] = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'ntp_flat.summary' : 'data.ntp.summary'
+    );
+
+    res.json({
+      totalRecords: result?.total?.[0]?.count || 0,
+      categories: result?.categories || [],
+      technologies: result?.technologies || [],
+      predictions: result?.predictions || [],
+      companies: (result?.companies || []).map(c => c._id)
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Server Error', message: err.message });
+  }
+});
+
+router.get('/ntp', cacheResponse(120), async (req, res) => {
   try {
     const startTime = Date.now();
     
@@ -206,11 +467,39 @@ router.get('/ntp', async (req, res) => {
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const useFlat = availability.ntp;
 
-    const results = await dataCollection.aggregate([
+    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const pipeline = useFlat ? [
+      {
+        $project: {
+          _id: 0,
+          companyName: 1,
+          domain: 1,
+          linkedinUrl: 1,
+          category: 1,
+          technology: 1,
+          purchaseProbability: 1,
+          purchasePrediction: 1,
+          ntpAnalysis: 1,
+          latestDetectedDate: 1,
+          previousDetectedDate: 1
+        }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ] : [
       { $unwind: '$NTP' },
-      { $skip: skip },
-      { $limit: limit },
       {
         $project: {
           _id: 0,
@@ -230,15 +519,29 @@ router.get('/ntp', async (req, res) => {
           latestDetectedDate: { $ifNull: ['$NTP.Latest Date', 'N/A'] },
           previousDetectedDate: { $ifNull: ['$NTP.Previous Date', 'N/A'] }
         }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
       }
-    ], { allowDiskUse: true }).toArray();
+    ];
 
-    const totalCount = await dataCollection.aggregate([
-      { $unwind: '$NTP' },
-      { $count: 'total' }
-    ], { allowDiskUse: true }).toArray();
+    const [result] = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'ntp_flat.page' : 'data.ntp.page'
+    );
 
-    const total = totalCount[0]?.total || 0;
+    const results = result?.data || [];
+    const total = result?.total?.[0]?.count || 0;
 
     const response = {
       data: results,
@@ -273,27 +576,139 @@ router.get('/ntp/all', async (req, res) => {
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const useFlat = availability.ntp;
 
     const matchStage = {};
-    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+    if (filters.companyName.length > 0) {
+      matchStage[useFlat ? 'companyName' : 'Company Name'] = { $in: filters.companyName };
+    }
 
-    const pipeline = [
-      { $unwind: '$NTP' }
-    ];
+    if (useFlat) {
+      if (filters.category.length > 0) matchStage.category = { $in: filters.category };
+      if (filters.technology.length > 0) matchStage.technology = { $in: filters.technology };
+      if (filters.prediction.length > 0) matchStage.purchasePrediction = { $in: filters.prediction };
+    }
+
+    const pipeline = [];
+    if (!useFlat) {
+      pipeline.push({ $unwind: '$NTP' });
+    }
 
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
 
-    if (filters.category.length > 0) {
-      pipeline.push({ $match: { 'NTP.Category': { $in: filters.category } } });
+    if (!useFlat) {
+      if (filters.category.length > 0) {
+        pipeline.push({ $match: { 'NTP.Category': { $in: filters.category } } });
+      }
+      if (filters.technology.length > 0) {
+        pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
+      }
+      if (filters.prediction.length > 0) {
+        pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
+      }
     }
-    if (filters.technology.length > 0) {
-      pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        companyName: useFlat ? '$companyName' : '$Company Name',
+        domain: useFlat ? '$domain' : '$Firmographics.About.Domain',
+        linkedinUrl: useFlat ? '$linkedinUrl' : {
+          $ifNull: [
+            '$Firmographics.About.linkedinUrl',
+            { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+          ]
+        },
+        category: useFlat ? '$category' : '$NTP.Category',
+        technology: useFlat ? '$technology' : '$NTP.Technology',
+        purchaseProbability: useFlat ? '$purchaseProbability' : '$NTP.Purchase Probability (%)',
+        purchasePrediction: useFlat ? '$purchasePrediction' : '$NTP.Purchase Prediction',
+        ntpAnalysis: useFlat ? '$ntpAnalysis' : '$NTP.NTP Analysis',
+        latestDetectedDate: useFlat ? '$latestDetectedDate' : { $ifNull: ['$NTP.Latest Date', 'N/A'] },
+        previousDetectedDate: useFlat ? '$previousDetectedDate' : { $ifNull: ['$NTP.Previous Date', 'N/A'] }
+      }
+    });
+
+    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const results = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'ntp_flat.all' : 'data.ntp.all'
+    );
+
+    const response = {
+      data: results,
+      total: results.length
+    };
+
+    setCachedQuery(cacheKey, response);
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ error: 'Server Error', data: [] });
+  }
+});
+
+// ====================================================
+// NTP EXPORT (NDJSON streaming)
+// ====================================================
+router.get('/ntp/export', async (req, res) => {
+  try {
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
+    };
+
+    res.setHeader('Content-Disposition', 'attachment; filename="ntp-export.ndjson"');
+    res.setHeader('Cache-Control', 'no-store');
+
+    const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const useFlat = availability.ntp;
+
+    if (useFlat) {
+      const query = {};
+      if (filters.companyName.length > 0) query.companyName = { $in: filters.companyName };
+      if (filters.category.length > 0) query.category = { $in: filters.category };
+      if (filters.technology.length > 0) query.technology = { $in: filters.technology };
+      if (filters.prediction.length > 0) query.purchasePrediction = { $in: filters.prediction };
+
+      const cursor = mongoose.connection.db.collection('ntp_flat')
+        .find(query, {
+          projection: {
+            _id: 0,
+            companyName: 1,
+            domain: 1,
+            linkedinUrl: 1,
+            category: 1,
+            technology: 1,
+            purchaseProbability: 1,
+            purchasePrediction: 1,
+            ntpAnalysis: 1,
+            latestDetectedDate: 1,
+            previousDetectedDate: 1
+          },
+          maxTimeMS: MONGO_MAX_TIME_MS
+        })
+        .batchSize(1000);
+
+      await streamCursorAsNdjson(res, cursor);
+      return;
     }
-    if (filters.prediction.length > 0) {
-      pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
-    }
+
+    const matchStage = {};
+    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+
+    const pipeline = [{ $unwind: '$NTP' }];
+    if (Object.keys(matchStage).length > 0) pipeline.push({ $match: matchStage });
+    if (filters.category.length > 0) pipeline.push({ $match: { 'NTP.Category': { $in: filters.category } } });
+    if (filters.technology.length > 0) pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
+    if (filters.prediction.length > 0) pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
 
     pipeline.push({
       $project: {
@@ -316,17 +731,10 @@ router.get('/ntp/all', async (req, res) => {
       }
     });
 
-    const results = await dataCollection.aggregate(pipeline, { allowDiskUse: true }).toArray();
-
-    const response = {
-      data: results,
-      total: results.length
-    };
-
-    setCachedQuery(cacheKey, response);
-    res.json(response);
+    const cursor = dataCollection.aggregate(pipeline, { allowDiskUse: true, maxTimeMS: MONGO_MAX_TIME_MS });
+    await streamCursorAsNdjson(res, cursor);
   } catch (err) {
-    res.status(500).json({ error: 'Server Error', data: [] });
+    res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
 
@@ -334,7 +742,7 @@ router.get('/ntp/all', async (req, res) => {
 // TECHNOGRAPHICS ROUTES - Query data collection directly
 // ====================================================
 
-router.get('/technographics/metadata', async (req, res) => {
+router.get('/technographics/metadata', cacheResponse(300), async (req, res) => {
   try {
     const startTime = Date.now();
     
@@ -345,8 +753,34 @@ router.get('/technographics/metadata', async (req, res) => {
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const useFlat = availability.technographics;
 
-    const result = await dataCollection.aggregate([
+    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const pipeline = useFlat ? [
+      {
+        $group: {
+          _id: null,
+          regions: { $addToSet: '$region' },
+          industries: { $addToSet: '$industry' },
+          categories: { $addToSet: '$category' },
+          employeeSizes: { $addToSet: '$employeeSize' },
+          revenues: { $addToSet: '$revenue' },
+          totalRecords: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          regions: { $sortArray: { input: '$regions', sortBy: 1 } },
+          industries: { $sortArray: { input: '$industries', sortBy: 1 } },
+          categories: { $sortArray: { input: '$categories', sortBy: 1 } },
+          employeeSizes: { $sortArray: { input: '$employeeSizes', sortBy: 1 } },
+          revenues: { $sortArray: { input: '$revenues', sortBy: 1 } },
+          totalRecords: 1
+        }
+      }
+    ] : [
       { $unwind: '$Technographics' },
       {
         $group: {
@@ -370,7 +804,14 @@ router.get('/technographics/metadata', async (req, res) => {
           totalRecords: 1
         }
       }
-    ], { allowDiskUse: true }).toArray();
+    ];
+
+    const result = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'technographics_flat.metadata' : 'data.technographics.metadata'
+    );
 
     const metadata = result[0] || {
       regions: [],
@@ -388,7 +829,129 @@ router.get('/technographics/metadata', async (req, res) => {
   }
 });
 
-router.get('/technographics', async (req, res) => {
+// ====================================================
+// TECHNOGRAPHICS SUMMARY - Aggregations for charts & filters
+// ====================================================
+router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
+  try {
+    const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const useFlat = availability.technographics;
+
+    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+
+    const baseProject = useFlat ? {
+      $project: {
+        _id: 0,
+        companyName: 1,
+        region: 1,
+        industry: 1,
+        category: 1,
+        employeeSize: 1,
+        revenue: 1,
+        technology: 1
+      }
+    } : {
+      $project: {
+        _id: 0,
+        companyName: '$Company Name',
+        region: { $ifNull: ['$Firmographics.Location.Country', 'N/A'] },
+        industry: { $ifNull: ['$Firmographics.About.Industry', 'N/A'] },
+        category: '$Technographics.Category',
+        employeeSize: {
+          $ifNull: [
+            '$Firmographics.About.Full Time employees',
+            { $ifNull: ['$Firmographics.About.Employees', 'N/A'] }
+          ]
+        },
+        revenue: { $ifNull: ['$Financial_Data.Finance.Total Revenue', 'N/A'] },
+        technology: '$Technographics.Keyword'
+      }
+    };
+
+    const countFacet = (field) => ([
+      { $match: { [field]: { $exists: true, $ne: null, $ne: '' } } },
+      { $group: { _id: `$${field}`, value: { $sum: 1 } } },
+      { $project: { _id: 0, label: '$_id', value: 1 } },
+      { $sort: { label: 1 } }
+    ]);
+
+    const pipeline = [
+      ...(useFlat ? [] : [{ $unwind: '$Technographics' }]),
+      baseProject,
+      {
+        $facet: {
+          regions: countFacet('region'),
+          industries: countFacet('industry'),
+          categories: countFacet('category'),
+          employeeSizes: countFacet('employeeSize'),
+          revenues: countFacet('revenue'),
+          technologies: countFacet('technology'),
+          regionCategories: [
+            { $match: { region: { $exists: true, $ne: null, $ne: '' }, category: { $exists: true, $ne: null, $ne: '' } } },
+            { $group: { _id: { region: '$region', category: '$category' }, value: { $sum: 1 } } }
+          ],
+          companies: [
+            { $match: { companyName: { $exists: true, $ne: null, $ne: '' } } },
+            { $group: { _id: '$companyName' } },
+            { $sort: { _id: 1 } }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ];
+
+    const [result] = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'technographics_flat.summary' : 'data.technographics.summary'
+    );
+
+    const regionCategoryCounts = {};
+    (result?.regionCategories || []).forEach(item => {
+      const region = item._id?.region || 'N/A';
+      const category = item._id?.category || 'N/A';
+      if (!regionCategoryCounts[region]) regionCategoryCounts[region] = {};
+      regionCategoryCounts[region][category] = item.value;
+    });
+
+    res.json({
+      totalRecords: result?.total?.[0]?.count || 0,
+      regions: result?.regions || [],
+      industries: result?.industries || [],
+      categories: result?.categories || [],
+      employeeSizes: result?.employeeSizes || [],
+      revenues: result?.revenues || [],
+      technologies: result?.technologies || [],
+      companies: (result?.companies || []).map(c => c._id),
+      regionCategoryCounts
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Server Error', message: err.message });
+  }
+});
+
+// ====================================================
+// TECHNOGRAPHICS FILTER OPTIONS (Category -> Technology)
+// ====================================================
+router.get('/technographics/filter-options', cacheResponse(300), async (req, res) => {
+  try {
+    const optionsPath = path.join(__dirname, '../config/filter_options.json');
+    if (!fs.existsSync(optionsPath)) {
+      return res.status(404).json({ error: 'Filter options file not found' });
+    }
+
+    const options = await readJsonCached(optionsPath);
+    res.json(options);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load filter options', message: err.message });
+  }
+});
+
+router.get('/technographics', cacheResponse(120), async (req, res) => {
   try {
     const startTime = Date.now();
     
@@ -396,18 +959,75 @@ router.get('/technographics', async (req, res) => {
     const limit = parseInt(req.query.limit) || 500;
     const skip = (page - 1) * limit;
 
-    const cacheKey = `tech-page-${page}-${limit}`;
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      region: req.query.region ? (Array.isArray(req.query.region) ? req.query.region : [req.query.region]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      industry: req.query.industry ? (Array.isArray(req.query.industry) ? req.query.industry : [req.query.industry]) : [],
+      employeeSize: req.query.employeeSize ? (Array.isArray(req.query.employeeSize) ? req.query.employeeSize : [req.query.employeeSize]) : [],
+      revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
+    };
+
+    const cacheKey = `tech-page-${page}-${limit}-${JSON.stringify(filters)}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const useFlat = availability.technographics;
 
-    const results = await dataCollection.aggregate([
+    const matchStage = {};
+    if (filters.companyName.length > 0) {
+      matchStage[useFlat ? 'companyName' : 'Company Name'] = { $in: filters.companyName };
+    }
+    if (useFlat) {
+      if (filters.region.length > 0) matchStage.region = { $in: filters.region };
+      if (filters.technology.length > 0) matchStage.technology = { $in: filters.technology };
+      if (filters.category.length > 0) matchStage.category = { $in: filters.category };
+      if (filters.industry.length > 0) matchStage.industry = { $in: filters.industry };
+    }
+
+    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const pipeline = useFlat ? [
+      ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
+      {
+        $project: {
+          _id: 0,
+          companyName: 1,
+          region: 1,
+          industry: 1,
+          employeeSize: 1,
+          revenue: 1,
+          category: 1,
+          technology: 1,
+          domain: 1,
+          linkedinUrl: 1,
+          previousDetectedDate: 1,
+          latestDetectedDate: 1,
+          renewalDate: 1
+        }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ] : [
       { $unwind: '$Technographics' },
-      { $skip: skip },
-      { $limit: limit },
+      ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
+      ...(filters.region.length > 0 ? [{ $match: { 'Firmographics.Location.Country': { $in: filters.region } } }] : []),
+      ...(filters.technology.length > 0 ? [{ $match: { 'Technographics.Keyword': { $in: filters.technology } } }] : []),
+      ...(filters.category.length > 0 ? [{ $match: { 'Technographics.Category': { $in: filters.category } } }] : []),
+      ...(filters.industry.length > 0 ? [{ $match: { 'Firmographics.About.Industry': { $in: filters.industry } } }] : []),
       {
         $project: {
           _id: 0,
@@ -434,15 +1054,29 @@ router.get('/technographics', async (req, res) => {
           latestDetectedDate: { $ifNull: ['$Technographics.Latest Date', 'N/A'] },
           renewalDate: { $ifNull: ['$Technographics.Renewal Date', 'N/A'] }
         }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
       }
-    ], { allowDiskUse: true }).toArray();
+    ];
 
-    const totalCount = await dataCollection.aggregate([
-      { $unwind: '$Technographics' },
-      { $count: 'total' }
-    ], { allowDiskUse: true }).toArray();
+    const [result] = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'technographics_flat.page' : 'data.technographics.page'
+    );
 
-    const total = totalCount[0]?.total || 0;
+    const results = result?.data || [];
+    const total = result?.total?.[0]?.count || 0;
 
     const response = {
       data: results,
@@ -480,30 +1114,161 @@ router.get('/technographics/all', async (req, res) => {
     }
 
     const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const useFlat = availability.technographics;
 
     const matchStage = {};
-    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+    if (filters.companyName.length > 0) {
+      matchStage[useFlat ? 'companyName' : 'Company Name'] = { $in: filters.companyName };
+    }
 
-    const pipeline = [
-      { $unwind: '$Technographics' }
-    ];
+    if (useFlat) {
+      if (filters.region.length > 0) matchStage.region = { $in: filters.region };
+      if (filters.technology.length > 0) matchStage.technology = { $in: filters.technology };
+      if (filters.category.length > 0) matchStage.category = { $in: filters.category };
+      if (filters.industry.length > 0) matchStage.industry = { $in: filters.industry };
+      if (filters.employeeSize.length > 0) matchStage.employeeSize = { $in: filters.employeeSize };
+      if (filters.revenue.length > 0) matchStage.revenue = { $in: filters.revenue };
+    }
+
+    const pipeline = [];
+    if (!useFlat) {
+      pipeline.push({ $unwind: '$Technographics' });
+    }
 
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
 
-    if (filters.region.length > 0) {
-      pipeline.push({ $match: { 'Firmographics.Location.Country': { $in: filters.region } } });
+    if (!useFlat) {
+      if (filters.region.length > 0) {
+        pipeline.push({ $match: { 'Firmographics.Location.Country': { $in: filters.region } } });
+      }
+      if (filters.technology.length > 0) {
+        pipeline.push({ $match: { 'Technographics.Keyword': { $in: filters.technology } } });
+      }
+      if (filters.category.length > 0) {
+        pipeline.push({ $match: { 'Technographics.Category': { $in: filters.category } } });
+      }
+      if (filters.industry.length > 0) {
+        pipeline.push({ $match: { 'Firmographics.About.Industry': { $in: filters.industry } } });
+      }
     }
-    if (filters.technology.length > 0) {
-      pipeline.push({ $match: { 'Technographics.Keyword': { $in: filters.technology } } });
+
+    pipeline.push({
+      $project: {
+        _id: 0,
+        companyName: useFlat ? '$companyName' : '$Company Name',
+        region: useFlat ? '$region' : { $ifNull: ['$Firmographics.Location.Country', 'N/A'] },
+        industry: useFlat ? '$industry' : { $ifNull: ['$Firmographics.About.Industry', 'N/A'] },
+        employeeSize: useFlat ? '$employeeSize' : {
+          $ifNull: [
+            '$Firmographics.About.Full Time employees',
+            { $ifNull: ['$Firmographics.About.Employees', 'N/A'] }
+          ]
+        },
+        revenue: useFlat ? '$revenue' : { $ifNull: ['$Financial_Data.Finance.Total Revenue', 'N/A'] },
+        category: useFlat ? '$category' : '$Technographics.Category',
+        technology: useFlat ? '$technology' : '$Technographics.Keyword',
+        domain: useFlat ? '$domain' : { $ifNull: ['$Firmographics.About.Domain', 'N/A'] },
+        linkedinUrl: useFlat ? '$linkedinUrl' : {
+          $ifNull: [
+            '$Firmographics.About.linkedinUrl',
+            { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
+          ]
+        },
+        previousDetectedDate: useFlat ? '$previousDetectedDate' : { $ifNull: ['$Technographics.Previous Date', 'N/A'] },
+        latestDetectedDate: useFlat ? '$latestDetectedDate' : { $ifNull: ['$Technographics.Latest Date', 'N/A'] },
+        renewalDate: useFlat ? '$renewalDate' : { $ifNull: ['$Technographics.Renewal Date', 'N/A'] }
+      }
+    });
+
+    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const results = await aggregateTimed(
+      collection,
+      pipeline,
+      { allowDiskUse: true },
+      useFlat ? 'technographics_flat.all' : 'data.technographics.all'
+    );
+
+    const response = {
+      data: results,
+      total: results.length
+    };
+
+    setCachedQuery(cacheKey, response);
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ error: 'Server Error', data: [] });
+  }
+});
+
+// ====================================================
+// TECHNOGRAPHICS EXPORT (NDJSON streaming)
+// ====================================================
+router.get('/technographics/export', async (req, res) => {
+  try {
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      region: req.query.region ? (Array.isArray(req.query.region) ? req.query.region : [req.query.region]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      industry: req.query.industry ? (Array.isArray(req.query.industry) ? req.query.industry : [req.query.industry]) : [],
+      employeeSize: req.query.employeeSize ? (Array.isArray(req.query.employeeSize) ? req.query.employeeSize : [req.query.employeeSize]) : [],
+      revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
+    };
+
+    res.setHeader('Content-Disposition', 'attachment; filename="technographics-export.ndjson"');
+    res.setHeader('Cache-Control', 'no-store');
+
+    const dataCollection = getDataCollection();
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const useFlat = availability.technographics;
+
+    if (useFlat) {
+      const query = {};
+      if (filters.companyName.length > 0) query.companyName = { $in: filters.companyName };
+      if (filters.region.length > 0) query.region = { $in: filters.region };
+      if (filters.technology.length > 0) query.technology = { $in: filters.technology };
+      if (filters.category.length > 0) query.category = { $in: filters.category };
+      if (filters.industry.length > 0) query.industry = { $in: filters.industry };
+      if (filters.employeeSize.length > 0) query.employeeSize = { $in: filters.employeeSize };
+      if (filters.revenue.length > 0) query.revenue = { $in: filters.revenue };
+
+      const cursor = mongoose.connection.db.collection('technographics_flat')
+        .find(query, {
+          projection: {
+            _id: 0,
+            companyName: 1,
+            region: 1,
+            industry: 1,
+            employeeSize: 1,
+            revenue: 1,
+            category: 1,
+            technology: 1,
+            domain: 1,
+            linkedinUrl: 1,
+            previousDetectedDate: 1,
+            latestDetectedDate: 1,
+            renewalDate: 1
+          },
+          maxTimeMS: MONGO_MAX_TIME_MS
+        })
+        .batchSize(1000);
+
+      await streamCursorAsNdjson(res, cursor);
+      return;
     }
-    if (filters.category.length > 0) {
-      pipeline.push({ $match: { 'Technographics.Category': { $in: filters.category } } });
-    }
-    if (filters.industry.length > 0) {
-      pipeline.push({ $match: { 'Firmographics.About.Industry': { $in: filters.industry } } });
-    }
+
+    const matchStage = {};
+    if (filters.companyName.length > 0) matchStage['Company Name'] = { $in: filters.companyName };
+
+    const pipeline = [{ $unwind: '$Technographics' }];
+    if (Object.keys(matchStage).length > 0) pipeline.push({ $match: matchStage });
+    if (filters.region.length > 0) pipeline.push({ $match: { 'Firmographics.Location.Country': { $in: filters.region } } });
+    if (filters.technology.length > 0) pipeline.push({ $match: { 'Technographics.Keyword': { $in: filters.technology } } });
+    if (filters.category.length > 0) pipeline.push({ $match: { 'Technographics.Category': { $in: filters.category } } });
+    if (filters.industry.length > 0) pipeline.push({ $match: { 'Firmographics.About.Industry': { $in: filters.industry } } });
 
     pipeline.push({
       $project: {
@@ -533,17 +1298,10 @@ router.get('/technographics/all', async (req, res) => {
       }
     });
 
-    const results = await dataCollection.aggregate(pipeline, { allowDiskUse: true }).toArray();
-
-    const response = {
-      data: results,
-      total: results.length
-    };
-
-    setCachedQuery(cacheKey, response);
-    res.json(response);
+    const cursor = dataCollection.aggregate(pipeline, { allowDiskUse: true, maxTimeMS: MONGO_MAX_TIME_MS });
+    await streamCursorAsNdjson(res, cursor);
   } catch (err) {
-    res.status(500).json({ error: 'Server Error', data: [] });
+    res.status(500).json({ error: 'Server Error', message: err.message });
   }
 });
 
@@ -552,7 +1310,7 @@ let companyDetailsCache = null;
 let companyDetailsCacheTime = 0;
 const COMPANY_DETAILS_CACHE_DURATION = 10 * 60 * 1000;
 
-router.get('/company-details', async (req, res) => {
+router.get('/company-details', cacheResponse(300), async (req, res) => {
   try {
     const now = Date.now();
 
@@ -560,7 +1318,11 @@ router.get('/company-details', async (req, res) => {
       return res.json(companyDetailsCache);
     }
 
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 });
+    const companies = await timed('company_details.find', async () => {
+      return Company.find({}, { 'Company Name': 1, Firmographics: 1, _id: 0 })
+        .maxTimeMS(MONGO_MAX_TIME_MS)
+        .lean();
+    });
 
     const companyDetails = {};
     companies.forEach(company => {
@@ -590,7 +1352,7 @@ const RENEWAL_CACHE_DURATION = 10 * 60 * 1000;
 let renewalMetadataCache = null;
 let renewalMetadataCacheTime = 0;
 
-router.get('/renewal-intelligence/metadata', async (req, res) => {
+router.get('/renewal-intelligence/metadata', cacheResponse(300), async (req, res) => {
   try {
     const now = Date.now();
 
@@ -599,35 +1361,81 @@ router.get('/renewal-intelligence/metadata', async (req, res) => {
     }
 
     const renewalCollection = mongoose.connection.db.collection('renewal_intel');
-    const renewalDocs = await renewalCollection.find({}).toArray();
+    const [result] = await aggregateTimed(renewalCollection, [
+      {
+        $facet: {
+          categories: [
+            { $project: { value: { $ifNull: ['$Category', 'N/A'] } } },
+            { $group: { _id: '$value' } },
+            { $sort: { _id: 1 } }
+          ],
+          products: [
+            { $project: { value: { $ifNull: ['$Keyword', 'N/A'] } } },
+            { $group: { _id: '$value' } },
+            { $sort: { _id: 1 } }
+          ],
+          quarters: [
+            { $project: { value: { $ifNull: ['$Renewal Date', 'N/A'] } } },
+            { $group: { _id: '$value' } },
+            { $sort: { _id: 1 } }
+          ],
+          companies: [
+            { $project: { value: { $ifNull: ['$Company Name', 'N/A'] } } },
+            { $group: { _id: '$value' } },
+            { $sort: { _id: 1 } }
+          ],
+          totalRecords: [
+            { $count: 'count' }
+          ],
+          categoryCounts: [
+            { $project: { category: { $ifNull: ['$Category', 'N/A'] }, company: '$Company Name' } },
+            { $group: { _id: { category: '$category', company: '$company' } } },
+            { $group: { _id: '$_id.category', value: { $sum: 1 } } },
+            { $sort: { _id: 1 } },
+            { $project: { _id: 0, label: '$_id', value: 1 } }
+          ],
+          productCounts: [
+            { $project: { product: { $ifNull: ['$Keyword', 'N/A'] }, company: '$Company Name' } },
+            { $group: { _id: { product: '$product', company: '$company' } } },
+            { $group: { _id: '$_id.product', value: { $sum: 1 } } },
+            { $sort: { _id: 1 } },
+            { $project: { _id: 0, label: '$_id', value: 1 } }
+          ],
+          quarterCounts: [
+            { $project: { qtr: { $ifNull: ['$Renewal Date', 'N/A'] }, company: '$Company Name' } },
+            { $group: { _id: { qtr: '$qtr', company: '$company' } } },
+            { $group: { _id: '$_id.qtr', value: { $sum: 1 } } },
+            { $sort: { _id: 1 } },
+            { $project: { _id: 0, label: '$_id', value: 1 } }
+          ]
+        }
+      }
+    ], { allowDiskUse: true }, 'renewal_intel.metadata');
 
-    const metadata = {
-      categories: new Set(),
-      products: new Set(),
-      quarters: new Set(),
-      companies: new Set(),
-      totalRecords: renewalDocs.length
+    const response = result ? {
+      categories: (result.categories || []).map((item) => item._id),
+      products: (result.products || []).map((item) => item._id),
+      quarters: (result.quarters || []).map((item) => item._id),
+      companies: (result.companies || []).map((item) => item._id),
+      totalRecords: result.totalRecords && result.totalRecords[0] ? result.totalRecords[0].count : 0,
+      categoryCounts: result.categoryCounts || [],
+      productCounts: result.productCounts || [],
+      quarterCounts: result.quarterCounts || []
+    } : {
+      categories: [],
+      products: [],
+      quarters: [],
+      companies: [],
+      totalRecords: 0,
+      categoryCounts: [],
+      productCounts: [],
+      quarterCounts: []
     };
 
-    renewalDocs.forEach(item => {
-      if (item.Category) metadata.categories.add(item.Category);
-      if (item.Keyword) metadata.products.add(item.Keyword);
-      if (item['Renewal Date']) metadata.quarters.add(item['Renewal Date']);
-      if (item['Company Name']) metadata.companies.add(item['Company Name']);
-    });
-
-    const result = {
-      categories: Array.from(metadata.categories).sort(),
-      products: Array.from(metadata.products).sort(),
-      quarters: Array.from(metadata.quarters).sort(),
-      companies: Array.from(metadata.companies).sort(),
-      totalRecords: metadata.totalRecords
-    };
-
-    renewalMetadataCache = result;
+    renewalMetadataCache = response;
     renewalMetadataCacheTime = now;
 
-    res.json(result);
+    res.json(response);
   } catch (err) {
 
     res.status(500).send('Server Error');
@@ -639,49 +1447,80 @@ router.get('/renewal-intelligence', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const skip = (page - 1) * limit;
-    const { companyName } = req.query;
+    const toArray = (value) => value ? (Array.isArray(value) ? value : [value]) : [];
+    const companyNames = toArray(req.query.companyName);
+    const categories = toArray(req.query.category);
+    const products = toArray(req.query.product);
+    const qtrs = toArray(req.query.qtr);
 
-if (page === 1 && !companyName && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
+    const hasFilters = companyNames.length > 0 || categories.length > 0 || products.length > 0 || qtrs.length > 0;
+
+    if (page === 1 && !hasFilters && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
       return res.json(renewalCache);
     }
 
     const renewalCollection = mongoose.connection.db.collection('renewal_intel');
-    const query = companyName ? { 'Company Name': companyName } : {};
+    const query = {};
+    if (companyNames.length > 0) query['Company Name'] = { $in: companyNames };
+    if (categories.length > 0) query['Category'] = { $in: categories };
+    if (products.length > 0) query['Keyword'] = { $in: products };
+    if (qtrs.length > 0) query['Renewal Date'] = { $in: qtrs };
 
-    const renewalDocs = await renewalCollection.find(query).toArray();
+    const [result] = await aggregateTimed(renewalCollection, [
+      { $match: query },
+      {
+        $project: {
+          _id: 0,
+          companyName: '$Company Name',
+          category: { $ifNull: ['$Category', 'N/A'] },
+          product: '$Keyword',
+          renewalDate: '$Renewal Date',
+          qtr: '$Renewal Date'
+        }
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit }
+          ],
+          total: [
+            { $count: 'count' }
+          ]
+        }
+      }
+    ], { allowDiskUse: true }, 'renewal_intel.page');
 
-    const renewalData = renewalDocs.map(item => ({
-      companyName: item['Company Name'],
-      category: item.Category || 'N/A',
-      product: item.Keyword,
-      renewalDate: item['Renewal Date'],
-      qtr: item['Renewal Date']
-    }));
+    const paginatedData = result?.data || [];
+    const total = result?.total?.[0]?.count || 0;
+    const response = {
+      data: paginatedData,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit)
+    };
 
-const paginatedData = renewalData.slice(skip, skip + limit);
-
-if (page === 1 && !companyName) {
-      renewalCache = paginatedData;
+    if (page === 1 && !hasFilters) {
+      renewalCache = response;
       renewalCacheTime = Date.now();
     }
 
-    res.json({
-      data: paginatedData,
-      total: renewalData.length,
-      page,
-      limit,
-      pages: Math.ceil(renewalData.length / limit)
-    });
+    res.json(response);
   } catch (err) {
 
     res.status(500).send('Server Error');
   }
 });
 
-router.get('/buyergroups', async (req, res) => {
+router.get('/buyergroups', cacheResponse(120), async (req, res) => {
   try {
 
-    const companies = await Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 });
+    const companies = await timed('buyergroups.find', async () => {
+      return Company.find({}, { 'Company Name': 1, Firmographics: 1, Buyers_Group: 1, Financial_Data: 1, _id: 0 })
+        .maxTimeMS(MONGO_MAX_TIME_MS)
+        .lean();
+    });
 
     const buyerGroupData = companies.flatMap(company => {
       const about = company.Firmographics?.About || {};
@@ -713,7 +1552,7 @@ let intentCache = null;
 let intentCacheTime = 0;
 const INTENT_CACHE_DURATION = 10 * 60 * 1000;
 
-router.get('/intent', async (req, res) => {
+router.get('/intent', cacheResponse(120), async (req, res) => {
   try {
     const now = Date.now();
 
@@ -722,7 +1561,12 @@ router.get('/intent', async (req, res) => {
     }
 
     const intentCollection = mongoose.connection.db.collection('intent_data');
-    const intentDocs = await intentCollection.find({}).toArray();
+    const intentDocs = await findTimed(
+      intentCollection,
+      {},
+      { projection: { 'Company Name': 1, 'Intent Status': 1 } },
+      'intent_data.all'
+    );
 
     const intentData = intentDocs.map(item => ({
       companyName: item['Company Name'],
@@ -738,13 +1582,35 @@ router.get('/intent', async (req, res) => {
   }
 });
 
-router.get('/product-catalogue', async (req, res) => {
+router.get('/product-catalogue', cacheResponse(300), async (req, res) => {
   try {
     const { year } = req.query;
     const collectionName = year === '2026' ? 'product_catlog_2026' : 'product_catlog_2025';
 
     const productCatalogueCollection = mongoose.connection.db.collection(collectionName);
-    const productDocs = await productCatalogueCollection.find({}).toArray();
+    const cacheKey = `collection:product-catalogue:${collectionName}`;
+    const cached = getCachedFile(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    const productDocs = await findTimed(
+      productCatalogueCollection,
+      {},
+      {
+        projection: {
+          'Product Name': 1,
+          Category: 1,
+          'Sub Category': 1,
+          Description: 1,
+          prodName: 1,
+          category: 1,
+          subCategory: 1,
+          description: 1
+        }
+      },
+      `product_catalogue.${collectionName}`
+    );
 
     const productData = productDocs.map(item => ({
       prodName: item['Product Name'] || item.prodName || 'N/A',
@@ -753,6 +1619,7 @@ router.get('/product-catalogue', async (req, res) => {
       description: item.Description || item.description || 'N/A'
     }));
 
+    setCachedFile(cacheKey, productData);
     res.json(productData);
   } catch (err) {
 
@@ -760,35 +1627,46 @@ router.get('/product-catalogue', async (req, res) => {
   }
 });
 
-router.get('/data-dictionary', async (req, res) => {
+router.get('/data-dictionary', cacheResponse(300), async (req, res) => {
   try {
     const dataDictionaryCollection = mongoose.connection.db.collection('tech_data_dictionary');
-    const dataDictionary = await dataDictionaryCollection.find({}).toArray();
+    const cacheKey = 'collection:data-dictionary';
+    const cached = getCachedFile(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
 
-const sortedData = dataDictionary.sort((a, b) => {
-      const attrA = a['Data Attribute'] || '';
-      const attrB = b['Data Attribute'] || '';
-      return attrA.localeCompare(attrB);
+    const dataDictionary = await timed('tech_data_dictionary.all', async () => {
+      return dataDictionaryCollection
+        .find({}, { maxTimeMS: MONGO_MAX_TIME_MS })
+        .sort({ 'Data Attribute': 1 })
+        .toArray();
     });
 
-    res.json(sortedData);
+    setCachedFile(cacheKey, dataDictionary);
+    res.json(dataDictionary);
   } catch (err) {
 
     res.status(500).send('Server Error');
   }
 });
 
-router.get('/org-chart/companies', async (req, res) => {
+router.get('/org-chart/companies', cacheResponse(300), async (req, res) => {
   try {
-    const fs = require('fs');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-if (!fs.existsSync(csvPath)) {
+    if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
+    const cacheKey = `org-chart:companies:${csvPath}`;
+    const cached = getCachedFile(cacheKey);
+    if (cached) {
+      return res.json({ companies: cached });
+    }
+
     const companies = await getCompaniesFromCSV(csvPath);
+    setCachedFile(cacheKey, companies);
     res.json({ companies });
   } catch (err) {
 
@@ -796,14 +1674,11 @@ if (!fs.existsSync(csvPath)) {
   }
 });
 
-router.get('/org-chart/categories', async (req, res) => {
+router.get('/org-chart/categories', cacheResponse(300), async (req, res) => {
   try {
-    const fs = require('fs');
-    const csv = require('csv-parser');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-if (!fs.existsSync(csvPath)) {
+    if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
@@ -811,35 +1686,20 @@ if (!fs.existsSync(csvPath)) {
       return res.status(404).json({ error: 'CSV file not found' });
     }
 
-const data = [];
-    fs.createReadStream(csvPath)
-      .pipe(csv())
-      .on('data', (row) => {
-        data.push(row);
-      })
-      .on('end', () => {
-
-        const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
-        res.json({ categories });
-      })
-      .on('error', (error) => {
-
-        res.status(500).json({ error: 'Failed to read CSV file' });
-      });
+    const data = await readCsvCached(csvPath);
+    const categories = [...new Set(data.map(row => row.Category).filter(Boolean))].sort();
+    res.json({ categories });
   } catch (err) {
 
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
 
-router.get('/org-chart/person-details', async (req, res) => {
+router.get('/org-chart/person-details', cacheResponse(300), async (req, res) => {
   try {
-    const fs = require('fs');
-    const csv = require('csv-parser');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-if (!fs.existsSync(csvPath)) {
+    if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
@@ -847,40 +1707,29 @@ if (!fs.existsSync(csvPath)) {
       return res.status(404).json({ error: 'CSV file not found' });
     }
 
-const data = [];
-    fs.createReadStream(csvPath)
-      .pipe(csv())
-      .on('data', (row) => {
-        data.push(row);
-      })
-      .on('end', () => {
+    const data = await readCsvCached(csvPath);
 
-        const companiesMap = {};
+    const companiesMap = {};
 
-        data.forEach((row) => {
-          const companyName = row['Company Name'] || 'Unknown';
+    data.forEach((row) => {
+      const companyName = row['Company Name'] || 'Unknown';
 
-          if (!companiesMap[companyName]) {
-            companiesMap[companyName] = [];
-          }
+      if (!companiesMap[companyName]) {
+        companiesMap[companyName] = [];
+      }
 
-          companiesMap[companyName].push({
-            id: row['Unique ID'] || '',
-            name: row.Name || 'N/A',
-            designation: row.Role || 'N/A',
-            email: row.email || 'N/A',
-            linkedin: row.Linkedin || '',
-            reportsTo: row['Reports To'] || 'N/A',
-            category: row.Category || 'N/A'
-          });
-        });
-
-res.json(companiesMap);
-      })
-      .on('error', (error) => {
-
-        res.status(500).json({ error: 'Failed to read CSV file' });
+      companiesMap[companyName].push({
+        id: row['Unique ID'] || '',
+        name: row.Name || 'N/A',
+        designation: row.Role || 'N/A',
+        email: row.email || 'N/A',
+        linkedin: row.Linkedin || '',
+        reportsTo: row['Reports To'] || 'N/A',
+        category: row.Category || 'N/A'
       });
+    });
+
+    res.json(companiesMap);
   } catch (err) {
 
     res.status(500).json({ error: 'Failed to fetch person details' });
@@ -891,62 +1740,52 @@ router.get('/org-chart/:companyName', async (req, res) => {
   try {
     const { companyName } = req.params;
     const decodedCompanyName = decodeURIComponent(companyName);
-    const fs = require('fs');
-    const csv = require('csv-parser');
+    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
-let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-if (!fs.existsSync(csvPath)) {
+    if (!fs.existsSync(csvPath)) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    }
+
+    if (!fs.existsSync(csvPath)) {
+      return res.status(404).json({ error: 'CSV file not found' });
     }
 
     const outputFolder = path.join(__dirname, '../org_charts_output_js');
 
-const data = [];
-    fs.createReadStream(csvPath)
-      .pipe(csv())
-      .on('data', (row) => {
-        data.push(row);
-      })
-      .on('end', async () => {
-        const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
-        const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
+    const data = await readCsvCached(csvPath);
+    const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
+    const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
 
-const sanitizeFilename = (name) => {
-          name = String(name);
-          name = name.replace(/[^\w\s-]/g, '').trim();
-          name = name.replace(/[-\s]+/g, '_');
-          return name || 'untitled_chart';
-        };
+    const sanitizeFilename = (name) => {
+      name = String(name);
+      name = name.replace(/[^\w\s-]/g, '').trim();
+      name = name.replace(/[-\s]+/g, '_');
+      return name || 'untitled_chart';
+    };
 
-        let safeFileName = sanitizeFilename(decodedCompanyName);
-        if (location) {
-          safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
-        }
+    let safeFileName = sanitizeFilename(decodedCompanyName);
+    if (location) {
+      safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
+    }
 
-        const htmlFileName = `${safeFileName}.html`;
-        const htmlFilePath = path.join(outputFolder, htmlFileName);
+    const htmlFileName = `${safeFileName}.html`;
+    const htmlFilePath = path.join(outputFolder, htmlFileName);
 
-if (fs.existsSync(htmlFilePath)) {
-          let html = fs.readFileSync(htmlFilePath, 'utf-8');
-          html = injectScrollableCSS(html);
-          res.setHeader('Content-Type', 'text/html; charset=utf-8');
-          res.send(html);
-        } else {
+    if (fs.existsSync(htmlFilePath)) {
+      let html = await readTextCached(htmlFilePath);
+      html = injectScrollableCSS(html);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(html);
+    }
 
-let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
-          html = injectScrollableCSS(html);
+    let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+    html = injectScrollableCSS(html);
 
-fs.writeFileSync(htmlFilePath, html, 'utf-8');
+    await fsp.mkdir(outputFolder, { recursive: true });
+    await fsp.writeFile(htmlFilePath, html, 'utf-8');
 
-res.setHeader('Content-Type', 'text/html; charset=utf-8');
-          res.send(html);
-        }
-      })
-      .on('error', (error) => {
-
-        res.status(500).json({ error: 'Failed to read CSV file' });
-      });
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
   } catch (err) {
 
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
@@ -955,9 +1794,6 @@ res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
-    const fs = require('fs');
-    const csv = require('csv-parser');
-
     let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
 
     if (!fs.existsSync(csvPath)) {
@@ -971,10 +1807,10 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
     }
 
     if (!fs.existsSync(outputFolder)) {
-      fs.mkdirSync(outputFolder, { recursive: true });
+      await fsp.mkdir(outputFolder, { recursive: true });
     }
 
-    const existingFiles = fs.readdirSync(outputFolder).filter(f => f.endsWith('.html'));
+    const existingFiles = (await fsp.readdir(outputFolder)).filter(f => f.endsWith('.html'));
     const existingCompanies = new Set(existingFiles.map(f => f.replace('.html', '')));
 
     const sanitizeFilename = (name) => {
@@ -1000,7 +1836,7 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
         const htmlFileName = `${safeFileName}.html`;
         const htmlFilePath = path.join(outputFolder, htmlFileName);
 
-        fs.writeFileSync(htmlFilePath, html, 'utf-8');
+        await fsp.writeFile(htmlFilePath, html, 'utf-8');
 
         newChartsGenerated++;
       } catch (err) {
@@ -1041,51 +1877,33 @@ router.post('/org-chart/generate-selected', async (req, res) => {
 
 
 
-router.get('/keywords', async (req, res) => {
+router.get('/keywords', cacheResponse(300), async (req, res) => {
   try {
-    const fs = require('fs');
-    const csv = require('csv-parser');
     const csvPath = require('path').join(__dirname, '../Keywords(AutoRecovered).csv');
 
     if (!fs.existsSync(csvPath)) {
       return res.status(404).json({ error: 'Keywords CSV file not found', path: csvPath });
     }
 
-    const keywordsData = [];
-    let errorOccurred = false;
-
-    fs.createReadStream(csvPath)
-      .pipe(csv())
-      .on('data', (row) => {
-        keywordsData.push(row);
-      })
-      .on('end', () => {
-        if (!errorOccurred) {
-          res.json({
-            data: keywordsData,
-            total: keywordsData.length
-          });
-        }
-      })
-      .on('error', (err) => {
-        errorOccurred = true;
-        res.status(500).json({ error: 'Failed to parse CSV file', details: err.message });
-      });
+    const keywordsData = await readCsvCached(csvPath);
+    res.json({
+      data: keywordsData,
+      total: keywordsData.length
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch keywords data', details: err.message });
   }
 });
 
-router.get('/glossary', async (req, res) => {
+router.get('/glossary', cacheResponse(300), async (req, res) => {
   try {
-    const fs = require('fs');
     const glossaryPath = require('path').join(__dirname, '../glossary.json');
 
     if (!fs.existsSync(glossaryPath)) {
       return res.status(404).json({ error: 'Glossary file not found', path: glossaryPath });
     }
 
-    const glossaryData = JSON.parse(fs.readFileSync(glossaryPath, 'utf-8'));
+    const glossaryData = await readJsonCached(glossaryPath);
     res.json(glossaryData);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch glossary data', details: err.message });
@@ -1095,10 +1913,9 @@ router.get('/glossary', async (req, res) => {
 // ============================================
 // GET /api/keywords-data - Get master table and glossary data
 // ============================================
-router.get('/keywords-data', (req, res) => {
+router.get('/keywords-data', cacheResponse(300), async (req, res) => {
   try {
     const keywordsDataPath = path.join(__dirname, '../keywords-data.json');
-    const fs = require('fs');
     
     if (!fs.existsSync(keywordsDataPath)) {
       return res.status(404).json({ 
@@ -1107,7 +1924,7 @@ router.get('/keywords-data', (req, res) => {
       });
     }
     
-    const keywordsData = JSON.parse(fs.readFileSync(keywordsDataPath, 'utf8'));
+    const keywordsData = await readJsonCached(keywordsDataPath);
     res.json({
       success: true,
       data: keywordsData
