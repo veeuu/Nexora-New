@@ -411,8 +411,8 @@ const getProductCountBySubCategory = (subCategory) => {
                               className="pagination-button nav"
                               title="First page"
                           >
-                              ≪
-                          </button>
+                              &laquo;
+                              </button>
 
                           <button
                               key="prev"
@@ -421,8 +421,8 @@ const getProductCountBySubCategory = (subCategory) => {
                               className="pagination-button nav"
                               title="Previous page"
                           >
-                              ‹
-                          </button>
+                              &lsaquo;
+                              </button>
 
                           {startPage > 1 && (
                               <>
@@ -467,8 +467,8 @@ const getProductCountBySubCategory = (subCategory) => {
                               className="pagination-button nav"
                               title="Next page"
                           >
-                              ›
-                          </button>
+                              &rsaquo;
+                              </button>
 
                           <button
                               key="last"
@@ -477,8 +477,8 @@ const getProductCountBySubCategory = (subCategory) => {
                               className="pagination-button nav"
                               title="Last page"
                           >
-                              ≫
-                          </button>
+                              &raquo;
+                              </button>
                       </>
                   );
               })()}

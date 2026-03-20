@@ -2720,8 +2720,8 @@ if (aQtr.year !== bQtr.year) {
                                             }}
                                             title="First page"
                                         >
-                                            ≪
-                                        </button>
+                                            &laquo;
+                                            </button>
 
                                         {}
                                         <button
@@ -2754,8 +2754,8 @@ if (aQtr.year !== bQtr.year) {
                                             }}
                                             title="Previous page"
                                         >
-                                            ‹
-                                        </button>
+                                            &lsaquo;
+                                            </button>
 
                                         {}
                                         {startPage > 1 && (
@@ -2887,8 +2887,8 @@ if (aQtr.year !== bQtr.year) {
                                             }}
                                             title="Next page"
                                         >
-                                            ›
-                                        </button>
+                                            &rsaquo;
+                                            </button>
 
                                         {}
                                         <button
@@ -2921,8 +2921,8 @@ if (aQtr.year !== bQtr.year) {
                                             }}
                                             title="Last page"
                                         >
-                                            ≫
-                                        </button>
+                                            &raquo;
+                                            </button>
                                     </>
                                 );
                             })()}

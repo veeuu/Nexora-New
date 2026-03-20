@@ -81,6 +81,16 @@ const extractCountryCode = (region) => {
   return '';
 };
 
+const formatRegionLabel = (region) => {
+  if (!region) return '';
+  const trimmed = String(region).trim();
+  if (!trimmed) return '';
+  const upper = trimmed.toUpperCase();
+  if (upper === 'UNITED STATES' || upper === 'UNITED STATES OF AMERICA' || upper === 'US' || upper === 'U.S.' || upper === 'USA')
+    return 'USA';
+  return trimmed;
+};
+
 const renderCountryFlag = (region) => {
   const code = extractCountryCode(region);
   if (!code) return null;
@@ -565,15 +575,15 @@ const employeeSizeRanges = [
 
 const revenueRanges = [
   { label: '<$1M', min: 0, max: 1000000 },
-  { label: '$1M–$5M', min: 1000000, max: 5000000 },
-  { label: '$5M–$10M', min: 5000000, max: 10000000 },
-  { label: '$10M–$25M', min: 10000000, max: 25000000 },
-  { label: '$25M–$50M', min: 25000000, max: 50000000 },
-  { label: '$50M–$100M', min: 50000000, max: 100000000 },
-  { label: '$100M–$250M', min: 100000000, max: 250000000 },
-  { label: '$250M–$500M', min: 250000000, max: 500000000 },
-  { label: '$500M–$1B', min: 500000000, max: 1000000000 },
-  { label: '$1B–$10B', min: 1000000000, max: 10000000000 },
+  { label: '$1M-$5M', min: 1000000, max: 5000000 },
+  { label: '$5M-$10M', min: 5000000, max: 10000000 },
+  { label: '$10M-$25M', min: 10000000, max: 25000000 },
+  { label: '$25M-$50M', min: 25000000, max: 50000000 },
+  { label: '$50M-$100M', min: 50000000, max: 100000000 },
+  { label: '$100M-$250M', min: 100000000, max: 250000000 },
+  { label: '$250M-$500M', min: 250000000, max: 500000000 },
+  { label: '$500M-$1B', min: 500000000, max: 1000000000 },
+  { label: '$1B-$10B', min: 1000000000, max: 10000000000 },
   { label: '$10B+', min: 10000000000, max: Infinity }
 ];
 
@@ -581,7 +591,7 @@ const formatEmployeeSize = (value) => {
   if (!value || value === 'N/A') return value;
 
   const strValue = String(value);
-  if (strValue.includes('+') || strValue.includes('–') || strValue.includes('-') || strValue.includes(',')) {
+  if (strValue.includes('+') || strValue.includes('-') || strValue.includes(',')) {
     return strValue;
   }
   
@@ -842,7 +852,7 @@ const Technographics = () => {
     }
     
     const logoPath = getLogoPath(techName);
-    console.log(`??? renderTechLogo called for "${techName}":`, logoPath ? '? Logo found' : '? No logo');
+    console.log(`- renderTechLogo called for "${techName}":`, logoPath ? '? Logo found' : '? No logo');
 
     if (logoPath) {
       return (
@@ -1627,7 +1637,7 @@ const Technographics = () => {
             color: '#dc2626',
             flexShrink: 0
           }}>
-            ?
+            !
           </div>
           <div style={{
             fontSize: '14px',
@@ -1649,7 +1659,7 @@ const Technographics = () => {
               lineHeight: '1'
             }}
           >
-            ?
+            {'\u00d7'}
           </button>
         </div>
       )}
@@ -1847,7 +1857,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -2062,7 +2072,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -2164,7 +2174,7 @@ const Technographics = () => {
                           }}
                         />
                         {renderCountryFlag(region)}
-                        <span>{region}</span>
+                        <span>{formatRegionLabel(region)}</span>
                       </div>
                       <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
                         {getCompanyCountByRegion(region)}
@@ -2245,7 +2255,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                {'\u00d7'}
               </button>
             </div>
           )}
@@ -2279,7 +2289,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               <div style={{
@@ -2461,7 +2471,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -2640,7 +2650,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                {'\u00d7'}
               </button>
             </div>
           )}
@@ -2677,7 +2687,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -2850,7 +2860,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                {'\u00d7'}
               </button>
             </div>
           )}
@@ -2887,7 +2897,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -3057,7 +3067,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                {'\u00d7'}
               </button>
             </div>
           )}
@@ -3094,7 +3104,7 @@ const Technographics = () => {
                     lineHeight: '1'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
               
@@ -3280,7 +3290,7 @@ const Technographics = () => {
                   lineHeight: '1'
                 }}
               >
-                ?
+                {'\u00d7'}
               </button>
             </div>
           )}
@@ -3642,10 +3652,10 @@ const Technographics = () => {
                             <>
                               <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <FaLock size={14} style={{ color: '#6b7280', filter: 'blur(0px)' }} />
-                                <span>••••••••••••••••••</span>
+                                <span>------------------</span>
                               </div>
                               <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none', marginTop: '4px' }}>
-                                <span>••••••••••</span>
+                                <span>----------</span>
                               </div>
                             </>
                           )}
@@ -3657,7 +3667,7 @@ const Technographics = () => {
                       <td onMouseEnter={(e) => handleMouseEnter(e, row.region)} onMouseLeave={handleMouseLeave}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           {renderCountryFlag(row.region)}
-                          {highlightText(row.region, searchTerm)}
+                          {highlightText(formatRegionLabel(row.region), searchTerm)}
                         </span>
                       </td>
                       <td style={{ textAlign: 'center', padding: '12px 8px' }} onMouseEnter={(e) => handleMouseEnter(e, row.employeeSize)} onMouseLeave={handleMouseLeave}>
@@ -3840,8 +3850,8 @@ const Technographics = () => {
                       }}
                       title="First page"
                     >
-                      «
-                    </button>
+                      &laquo;
+                      </button>
 
                     {}
                     <button
@@ -3874,8 +3884,8 @@ const Technographics = () => {
                       }}
                       title="Previous page"
                     >
-                      ‹
-                    </button>
+                      &lsaquo;
+                      </button>
 
                     {}
                     {startPage > 1 && (
@@ -4007,8 +4017,8 @@ const Technographics = () => {
                       }}
                       title="Next page"
                     >
-                      ›
-                    </button>
+                      &rsaquo;
+                      </button>
 
                     {}
                     <button
@@ -4041,8 +4051,8 @@ const Technographics = () => {
                       }}
                       title="Last page"
                     >
-                      »
-                    </button>
+                      &raquo;
+                      </button>
                   </>
                 );
               })()}
@@ -4151,7 +4161,7 @@ const Technographics = () => {
                     color: '#666'
                   }}
                 >
-                  ?
+                  {'\u00d7'}
                 </button>
               </div>
             </div>

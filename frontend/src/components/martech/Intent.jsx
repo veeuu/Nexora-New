@@ -884,8 +884,8 @@ useEffect(() => {
                               className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="First page"
                           >
-                              «
-                          </button>
+                              &laquo;
+                              </button>
 
                           {}
                           <button
@@ -895,8 +895,8 @@ useEffect(() => {
                               className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="Previous page"
                           >
-                              ‹
-                          </button>
+                              &lsaquo;
+                              </button>
 
                           {}
                           {startPage > 1 && (
@@ -943,8 +943,8 @@ useEffect(() => {
                               className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Next page"
                           >
-                              ›
-                          </button>
+                              &rsaquo;
+                              </button>
 
                           {}
                           <button
@@ -954,8 +954,8 @@ useEffect(() => {
                               className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Last page"
                           >
-                              »
-                          </button>
+                              &raquo;
+                              </button>
                       </>
                   );
               })()}

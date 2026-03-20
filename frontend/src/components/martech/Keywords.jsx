@@ -190,8 +190,8 @@ const Keywords = () => {
                     className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                     title="First page"
                   >
-                    «
-                  </button>
+            &laquo;
+                    </button>
 
                   <button
                     key="prev"
@@ -200,8 +200,8 @@ const Keywords = () => {
                     className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                     title="Previous page"
                   >
-                    ‹
-                  </button>
+                    &lsaquo;
+                    </button>
 
                   {startPage > 1 && (
                     <>
@@ -234,8 +234,8 @@ const Keywords = () => {
                     className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                     title="Next page"
                   >
-                    ›
-                  </button>
+                    &rsaquo;
+                    </button>
 
                   <button
                     key="last"
@@ -244,8 +244,8 @@ const Keywords = () => {
                     className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                     title="Last page"
                   >
-                    »
-                  </button>
+                    &raquo;
+                    </button>
                 </>
               );
             })()}

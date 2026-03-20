@@ -1330,8 +1330,8 @@ const NTP = () => {
                       className="ntp-pagination-button"
                       title="First page"
                     >
-                      ≪
-                    </button>
+                      &laquo;
+                      </button>
 
                     {}
                     <button
@@ -1341,8 +1341,8 @@ const NTP = () => {
                       className="ntp-pagination-button"
                       title="Previous page"
                     >
-                      ‹
-                    </button>
+                      &lsaquo;
+                      </button>
 
                     {}
                     {startPage > 1 && (
@@ -1389,8 +1389,8 @@ const NTP = () => {
                       className="ntp-pagination-button"
                       title="Next page"
                     >
-                      ›
-                    </button>
+                      &rsaquo;
+                      </button>
 
                     {}
                     <button
@@ -1400,8 +1400,8 @@ const NTP = () => {
                       className="ntp-pagination-button"
                       title="Last page"
                     >
-                      ≫
-                    </button>
+                      &raquo;
+                      </button>
                   </>
                 );
               })()}
