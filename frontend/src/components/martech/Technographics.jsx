@@ -3434,7 +3434,7 @@ const Technographics = () => {
                   }}
                   title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
                 >
-                  Reveal
+                  Unlock
                 </button>
               </th>
               <th style={{ textAlign: 'left', padding: '12px 8px' }}>Company Name</th>
@@ -4348,7 +4348,7 @@ const Technographics = () => {
         
         /* Set specific column widths */
         th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
-        th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
+        th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Unlock */
         th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
         th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
         th:nth-child(5), td:nth-child(5) { width: 140px !important; } /* Region */
@@ -4362,7 +4362,7 @@ const Technographics = () => {
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
           th:nth-child(1), td:nth-child(1) { width: 50px !important; } /* Checkbox */
-          th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Reveal */
+          th:nth-child(2), td:nth-child(2) { width: 120px !important; } /* Unlock */
           th:nth-child(3), td:nth-child(3) { width: 180px !important; } /* Company Name */
           th:nth-child(4), td:nth-child(4) { width: 120px !important; } /* Industry */
           th:nth-child(5), td:nth-child(5) { width: 95px !important; } /* Region */
