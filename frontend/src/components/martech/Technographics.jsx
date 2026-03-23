@@ -3,7 +3,7 @@ import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Loading GIF - Clients.gif';
-import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaLock, FaUnlock } from 'react-icons/fa';
+import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaLock, FaUnlock, FaLightbulb } from 'react-icons/fa';
 
 const countryCodeMap = {
   'United States': 'US', 'USA': 'US', 'UNITED STATES': 'US',
@@ -4096,8 +4096,30 @@ const Technographics = () => {
             {tooltip.text}
           </div>
           {tooltip.hint && (
-            <div style={{ fontSize: '11px', color: 'rgb(0, 102, 204)', fontWeight: '400', fontStyle: 'italic' }}>
-              ?? {tooltip.hint}
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'rgb(0, 102, 204)',
+                fontWeight: '400',
+                fontStyle: 'italic',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#f59e0b',
+                  animation: 'ntpBulbFlicker 1.8s ease-in-out infinite',
+                  filter: 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.45))'
+                }}
+              >
+                <FaLightbulb size={11} />
+              </span>
+              <span>{tooltip.hint}</span>
             </div>
           )}
           <div
@@ -4356,6 +4378,30 @@ const Technographics = () => {
           }
         }
         
+        @keyframes ntpBulbFlicker {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          15% {
+            opacity: 0.75;
+          }
+          30% {
+            opacity: 1;
+            transform: scale(1.08);
+          }
+          45% {
+            opacity: 0.82;
+          }
+          60% {
+            opacity: 1;
+          }
+          75% {
+            opacity: 0.9;
+            transform: scale(1.04);
+          }
+        }
+
         th {
           background-color: #f8f9fa;
           font-weight: 600;
