@@ -1,9 +1,9 @@
 // src/App.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
-import ChatBot from './components/ChatBot';
+import LandingPage from './components/LandingPage';
 import './styles.css';
 
 function App() {
@@ -96,15 +96,13 @@ function App() {
     localStorage.removeItem('username');
   };
 
-  const handleChatbotNavigate = (page) => {
-    if (dashboardNav) {
-      dashboardNav(page);
-    }
-  };
-
   return (
     <div className="App">
       <Routes>
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />} 
+        />
         <Route 
           path="/login" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
@@ -113,12 +111,7 @@ function App() {
           path="/dashboard/*" 
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 
         />
-        <Route 
-          path="/" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
-        />
       </Routes>
-      {/* <ChatBot isAuthenticated={isAuthenticated} onNavigate={handleChatbotNavigate} /> */}
     </div>
   );
 }

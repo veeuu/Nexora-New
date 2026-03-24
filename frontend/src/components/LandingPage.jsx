@@ -1,0 +1,329 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AnimatedCounter from './AnimatedCounter';
+import nexoraLogo from '../assets/Nexora Logo (1)-cropped.svg';
+import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
+import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
+import ccpaLogo from '../landing/ccpa-1.png';
+import iso27001Logo from '../landing/ISO27001-2022.svg';
+import iso9001Logo from '../landing/ISO9001-2015.svg';
+import soc2Logo from '../landing/SOC_2.svg';
+import '../styles/landingPage.css';
+
+const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const [expandedFeature, setExpandedFeature] = useState(null);
+  const [expandedFaq, setExpandedFaq] = useState(null);
+
+  const features = [
+    {
+      id: 1,
+      title: 'Technographics',
+      description: 'The technology product(s) the company uses'
+    },
+    {
+      id: 2,
+      title: 'Intent',
+      description: 'A measure of the intensity of the signal for a given product and the likelihood of the existence of a product'
+    },
+    {
+      id: 3,
+      title: 'Next Tech Purchase (NTP®)',
+      description: 'Predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators'
+    },
+    {
+      id: 4,
+      title: 'Renewal Intelligence',
+      description: 'Renewal Cycle of a product'
+    },
+    {
+      id: 5,
+      title: 'Buying Group',
+      description: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements'
+    }
+  ];
+
+  const stats = [
+    { number: '600M+', label: 'Total Companies' },
+    { number: '590M+', label: 'Technographics' },
+    { number: '530M+', label: 'Renewal Intelligence' },
+    { number: '530M+', label: 'Intent' },
+    { number: '430M+', label: 'Buying Group' },
+    { number: '530M+', label: 'Next Tech Purchase®' }
+  ];
+
+  const faqs = [
+    {
+      id: 1,
+      question: 'What is Nexora?',
+      answer: 'Nexora is a comprehensive B2B data platform that provides real-time technographics, intent signals, and buying group intelligence to help you identify high-fit accounts and predict technology adoption.'
+    },
+    {
+      id: 2,
+      question: 'Who can use Nexora?',
+      answer: 'Nexora is designed for sales, marketing, and revenue operations teams at B2B companies of all sizes. Whether you\'re a startup or an enterprise, Nexora helps you scale your go-to-market efforts.'
+    },
+    {
+      id: 3,
+      question: 'Is Nexora an AI-powered platform?',
+      answer: 'Yes, Nexora leverages advanced AI and machine learning algorithms to analyze vast amounts of data and provide predictive insights about technology adoption and buying signals.'
+    },
+    {
+      id: 4,
+      question: 'How does Nexora get its data?',
+      answer: 'Nexora aggregates data from multiple sources including public records, web signals, technology signals, and proprietary data sources to provide comprehensive B2B intelligence.'
+    },
+    {
+      id: 5,
+      question: 'How is Nexora different from other GTM tools?',
+      answer: 'Nexora combines technographics, intent data, and buying group intelligence in one unified platform. Our AI-powered insights help you identify the right accounts and the right people to reach.'
+    },
+    {
+      id: 6,
+      question: 'Can I try Nexora before buying?',
+      answer: 'Absolutely! We offer a free trial so you can explore Nexora\'s features and see how it can help your team. Sign up today to get started.'
+    }
+  ];
+
+  return (
+    <div className="landing-page">
+      {/* Header */}
+      <header className="landing-header">
+        <div className="header-container">
+          <div className="logo-section">
+            <img src={nexoraLogo2} alt="Nexora" className="header-logo" />
+          </div>
+          <button className="btn-login" onClick={() => navigate('/login')}>
+            Log In
+          </button>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-wrapper">
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Unlock B2B Intelligence That <span className="highlight">Drives Revenue</span>
+            </h1>
+            <p className="hero-subtitle">
+              Access 600M+ companies with real-time technographics, intent signals, and buying group intelligence. Identify high-fit accounts, predict technology adoption, and close deals faster with Nexora's comprehensive B2B data platform.
+            </p>
+            <div className="hero-cta">
+              <input 
+                type="email" 
+                placeholder="Enter your business email" 
+                className="email-input"
+              />
+              <button className="btn-free-trial" onClick={() => navigate('/login')}>
+                Start Free Trial
+              </button>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="hero-card">
+              <div className="card-header">
+                <div className="card-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div className="card-content">
+                <div className="card-line short"></div>
+                <div className="card-line"></div>
+                <div className="card-line medium"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="stats-section">
+        <div className="stats-wrapper">
+          <div className="stats-header">
+            <h2>Powering Go-To-Market Excellence</h2>
+            <p>Join leading B2B companies leveraging Nexora's intelligence to scale revenue</p>
+          </div>
+          <div className="stats-container">
+            {stats.map((stat, index) => (
+              <div key={index} className="stat-card">
+                <div className="stat-card-inner">
+                  <div className="stat-icon-bg"></div>
+                  <div className="stat-number">
+                    <AnimatedCounter value={stat.number} duration={2000} />
+                  </div>
+                  <div className="stat-label">{stat.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="features-section">
+        <div className="features-header">
+          <h2>Enterprise-Grade B2B Intelligence</h2>
+          <p>Explore our comprehensive data attributes that power smarter go-to-market decisions</p>
+        </div>
+        <div className="features-accordion">
+          <div className="accordion-left">
+            {features.map((feature) => (
+              <div key={feature.id} className="accordion-item">
+                <button 
+                  className={`accordion-header ${expandedFeature === feature.id ? 'active' : ''}`}
+                  onClick={() => setExpandedFeature(expandedFeature === feature.id ? null : feature.id)}
+                >
+                  <span className="accordion-title">{feature.title}</span>
+                  <span className="accordion-toggle">
+                    {expandedFeature === feature.id ? '−' : '+'}
+                  </span>
+                </button>
+                {expandedFeature === feature.id && (
+                  <div className="accordion-content">
+                    <p>{feature.description}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="accordion-right">
+            <div className="feature-image-container">
+              {/* Image will be placed here */}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What Makes Us Different Section */}
+      <section className="difference-section">
+        <div className="difference-wrapper">
+          <div className="difference-header">
+            <h2>Here's what makes us different</h2>
+            <p>Find and close your next customer before your competitors do with our all-in-one platform that tells you who to reach and how to reach them. With Nexora, you can unite sales and marketing teams around a single source of truth. And you can scale faster by automating tasks across all outreach channels.</p>
+          </div>
+          <div className="difference-cards">
+            <div className="difference-card">
+              <h3>GTM Data Universe</h3>
+              <p>Gain a complete view of your customers. Know who they are, what they need, and the best time to reach them.</p>
+            </div>
+            <div className="difference-card">
+              <h3>Built to Connect</h3>
+              <p>Seamlessly align sales, marketing, and operations with unified data that works across your tech stack.</p>
+            </div>
+            <div className="difference-card">
+              <h3>Agent-Ready</h3>
+              <p>Automate repetitive tasks with AI, so your team can focus on building relationships and closing deals.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="cta-glass-container">
+          <div className="cta-content">
+            <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
+            <button className="btn-cta-primary" onClick={() => navigate('/login')}>
+              Get Started Free
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="faq-section">
+        <div className="faq-accordion">
+          <div className="accordion-left-faq">
+            <div className="faq-header">
+              <h2>Frequently Asked Questions</h2>
+              <p>Find answers to common questions about Nexora and how it can help your team</p>
+            </div>
+          </div>
+          <div className="accordion-right-faq">
+            {faqs.map((faq) => (
+              <div key={faq.id} className="accordion-item-faq">
+                <button 
+                  className={`accordion-header-faq ${expandedFaq === faq.id ? 'active' : ''}`}
+                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
+                >
+                  <span className="accordion-title-faq">{faq.question}</span>
+                  <span className="accordion-toggle-faq">
+                    {expandedFaq === faq.id ? '−' : '+'}
+                  </span>
+                </button>
+                {expandedFaq === faq.id && (
+                  <div className="accordion-content-faq">
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="landing-footer">
+        <div className="footer-container">
+          <div className="footer-content">
+            <div className="footer-logo-section">
+              <img src={nexoraLogo2} alt="Nexora" className="footer-logo" />
+            </div>
+
+            <div className="footer-left">
+              <p className="footer-desc">Empowering go-to-market teams with real-time B2B intelligence and predictive insights.</p>
+              <div className="footer-socials">
+                <a href="#linkedin" title="LinkedIn" aria-label="LinkedIn">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div className="footer-right">
+              <div className="footer-links">
+                <h5>Help</h5>
+                <ul>
+                  <li><a href="#faq">FAQ</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="footer-certifications-right">
+              <div className="footer-cert-logos">
+                <div className="footer-cert-item">
+                  <img src={gdprLogo} alt="GDPR Ready" title="GDPR Ready" />
+                </div>
+                <div className="footer-cert-item">
+                  <img src={ccpaLogo} alt="CCPA Compliant" title="CCPA Compliant" />
+                </div>
+                <div className="footer-cert-item">
+                  <img src={iso9001Logo} alt="ISO 9001:2015" title="ISO 9001:2015" />
+                </div>
+                <div className="footer-cert-item">
+                  <img src={iso27001Logo} alt="ISO 27001:2022" title="ISO 27001:2022" />
+                </div>
+                <div className="footer-cert-item">
+                  <img src={soc2Logo} alt="SOC 2 Certified" title="SOC 2 Certified" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-divider-line"></div>
+
+          <div className="footer-bottom">
+            <p className="footer-copyright">&copy; 2026 Nexora. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default LandingPage;
