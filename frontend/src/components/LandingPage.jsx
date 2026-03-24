@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedCounter from './AnimatedCounter';
-import nexoraLogo from '../assets/Nexora Logo (1)-cropped.svg';
 import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
 import ccpaLogo from '../landing/ccpa-1.png';
 import iso27001Logo from '../landing/ISO27001-2022.svg';
 import iso9001Logo from '../landing/ISO9001-2015.svg';
 import soc2Logo from '../landing/SOC_2.svg';
+import technoSvg from '../landing/TECHNO SS FOR LP.svg';
 import '../styles/landingPage.css';
 
 const LandingPage = () => {
@@ -191,9 +191,7 @@ const LandingPage = () => {
             ))}
           </div>
           <div className="accordion-right">
-            <div className="feature-image-container">
-              {/* Image will be placed here */}
-            </div>
+            <img src={technoSvg} alt="Technographics Features" className="feature-image" />
           </div>
         </div>
       </section>
