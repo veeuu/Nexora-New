@@ -433,7 +433,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         }
       }, 1500);
     } catch (error) {
-      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching NTP® Next Purchase analysis. Please try again.' }]);
+      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error while fetching analysis. Please try again.' }]);
     } finally {
       setLoading(false);
     }
@@ -703,7 +703,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
       {isOpen ? (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h3>Your Next Purchase</h3>
+            <h3>Nexora Copilot</h3>
             <div className="chatbot-header-buttons">
               <button
                 onClick={() => {
@@ -986,7 +986,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
             {loading && (
               <div className="chatbot-loading">
                 <div className="chatbot-loading-text">
-                  Searching NTP® Next Purchase analysis...
+                  Searching analysis...
                 </div>
               </div>
             )}
@@ -1076,7 +1076,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.4)';
             }}
-            title="Open NTP® Next Purchase Assistant"
+            title="Open Nexora Copilot"
             style={{
               position: 'relative',
               overflow: 'visible'
