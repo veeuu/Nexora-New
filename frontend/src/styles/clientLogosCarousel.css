@@ -1,0 +1,106 @@
+/* ============ CLIENT LOGOS CAROUSEL ============ */
+.client-logos-section {
+  padding: 2rem 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.logos-container {
+  display: flex;
+  gap: 3rem;
+  padding: 0 2rem;
+  justify-content: flex-start;
+  align-items: center;
+  animation: continuousScroll 52s linear infinite;
+}
+
+.logos-container.paused {
+  animation-play-state: paused;
+}
+
+@keyframes continuousScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 1.5rem));
+  }
+}
+
+.logo-image {
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.logo-image.logo-small {
+  height: 50px;
+}
+
+.logo-image:hover {
+  opacity: 1;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .client-logos-section {
+    padding: 1.5rem 0;
+  }
+
+  .logos-container {
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+
+  .logo-image {
+    height: 60px;
+  }
+
+  .logo-image.logo-small {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logos-container {
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .logo-image {
+    height: 50px;
+  }
+
+  .logo-image.logo-small {
+    height: 35px;
+  }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .client-logos-section {
+    padding: 1.5rem 0;
+  }
+
+  .logos-container {
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+
+  .logo-image {
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logos-container {
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .logo-image {
+    height: 50px;
+  }
+}

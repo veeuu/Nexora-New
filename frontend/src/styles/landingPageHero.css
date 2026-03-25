@@ -1,0 +1,222 @@
+/* ============ LANDING PAGE HERO SECTION ============ */
+/* Dedicated hero styling for landing page - takes priority */
+
+.landing-page .hero-section {
+  padding: 4rem 2rem !important;
+  background: #ffffff !important;
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.landing-page .hero-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -20% !important;
+  right: -10% !important;
+  width: 800px !important;
+  height: 800px !important;
+  background: radial-gradient(circle, rgba(0, 102, 255, 0.15) 0%, transparent 70%) !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+}
+
+.landing-page .hero-section::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -15% !important;
+  left: -5% !important;
+  width: 700px !important;
+  height: 700px !important;
+  background: radial-gradient(circle, rgba(0, 102, 255, 0.1) 0%, transparent 70%) !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+}
+
+.landing-page .hero-wrapper {
+  max-width: 1300px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: 1.1fr 1fr !important;
+  gap: 3.5rem !important;
+  align-items: center !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.landing-page .hero-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.5rem !important;
+}
+
+.landing-page .hero-title {
+  font-size: 2.5rem !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  color: #1a1a1a !important;
+  letter-spacing: -1.2px !important;
+}
+
+.landing-page .hero-subtitle {
+  font-size: 1.05rem !important;
+  color: #666666 !important;
+  line-height: 1.7 !important;
+  max-width: 550px !important;
+  font-weight: 400 !important;
+}
+
+.landing-page .hero-cta {
+  display: flex !important;
+  gap: 0.8rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.landing-page .email-input {
+  flex: 1 !important;
+  padding: 1rem 1.3rem !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+  background: #ffffff !important;
+  color: #333333 !important;
+}
+
+.landing-page .email-input:focus {
+  outline: none !important;
+  border-color: #0066ff !important;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1) !important;
+}
+
+.landing-page .email-input::placeholder {
+  color: #999999 !important;
+}
+
+.landing-page .btn-free-trial {
+  padding: 1rem 2.5rem !important;
+  background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3) !important;
+  white-space: nowrap !important;
+  letter-spacing: 0.3px !important;
+}
+
+.landing-page .btn-free-trial:hover {
+  background: linear-gradient(135deg, #0052cc 0%, #003d99 100%) !important;
+  box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.landing-page .btn-free-trial:active {
+  transform: translateY(0) !important;
+}
+
+.landing-page .hero-stats {
+  display: flex !important;
+  gap: 2.5rem !important;
+  margin-top: 1.5rem !important;
+  flex-wrap: wrap !important;
+}
+
+.landing-page .stat-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.8rem !important;
+}
+
+.landing-page .stat-rating {
+  font-size: 1rem !important;
+}
+
+.landing-page .stat-badge {
+  font-size: 1.2rem !important;
+}
+
+.landing-page .stat-text {
+  font-size: 0.9rem !important;
+  color: #666666 !important;
+  font-weight: 500 !important;
+}
+
+.landing-page .hero-visual {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+
+.landing-page .hero-image {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Responsive for Landing Page Hero */
+@media (max-width: 1024px) {
+  .landing-page .hero-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .landing-page .hero-title {
+    font-size: 2.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-page .hero-section {
+    padding: 2.5rem 1.5rem !important;
+  }
+
+  .landing-page .hero-title {
+    font-size: 2rem !important;
+  }
+
+  .landing-page .hero-subtitle {
+    font-size: 0.95rem !important;
+  }
+
+  .landing-page .hero-cta {
+    flex-direction: column !important;
+  }
+
+  .landing-page .email-input,
+  .landing-page .btn-free-trial {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page .hero-section {
+    padding: 2rem 1rem !important;
+  }
+
+  .landing-page .hero-title {
+    font-size: 1.5rem !important;
+  }
+
+  .landing-page .hero-subtitle {
+    font-size: 0.9rem !important;
+  }
+
+  .landing-page .hero-stats {
+    gap: 1.5rem !important;
+  }
+}

@@ -269,74 +269,10 @@
   position: relative;
 }
 
-.hero-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+.hero-image {
   width: 100%;
-  max-width: 450px;
-  animation: float 3.5s ease-in-out infinite;
-  border: 1px solid #f0f0f0;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-.card-header {
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f7ff 100%);
-  padding: 1.3rem;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.card-dots {
-  display: flex;
-  gap: 0.7rem;
-}
-
-.card-dots span {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #d0d0d0;
-}
-
-.card-dots span:first-child {
-  background: #ff6b6b;
-}
-
-.card-dots span:nth-child(2) {
-  background: #ffd93d;
-}
-
-.card-dots span:nth-child(3) {
-  background: #6bcf7f;
-}
-
-.card-content {
-  padding: 2rem;
-}
-
-.card-line {
-  height: 10px;
-  background: linear-gradient(90deg, #e8e8e8 0%, #f0f0f0 100%);
-  border-radius: 5px;
-  margin-bottom: 1.3rem;
-}
-
-.card-line.short {
-  width: 60%;
-}
-
-.card-line.medium {
-  width: 75%;
-  margin-bottom: 0;
+  height: auto;
+  object-fit: contain;
 }
 
 /* ============ STATS SECTION ============ */
@@ -866,10 +802,15 @@
   letter-spacing: 0.3px;
 }
 
-.btn-cta-primary:hover {
+.btn-cta-primary:hover:not(:disabled) {
   background: #f0f7ff;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cta-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ============ DIFFERENCE SECTION ============ */
@@ -1699,4 +1640,102 @@
   .footer-copyright {
     font-size: 0.75rem;
   }
+}
+
+
+/* ============ MODAL STYLES ============ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.modal-close-simple {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #999999;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close-simple:hover {
+  color: #333333;
+  transform: scale(1.1);
+}
+
+.modal-close-simple:active {
+  transform: scale(0.95);
+}
+
+.modal-text {
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.3px;
+}
+
+.modal-message {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 2rem;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-message {
+    font-size: 0.95rem;
+  }
+}
+
+
+.modal-content button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

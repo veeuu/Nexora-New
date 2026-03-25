@@ -1,24 +1,26 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AnimatedCounter from './AnimatedCounter';
+import ClientLogosCarousel from './ClientLogosCarousel';
 import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
+import proplusDataLogo from '../assets/unnamed (1).png';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
 import ccpaLogo from '../landing/ccpa-1.png';
 import iso27001Logo from '../landing/ISO27001-2022.svg';
 import iso9001Logo from '../landing/ISO9001-2015.svg';
 import soc2Logo from '../landing/SOC_2.svg';
 import technoSvg from '../landing/TECHNO SS FOR LP.svg';
-import intentSvg from '../landing/INTENT SS FOR LP.svg';
+import intentSvg from '../landing/INtent SS revised.svg';
 import riSvg from '../landing/RI SS FOR LP.svg';
 import bgSvg from '../landing/UPDATED BG SS FOR LP.svg';
 import ntpSvg from '../landing/NTP SS FOR LP.svg';
+import heroSvg from '../landing/SS for Nexora LP HERO.svg';
 import '../styles/landingPage.css';
+import '../styles/landingPageHero.css';
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-
   const [expandedFeature, setExpandedFeature] = useState(1);
   const [expandedFaq, setExpandedFaq] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const features = [
     {
@@ -30,7 +32,7 @@ const LandingPage = () => {
     {
       id: 2,
       title: 'Renewal Intelligence',
-      description: 'Identifies when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving.',
+      description: 'Identify when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving.',
       image: riSvg
     },
     {
@@ -66,23 +68,23 @@ const LandingPage = () => {
     {
       id: 1,
       question: 'What is Nexora?',
-      answer: 'Nexora is a comprehensive B2B data platform that provides real-time technographics, intent signals, and buying group intelligence to help you identify high-fit accounts and predict technology adoption.'
+      answer: 'Nexora is a comprehensive AI Powered B2B data platform that provides real-time technographics, intent signals, and buying group intelligence to help you identify high-fit accounts and predict technology adoption.'
     },
     {
       id: 2,
       question: 'Who can use Nexora?',
-      answer: 'Nexora is designed for sales, marketing, and revenue operations teams at B2B companies of all sizes. Whether you\'re a startup or an enterprise, Nexora helps you scale your go-to-market efforts.'
+      answer: 'Nexora is designed for sales, marketing, and revenue operations teams at B2B companies of all sizes. Whether you\'re a startup or an enterprise, Nexora helps you scale your go-to-market motions.'
     },
-    {
-      id: 3,
-      question: 'Is Nexora an AI-powered platform?',
-      answer: 'Yes, Nexora leverages advanced AI and machine learning algorithms to analyze vast amounts of data and provide predictive insights about technology adoption and buying signals.'
-    },
-    {
-      id: 4,
-      question: 'How does Nexora get its data?',
-      answer: 'Nexora aggregates data from multiple sources including public records, web signals, technology signals, and proprietary data sources to provide comprehensive B2B intelligence.'
-    },
+    // {
+    //   id: 3,
+    //   question: 'Is Nexora an AI-powered platform?',
+    //   answer: 'Yes, Nexora leverages advanced AI and machine learning algorithms to analyze vast amounts of data and provide predictive insights about technology adoption and buying signals.'
+    // },
+    // {
+    //   id: 4,
+    //   question: 'How does Nexora get its data?',
+    //   answer: 'Nexora aggregates data from multiple sources including public records, web signals, technology signals, and proprietary data sources to provide comprehensive B2B intelligence.'
+    // },
     {
       id: 5,
       question: 'How is Nexora different from other GTM tools?',
@@ -103,9 +105,10 @@ const LandingPage = () => {
           <div className="logo-section">
             <img src={nexoraLogo2} alt="Nexora" className="header-logo" />
           </div>
-          <button className="btn-login" onClick={() => navigate('/login')}>
-            Log In
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
+            <span style={{ fontSize: '0.85rem', color: '#a0a0a0', fontWeight: '500' }}>Powered by</span>
+            <img src={proplusDataLogo} alt="ProPlus Data" className="header-logo" style={{ height: '40px' }} />
+          </div>
         </div>
       </header>
 
@@ -114,10 +117,10 @@ const LandingPage = () => {
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
-              Unlock B2B Intelligence That <span className="highlight">Drives Revenue</span>
+              AI-powered platform for revenue teams to identify, prioritize, and convert the <span className="highlight">right accounts, faster</span>
             </h1>
             <p className="hero-subtitle">
-              Access 600M+ companies with real-time technographics, intent signals, and buying group intelligence. Identify high-fit accounts, predict technology adoption, and close deals faster with Nexora's comprehensive B2B data platform.
+              Access 600M+ companies with real-time technographics, renewal intelligence, intent signals, and buying group insights so you can prioritize high-value accounts, anticipate technology shifts, and accelerate revenue with precision.
             </p>
             <div className="hero-cta">
               <input 
@@ -125,29 +128,19 @@ const LandingPage = () => {
                 placeholder="Enter your business email" 
                 className="email-input"
               />
-              <button className="btn-free-trial" onClick={() => navigate('/login')}>
+              <button className="btn-free-trial" onClick={() => setShowModal(true)}>
                 Start Free Trial
               </button>
             </div>
           </div>
           <div className="hero-visual">
-            <div className="hero-card">
-              <div className="card-header">
-                <div className="card-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-              <div className="card-content">
-                <div className="card-line short"></div>
-                <div className="card-line"></div>
-                <div className="card-line medium"></div>
-              </div>
-            </div>
+            <img src={heroSvg} alt="Nexora Dashboard" className="hero-image" />
           </div>
         </div>
       </section>
+
+      {/* Client Logos Carousel */}
+      <ClientLogosCarousel />
 
       {/* Stats Section */}
       <section className="stats-section">
@@ -240,8 +233,8 @@ const LandingPage = () => {
         <div className="cta-glass-container">
           <div className="cta-content">
             <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
-            <button className="btn-cta-primary" onClick={() => navigate('/login')}>
-              Get Started Free
+            <button className="btn-cta-primary" disabled>
+              Coming Soon
             </button>
           </div>
         </div>
@@ -335,6 +328,27 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Thank You Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="modal-close-simple" 
+              onClick={() => setShowModal(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="modal-text">
+              <h2 className="modal-title">Thank You for Registration!</h2>
+              <p className="modal-message">
+                We'll get back to you as soon as possible
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
 import heroImage from '../assets/Nexora Login Page Updated without Starhub.svg';
 import proplusDataLogo from '../assets/unnamed (1).png';
 import '../styles/login.css';
+import '../styles/loginPageHero.css';
 
 const Login = ({ onLogin }) => {
   const [isSignup, setIsSignup] = useState(false);
