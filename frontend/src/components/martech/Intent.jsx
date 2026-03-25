@@ -416,7 +416,7 @@ useEffect(() => {
       )}
 
       <div className="header-actions-fixed">
-        <h2>Intent Data</h2>
+        <h2>Intent</h2>
         <div className="actions-right">
         </div>
       </div>
@@ -754,7 +754,7 @@ useEffect(() => {
                   }}
                   title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
                 >
-                  Reveal
+                  Unlock
                 </button>
               </th>
               <th>Company Name</th>

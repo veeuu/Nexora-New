@@ -296,20 +296,6 @@ const NTP = () => {
 
   const handleDownloadCSV = async () => {
     try {
-      const revealedRowKeys = new Set();
-      filteredData.forEach((row, index) => {
-        const rowKey = `${index}-${row.companyName}`;
-        if (revealedRows.has(rowKey)) {
-          const key = `${row.companyName}|${row.category}|${row.technology}|${row.purchasePrediction}`;
-          revealedRowKeys.add(key);
-        }
-      });
-
-      if (revealedRowKeys.size === 0) {
-        alert('No revealed companies to download. Please reveal company details first.');
-        return;
-      }
-
       const queryParams = new URLSearchParams();
       if (filters.companyName.length > 0) {
         filters.companyName.forEach(name => queryParams.append('companyName', name));
@@ -342,13 +328,8 @@ const NTP = () => {
         })
         .filter(Boolean);
 
-      const revealedData = rows.filter(row => {
-        const key = `${row.companyName}|${row.category}|${row.technology}|${row.purchasePrediction}`;
-        return revealedRowKeys.has(key);
-      });
-
-      if (revealedData.length === 0) {
-        alert('No revealed companies to download. Please reveal company details first.');
+      if (rows.length === 0) {
+        alert('No data to download. Please apply filters and try again.');
         return;
       }
 
@@ -359,7 +340,7 @@ const NTP = () => {
 
       const csvContent = [
         headers.join(','),
-        ...revealedData.map(row =>
+        ...rows.map(row =>
           headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
         )
       ].join('\n');

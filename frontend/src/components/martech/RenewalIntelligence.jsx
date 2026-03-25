@@ -2297,7 +2297,7 @@ if (aQtr.year !== bQtr.year) {
                                             }}
                                             title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
                                           >
-                                            Reveal
+                                            Unlock
                                           </button>
                                         </th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
@@ -2475,7 +2475,7 @@ if (aQtr.year !== bQtr.year) {
                                             style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                                           />
                                         </th>
-                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Reveal</th>
+                                        <th style={{ textAlign: 'center', padding: '12px 8px', width: '80px' }}>Unlock</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Company Name</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Product</th>
                                         <th style={{ textAlign: 'left', flex: 1, padding: '12px 8px' }}>Renewal Timelines</th>
