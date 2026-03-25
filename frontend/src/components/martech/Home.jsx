@@ -5,6 +5,7 @@ import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
 import nexoraLogo from '../../assets/nexora-logo.png';
 import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/home.css';
 
 const Home = () => {
@@ -26,7 +27,14 @@ const Home = () => {
   useEffect(() => {
     setShowProductCatalogue(false);
     setShowDataDictionary(false);
-    setLoading(false);
+    setLoading(true);
+    
+    // Show loading gif for 1.5 seconds
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -42,52 +50,8 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '600px',
-        backgroundColor: '#ffffffff',
-        borderRadius: '8px',
-        padding: '40px 20px'
-      }}>
-        <img
-          src={nexoraLogo}
-          alt="Nexora"
-          style={{
-            width: '250px',
-            height: 'auto',
-            marginBottom: '30px',
-            opacity: 0.9,
-            animation: 'pulse 2s infinite'
-          }}
-        />
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '20px',
-          width: '100%',
-          maxWidth: '1000px',
-          marginTop: '40px'
-        }}>
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} style={{
-              height: '120px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '8px',
-              animation: 'pulse 2s infinite'
-            }} />
-          ))}
-        </div>
-        <p style={{
-          color: '#6b7280',
-          fontSize: '14px',
-          textAlign: 'center',
-          marginTop: '30px'
-        }}>
-          Loading dashboard...
-        </p>
+      <div className="loading-overlay">
+        <img src={loadingGif} alt="Loading" />
       </div>
     );
   }

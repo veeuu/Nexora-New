@@ -26,7 +26,10 @@ const Keywords = () => {
         setTableData([]);
       })
       .finally(() => {
-        setLoading(false);
+        // Show loading gif for 1.5 seconds
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
       });
   }, []);
 
