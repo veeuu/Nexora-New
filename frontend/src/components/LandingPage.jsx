@@ -29,27 +29,27 @@ const LandingPage = () => {
     },
     {
       id: 2,
-      title: 'Intent',
-      description: 'Intent data captures behavioral signals that indicate a company’s interest in specific technologies or solutions, helping prioritize outreach and improve conversion efficiency.',
-      image: intentSvg
-    },
-    {
-      id: 3,
-      title: 'Next Tech Purchase (NTP®)',
-      description: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals.',
-      image: ntpSvg
-    },
-    {
-      id: 4,
       title: 'Renewal Intelligence',
       description: 'Identifies when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving.',
       image: riSvg
     },
     {
-      id: 5,
+      id: 3,
+      title: 'Intent',
+      description: 'Intent data captures behavioral signals that indicate a company\'s interest in specific technologies or solutions, helping prioritize outreach and improve conversion efficiency.',
+      image: intentSvg
+    },
+    {
+      id: 4,
       title: 'Buying Group',
-      description: 'Reveals who the real decision-makers are, who influences them, and how different departments are structured.',
+      description: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements',
       image: bgSvg
+    },
+    {
+      id: 5,
+      title: 'Next Tech Purchase (NTP®)',
+      description: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals.',
+      image: ntpSvg
     }
   ];
 
