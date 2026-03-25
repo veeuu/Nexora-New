@@ -75,6 +75,16 @@ const LandingPage = () => {
       question: 'Who can use Nexora?',
       answer: 'Nexora is designed for sales, marketing, and revenue operations teams at B2B companies of all sizes. Whether you\'re a startup or an enterprise, Nexora helps you scale your go-to-market motions.'
     },
+    {
+      id: 3,
+      question: 'Is Nexora Free?',
+      answer: 'Nexora offers flexible pricing options based on your business needs. You may get free credits to explore the platform initially. After that, pricing depends on factors such as: Credit usage, Data access requirements, Credit score usage, Feature access (Intent, Technographics, etc.). This ensures you only pay for what you actually use.'
+    },
+    {
+      id: 4,
+      question: 'Is Nexora Secure?',
+      answer: 'Yes, Nexora is built with strong security and data protection standards. Nexora is a product of ProPlus Data, a trusted and certified data solutions company. ProPlus Data follows industry-standard security, compliance, and data protection practices to ensure your information remains safe and secure. This means: Secure data handling, Compliance with data protection standards, Reliable and trusted infrastructure. Your data privacy and security are always a top priority.'
+    },
     // {
     //   id: 3,
     //   question: 'Is Nexora an AI-powered platform?',
@@ -343,7 +353,7 @@ const LandingPage = () => {
             <div className="modal-text">
               <h2 className="modal-title">Thank You for Registration!</h2>
               <p className="modal-message">
-                We'll get back to you as soon as possible
+                We'll get back to you soon!!!
               </p>
             </div>
           </div>
