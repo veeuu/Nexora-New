@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils.jsx';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/productCatalogue.css';
 
 const ProductCatalogue = () => {

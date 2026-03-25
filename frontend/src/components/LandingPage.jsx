@@ -8,39 +8,48 @@ import iso27001Logo from '../landing/ISO27001-2022.svg';
 import iso9001Logo from '../landing/ISO9001-2015.svg';
 import soc2Logo from '../landing/SOC_2.svg';
 import technoSvg from '../landing/TECHNO SS FOR LP.svg';
+import intentSvg from '../landing/INTENT SS FOR LP.svg';
+import riSvg from '../landing/RI SS FOR LP.svg';
+import bgSvg from '../landing/UPDATED BG SS FOR LP.svg';
+import ntpSvg from '../landing/NTP SS FOR LP.svg';
 import '../styles/landingPage.css';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const [expandedFeature, setExpandedFeature] = useState(null);
+  const [expandedFeature, setExpandedFeature] = useState(1);
   const [expandedFaq, setExpandedFaq] = useState(null);
 
   const features = [
     {
       id: 1,
       title: 'Technographics',
-      description: 'The technology product(s) the company uses'
+      description: 'Shows you what technologies companies currently use, and the maturity of their technology stack. ',
+      image: technoSvg
     },
     {
       id: 2,
       title: 'Intent',
-      description: 'A measure of the intensity of the signal for a given product and the likelihood of the existence of a product'
+      description: 'Intent data captures behavioral signals that indicate a company’s interest in specific technologies or solutions, helping prioritize outreach and improve conversion efficiency.',
+      image: intentSvg
     },
     {
       id: 3,
       title: 'Next Tech Purchase (NTP®)',
-      description: 'Predicts which technologies a company is most likely to adopt next based on multiple strategic and behavioral indicators'
+      description: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals.',
+      image: ntpSvg
     },
     {
       id: 4,
       title: 'Renewal Intelligence',
-      description: 'Renewal Cycle of a product'
+      description: 'Identifies when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving.',
+      image: riSvg
     },
     {
       id: 5,
       title: 'Buying Group',
-      description: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements'
+      description: 'Reveals who the real decision-makers are, who influences them, and how different departments are structured.',
+      image: bgSvg
     }
   ];
 
@@ -175,7 +184,7 @@ const LandingPage = () => {
               <div key={feature.id} className="accordion-item">
                 <button 
                   className={`accordion-header ${expandedFeature === feature.id ? 'active' : ''}`}
-                  onClick={() => setExpandedFeature(expandedFeature === feature.id ? null : feature.id)}
+                  onClick={() => setExpandedFeature(expandedFeature === feature.id ? feature.id : feature.id)}
                 >
                   <span className="accordion-title">{feature.title}</span>
                   <span className="accordion-toggle">
@@ -191,7 +200,13 @@ const LandingPage = () => {
             ))}
           </div>
           <div className="accordion-right">
-            <img src={technoSvg} alt="Technographics Features" className="feature-image" />
+            {expandedFeature && (
+              <img 
+                src={features.find(f => f.id === expandedFeature)?.image} 
+                alt="Feature Screenshot" 
+                className="feature-image" 
+              />
+            )}
           </div>
         </div>
       </section>

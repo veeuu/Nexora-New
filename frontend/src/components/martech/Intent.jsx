@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import IntentPieChart from './IntentPieChart';
 import { FaLock, FaUnlock } from 'react-icons/fa';
 import '../../styles/intent.css';

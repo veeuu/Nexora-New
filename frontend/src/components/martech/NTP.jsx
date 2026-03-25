@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock, FaCopy } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
 import '../../styles/ntp.css';

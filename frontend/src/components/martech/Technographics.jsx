@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useMemo } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaLock, FaUnlock, FaLightbulb } from 'react-icons/fa';
 
 const countryCodeMap = {

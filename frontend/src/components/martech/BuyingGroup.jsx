@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/buyingGroup.css';
 
 const BuyingGroup = () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import loadingGif from '../../assets/Loading GIF - Clients.gif';
+import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/keywords.css';
 
 const Keywords = () => {

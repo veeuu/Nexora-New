@@ -33,7 +33,7 @@ const AnimatedCounter = ({ value, duration = 2000 }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setTrigger(prev => prev + 1);
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
