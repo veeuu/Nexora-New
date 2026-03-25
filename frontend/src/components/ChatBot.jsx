@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaTimes, FaMinus } from 'react-icons/fa';
+import copilotImage from '../assets/ChatGPT_Image_Mar_25__2026__10_39_07_AM-removebg-preview (1).png';
 import '../styles/chatbot.css';
 // import chatbotVideo from '../video/Video_Generation_For_Chatbot (online-video-cutter,com)-Picsart-BackgroundRemover.mp4';
 
@@ -1022,7 +1023,16 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
             className="chatbot-minimized-btn"
             title="Open chatbot"
           >
-            <span className="minimized-icon">💬</span>
+            <img 
+              src={copilotImage} 
+              alt="Nexora Copilot" 
+              className="minimized-icon"
+              style={{
+                width: '24px',
+                height: '24px',
+                objectFit: 'contain'
+              }}
+            />
             <span className="minimized-text">Chat</span>
           </button>
         </div>
@@ -1089,26 +1099,15 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
               gap: '4px',
               fontSize: '24px'
             }}>
-              📊
-            </span>
-            <span style={{
-              position: 'absolute',
-              top: '-8px',
-              right: '-8px',
-              width: '24px',
-              height: '24px',
-              backgroundColor: '#ec4899',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              color: 'white',
-              animation: 'pulse 2s infinite',
-              boxShadow: '0 0 12px rgba(236, 72, 153, 0.6)'
-            }}>
-              ⚡
+              <img 
+                src={copilotImage} 
+                alt="Nexora Copilot" 
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  objectFit: 'contain'
+                }}
+              />
             </span>
           </button>
         </div>
