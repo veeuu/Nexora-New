@@ -127,7 +127,7 @@ const LandingPage = () => {
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
-              AI platform for a predictable pipeline<span className="highlight"></span>
+              AI Platform for a Predictable Pipeline<span className="highlight"></span>
             </h1>
             <p className="hero-subtitle">
               Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights to identify, prioritize, and convert the right accounts, faster.
