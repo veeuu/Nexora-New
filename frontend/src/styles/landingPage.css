@@ -155,12 +155,12 @@
 .hero-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0rem;
 }
 
 .hero-title {
-  font-size: 3.5rem;
-  font-weight: 900;
+  font-size: 4.5rem;
+  font-weight: 800;
   line-height: 1.2;
   color: #1a1a1a;
   letter-spacing: -1.2px;
@@ -185,7 +185,8 @@
 .hero-cta {
   display: flex;
   gap: 0.8rem;
-  margin-top: 0.5rem;
+  margin-top: 3.0rem;
+  padding-top: 1.5rem;
 }
 
 .email-input {
@@ -1660,8 +1661,8 @@
 .modal-content {
   background: #ffffff;
   border-radius: 12px;
-  padding: 2.5rem;
-  max-width: 500px;
+  padding: 3.5rem;
+  max-width: 600px;
   width: 90%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -1698,19 +1699,20 @@
 
 .modal-text {
   text-align: center;
+  padding: 1rem 0;
 }
 
 .modal-title {
   font-size: 1.8rem;
   font-weight: 700;
   color: #1a1a1a;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.0rem;
   letter-spacing: -0.3px;
 }
 
 .modal-message {
   font-size: 1rem;
-  color: #666666;
+  color: #090909;
   margin: 0;
   line-height: 1.6;
 }

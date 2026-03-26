@@ -127,10 +127,10 @@ const LandingPage = () => {
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
-              AI-powered platform for revenue teams to identify, prioritize, and convert the <span className="highlight">right accounts, faster</span>
+              AI platform for a predictable pipeline<span className="highlight"></span>
             </h1>
             <p className="hero-subtitle">
-              Access 600M+ companies with real-time technographics, renewal intelligence, intent signals, and buying group insights so you can prioritize high-value accounts, anticipate technology shifts, and accelerate revenue with precision.
+              Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights to identify, prioritize, and convert the right accounts, faster.
             </p>
             <div className="hero-cta">
               <input 
@@ -351,9 +351,10 @@ const LandingPage = () => {
               ×
             </button>
             <div className="modal-text">
-              <h2 className="modal-title">Thank You for Registration!</h2>
+              <h2 className="modal-title">Thank you.</h2>
               <p className="modal-message">
-                We'll get back to you soon!!!
+                <strong>Your request is now in motion.</strong><br />
+                Our team will reach out shortly with the next steps.
               </p>
             </div>
           </div>
