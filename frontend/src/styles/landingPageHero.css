@@ -155,7 +155,7 @@
 }
 
 .landing-page .hero-image {
-  width: 100% !important;
+  width: 120% !important;
   height: auto !important;
   object-fit: contain !important;
 }
