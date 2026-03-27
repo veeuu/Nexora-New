@@ -13,7 +13,7 @@ import intentSvg from '../landing/INtent SS revised.svg';
 import riSvg from '../landing/RI SS FOR LP.svg';
 import bgSvg from '../landing/UPDATED BG SS FOR LP.svg';
 import ntpSvg from '../landing/NTP SS FOR LP.svg';
-import heroSvg from '../landing/SS for Nexora LP HERO.svg';
+import heroSvg from '../landing/LP HERO UPDATED.svg';
 import '../styles/landingPage.css';
 import '../styles/landingPageHero.css';
 
