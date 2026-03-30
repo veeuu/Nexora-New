@@ -223,16 +223,20 @@ const LandingPage = () => {
           </div>
           <div className="difference-cards">
             <div className="difference-card">
-              <h3>GTM Data Universe</h3>
-              <p>Gain a complete view of your customers. Know who they are, what they need, and the best time to reach them.</p>
+              <h3>Strategic Imperative</h3>
+              <p>Build the standard. We are creating the most trusted intelligence engine for enterprise technology decisions.</p>
             </div>
             <div className="difference-card">
-              <h3>Built to Connect</h3>
-              <p>Seamlessly align sales, marketing, and operations with unified data that works across your tech stack.</p>
+              <h3>Change how teams sell</h3>
+              <p>We help teams stop reacting to the past and start anticipating future revenue.</p>
             </div>
             <div className="difference-card">
-              <h3>Agent-Ready</h3>
-              <p>Automate repetitive tasks with AI, so your team can focus on building relationships and closing deals.</p>
+              <h3>Unite your organization</h3>
+              <p>We align Sales, Marketing, and Product teams with one shared view of what comes next.</p>
+            </div>
+            <div className="difference-card">
+              <h3>Win with timing</h3>
+              <p>We give you the advantage of knowing when to act, before your competitors do.</p>
             </div>
           </div>
         </div>
