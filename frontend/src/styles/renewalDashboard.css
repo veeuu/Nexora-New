@@ -69,6 +69,26 @@
   font-weight: 600;
 }
 
+.renewal-theme-toggle-btn {
+  padding: 8px 12px;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.renewal-theme-toggle-btn:hover {
+  background-color: #334155;
+  border-color: #475569;
+}
+
 .renewal-filter-btn-dashboard,
 .renewal-download-btn-dashboard {
   padding: 8px 16px;
@@ -372,7 +392,7 @@
 }
 
 .renewal-renewals-bar {
-  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(180deg, rgb(59, 130, 246) 0%, #3b82f6 100%);
 }
 
 .renewal-unlocked-bar {
@@ -520,8 +540,8 @@
 }
 
 .renewal-timeline-renewals {
-  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(180deg, rgb(59, 130, 246) 0%, #3b82f6 100%);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .renewal-timeline-unlocked {
@@ -576,7 +596,7 @@
 }
 
 .renewal-timeline-renewals-color {
-  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(180deg, rgb(59, 130, 246) 0%, #3b82f6 100%);
 }
 
 .renewal-timeline-unlocked-color {
@@ -899,5 +919,412 @@
 }
 
 .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+
+/* ============================================
+   LIGHT MODE THEME
+   ============================================ */
+
+.renewal-dashboard-modal-content.light-mode {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.light-mode .renewal-dashboard-modal-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom-color: #e2e8f0;
+}
+
+.light-mode .renewal-dashboard-title-section h2 {
+  color: #0f172a;
+}
+
+.light-mode .renewal-dashboard-title-section p {
+  color: #64748b;
+}
+
+.light-mode .renewal-kpi-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-kpi-card:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .renewal-kpi-title {
+  color: #475569;
+}
+
+.light-mode .renewal-kpi-value {
+  color: #0f172a;
+}
+
+.light-mode .renewal-chart-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-chart-container:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .renewal-chart-header h3 {
+  color: #0f172a;
+}
+
+.light-mode .renewal-chart-header p {
+  color: #64748b;
+}
+
+.light-mode .renewal-chart-legend {
+  border-top-color: #cbd5e1;
+}
+
+.light-mode .renewal-legend-item {
+  color: #1e293b;
+}
+
+.light-mode .renewal-tab-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-tab-btn.active {
+  background-color: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.light-mode .renewal-tab-btn:hover:not(.active) {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.light-mode .renewal-chart-y-axis {
+  border-left-color: #cbd5e1;
+}
+
+.light-mode .renewal-y-label {
+  color: #64748b;
+}
+
+.light-mode .renewal-bars-container {
+  border-left-color: #cbd5e1;
+}
+
+.light-mode .renewal-timeline-axis {
+  border-right-color: #cbd5e1;
+}
+
+.light-mode .renewal-timeline-axis-label {
+  color: #64748b;
+}
+
+.light-mode .renewal-timeline-label {
+  color: #475569;
+}
+
+.light-mode .renewal-funnel-label {
+  color: #1e293b;
+}
+
+.light-mode .renewal-tracker-item {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-tracker-item:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.light-mode .renewal-tracker-product {
+  color: #1e293b;
+}
+
+.light-mode .renewal-tracker-company {
+  color: #64748b;
+}
+
+.light-mode .renewal-tracker-quarter {
+  color: #059669;
+  background-color: #d1fae5;
+}
+
+.light-mode .renewal-tracker-product-logo {
+  background-color: #e2e8f0;
+}
+
+.light-mode .renewal-donut-center-text {
+  fill: #0f172a;
+}
+
+.light-mode .renewal-donut-center-label {
+  fill: #64748b;
+}
+
+.light-mode .renewal-legend-item-donut {
+  border-radius: 6px;
+}
+
+.light-mode .renewal-legend-item-donut:hover {
+  background-color: #f1f5f9;
+}
+
+.light-mode .renewal-legend-product {
+  color: #1e293b;
+}
+
+.light-mode .renewal-legend-stats {
+  color: #64748b;
+}
+
+.light-mode .renewal-theme-toggle-btn {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-theme-toggle-btn:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.light-mode .renewal-close-button {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+
+.light-mode .renewal-close-button:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.light-mode .renewal-chart-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.light-mode .renewal-timeline-legend {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.light-mode .renewal-timeline-legend-item {
+  color: #1e293b;
+}
+
+/* ============================================
+   DARK MODE THEME (Default)
+   ============================================ */
+
+.renewal-dashboard-modal-content.dark-mode {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+.dark-mode .renewal-dashboard-modal-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 100%);
+  border-bottom-color: #1e293b;
+}
+
+.dark-mode .renewal-dashboard-title-section h2 {
+  color: #ffffff;
+}
+
+.dark-mode .renewal-dashboard-title-section p {
+  color: #94a3b8;
+}
+
+.dark-mode .renewal-kpi-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.dark-mode .renewal-kpi-card:hover {
+  border-color: #475569;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .renewal-kpi-title {
+  color: #94a3b8;
+}
+
+.dark-mode .renewal-kpi-value {
+  color: #ffffff;
+}
+
+.dark-mode .renewal-chart-container {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.dark-mode .renewal-chart-container:hover {
+  border-color: #475569;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .renewal-chart-header h3 {
+  color: #ffffff;
+}
+
+.dark-mode .renewal-chart-header p {
+  color: #94a3b8;
+}
+
+.dark-mode .renewal-chart-legend {
+  border-top-color: #334155;
+}
+
+.dark-mode .renewal-legend-item {
+  color: #e2e8f0;
+}
+
+.dark-mode .renewal-tab-btn {
+  background-color: #0f172a;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.dark-mode .renewal-tab-btn.active {
+  background-color: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.dark-mode .renewal-tab-btn:hover:not(.active) {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+.dark-mode .renewal-chart-y-axis {
+  border-left-color: #334155;
+}
+
+.dark-mode .renewal-y-label {
+  color: #64748b;
+}
+
+.dark-mode .renewal-bars-container {
+  border-left-color: #334155;
+}
+
+.dark-mode .renewal-timeline-axis {
+  border-right-color: #334155;
+}
+
+.dark-mode .renewal-timeline-axis-label {
+  color: #64748b;
+}
+
+.dark-mode .renewal-timeline-label {
+  color: #cbd5e1;
+}
+
+.dark-mode .renewal-funnel-label {
+  color: #e2e8f0;
+}
+
+.dark-mode .renewal-tracker-item {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+.dark-mode .renewal-tracker-item:hover {
+  background-color: #1a1f3a;
+  border-color: #334155;
+}
+
+.dark-mode .renewal-tracker-product {
+  color: #e2e8f0;
+}
+
+.dark-mode .renewal-tracker-company {
+  color: #94a3b8;
+}
+
+.dark-mode .renewal-tracker-quarter {
+  color: #10b981;
+  background-color: #10b98120;
+}
+
+.dark-mode .renewal-tracker-product-logo {
+  background-color: #1e293b;
+}
+
+.dark-mode .renewal-donut-center-text {
+  fill: #ffffff;
+}
+
+.dark-mode .renewal-donut-center-label {
+  fill: #94a3b8;
+}
+
+.dark-mode .renewal-legend-item-donut:hover {
+  background-color: #1e293b;
+}
+
+.dark-mode .renewal-legend-product {
+  color: #e2e8f0;
+}
+
+.dark-mode .renewal-legend-stats {
+  color: #94a3b8;
+}
+
+.dark-mode .renewal-theme-toggle-btn {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.dark-mode .renewal-theme-toggle-btn:hover {
+  background-color: #334155;
+  border-color: #475569;
+}
+
+.dark-mode .renewal-close-button {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.dark-mode .renewal-close-button:hover {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }

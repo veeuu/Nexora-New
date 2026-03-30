@@ -103,7 +103,7 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
 };
 
 // Product Breakdown Donut Chart
-const ProductBreakdownChart = ({ data }) => {
+const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
   let currentAngle = -90;
 
@@ -143,7 +143,7 @@ const ProductBreakdownChart = ({ data }) => {
               style={{ animation: `renewal-fadeIn 0.6s ease-out ${idx * 0.1}s both` }}
             />
           ))}
-          <circle cx="100" cy="100" r="50" fill="#0f172a" />
+          <circle cx="100" cy="100" r="50" fill={isDarkMode ? "#0f172a" : "#ffffff"} />
           <text x="100" y="100" textAnchor="middle" dy="0.3em" className="renewal-donut-center-text">
             {total}
           </text>
@@ -257,6 +257,7 @@ const RenewalDashboard = ({ onClose }) => {
   const [productData, setProductData] = useState([]);
   const [urgencyData, setUrgencyData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const trackerListRef = useRef(null);
 
   // Fetch metadata for KPIs and charts
@@ -268,10 +269,10 @@ const RenewalDashboard = ({ onClose }) => {
         
         // Build KPI data from metadata
         const kpis = [
-          { icon: '📊', title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-          { icon: '⚡', title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-          { icon: '🔓', title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
-          { icon: '🔴', title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+          { icon: '📈', title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
+          { icon: '⏰', title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
+          { icon: '👥', title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
+          { icon: '⚠️', title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
         ];
         setKpiData(kpis);
 
@@ -280,7 +281,7 @@ const RenewalDashboard = ({ onClose }) => {
           name: cat,
           value: Math.floor(Math.random() * 100) + 20,
           percentage: 0,
-          color: ['#10b981', '#0ea5e9', '#f59e0b', '#ef4444', '#a78bfa'][idx]
+          color: ['#0ea5e9', '#3b82f6', '#1e40af', '#1e3a8a', '#0c4a6e'][idx]
         }));
         const totalProducts = products.reduce((sum, p) => sum + p.value, 0);
         products.forEach(p => p.percentage = ((p.value / totalProducts) * 100).toFixed(1));
@@ -288,10 +289,10 @@ const RenewalDashboard = ({ onClose }) => {
 
         // Build urgency funnel
         const urgency = [
-          { label: '< 1 Month', value: Math.floor((data.totalRecords || 0) * 0.1), color: '#ef4444' },
-          { label: '1–3 Months', value: Math.floor((data.totalRecords || 0) * 0.25), color: '#f59e0b' },
+          { label: '< 1 Month', value: Math.floor((data.totalRecords || 0) * 0.1), color: '#0c4a6e' },
+          { label: '1–3 Months', value: Math.floor((data.totalRecords || 0) * 0.25), color: '#1e3a8a' },
           { label: '3–6 Months', value: Math.floor((data.totalRecords || 0) * 0.35), color: '#3b82f6' },
-          { label: '6–12 Months', value: Math.floor((data.totalRecords || 0) * 0.3), color: '#10b981' }
+          { label: '6–12 Months', value: Math.floor((data.totalRecords || 0) * 0.3), color: '#0ea5e9' }
         ];
         setUrgencyData(urgency);
 
@@ -369,7 +370,7 @@ const RenewalDashboard = ({ onClose }) => {
 
   return (
     <div className="renewal-modal-overlay" onClick={onClose}>
-      <div className="renewal-dashboard-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`} onClick={(e) => e.stopPropagation()}>
         <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
             <h2>Renewal Intelligence Dashboard</h2>
@@ -377,6 +378,13 @@ const RenewalDashboard = ({ onClose }) => {
           </div>
           <div className="renewal-dashboard-header-actions">
             <div className="renewal-live-indicator">● Live</div>
+            <button 
+              className="renewal-theme-toggle-btn"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
             <button className="renewal-close-button" onClick={onClose}>✕</button>
           </div>
         </div>
@@ -392,7 +400,7 @@ const RenewalDashboard = ({ onClose }) => {
           {/* Charts Grid */}
           <div className="renewal-charts-grid">
             <div className="renewal-chart-half-width">
-              {productData.length > 0 && <ProductBreakdownChart data={productData} />}
+              {productData.length > 0 && <ProductBreakdownChart data={productData} isDarkMode={isDarkMode} />}
             </div>
             <div className="renewal-chart-half-width">
               {urgencyData.length > 0 && <UrgencyFunnelChart data={urgencyData} />}
