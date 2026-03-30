@@ -26,16 +26,16 @@ const AnimatedCounter = ({ end, duration = 2000 }) => {
 // KPI Card Component
 const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
   return (
-    <div className="kpi-card" style={{ borderTopColor: accentColor }}>
-      <div className="kpi-icon" style={{ backgroundColor: `${accentColor}20`, color: accentColor }}>
+    <div className="renewal-kpi-card" style={{ borderTopColor: accentColor }}>
+      <div className="renewal-kpi-icon" style={{ backgroundColor: `${accentColor}20`, color: accentColor }}>
         {icon}
       </div>
-      <div className="kpi-content">
-        <h3 className="kpi-title">{title}</h3>
-        <div className="kpi-value">
+      <div className="renewal-kpi-content">
+        <h3 className="renewal-kpi-title">{title}</h3>
+        <div className="renewal-kpi-value">
           <AnimatedCounter end={value} />
         </div>
-        <div className="kpi-trend" style={{ color: trend === 'up' ? '#10b981' : '#ef4444' }}>
+        <div className="renewal-kpi-trend" style={{ color: trend === 'up' ? '#10b981' : '#ef4444' }}>
           <span>{trend === 'up' ? '↑' : '↓'}</span>
           <span>{trendValue}</span>
         </div>
@@ -49,59 +49,59 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
   const maxValue = Math.max(...data.map(d => Math.max(d.renewals, d.unlocked)));
   
   return (
-    <div className="chart-container">
-      <div className="chart-header">
+    <div className="renewal-chart-container">
+      <div className="renewal-chart-header">
         <h3>Renewal Timeline Distribution</h3>
         <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2025–2026</p>
       </div>
-      <div className="chart-tabs">
-        <button className={`tab-btn ${mode === 'quarter' ? 'active' : ''}`}>By Quarter</button>
-        <button className={`tab-btn ${mode === 'month' ? 'active' : ''}`}>By Month</button>
+      <div className="renewal-chart-tabs">
+        <button className={`renewal-tab-btn ${mode === 'quarter' ? 'active' : ''}`}>By Quarter</button>
+        <button className={`renewal-tab-btn ${mode === 'month' ? 'active' : ''}`}>By Month</button>
       </div>
-      <div className="bar-chart">
-        <div className="chart-y-axis">
-          <div className="y-label">120</div>
-          <div className="y-label">80</div>
-          <div className="y-label">40</div>
-          <div className="y-label">0</div>
+      <div className="renewal-bar-chart">
+        <div className="renewal-chart-y-axis">
+          <div className="renewal-y-label">120</div>
+          <div className="renewal-y-label">80</div>
+          <div className="renewal-y-label">40</div>
+          <div className="renewal-y-label">0</div>
         </div>
-        <div className="bars-container">
+        <div className="renewal-bars-container">
           {data.map((item, idx) => (
-            <div key={idx} className="bar-group">
-              <div className="bar-wrapper">
+            <div key={idx} className="renewal-bar-group">
+              <div className="renewal-bar-wrapper">
                 <div
-                  className="bar renewals-bar"
+                  className="renewal-bar renewal-renewals-bar"
                   style={{
                     height: `${(item.renewals / maxValue) * 100}%`,
-                    animation: `slideUp 0.6s ease-out ${idx * 0.05}s both`
+                    animation: `renewal-slideUp 0.6s ease-out ${idx * 0.05}s both`
                   }}
                 >
-                  <span className="bar-label">{item.renewals}</span>
+                  <span className="renewal-bar-label">{item.renewals}</span>
                 </div>
               </div>
-              <div className="bar-wrapper">
+              <div className="renewal-bar-wrapper">
                 <div
-                  className="bar unlocked-bar"
+                  className="renewal-bar renewal-unlocked-bar"
                   style={{
                     height: `${(item.unlocked / maxValue) * 100}%`,
-                    animation: `slideUp 0.6s ease-out ${idx * 0.05 + 0.1}s both`
+                    animation: `renewal-slideUp 0.6s ease-out ${idx * 0.05 + 0.1}s both`
                   }}
                 >
-                  <span className="bar-label">{item.unlocked}</span>
+                  <span className="renewal-bar-label">{item.unlocked}</span>
                 </div>
               </div>
-              <div className="bar-label-x">{item.label}</div>
+              <div className="renewal-bar-label-x">{item.label}</div>
             </div>
           ))}
         </div>
       </div>
-      <div className="chart-legend">
-        <div className="legend-item">
-          <div className="legend-color renewals-color"></div>
+      <div className="renewal-chart-legend">
+        <div className="renewal-legend-item">
+          <div className="renewal-legend-color renewal-renewals-color"></div>
           <span>Renewals</span>
         </div>
-        <div className="legend-item">
-          <div className="legend-color unlocked-color"></div>
+        <div className="renewal-legend-item">
+          <div className="renewal-legend-color renewal-unlocked-color"></div>
           <span>Unlocked</span>
         </div>
       </div>
@@ -135,36 +135,36 @@ const ProductBreakdownChart = ({ data }) => {
   });
 
   return (
-    <div className="chart-container">
-      <div className="chart-header">
+    <div className="renewal-chart-container">
+      <div className="renewal-chart-header">
         <h3>Product Breakdown</h3>
         <p>Share of renewals by product</p>
       </div>
-      <div className="donut-chart-wrapper">
-        <svg viewBox="0 0 200 200" className="donut-chart">
+      <div className="renewal-donut-chart-wrapper">
+        <svg viewBox="0 0 200 200" className="renewal-donut-chart">
           {slices.map((slice, idx) => (
             <path
               key={idx}
               d={slice.path}
               fill={slice.color}
-              style={{ animation: `fadeIn 0.6s ease-out ${idx * 0.1}s both` }}
+              style={{ animation: `renewal-fadeIn 0.6s ease-out ${idx * 0.1}s both` }}
             />
           ))}
           <circle cx="100" cy="100" r="50" fill="#0f172a" />
-          <text x="100" y="100" textAnchor="middle" dy="0.3em" className="donut-center-text">
+          <text x="100" y="100" textAnchor="middle" dy="0.3em" className="renewal-donut-center-text">
             {total}
           </text>
-          <text x="100" y="115" textAnchor="middle" className="donut-center-label">
+          <text x="100" y="115" textAnchor="middle" className="renewal-donut-center-label">
             renewals
           </text>
         </svg>
-        <div className="donut-legend">
+        <div className="renewal-donut-legend">
           {data.map((item, idx) => (
-            <div key={idx} className="legend-item-donut">
-              <div className="legend-color" style={{ backgroundColor: item.color }}></div>
-              <div className="legend-text">
-                <span className="legend-product">{item.name}</span>
-                <span className="legend-stats">{item.percentage}% · {item.value} cos</span>
+            <div key={idx} className="renewal-legend-item-donut">
+              <div className="renewal-legend-color" style={{ backgroundColor: item.color }}></div>
+              <div className="renewal-legend-text">
+                <span className="renewal-legend-product">{item.name}</span>
+                <span className="renewal-legend-stats">{item.percentage}% · {item.value} cos</span>
               </div>
             </div>
           ))}
@@ -179,25 +179,25 @@ const UrgencyFunnelChart = ({ data }) => {
   const maxValue = Math.max(...data.map(d => d.value));
 
   return (
-    <div className="chart-container">
-      <div className="chart-header">
+    <div className="renewal-chart-container">
+      <div className="renewal-chart-header">
         <h3>Urgency Funnel</h3>
         <p>Renewals by time remaining</p>
-        <div className="active-indicator">● Active</div>
+        <div className="renewal-active-indicator">● Active</div>
       </div>
-      <div className="funnel-chart">
+      <div className="renewal-funnel-chart">
         {data.map((item, idx) => (
-          <div key={idx} className="funnel-item">
-            <div className="funnel-label">{item.label}</div>
+          <div key={idx} className="renewal-funnel-item">
+            <div className="renewal-funnel-label">{item.label}</div>
             <div
-              className="funnel-bar"
+              className="renewal-funnel-bar"
               style={{
                 width: `${(item.value / maxValue) * 100}%`,
                 backgroundColor: item.color,
-                animation: `slideInLeft 0.6s ease-out ${idx * 0.1}s both`
+                animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
               }}
             >
-              <span className="funnel-value">{item.value}</span>
+              <span className="renewal-funnel-value">{item.value}</span>
             </div>
           </div>
         ))}
@@ -222,22 +222,22 @@ const RenewalTracker = ({ data }) => {
   };
 
   return (
-    <div className="chart-container">
-      <div className="chart-header">
+    <div className="renewal-chart-container">
+      <div className="renewal-chart-header">
         <h3>Renewal Tracker</h3>
         <p>Most recent opportunities</p>
-        <a href="#" className="view-all-link">View All →</a>
+        <a href="#" className="renewal-view-all-link">View All →</a>
       </div>
-      <div className="tracker-list">
+      <div className="renewal-tracker-list">
         {data.map((item, idx) => (
-          <div key={idx} className="tracker-item">
-            <div className="tracker-urgency-dot" style={{ backgroundColor: getUrgencyColor(item.urgency) }}></div>
-            <div className="tracker-product-icon">{item.icon}</div>
-            <div className="tracker-content">
-              <div className="tracker-product">{item.product}</div>
-              <div className="tracker-company">{item.company}</div>
+          <div key={idx} className="renewal-tracker-item">
+            <div className="renewal-tracker-urgency-dot" style={{ backgroundColor: getUrgencyColor(item.urgency) }}></div>
+            <div className="renewal-tracker-product-icon">{item.icon}</div>
+            <div className="renewal-tracker-content">
+              <div className="renewal-tracker-product">{item.product}</div>
+              <div className="renewal-tracker-company">{item.company}</div>
             </div>
-            <div className="tracker-quarter">{item.quarter}</div>
+            <div className="renewal-tracker-quarter">{item.quarter}</div>
           </div>
         ))}
       </div>
@@ -293,41 +293,41 @@ const RenewalDashboard = ({ onClose }) => {
   ];
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="dashboard-modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="dashboard-modal-header">
-          <div className="dashboard-title-section">
+    <div className="renewal-modal-overlay" onClick={onClose}>
+      <div className="renewal-dashboard-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="renewal-dashboard-modal-header">
+          <div className="renewal-dashboard-title-section">
             <h2>Renewal Intelligence Dashboard</h2>
             <p>Dashboard overview · Q2 2026 · Last updated just now</p>
           </div>
-          <div className="dashboard-header-actions">
-            <div className="live-indicator">● Live</div>
-            <button className="filter-btn-dashboard">🔍 Filter</button>
-            <button className="download-btn-dashboard">⬇ Download CSV</button>
-            <button className="close-button" onClick={onClose}>✕</button>
+          <div className="renewal-dashboard-header-actions">
+            <div className="renewal-live-indicator">● Live</div>
+            <button className="renewal-filter-btn-dashboard">🔍 Filter</button>
+            <button className="renewal-download-btn-dashboard">⬇ Download CSV</button>
+            <button className="renewal-close-button" onClick={onClose}>✕</button>
           </div>
         </div>
 
         <div className="renewal-dashboard-content">
           {/* KPI Cards */}
-          <div className="kpi-grid">
-            {kpiData.map((kpi, idx) => (
-              <KPICard key={idx} {...kpi} />
+          <div className="renewal-kpi-grid">
+            {kpiData.map((kpi) => (
+              <KPICard key={kpi.title} {...kpi} />
             ))}
           </div>
 
           {/* Charts Grid */}
-          <div className="charts-grid">
-            <div className="chart-half-width">
+          <div className="renewal-charts-grid">
+            <div className="renewal-chart-half-width">
               <ProductBreakdownChart data={productData} />
             </div>
-            <div className="chart-half-width">
+            <div className="renewal-chart-half-width">
               <UrgencyFunnelChart data={urgencyData} />
             </div>
-            <div className="chart-full-width">
+            <div className="renewal-chart-full-width">
               <RenewalTimelineChart data={timelineData} mode={timelineMode} />
             </div>
-            <div className="chart-full-width">
+            <div className="renewal-chart-full-width">
               <RenewalTracker data={trackerData} />
             </div>
           </div>
@@ -338,3 +338,4 @@ const RenewalDashboard = ({ onClose }) => {
 };
 
 export default RenewalDashboard;
+

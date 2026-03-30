@@ -82,10 +82,18 @@
 }
 
 .chart-container {
-  height: 320px;
-  width: 100%;
-  position: relative;
-  z-index: 1;
+  height: 320px !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 1 !important;
+  min-height: 320px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
 }
 
 .chart-legend {
