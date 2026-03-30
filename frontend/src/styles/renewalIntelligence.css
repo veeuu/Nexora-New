@@ -9,6 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  margin-top: 20px;
 }
 
 .header-actions h2 {
@@ -31,6 +32,7 @@
 
 .filter-section {
   margin-bottom: 20px;
+  padding-top: 16px;
 }
 
 .filter-wrapper {
@@ -86,30 +88,48 @@
   background-color: #f3f4f6;
 }
 
-.download-csv-button {
-  display: flex;
+.download-csv-button,
+.view-summary-button {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.download-csv-button {
+  background-color: #10b981;
+  border: 1px solid #10b981;
+  color: #ffffff;
 }
 
 .download-csv-button:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
+  background-color: #059669;
+  border-color: #059669;
 }
 
-.csv-icon {
+.view-summary-button {
+  background-color: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+}
+
+.view-summary-button:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.csv-icon,
+.summary-icon {
   width: 16px;
   height: 16px;
-  color: #6b7280;
+  flex-shrink: 0;
 }
 
 .table-grid {
@@ -380,6 +400,53 @@ td {
   50% {
     opacity: 0.5;
   }
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.filter-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown-wrapper-relative {
+  position: relative;
+}
+
+.filter-button {
+  padding: 8px 14px;
+  background-color: white;
+  color: #3b82f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-button:hover {
+  background-color: #f3f4f6;
+  border-color: #3b82f6;
 }
 
 @media (max-width: 768px) {

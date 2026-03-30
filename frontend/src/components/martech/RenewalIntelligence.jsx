@@ -3,6 +3,7 @@ import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
+import RenewalDashboard from './RenewalDashboard';
 
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -297,6 +298,7 @@ const RenewalIntelligence = () => {
     const [products, setProducts] = useState([]);
     const [measurements, setMeasurements] = useState({});
     const [companySearchTerm, setCompanySearchTerm] = useState('');
+    const [showDashboard, setShowDashboard] = useState(false);
     const rowsPerPage = 9;
     const filterRef = useRef(null);
 
@@ -1032,7 +1034,7 @@ if (aQtr.year !== bQtr.year) {
     return (
         <>
         <div className="renewal-intelligence-container">
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '24px', paddingTop: '24px', paddingLeft: '16px', paddingRight: '16px' }}>
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '15px', paddingTop: '15px', paddingLeft: '16px', paddingRight: '16px' }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700', margin: '0' }}>Renewal Intelligence</h2>
                 <div className="actions-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {}
@@ -1041,8 +1043,8 @@ if (aQtr.year !== bQtr.year) {
 
             <div className="section-subtle-divider" />
 
-            <div style={{ marginBottom: '8px' }} ref={filterRef}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '60px' }}>
+            <div style={{ marginBottom: '20px', paddingTop: '40px' }} ref={filterRef}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 {}
                 <div style={{ position: 'relative' }}>
@@ -2202,20 +2204,31 @@ if (aQtr.year !== bQtr.year) {
                 </div>
 
                 {}
-                <button
-                  onClick={() => downloadCSV(filteredData)}
-                  className="download-csv-button"
-                  style={{ flexShrink: 0 }}
-                >
-                  <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="12" y1="13" x2="12" y2="17"></line>
-                    <line x1="8" y1="13" x2="8" y2="17"></line>
-                    <line x1="16" y1="13" x2="16" y2="17"></line>
-                  </svg>
-                  Download CSV
-                </button>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => downloadCSV(filteredData)}
+                    className="download-csv-button"
+                  >
+                    <svg className="csv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="12" y1="13" x2="12" y2="17"></line>
+                      <line x1="8" y1="13" x2="8" y2="17"></line>
+                      <line x1="16" y1="13" x2="16" y2="17"></line>
+                    </svg>
+                    Download CSV
+                  </button>
+                  <button
+                    onClick={() => setShowDashboard(true)}
+                    className="view-summary-button"
+                  >
+                    <svg className="summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    View Dashboard
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -3069,6 +3082,7 @@ td:nth-child(2), th:nth-child(2) {
             `}</style>
             {}
         </div>
+        {showDashboard && <RenewalDashboard onClose={() => setShowDashboard(false)} />}
         </>
     );
 };
