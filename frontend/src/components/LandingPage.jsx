@@ -157,7 +157,7 @@ const LandingPage = () => {
         <div className="stats-wrapper">
           <div className="stats-header">
             <h2>Powering Go-To-Market Excellence</h2>
-            <p>Join leading B2B companies leveraging Nexora's intelligence to scale revenue</p>
+            <p>Join leading B2B companies leveraging ProPlus Data's intelligence to scale revenue</p>
           </div>
           <div className="stats-container">
             {stats.map((stat, index) => (
