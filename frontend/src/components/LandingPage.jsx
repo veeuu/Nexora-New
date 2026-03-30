@@ -234,10 +234,10 @@ const LandingPage = () => {
               <h3>Unite your organization</h3>
               <p>We align Sales, Marketing, and Product teams with one shared view of what comes next.</p>
             </div>
-            <div className="difference-card">
+            {/* <div className="difference-card">
               <h3>Win with timing</h3>
               <p>We give you the advantage of knowing when to act, before your competitors do.</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
