@@ -455,12 +455,19 @@ router.get('/ntp/summary', cacheResponse(300), async (req, res) => {
 router.get('/ntp', cacheResponse(120), async (req, res) => {
   try {
     const startTime = Date.now();
-    
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 500;
     const skip = (page - 1) * limit;
 
-    const cacheKey = `ntp-page-${page}-${limit}`;
+    const filters = {
+      companyName: req.query.companyName ? (Array.isArray(req.query.companyName) ? req.query.companyName : [req.query.companyName]) : [],
+      category: req.query.category ? (Array.isArray(req.query.category) ? req.query.category : [req.query.category]) : [],
+      technology: req.query.technology ? (Array.isArray(req.query.technology) ? req.query.technology : [req.query.technology]) : [],
+      prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
+    };
+
+    const cacheKey = `ntp-page-${page}-${limit}-${JSON.stringify(filters)}`;
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
@@ -469,69 +476,47 @@ router.get('/ntp', cacheResponse(120), async (req, res) => {
     const dataCollection = getDataCollection();
     const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
     const useFlat = availability.ntp;
-
     const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
-    const pipeline = useFlat ? [
-      {
-        $project: {
-          _id: 0,
-          companyName: 1,
-          domain: 1,
-          linkedinUrl: 1,
-          category: 1,
-          technology: 1,
-          purchaseProbability: 1,
-          purchasePrediction: 1,
-          ntpAnalysis: 1,
-          latestDetectedDate: 1,
-          previousDetectedDate: 1
-        }
-      },
-      {
-        $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: 'count' }
-          ]
-        }
+
+    const matchStage = {};
+    if (filters.companyName.length > 0) matchStage[useFlat ? 'companyName' : 'Company Name'] = { $in: filters.companyName };
+    if (useFlat) {
+      if (filters.category.length > 0) matchStage.category = { $in: filters.category };
+      if (filters.technology.length > 0) matchStage.technology = { $in: filters.technology };
+      if (filters.prediction.length > 0) matchStage.purchasePrediction = { $in: filters.prediction };
+    }
+
+    const pipeline = [];
+    if (!useFlat) pipeline.push({ $unwind: '$NTP' });
+    if (Object.keys(matchStage).length > 0) pipeline.push({ $match: matchStage });
+    if (!useFlat) {
+      if (filters.category.length > 0) pipeline.push({ $match: { 'NTP.Category': { $in: filters.category } } });
+      if (filters.technology.length > 0) pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
+      if (filters.prediction.length > 0) pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
+    }
+    pipeline.push({
+      $project: {
+        _id: 0,
+        companyName: useFlat ? '$companyName' : '$Company Name',
+        domain: useFlat ? '$domain' : '$Firmographics.About.Domain',
+        linkedinUrl: useFlat ? '$linkedinUrl' : {
+          $ifNull: ['$Firmographics.About.linkedinUrl', { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }]
+        },
+        category: useFlat ? '$category' : '$NTP.Category',
+        technology: useFlat ? '$technology' : '$NTP.Technology',
+        purchaseProbability: useFlat ? '$purchaseProbability' : '$NTP.Purchase Probability (%)',
+        purchasePrediction: useFlat ? '$purchasePrediction' : '$NTP.Purchase Prediction',
+        ntpAnalysis: useFlat ? '$ntpAnalysis' : '$NTP.NTP Analysis',
+        latestDetectedDate: useFlat ? '$latestDetectedDate' : { $ifNull: ['$NTP.Latest Date', 'N/A'] },
+        previousDetectedDate: useFlat ? '$previousDetectedDate' : { $ifNull: ['$NTP.Previous Date', 'N/A'] }
       }
-    ] : [
-      { $unwind: '$NTP' },
-      {
-        $project: {
-          _id: 0,
-          companyName: '$Company Name',
-          domain: '$Firmographics.About.Domain',
-          linkedinUrl: {
-            $ifNull: [
-              '$Firmographics.About.linkedinUrl',
-              { $ifNull: ['$Firmographics.About.LinkedIn URL', ''] }
-            ]
-          },
-          category: '$NTP.Category',
-          technology: '$NTP.Technology',
-          purchaseProbability: '$NTP.Purchase Probability (%)',
-          purchasePrediction: '$NTP.Purchase Prediction',
-          ntpAnalysis: '$NTP.NTP Analysis',
-          latestDetectedDate: { $ifNull: ['$NTP.Latest Date', 'N/A'] },
-          previousDetectedDate: { $ifNull: ['$NTP.Previous Date', 'N/A'] }
-        }
-      },
-      {
-        $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: 'count' }
-          ]
-        }
+    });
+    pipeline.push({
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limit }],
+        total: [{ $count: 'count' }]
       }
-    ];
+    });
 
     const [result] = await aggregateTimed(
       collection,

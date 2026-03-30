@@ -377,7 +377,6 @@ const NTP = () => {
       if (filters.category.length > 0) {
         filters.category.forEach(cat => queryParams.append('category', cat));
       }
-
       const response = await fetch(`/api/ntp?${queryParams.toString()}`);
       const data = await response.json();
 
@@ -471,35 +470,14 @@ const NTP = () => {
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
   const filteredData = useMemo(() => {
-    
-    const hasCategoryFilter = Array.isArray(filters.category) && filters.category.length > 0;
-    const hasPurchasePredictionFilter = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length > 0;
-
-    // Show all data by default (no mandatory filters required)
-    return tableData
-      .filter(row => {
-        // Exclude "Not Detected" records
-        if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
-          return false;
-        }
-        
-        const filterMatches = Object.keys(filters).every(key => {
-          const selectedValues = Array.isArray(filters[key]) ? filters[key] : [];
-          if (selectedValues.length === 0) return true; 
-          
-          const rowValue = String(row[key]).toLowerCase();
-          return selectedValues.some(val => String(val).toLowerCase() === rowValue);
-        });
-
-        return filterMatches;
-      })
-      .sort((a, b) => {
-        // Sort by purchase probability in descending order (highest first)
-        const probA = parseFloat(String(a.purchaseProbability || '0').replace('%', '')) || 0;
-        const probB = parseFloat(String(b.purchaseProbability || '0').replace('%', '')) || 0;
-        return probB - probA;
-      });
-  }, [tableData, filters]);
+    // Backend handles filters - just exclude "Not Detected" records client-side
+    return tableData.filter(row => {
+      if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
+        return false;
+      }
+      return true;
+    });
+  }, [tableData]);
 
   const handleAnalysisClick = (analysis) => {
     setModalContent(analysis);
@@ -1079,49 +1057,30 @@ const NTP = () => {
           </thead>
           <tbody>
             {(() => {
-              
-              const groupedData = {};
+              // Group filteredData by company (backend already paginated)
+              const companiesMap = new Map();
               filteredData.forEach(row => {
-                const key = `${row.category}|${row.purchasePrediction}`;
-                if (!groupedData[key]) {
-                  groupedData[key] = {
-                    category: row.category,
-                    purchasePrediction: row.purchasePrediction,
-                    companies: new Map()
-                  };
-                }
-
-                if (!groupedData[key].companies.has(row.companyName)) {
-                  groupedData[key].companies.set(row.companyName, {
+                if (!companiesMap.has(row.companyName)) {
+                  companiesMap.set(row.companyName, {
                     companyName: row.companyName,
                     domain: row.domain,
                     linkedinUrl: row.linkedinUrl,
+                    category: row.category,
+                    purchasePrediction: row.purchasePrediction,
                     technologies: []
                   });
                 }
-                
-                groupedData[key].companies.get(row.companyName).technologies.push({
+                companiesMap.get(row.companyName).technologies.push({
                   technology: row.technology,
                   purchaseProbability: row.purchaseProbability,
                   ntpAnalysis: row.ntpAnalysis
                 });
               });
 
-              const allCompanies = [];
-              Object.values(groupedData).forEach(group => {
-                Array.from(group.companies.values()).forEach(company => {
-                  allCompanies.push({ ...company, category: group.category, purchasePrediction: group.purchasePrediction });
-                });
-              });
+              const allCompanies = Array.from(companiesMap.values());
 
-              const totalCompanies = allCompanies.length;
-              const totalPages = Math.ceil(totalCompanies / rowsPerPage);
-              const startIndex = (currentPage - 1) * rowsPerPage;
-              const endIndex = Math.min(startIndex + rowsPerPage, totalCompanies);
-              const paginatedCompanies = allCompanies.slice(startIndex, endIndex);
-
-              return paginatedCompanies.map((company, companyIndex) => {
-                const actualIndex = startIndex + companyIndex;
+              return allCompanies.map((company, companyIndex) => {
+                const actualIndex = companyIndex;
                 const companyRowSpan = company.technologies.length > 3 ? 1 : company.technologies.length;
 
                 return company.technologies.map((tech, techIndex) => {
