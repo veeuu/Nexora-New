@@ -145,23 +145,25 @@ tbody tr:hover {
 
 /* Button Styles */
 .view-summary-button {
-  padding: 8px 16px;
+  padding: 10px 18px;
   background-color: #3b82f6;
   color: white;
-  border: none;
+  border: 2px solid #1e40af;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .view-summary-button:hover {
   background-color: #2563eb;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .summary-icon {
@@ -170,23 +172,25 @@ tbody tr:hover {
 }
 
 .download-csv-button {
-  padding: 8px 16px;
+  padding: 10px 18px;
   background-color: #45a049;
   color: white;
-  border: none;
+  border: 2px solid #2d7a2d;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(69, 160, 73, 0.3);
 }
 
 .download-csv-button:hover {
-  background-color: #45a049;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  background-color: #3d8b41;
+  box-shadow: 0 4px 12px rgba(69, 160, 73, 0.5);
+  transform: translateY(-2px);
 }
 
 .csv-icon {
@@ -865,9 +869,10 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
   justify-content: space-between;
   margin-top: 90px;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .filter-controls-left {
@@ -875,6 +880,17 @@ tbody tr:hover {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* !IMPORTANT - This ensures Download CSV and View Summary buttons stay on the right side */
+.filter-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* Filter Dropdown Wrapper Relative */
