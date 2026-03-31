@@ -28,9 +28,11 @@ const AnimatedCounter = ({ end, duration = 2000 }) => {
 const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
   return (
     <div className="renewal-kpi-card" style={{ borderTopColor: accentColor }}>
-      <div className="renewal-kpi-icon" style={{ backgroundColor: `${accentColor}20`, color: accentColor }}>
-        {icon}
-      </div>
+      {icon && (
+        <div className="renewal-kpi-icon" style={{ backgroundColor: `${accentColor}20`, color: accentColor }}>
+          {icon}
+        </div>
+      )}
       <div className="renewal-kpi-content">
         <h3 className="renewal-kpi-title">{title}</h3>
         <div className="renewal-kpi-value">
@@ -257,7 +259,7 @@ const RenewalDashboard = ({ onClose }) => {
   const [productData, setProductData] = useState([]);
   const [urgencyData, setUrgencyData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const trackerListRef = useRef(null);
 
   // Fetch metadata for KPIs and charts
@@ -269,10 +271,10 @@ const RenewalDashboard = ({ onClose }) => {
         
         // Build KPI data from metadata
         const kpis = [
-          { icon: '📈', title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-          { icon: '⏰', title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-          { icon: '👥', title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
-          { icon: '⚠️', title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+          { title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
+          { title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
+          { title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
+          { title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
         ];
         setKpiData(kpis);
 
