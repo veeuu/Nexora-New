@@ -200,17 +200,11 @@ const LandingPage = () => {
             transition: 'background 0.2s',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-            <polyline points="10 17 15 12 10 7"/>
-            <line x1="15" y1="12" x2="3" y2="12"/>
-          </svg>
-          Sign In
+          Log In
         </button>
       </section>
 
@@ -312,9 +306,9 @@ const LandingPage = () => {
         <div className="cta-glass-container">
           <div className="cta-content">
             <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
-            <button className="btn-cta-primary" disabled>
+            {/* <button className="btn-cta-primary" disabled>
               Coming Soon
-            </button>
+            </button> */}
           </div>
         </div>
       </section>
