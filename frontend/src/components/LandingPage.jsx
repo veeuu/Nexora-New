@@ -141,32 +141,6 @@ const LandingPage = () => {
             <img src={nexoraLogo2} alt="Nexora" className="header-logo" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
-            <button
-              onClick={() => navigate('/login')}
-              title="Login"
-              style={{
-                background: 'transparent',
-                border: '1.5px solid rgba(255,255,255,0.35)',
-                borderRadius: '50%',
-                width: '46px',
-                height: '46px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                marginRight: '12px',
-                color: '#ffffff',
-                transition: 'all 0.2s',
-                padding: 0,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent'; }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </button>
             <span style={{ fontSize: '0.85rem', color: '#a0a0a0', fontWeight: '500' }}>Powered by</span>
             <img src={proplusDataLogo} alt="ProPlus Data" className="header-logo" style={{ height: '35px' }} />
           </div>
@@ -174,7 +148,29 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section" style={{ position: 'relative' }}>
+        <button
+          onClick={() => navigate('/login')}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '24px',
+            background: 'white',
+            border: '1px solid #e5e7eb',
+            borderRadius: '6px',
+            padding: '8px 20px',
+            color: '#000000',
+            fontSize: '0.85rem',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            zIndex: 10,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+        >
+          Login
+        </button>
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">

@@ -126,7 +126,7 @@ const Home = () => {
                   className={`home-quick-btn home-quick-btn-summary${activeView === 'summary' ? ' active' : ''}`}
                   onClick={() => handleViewClick('summary')}
                 >
-                  View Overall Summary
+                  Overall Summary
                 </button>
                 <button
                   className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`}
