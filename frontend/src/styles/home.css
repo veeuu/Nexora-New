@@ -523,35 +523,35 @@
 }
 
 .home-quick-btn-intent {
-  background: linear-gradient(135deg, #1a3a5c 0%, #1a56b0 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   color: white;
 }
 
 .home-quick-btn-intent:hover {
-  background: linear-gradient(135deg, #0a1f2e 0%, #003d8a 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
 }
 
 .home-quick-btn-renewal {
-  background: linear-gradient(135deg, #1a3a5c 0%, #1a56b0 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   color: white;
 }
 
 .home-quick-btn-renewal:hover {
-  background: linear-gradient(135deg, #0a1f2e 0%, #003d8a 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
 }
 
 
 .home-quick-btn-summary {
-  background: linear-gradient(135deg, #1a3a5c 0%, #1a56b0 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   color: white;
 }
 
 .home-quick-btn-summary:hover {
-  background: linear-gradient(135deg, #0a1f2e 0%, #003d8a 100%);
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
 }

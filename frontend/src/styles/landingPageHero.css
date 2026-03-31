@@ -48,7 +48,7 @@
 .landing-page .hero-content {
   display: flex !important;
   flex-direction: column !important;
-  gap: 1.5rem !important;
+  gap: 1.0rem !important;
 }
 
 .landing-page .hero-title {

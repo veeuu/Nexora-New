@@ -148,29 +148,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="hero-section" style={{ position: 'relative' }}>
-        <button
-          onClick={() => navigate('/login')}
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '24px',
-            background: 'white',
-            border: '1px solid #e5e7eb',
-            borderRadius: '6px',
-            padding: '8px 20px',
-            color: '#000000',
-            fontSize: '0.85rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            zIndex: 10,
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
-        >
-          Login
-        </button>
+      <section className="hero-section">
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
@@ -194,6 +172,29 @@ const LandingPage = () => {
                 disabled={submitting}
               >
                 {submitting ? 'Submitting...' : 'Start Free Trial'}
+              </button>
+            </div>
+
+            {/* Divider + Sign In */}
+            <div style={{ marginTop: '12px', width: '60%' }}>
+              <div style={{ height: '1px', background: '#d1d5db', marginBottom: '25px', width: '100%' }} />
+              <button
+                onClick={() => navigate('/login')}
+                style={{
+                  background: 'linear-gradient(135deg, rgb(150, 176, 255) 0%, rgb(30, 48, 108) 100%)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '9px 28px',
+                  color: 'white',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+              >
+                Sign In
               </button>
             </div>
           </div>
