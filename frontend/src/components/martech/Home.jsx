@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ProductCatalogue from './ProductCatalogue';
 import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
-import nexoraLogo from '../../assets/nexora-logo.png';
+import IntentPieChart from './IntentPieChart';
+import RenewalDashboard from './RenewalDashboard';
 import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/home.css';
 
 const Home = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [stats, setStats] = useState({
     totalCompanies: 0,
@@ -21,6 +21,45 @@ const Home = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProductCatalogue, setShowProductCatalogue] = useState(false);
   const [showDataDictionary, setShowDataDictionary] = useState(false);
+  // 'summary' | 'renewal' | 'intent' | null
+  const [activeView, setActiveView] = useState('summary');
+  const [intentData, setIntentData] = useState([]);
+  const [intentLoading, setIntentLoading] = useState(false);
+
+  const fetchIntentData = async () => {
+    setIntentLoading(true);
+    try {
+      const res = await fetch('/api/intent');
+      const raw = await res.json();
+      const statusCounts = {};
+      raw.forEach(row => {
+        if (row.intentStatus && String(row.intentStatus).trim()) {
+          const s = String(row.intentStatus).trim();
+          statusCounts[s] = (statusCounts[s] || 0) + 1;
+        }
+      });
+      const total = Object.values(statusCounts).reduce((sum, c) => sum + c, 0);
+      setIntentData(Object.entries(statusCounts).map(([name, value]) => ({
+        name, value, percentage: ((value / total) * 100).toFixed(1)
+      })));
+    } catch {
+      setIntentData([]);
+    } finally {
+      setIntentLoading(false);
+    }
+  };
+
+  const handleViewClick = (view) => {
+    if (activeView === view) {
+      setActiveView(null); // toggle off
+    } else {
+      setActiveView(view);
+      if (view === 'intent' && intentData.length === 0) {
+        fetchIntentData();
+      }
+    }
+  };
+
   const dropdownRef = useRef(null);
 
   // Reset to welcome page when Home component mounts or when navigating back to home
@@ -82,6 +121,26 @@ const Home = () => {
               <p className="home-subtitle">
                 Your comprehensive B2B intelligence platform
               </p>
+              <div className="home-quick-buttons">
+                <button
+                  className={`home-quick-btn home-quick-btn-summary${activeView === 'summary' ? ' active' : ''}`}
+                  onClick={() => handleViewClick('summary')}
+                >
+                  View Overall Summary
+                </button>
+                <button
+                  className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`}
+                  onClick={() => handleViewClick('renewal')}
+                >
+                  Renewal Intelligence
+                </button>
+                <button
+                  className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`}
+                  onClick={() => handleViewClick('intent')}
+                >
+                  Intent
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -129,6 +188,7 @@ const Home = () => {
       ) : (
         <>
           {}
+          {activeView === 'summary' && (
           <div className="home-stats-grid">
             <AnimatedStatCard
               number="600M+"
@@ -138,7 +198,6 @@ const Home = () => {
               labelClass="home-stat-label-teal"
               maxValue={100000}
             />
-
             <AnimatedStatCard
               number="590M+"
               label="Technographics"
@@ -147,7 +206,6 @@ const Home = () => {
               labelClass="home-stat-label-orange"
               maxValue={100000}
             />
-
             <AnimatedStatCard
               number="530M+"
               label="Renewal Intelligence"
@@ -156,7 +214,6 @@ const Home = () => {
               labelClass="home-stat-label-pink"
               maxValue={100000}
             />
-
             <AnimatedStatCard
               number="530M+"
               label="Intent"
@@ -165,7 +222,6 @@ const Home = () => {
               labelClass="home-stat-label-purple"
               maxValue={100000}
             />
-
             <AnimatedStatCard
               number="430M+"
               label="Buying Group"
@@ -174,7 +230,6 @@ const Home = () => {
               labelClass="home-stat-label-yellow"
               maxValue={100000}
             />
-
             <AnimatedStatCard
               number="530M+"
               label="Next Tech Purchase®"
@@ -184,36 +239,25 @@ const Home = () => {
               maxValue={100000}
             />
           </div>
+          )}
 
-          {}
-          <div className="home-quick-links-section">
-            <h2 className="home-quick-links-title">
-              Quick Demo
-            </h2>
-            <div className="home-quick-links-grid">
-              {[
-                { name: 'Technographics', desc: 'View company technology stack', route: '/dashboard/technographics' },
-                { name: 'Renewal Intelligence', desc: 'Track renewal timelines', route: '/dashboard/renewal-intelligence' },
-                { name: 'Intent', desc: 'Monitor buying intent signals', route: '/dashboard/intent' },
-                { name: 'Next Tech Purchase®', desc: 'Analyzend  purchase propensity', route: '/dashboard/ntp' },
-                { name: 'Buying Group', desc: 'Identify decision makers', route: '/dashboard/buying-group' }
-              ].map((link, idx) => (
-                <div
-                  key={idx}
-                  className="home-quick-link-card"
-                  onClick={() => navigate(link.route)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className="home-quick-link-name">
-                    {link.name}
-                  </div>
-                  <div className="home-quick-link-description">
-                    {link.desc}
-                  </div>
-                </div>
-              ))}
+          {activeView === 'intent' && (
+            <div className="home-intent-summary">
+              <h3 className="home-intent-summary-title">Intent Summary</h3>
+              {intentLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading intent data...</div>
+              ) : (
+                <IntentPieChart data={intentData} />
+              )}
             </div>
-          </div>
+          )}
+
+          {activeView === 'renewal' && (
+            <div className="home-renewal-inline">
+              <RenewalDashboard onClose={() => setActiveView(null)} inline />
+            </div>
+          )}
+
         </>
       )}
     </div>

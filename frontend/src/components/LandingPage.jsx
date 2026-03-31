@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AnimatedCounter from './AnimatedCounter';
 import ClientLogosCarousel from './ClientLogosCarousel';
 import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
@@ -18,6 +19,7 @@ import '../styles/landingPage.css';
 import '../styles/landingPageHero.css';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [expandedFeature, setExpandedFeature] = useState(1);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -139,8 +141,34 @@ const LandingPage = () => {
             <img src={nexoraLogo2} alt="Nexora" className="header-logo" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
+            <button
+              onClick={() => navigate('/login')}
+              title="Login"
+              style={{
+                background: 'transparent',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                borderRadius: '50%',
+                width: '46px',
+                height: '46px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                marginRight: '12px',
+                color: '#ffffff',
+                transition: 'all 0.2s',
+                padding: 0,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent'; }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </button>
             <span style={{ fontSize: '0.85rem', color: '#a0a0a0', fontWeight: '500' }}>Powered by</span>
-            <img src={proplusDataLogo} alt="ProPlus Data" className="header-logo" style={{ height: '40px' }} />
+            <img src={proplusDataLogo} alt="ProPlus Data" className="header-logo" style={{ height: '35px' }} />
           </div>
         </div>
       </header>

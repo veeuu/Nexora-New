@@ -1328,3 +1328,18 @@
 .dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+
+/* Inline mode (embedded in home page) */
+.renewal-dashboard-inline {
+  width: 100%;
+}
+
+.renewal-dashboard-inline .renewal-dashboard-modal-content {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  border-radius: 8px;
+  box-shadow: none;
+  margin: 0;
+}

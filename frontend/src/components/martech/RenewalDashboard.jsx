@@ -249,7 +249,7 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
 };
 
 // Main Dashboard Component
-const RenewalDashboard = ({ onClose }) => {
+const RenewalDashboard = ({ onClose, inline = false }) => {
   const [timelineMode, setTimelineMode] = useState('quarter');
   const [trackerData, setTrackerData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -371,8 +371,14 @@ const RenewalDashboard = ({ onClose }) => {
   }, [handleScroll]);
 
   return (
-    <div className="renewal-modal-overlay" onClick={onClose}>
-      <div className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={inline ? 'renewal-dashboard-inline' : 'renewal-modal-overlay'}
+      onClick={inline ? undefined : onClose}
+    >
+      <div
+        className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`}
+        onClick={inline ? undefined : (e) => e.stopPropagation()}
+      >
         <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
             <h2>Renewal Intelligence Dashboard</h2>
