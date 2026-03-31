@@ -176,24 +176,32 @@ const LandingPage = () => {
             </div>
 
             {/* Divider + Sign In */}
-            <div style={{ marginTop: '12px', width: '60%' }}>
+            <div style={{ marginTop: '12px', width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ height: '1px', background: '#d1d5db', marginBottom: '25px', width: '100%' }} />
               <button
                 onClick={() => navigate('/login')}
                 style={{
-                  background: 'linear-gradient(135deg, rgb(150, 176, 255) 0%, rgb(30, 48, 108) 100%)',
-                  border: 'none',
+                  background: 'white',
+                  border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   padding: '9px 28px',
-                  color: 'white',
+                  color: '#111827',
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   cursor: 'pointer',
                   transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
                 Sign In
               </button>
             </div>
