@@ -21,6 +21,29 @@ const LandingPage = () => {
   const [expandedFeature, setExpandedFeature] = useState(1);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleStartFreeTrial = async () => {
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'Landing Page - Hero' })
+      });
+    } catch (err) {
+      // show modal regardless
+    } finally {
+      setSubmitting(false);
+      setEmail('');
+      setShowModal(true);
+    }
+  };
 
   const features = [
     {
@@ -137,9 +160,16 @@ const LandingPage = () => {
                 type="email" 
                 placeholder="Enter your business email" 
                 className="email-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleStartFreeTrial()}
               />
-              <button className="btn-free-trial" onClick={() => setShowModal(true)}>
-                Start Free Trial
+              <button 
+                className="btn-free-trial" 
+                onClick={handleStartFreeTrial}
+                disabled={submitting}
+              >
+                {submitting ? 'Submitting...' : 'Start Free Trial'}
               </button>
             </div>
           </div>

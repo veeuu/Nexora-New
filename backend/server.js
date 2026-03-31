@@ -33,6 +33,36 @@ app.use('/api', apiRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/buying-groups', buyingGroupRouter);
 
+// Google Sheets email submission proxy
+app.post('/api/subscribe', async (req, res) => {
+  try {
+    const { email, source } = req.body;
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Invalid email' });
+    }
+
+    const SHEET_URL = process.env.GOOGLE_SHEET_URL || '';
+    if (!SHEET_URL) {
+      return res.status(500).json({ success: false, error: 'Sheet URL not configured' });
+    }
+
+    const params = new URLSearchParams();
+    params.append('email', email);
+    params.append('source', source || 'Landing Page');
+    params.append('timestamp', new Date().toISOString());
+
+    const response = await fetch(`${SHEET_URL}?${params.toString()}`, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[subscribe]', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 const startServer = async () => {
   try {
     await connectDB();
