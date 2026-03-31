@@ -243,7 +243,6 @@ const Home = () => {
 
           {activeView === 'intent' && (
             <div className="home-intent-summary">
-              <h3 className="home-intent-summary-title">Intent Summary</h3>
               {intentLoading ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading intent data...</div>
               ) : (

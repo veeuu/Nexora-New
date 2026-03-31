@@ -69,6 +69,32 @@
   font-weight: 600;
 }
 
+.renewal-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #eaf7f1;
+  color: #0f6e56;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.renewal-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.renewal-live-dot.renewal-live-dot-on {
+  opacity: 1;
+}
+
 .renewal-theme-toggle-btn {
   padding: 8px 12px;
   background-color: #1e293b;

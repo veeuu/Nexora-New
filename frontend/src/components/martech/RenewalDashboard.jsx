@@ -259,8 +259,14 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
   const [productData, setProductData] = useState([]);
   const [urgencyData, setUrgencyData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode] = useState(false);
+  const [animDot, setAnimDot] = useState(true);
   const trackerListRef = useRef(null);
+
+  useEffect(() => {
+    const t = setInterval(() => setAnimDot(v => !v), 750);
+    return () => clearInterval(t);
+  }, []);
 
   // Fetch metadata for KPIs and charts
   useEffect(() => {
@@ -385,15 +391,9 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
             <p>Dashboard overview · Q2 2026 · Last updated just now</p>
           </div>
           <div className="renewal-dashboard-header-actions">
-            <div className="renewal-live-indicator">● Live</div>
-            <button 
-              className="renewal-theme-toggle-btn"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-            <button className="renewal-close-button" onClick={onClose}>✕</button>
+            <span className="renewal-live-badge">
+              <span className={`renewal-live-dot${animDot ? ' renewal-live-dot-on' : ''}`}></span> Live
+            </span>
           </div>
         </div>
 

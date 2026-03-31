@@ -1,195 +1,278 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from 'recharts';
 import '../../styles/intentPieChart.css';
 
-const IntentPieChart = ({ data }) => {
-  const [activeSlice, setActiveSlice] = useState(null);
+const STATUS_COLORS = {
+  High:         '#0f3460',
+  'High-Medium':'#1a56b0',
+  Medium:       '#2a65a3',
+  Low:          '#60a5fa',
+  Greenfield:   '#93c5fd',
+};
 
-  // Ensure data is valid
+const DEFAULT_COLOR = '#bfdbfe';
+
+// Normalize raw status strings into canonical buckets
+const normalizeStatus = (raw) => {
+  const s = String(raw || '').trim().toLowerCase();
+  if (s === 'high')         return 'High';
+  if (s === 'high-medium' || s === 'high medium') return 'High-Medium';
+  if (s === 'medium')       return 'Medium';
+  if (s === 'low')          return 'Low';
+  if (s.includes('green'))  return 'Greenfield';
+  return String(raw || '').trim() || 'Unknown';
+};
+
+const getColor = (name) => STATUS_COLORS[name] || DEFAULT_COLOR;
+
+// Animated counter — counts up from 0 to `end` over `duration` ms
+const AnimatedCounter = ({ end, duration = 1500 }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!end) return;
+    let start = 0;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [end, duration]);
+  return <span>{count.toLocaleString()}</span>;
+};
+
+const DonutTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="idb-tooltip">
+      <span style={{ color: getColor(payload[0].name), fontWeight: 600 }}>{payload[0].name}</span>
+      <span>{payload[0].value} companies ({payload[0].payload.pct}%)</span>
+    </div>
+  );
+};
+
+const BarTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="idb-tooltip">
+      <span style={{ fontWeight: 600 }}>{label}</span>
+      <span>{payload[0].value} companies</span>
+    </div>
+  );
+};
+
+const IntentPieChart = ({ data }) => {
+  const [filter, setFilter]   = useState('All');
+  const [animDot, setAnimDot] = useState(true);
+
+  useEffect(() => {
+    const t = setInterval(() => setAnimDot(v => !v), 750);
+    return () => clearInterval(t);
+  }, []);
+
+  // ── Derive everything from real API data ──────────────────────────────────
+  // `data` = [{ name: 'High', value: 26, percentage: '61.9' }, ...]
+  // already aggregated by Home.jsx before passing in
+
+  const allStatuses = data && data.length > 0 ? data : [];
+
+  // Normalize names in case API returns raw strings
+  const normalized = allStatuses.map(d => ({
+    ...d,
+    name: normalizeStatus(d.name),
+  }));
+
+  // Merge duplicates after normalization
+  const merged = Object.values(
+    normalized.reduce((acc, d) => {
+      acc[d.name] = { name: d.name, value: (acc[d.name]?.value || 0) + d.value };
+      return acc;
+    }, {})
+  );
+
+  const totalAll = merged.reduce((s, d) => s + d.value, 0);
+
+  // Add pct for tooltip
+  const mergedWithPct = merged.map(d => ({
+    ...d,
+    pct: totalAll ? ((d.value / totalAll) * 100).toFixed(1) : '0',
+  }));
+
+  // Filter chips — only show statuses that exist in data
+  const availableStatuses = merged.map(d => d.name);
+  const filters = ['All', ...availableStatuses];
+
+  // Filtered slice for charts
+  const filtered = filter === 'All'
+    ? mergedWithPct
+    : mergedWithPct.filter(d => d.name === filter);
+
+  const filteredTotal = filtered.reduce((s, d) => s + d.value, 0);
+
+  // KPI values
+  const getCount = (name) => merged.find(d => d.name === name)?.value || 0;
+  const highCount   = getCount('High');
+  const medCount    = getCount('Medium');
+  const lowCount    = getCount('Low');
+  const hmCount     = getCount('High-Medium');
+  const gfCount     = getCount('Greenfield');
+
+  const highPct = totalAll ? ((highCount / totalAll) * 100).toFixed(1) : 0;
+  const medPct  = totalAll ? ((medCount  / totalAll) * 100).toFixed(1) : 0;
+  const lowPct  = totalAll ? ((lowCount  / totalAll) * 100).toFixed(1) : 0;
+
+  // Bar chart — all statuses sorted by count desc
+  const barData = [...mergedWithPct].sort((a, b) => b.value - a.value);
+
   if (!data || data.length === 0) {
     return (
-      <div className="intent-pie-chart-container">
+      <div className="idb-root">
         <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
-          No data available to display
+          No intent data available
         </div>
       </div>
     );
   }
 
-  const COLORS = {
-    'Low': { main: '#dbeafe', light: '#bfdbfe', gradient: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)' },
-    'Medium': { main: '#93c5fd', light: '#60a5fa', gradient: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)' },
-    'High-Medium': { main: '#3b82f6', light: '#1d4ed8', gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
-    'High': { main: '#1e40af', light: '#1e3a8a', gradient: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)' }
-  };
-
-  const getColor = (status) => COLORS[status]?.main || '#8884d8';
-
-  const renderCustomLabel = (entry) => {
-    const RADIAN = Math.PI / 180;
-    const radius = 110 * 0.45;
-    const x = entry.cx + radius * Math.cos(-entry.midAngle * RADIAN);
-    const y = entry.cy + radius * Math.sin(-entry.midAngle * RADIAN);
-
-    return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor="middle" 
-        dominantBaseline="central"
-        fontSize="11"
-        fontWeight="700"
-        style={{ 
-          pointerEvents: 'none',
-          textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-          filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))'
-        }}
-      >
-        {entry.name}
-      </text>
-    );
-  };
-
-  const chartData = data.map(item => ({
-    name: item.name,
-    value: item.value,
-    percentage: item.percentage
-  }));
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const status = payload[0].name;
-      const color = getColor(status);
-      return (
-        <div className="intent-tooltip" style={{ borderColor: color }}>
-          <p className="tooltip-title" style={{ color }}>
-            {payload[0].name}
-          </p>
-          <div className="tooltip-divider" style={{ borderTopColor: `${color}20` }}>
-            <p className="tooltip-row">
-              Count: <span className="tooltip-value">{payload[0].value}</span>
-            </p>
-            <p className="tooltip-row">
-              Percentage: <span className="tooltip-value" style={{ color }}>{payload[0].payload.percentage}%</span>
-            </p>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="intent-pie-chart-container">
-      <div className="charts-grid">
-        {/* Pie Chart Container */}
-        <div className="chart-card chart-wrapper">
-          <div className="chart-background-glow"></div>
-          
-          <h3 className="chart-title">
-            <span className="chart-title-accent"></span>
-            Intent Status Distribution
-          </h3>
-          
-          <div className="chart-container" style={{ height: '300px' }}>
-            {chartData && chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="45%"
-                    labelLine={false}
-                    label={renderCustomLabel}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    animationDuration={800}
-                    animationEasing="ease-out"
-                    onMouseEnter={(_, index) => setActiveSlice(index)}
-                    onMouseLeave={() => setActiveSlice(null)}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={getColor(entry.name)}
-                        className={`pie-slice ${activeSlice !== null && activeSlice !== index ? 'pie-slice-inactive' : 'pie-slice-active'}`}
-                        style={{
-                          filter: activeSlice !== null && activeSlice !== index ? 'brightness(0.7)' : 'brightness(1)',
-                          transition: 'filter 0.3s ease, transform 0.3s ease',
-                          cursor: 'pointer',
-                          transformOrigin: '50% 50%',
-                          transform: activeSlice === index ? 'scale(1.08)' : 'scale(1)'
-                        }}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#9ca3af' }}>
-                No data available
-              </div>
-            )}
+    <div className="idb-root">
+      {/* Header */}
+      <div className="idb-header">
+        <div className="idb-header-left">
+          <div className="idb-title">Intent Dashboard</div>
+          <div className="idb-meta">
+            <span className="idb-meta-bold">Dashboard overview</span> · Live data · Last updated just now
           </div>
         </div>
+        <div className="idb-header-actions">
+          <span className="idb-badge-live">
+            <span className={`idb-dot${animDot ? ' idb-dot-on' : ''}`}></span> Live
+          </span>
 
-        {/* Bar Chart Container */}
-        <div className="chart-card chart-wrapper">
-          <div className="chart-background-glow"></div>
+        </div>
+      </div>
 
-          <h3 className="chart-title">
-            <span className="chart-title-accent"></span>
-            Company Count by Status
-          </h3>
+      {/* Filter chips */}
+      <div className="idb-filter-bar">
+        {filters.map(f => (
+          <button
+            key={f}
+            className={`idb-chip${filter === f ? ' idb-chip-active' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f === 'All' ? 'All' : `${f} Intent`}
+          </button>
+        ))}
+      </div>
 
-          <div className="chart-container" style={{ height: '300px' }}>
-            {chartData && chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 15, right: 15, left: 45, bottom: 35 }}
-                >
-                  <defs>
-                    {chartData.map((item, idx) => (
-                      <linearGradient key={`grad-${idx}`} id={`gradient-${idx}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={COLORS[item.name]?.light || '#8884d8'} />
-                        <stop offset="100%" stopColor={getColor(item.name)} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" vertical={false} />
-                  <XAxis 
-                    dataKey="name" 
-                    angle={0}
-                    textAnchor="middle"
-                    height={60}
-                    tick={{ fontSize: 12, fill: '#6b7280', fontWeight: 500 }}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                    tickLine={{ stroke: '#e5e7eb' }}
-                    interval={0}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12, fill: '#6b7280', fontWeight: 500 }}
-                    axisLine={{ stroke: '#e5e7eb' }}
-                    gridLine={{ stroke: '#f3f4f6' }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="value" fill="#8884d8" radius={[10, 10, 0, 0]} animationDuration={800}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#9ca3af' }}>
-                No data available
-              </div>
-            )}
+      {/* KPI cards */}
+      <div className="idb-kpi-grid">
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">Total Companies</div>
+          <div className="idb-kpi-value"><AnimatedCounter end={totalAll} /></div>
+          <div className="idb-kpi-sub idb-muted">{merged.length} intent categories</div>
+        </div>
+        {highCount > 0 && (
+          <div className="idb-kpi-card">
+            <div className="idb-kpi-label">High Intent</div>
+            <div className="idb-kpi-value" style={{ color: '#0f3460' }}><AnimatedCounter end={highCount} /></div>
+            <div className="idb-kpi-sub idb-up">{highPct}% of pipeline</div>
           </div>
+        )}
+        {medCount > 0 && (
+          <div className="idb-kpi-card">
+            <div className="idb-kpi-label">Medium Intent</div>
+            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={medCount} /></div>
+            <div className="idb-kpi-sub idb-warn">{medPct}% of pipeline</div>
+          </div>
+        )}
+        {lowCount > 0 && (
+          <div className="idb-kpi-card">
+            <div className="idb-kpi-label">Low Intent</div>
+            <div className="idb-kpi-value" style={{ color: '#2a65a3' }}><AnimatedCounter end={lowCount} /></div>
+            <div className="idb-kpi-sub idb-muted">{lowPct}% of pipeline</div>
+          </div>
+        )}
+        {hmCount > 0 && (
+          <div className="idb-kpi-card">
+            <div className="idb-kpi-label">High-Medium</div>
+            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={hmCount} /></div>
+            <div className="idb-kpi-sub idb-up">{totalAll ? ((hmCount/totalAll)*100).toFixed(1) : 0}% of pipeline</div>
+          </div>
+        )}
+        {gfCount > 0 && (
+          <div className="idb-kpi-card">
+            <div className="idb-kpi-label">Greenfield</div>
+            <div className="idb-kpi-value" style={{ color: '#60a5fa' }}><AnimatedCounter end={gfCount} /></div>
+            <div className="idb-kpi-sub idb-muted">{totalAll ? ((gfCount/totalAll)*100).toFixed(1) : 0}% of pipeline</div>
+          </div>
+        )}
+      </div>
+
+      {/* Charts */}
+      <div className="idb-charts-row">
+        {/* Donut */}
+        <div className="idb-chart-card">
+          <div className="idb-chart-title">Intent status breakdown</div>
+          <div className="idb-chart-sub">Distribution across {filteredTotal.toLocaleString()} companies</div>
+          <div className="idb-legend">
+            {filtered.map(d => (
+              <span key={d.name} className="idb-leg">
+                <span className="idb-leg-sq" style={{ background: getColor(d.name) }}></span>
+                {d.name} {d.pct}%
+              </span>
+            ))}
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={filtered}
+                cx="50%" cy="50%"
+                innerRadius={55} outerRadius={85}
+                dataKey="value" paddingAngle={2}
+                animationDuration={600}
+              >
+                {filtered.map((entry, i) => (
+                  <Cell key={i} fill={getColor(entry.name)} />
+                ))}
+              </Pie>
+              <Tooltip content={<DonutTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Bar – companies by status */}
+        <div className="idb-chart-card idb-chart-card-wide">
+          <div className="idb-chart-title">Companies by intent status</div>
+          <div className="idb-chart-sub">All {totalAll.toLocaleString()} companies ranked by status</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart
+              data={barData}
+              layout="vertical"
+              margin={{ top: 4, right: 24, left: 90, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis
+                type="category" dataKey="name"
+                tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={90}
+              />
+              <Tooltip content={<BarTooltip />} />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]} animationDuration={600}>
+                {barData.map((entry, i) => (
+                  <Cell key={i} fill={getColor(entry.name)} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
