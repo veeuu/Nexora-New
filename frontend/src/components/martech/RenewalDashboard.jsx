@@ -36,7 +36,7 @@ const KPICard = ({ icon, title, value, accentColor }) => {
       <div className="renewal-kpi-content">
         <h3 className="renewal-kpi-title">{title}</h3>
         <div className="renewal-kpi-value">
-          <AnimatedCounter end={value} />
+          {value}
         </div>
       </div>
     </div>
@@ -323,10 +323,9 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
   // Fake metadata for KPIs and charts
   useEffect(() => {
     const kpis = [
-      { title: 'Total Renewals Tracked', value: 34337, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-      { title: 'Due This Quarter (Q2)', value: 1347, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-
-      { title: 'High-Urgency Renewals', value: 3433, trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+      { title: 'Total Renewals Tracked', value: '3.4M',  accentColor: '#3b82f6' },
+      { title: 'Due This Quarter (Q2)', value: '1.3M',  accentColor: '#f59e0b' },
+      { title: 'High-Urgency Renewals', value: '343.8K', accentColor: '#ef4444' }
     ];
     setKpiData(kpis);
 
@@ -490,4 +489,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
 };
 
 export default RenewalDashboard;
+
+
+
 

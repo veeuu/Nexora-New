@@ -25,7 +25,7 @@ const KPICard = ({ label, value, prefix = '', suffix = '', accentColor }) => (
   <div className="tg-kpi-card" style={{ borderLeftColor: accentColor }}>
     <div className="tg-kpi-label">{label}</div>
     <div className="tg-kpi-value">
-      {prefix}<AnimatedCounter end={value} />{suffix}
+      {prefix}{value}{suffix}
     </div>
   </div>
 );
@@ -89,10 +89,10 @@ const TechnographicsDashboard = ({ inline = false }) => {
         <div className="tg-body">
           {/* KPI Cards */}
           <div className="tg-kpi-grid">
-            <KPICard label="Companies Tracked"     value={248} delta="12.4% vs last quarter" deltaUp accentColor="#1e40af" />
-            <KPICard label="Technologies Detected"  value={64}  delta="8.7% new signals"       deltaUp accentColor="#2563eb" />
-            <KPICard label="Avg. Revenue Band"      value={47}  prefix="$" suffix="M" delta="3.2% median shift" deltaUp accentColor="#3b82f6" />
-            <KPICard label="New Detections Q1 '26"  value={137} delta="2.1% vs Q4 '25"         deltaUp={false} accentColor="#60a5fa" />
+            <KPICard label="Companies Tracked"     value="2.4M"   accentColor="#1e40af" />
+            <KPICard label="Technologies Detected"  value="6.4M"   accentColor="#2563eb" />
+            <KPICard label="Avg. Revenue Band"      value="$47M"   accentColor="#3b82f6" />
+            <KPICard label="New Detections Q1 '26"  value="1.3M"   accentColor="#60a5fa" />
           </div>
 
           {/* Row 1: Tech Adoption Bar + Industry Donut */}
