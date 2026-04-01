@@ -178,41 +178,35 @@ const IntentPieChart = ({ data }) => {
         <div className="idb-kpi-card">
           <div className="idb-kpi-label">Total Companies</div>
           <div className="idb-kpi-value"><AnimatedCounter end={totalAll} /></div>
-          <div className="idb-kpi-sub idb-muted">{merged.length} intent categories</div>
         </div>
         {highCount > 0 && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">High Intent</div>
             <div className="idb-kpi-value" style={{ color: '#0f3460' }}><AnimatedCounter end={highCount} /></div>
-            <div className="idb-kpi-sub idb-up">{highPct}% of pipeline</div>
           </div>
         )}
         {medCount > 0 && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Medium Intent</div>
             <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={medCount} /></div>
-            <div className="idb-kpi-sub idb-warn">{medPct}% of pipeline</div>
           </div>
         )}
         {lowCount > 0 && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Low Intent</div>
             <div className="idb-kpi-value" style={{ color: '#2a65a3' }}><AnimatedCounter end={lowCount} /></div>
-            <div className="idb-kpi-sub idb-muted">{lowPct}% of pipeline</div>
           </div>
         )}
         {hmCount > 0 && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">High-Medium</div>
             <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={hmCount} /></div>
-            <div className="idb-kpi-sub idb-up">{totalAll ? ((hmCount/totalAll)*100).toFixed(1) : 0}% of pipeline</div>
           </div>
         )}
         {gfCount > 0 && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Greenfield</div>
             <div className="idb-kpi-value" style={{ color: '#60a5fa' }}><AnimatedCounter end={gfCount} /></div>
-            <div className="idb-kpi-sub idb-muted">{totalAll ? ((gfCount/totalAll)*100).toFixed(1) : 0}% of pipeline</div>
           </div>
         )}
       </div>

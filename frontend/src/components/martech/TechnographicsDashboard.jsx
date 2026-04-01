@@ -21,14 +21,11 @@ const AnimatedCounter = ({ end, duration = 1200 }) => {
   return <span>{count.toLocaleString()}</span>;
 };
 
-const KPICard = ({ label, value, prefix = '', suffix = '', delta, deltaUp, accentColor }) => (
+const KPICard = ({ label, value, prefix = '', suffix = '', accentColor }) => (
   <div className="tg-kpi-card" style={{ borderLeftColor: accentColor }}>
     <div className="tg-kpi-label">{label}</div>
     <div className="tg-kpi-value">
       {prefix}<AnimatedCounter end={value} />{suffix}
-    </div>
-    <div className={`tg-kpi-delta ${deltaUp ? 'delta-up' : 'delta-down'}`}>
-      {deltaUp ? '↑' : '↓'} {delta}
     </div>
   </div>
 );
@@ -127,7 +124,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={INDUSTRY_DATA} cx="50%" cy="45%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value">
+                  <Pie data={INDUSTRY_DATA} cx="50%" cy="45%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value" animationDuration={400}>
                     {INDUSTRY_DATA.map((_, i) => <Cell key={i} fill={INDUSTRY_COLORS[i]} />)}
                   </Pie>
                   <Tooltip contentStyle={tooltipStyle} />

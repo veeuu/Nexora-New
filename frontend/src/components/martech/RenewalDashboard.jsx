@@ -25,7 +25,7 @@ const AnimatedCounter = ({ end, duration = 2000 }) => {
 };
 
 // KPI Card Component
-const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
+const KPICard = ({ icon, title, value, accentColor }) => {
   return (
     <div className="renewal-kpi-card" style={{ borderTopColor: accentColor }}>
       {icon && (
@@ -37,10 +37,6 @@ const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
         <h3 className="renewal-kpi-title">{title}</h3>
         <div className="renewal-kpi-value">
           <AnimatedCounter end={value} />
-        </div>
-        <div className="renewal-kpi-trend" style={{ color: trend === 'up' ? '#10b981' : '#ef4444' }}>
-          <span>{trend === 'up' ? '↑' : '↓'}</span>
-          <span>{trendValue}</span>
         </div>
       </div>
     </div>

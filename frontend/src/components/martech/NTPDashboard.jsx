@@ -119,7 +119,6 @@ export default function NTPDashboard() {
           <div key={k.label} className="ntpd-kpi ntpd-kpi-anim" style={{ animationDelay: `${i * 80}ms` }}>
             <div className="ntpd-kpi-label">{k.label}</div>
             <div className={`ntpd-kpi-val ${k.cls}`}>{k.val}</div>
-            <div className="ntpd-kpi-sub">{k.sub}</div>
           </div>
         ))}
       </div>
