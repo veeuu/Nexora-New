@@ -397,7 +397,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
         <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
             <h2>Renewal Intelligence Dashboard</h2>
-            <p><strong>Dashboard overview</strong> · Q2 2026 · Last updated just now</p>
+            {/* <p><strong>Dashboard overview</strong> · Q2 2026 · Last updated just now</p> */}
           </div>
           <div className="renewal-dashboard-header-actions">
             <span className="renewal-live-badge">

@@ -97,9 +97,9 @@ export default function NTPDashboard() {
       <div className="ntpd-header">
         <div className="ntpd-header-left">
           <div className="ntpd-title">NTP® Dashboard</div>
-          <div className="ntpd-meta">
+          {/* <div className="ntpd-meta">
             <span className="ntpd-meta-bold">Dashboard overview</span> · Next-to-Purchase Intelligence® · April 2026
-          </div>
+          </div> */}
         </div>
         <div className="ntpd-header-actions">
           <span className="ntpd-badge-live">

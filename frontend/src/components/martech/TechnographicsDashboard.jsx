@@ -98,7 +98,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
         <div className="tg-header">
           <div className="tg-header-left">
             <h2>Technographics Dashboard</h2>
-            <p><strong>Dashboard overview</strong> · Live data · Last updated just now</p>
+            {/* <p><strong>Dashboard overview</strong> · Live data · Last updated just now</p> */}
           </div>
           <div className="tg-header-right">
             <span className="tg-live-badge">

@@ -148,9 +148,9 @@ const IntentPieChart = ({ data }) => {
       <div className="idb-header">
         <div className="idb-header-left">
           <div className="idb-title">Intent Dashboard</div>
-          <div className="idb-meta">
+          {/* <div className="idb-meta">
             <span className="idb-meta-bold">Dashboard overview</span> · Live data · Last updated just now
-          </div>
+          </div> */}
         </div>
         <div className="idb-header-actions">
           <span className="idb-badge-live">
