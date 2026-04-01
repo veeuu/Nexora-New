@@ -136,7 +136,7 @@ const sendAdminNotificationEmail = async ({ name, email, phone, jobTitle, source
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || `"Nexora" <${process.env.EMAIL_USER}>`,
-    to: 'swapnil@proplusdata.co',
+    to: process.env.ADMIN_EMAIL,
     subject: `🔔 New Free Trial Request – ${name || email}`,
     html: `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:40px 16px;">
