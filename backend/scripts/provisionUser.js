@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Usage: node scripts/provisionUser.js "Full Name" "email@company.com"
 // Run from backend/ directory
+//node scripts/provisionUser.js "Test User" "email@gmail.com"
 
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
