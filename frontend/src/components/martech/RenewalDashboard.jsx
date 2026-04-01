@@ -59,7 +59,7 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
       <div className="renewal-chart-header">
         <div className="renewal-chart-header-left">
           <h3>Renewal Timeline Distribution</h3>
-          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2025–2026</p>
+          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2026-2031</p>
         </div>
         <div className="renewal-timeline-legend">
           <div className="renewal-timeline-legend-item">
@@ -172,7 +172,7 @@ const UrgencyFunnelChart = ({ data }) => {
   return (
     <div className="renewal-chart-container">
       <div className="renewal-chart-header">
-        <h3>Urgency Funnel</h3>
+        <h3>Priority Funnel</h3>
         <p></p>
         <div className="renewal-active-indicator">● Active</div>
       </div>
@@ -180,15 +180,17 @@ const UrgencyFunnelChart = ({ data }) => {
         {data.map((item, idx) => (
           <div key={idx} className="renewal-funnel-item">
             <div className="renewal-funnel-label">{item.label}</div>
-            <div
-              className="renewal-funnel-bar"
-              style={{
-                width: `${(item.value / maxValue) * 100}%`,
-                backgroundColor: item.color,
-                animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
-              }}
-            >
-              <span className="renewal-funnel-value">{item.value}</span>
+            <div className="renewal-funnel-track">
+              <div
+                className="renewal-funnel-bar"
+                style={{
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color,
+                  animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
+                }}
+              >
+                <span className="renewal-funnel-value">{item.value}</span>
+              </div>
             </div>
           </div>
         ))}
@@ -288,21 +290,22 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     ]);
 
     setTimelineData([
+      { label: 'Q1 2026', renewals: 82 },
+      { label: 'Q2 2026', renewals: 74 },
+      { label: 'Q3 2026', renewals: 133 },
+      { label: 'Q4 2026', renewals: 107 },
       { label: 'Q1 2027', renewals: 109 },
+      { label: 'Q2 2027', renewals: 148 },
+      { label: 'Q3 2027', renewals: 107 },
+      { label: 'Q4 2027', renewals: 99 },
       { label: 'Q1 2028', renewals: 35 },
+      { label: 'Q2 2028', renewals: 71 },
+      { label: 'Q3 2028', renewals: 61 },
+      { label: 'Q4 2028', renewals: 99 },
       { label: 'Q1 2029', renewals: 148 },
+      { label: 'Q2 2029', renewals: 143 },
       { label: 'Q1 2030', renewals: 69 },
       { label: 'Q1 2031', renewals: 146 },
-      { label: 'Q2 2026', renewals: 74 },
-      { label: 'Q2 2027', renewals: 148 },
-      { label: 'Q2 2028', renewals: 71 },
-      { label: 'Q2 2029', renewals: 143 },
-      { label: 'Q3 2026', renewals: 133 },
-      { label: 'Q3 2027', renewals: 107 },
-      { label: 'Q3 2028', renewals: 61 },
-      { label: 'Q4 2026', renewals: 107 },
-      { label: 'Q4 2027', renewals: 99 },
-      { label: 'Q4 2028', renewals: 99 },
     ]);
   }, []);
 
