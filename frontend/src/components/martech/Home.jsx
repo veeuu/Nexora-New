@@ -5,6 +5,7 @@ import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
 import IntentPieChart from './IntentPieChart';
 import RenewalDashboard from './RenewalDashboard';
+import TechnographicsDashboard from './TechnographicsDashboard';
 import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/home.css';
@@ -135,6 +136,12 @@ const Home = () => {
                   Renewal Intelligence
                 </button>
                 <button
+                  className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`}
+                  onClick={() => handleViewClick('technographics')}
+                >
+                  Technographics
+                </button>
+                <button
                   className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`}
                   onClick={() => handleViewClick('intent')}
                 >
@@ -254,6 +261,12 @@ const Home = () => {
           {activeView === 'renewal' && (
             <div className="home-renewal-inline">
               <RenewalDashboard onClose={() => setActiveView(null)} inline />
+            </div>
+          )}
+
+          {activeView === 'technographics' && (
+            <div className="home-technographics-inline">
+              <TechnographicsDashboard inline />
             </div>
           )}
 

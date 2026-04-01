@@ -544,6 +544,27 @@
   box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
 }
 
+.home-quick-btn-technographics {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-technographics:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-quick-btn-technographics.active {
+  background: linear-gradient(135deg, #1a56b0 0%, #1448a0 100%);
+  box-shadow: 0 4px 12px rgba(0, 61, 138, 0.4);
+}
+
+.home-technographics-inline {
+  width: 100%;
+  margin-top: 16px;
+}
+
 
 .home-quick-btn-summary {
   background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
