@@ -84,7 +84,7 @@ const Login = ({ onLogin }) => {
       const data = await res.json();
       if (res.ok && data.success) {
         setError('');
-        setSuccessMessage('✅ Request submitted! Check your email for confirmation.');
+        setSuccessMessage('Request submitted! Check your email for confirmation.');
         // Clear form
         setFullName('');
         setEmail('');

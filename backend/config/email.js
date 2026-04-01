@@ -89,7 +89,6 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
       <div class="divider"></div>
       <div class="sign">
         Questions? Reach us at <a href="mailto:nexora@proplusdata.co" style="color:#4a6cf7;">nexora@proplusdata.co</a>
-        <span>— The ProPlus Data Team</span>
       </div>
     </div>
     <div style="background:#f8f9fd;border-top:1px solid #edf0f7;padding:16px 44px;font-size:11px;color:#b0b4c8;text-align:center;line-height:1.6;">
