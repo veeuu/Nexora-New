@@ -1,0 +1,354 @@
+/* ── NTP Dashboard – Light mode, intent blue scheme ── */
+
+.ntpd-wrap {
+  background: transparent;
+  padding: 0 0 24px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header */
+.ntpd-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.ntpd-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.ntpd-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.ntpd-header-right {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #1a56b0;
+}
+
+/* KPI grid */
+.ntpd-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ntpd-kpi {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.ntpd-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.ntpd-kpi-val {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0f1c3f;
+  line-height: 1;
+}
+
+.ntpd-kpi-val.ntpd-green { color: #1a56b0; }
+.ntpd-kpi-val.ntpd-blue  { font-size: 22px; padding-top: 4px; color: #2a65a3; }
+
+.ntpd-kpi-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+
+/* 2x2 chart grid */
+.ntpd-grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* Layout rows */
+.ntpd-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.ntpd-row3 {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* Card */
+.ntpd-card {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.ntpd-mb { margin-bottom: 14px; }
+
+.ntpd-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+/* Legend */
+.ntpd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ntpd-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.ntpd-leg-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Ranking */
+.ntpd-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ntpd-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ntpd-rank-num {
+  font-size: 11px;
+  font-weight: 500;
+  color: #bbb;
+  width: 16px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ntpd-rank-name {
+  font-size: 12px;
+  color: #334155;
+  width: 148px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ntpd-rank-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #eff6ff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ntpd-rank-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ntpd-rank-pct {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  width: 38px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ntpd-rank-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.ntpd-badge-h { background: #eff6ff; color: #1a56b0; }
+.ntpd-badge-m { background: #e0f2fe; color: #0369a1; }
+.ntpd-badge-l { background: #dbeafe; color: #1d4ed8; }
+
+/* Funnel */
+.ntpd-funnel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ntpd-funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ntpd-funnel-label {
+  font-size: 11px;
+  color: #64748b;
+  width: 72px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 500;
+}
+
+.ntpd-funnel-flex { flex: 1; }
+
+.ntpd-funnel-bar {
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  min-width: 32px;
+}
+
+.ntpd-funnel-count {
+  font-size: 11px;
+  color: #94a3b8;
+  width: 36px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+/* Custom tooltip */
+.ntpd-tooltip {
+  background: #fff;
+  border: 1px solid #e8edf5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.ntpd-tooltip-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ntpd-tooltip-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a56b0;
+}
+
+/* Entrance animations */
+.ntpd-wrap {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.ntpd-wrap.ntpd-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes ntpd-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ntpd-kpi-anim {
+  opacity: 0;
+  animation: ntpd-fade-up 0.45s ease forwards;
+}
+
+.ntpd-card-anim {
+  opacity: 0;
+  animation: ntpd-fade-up 0.5s ease forwards;
+}
+
+.ntpd-rank-anim {
+  opacity: 0;
+  animation: ntpd-fade-up 0.4s ease forwards;
+}
+
+/* Hover effects */
+.ntpd-kpi {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.ntpd-kpi:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(26, 86, 176, 0.1);
+}
+
+.ntpd-card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.ntpd-card:hover {
+  box-shadow: 0 8px 24px rgba(26, 86, 176, 0.08);
+  transform: translateY(-2px);
+}
+
+.ntpd-funnel-bar-hover {
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease;
+}
+
+.ntpd-funnel-bar-hover:hover {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 900px) {
+  .ntpd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .ntpd-row2, .ntpd-row3 { grid-template-columns: 1fr; }
+}

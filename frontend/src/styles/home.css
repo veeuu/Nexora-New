@@ -595,3 +595,19 @@
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
   transform: none;
 }
+
+.home-quick-btn-ntp {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-ntp:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-ntp-inline {
+  width: 100%;
+  margin-top: 16px;
+}
