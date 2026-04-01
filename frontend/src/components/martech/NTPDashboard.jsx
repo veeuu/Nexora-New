@@ -149,12 +149,16 @@ export default function NTPDashboard() {
             </PieChart>
           </ResponsiveContainer>
           <div className="ntpd-legend">
-            {catPieData.map((entry, i) => (
-              <span key={entry.name} className="ntpd-leg-item">
-                <span className="ntpd-leg-dot" style={{ background: catPieColors[i] }} />
-                {entry.name} ({entry.value.toLocaleString()})
-              </span>
-            ))}
+            {catPieData.map((entry, i) => {
+              const total = catPieData.reduce((s, d) => s + d.value, 0);
+              const pct = ((entry.value / total) * 100).toFixed(1);
+              return (
+                <span key={entry.name} className="ntpd-leg-item">
+                  <span className="ntpd-leg-dot" style={{ background: catPieColors[i] }} />
+                  {entry.name} ({pct}%)
+                </span>
+              );
+            })}
           </div>
         </div>
 
@@ -220,12 +224,16 @@ export default function NTPDashboard() {
             </PieChart>
           </ResponsiveContainer>
           <div className="ntpd-legend">
-            {predPieData.map((entry) => (
-              <span key={entry.name} className="ntpd-leg-item">
-                <span className="ntpd-leg-dot" style={{ background: predColors[entry.name] }} />
-                {entry.name} ({entry.value.toLocaleString()})
-              </span>
-            ))}
+            {predPieData.map((entry) => {
+              const total = predPieData.reduce((s, d) => s + d.value, 0);
+              const pct = ((entry.value / total) * 100).toFixed(1);
+              return (
+                <span key={entry.name} className="ntpd-leg-item">
+                  <span className="ntpd-leg-dot" style={{ background: predColors[entry.name] }} />
+                  {entry.name} ({pct}%)
+                </span>
+              );
+            })}
           </div>
         </div>
 
