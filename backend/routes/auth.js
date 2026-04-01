@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const PgUser = require('../models/PgUser');
 const PgSession = require('../models/PgSession');
-const { sendOTPEmail } = require('../config/email');
+const { sendOTPEmail, sendTrialAccessEmail } = require('../config/email');
 
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -266,6 +266,63 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error during login' });
+  }
+});
+
+// ─── Provision Trial User (admin use - creates account + emails credentials) ──
+// POST /api/auth/provision
+// Body: { email, fullName, adminKey }
+// adminKey must match ADMIN_PROVISION_KEY in .env
+router.post('/provision', async (req, res) => {
+  try {
+    const { email, fullName, adminKey } = req.body;
+
+    // Simple admin key check
+    if (adminKey !== process.env.ADMIN_PROVISION_KEY) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    if (!email || !fullName) {
+      return res.status(400).json({ message: 'Email and fullName are required' });
+    }
+
+    // Check if user already exists
+    const existing = await PgUser.findOne({ where: { email } });
+    if (existing) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    // Generate a readable temp password: Name + 4 random digits + !
+    const digits = Math.floor(1000 + Math.random() * 9000);
+    const tempPassword = `${fullName.split(' ')[0]}@${digits}!`;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(tempPassword, salt);
+
+    // Create user - already verified (no OTP needed)
+    await PgUser.create({
+      email,
+      fullName,
+      password: hashedPassword,
+      isVerified: true,
+      otp: null,
+      otpExpiry: null
+    });
+
+    // Send credentials email
+    await sendTrialAccessEmail(email, fullName, tempPassword);
+
+    console.log(`[provision] Trial user created: ${email} | Temp password: ${tempPassword}`);
+
+    res.status(201).json({
+      success: true,
+      message: `Trial account created for ${email}. Credentials sent via email.`,
+      email,
+      tempPassword // also return in response for admin reference
+    });
+  } catch (err) {
+    console.error('[provision error]', err.message);
+    res.status(500).json({ message: 'Server error', detail: err.message });
   }
 });
 
