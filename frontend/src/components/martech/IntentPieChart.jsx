@@ -120,13 +120,14 @@ const IntentPieChart = ({ data }) => {
 
   const filteredTotal = filtered.reduce((s, d) => s + d.value, 0);
 
-  // KPI values
+  // KPI values — hardcoded in millions
   const getCount = (name) => merged.find(d => d.name === name)?.value || 0;
-  const highCount   = getCount('High');
-  const medCount    = getCount('Medium');
-  const lowCount    = getCount('Low');
-  const hmCount     = getCount('High-Medium');
-  const gfCount     = getCount('Greenfield');
+  const highCount   = '1.2M';
+  const medCount    = '2.1M';
+  const lowCount    = '983.1K';
+  const hmCount     = '872.6K';
+  const gfCount     = '563.2K';
+  const totalAllDisplay = '5.8M';
 
   const highPct = totalAll ? ((highCount / totalAll) * 100).toFixed(1) : 0;
   const medPct  = totalAll ? ((medCount  / totalAll) * 100).toFixed(1) : 0;
@@ -182,36 +183,36 @@ const IntentPieChart = ({ data }) => {
       <div className="idb-kpi-grid">
         <div className="idb-kpi-card">
           <div className="idb-kpi-label">Total Companies</div>
-          <div className="idb-kpi-value"><AnimatedCounter end={totalAll} /></div>
+          <div className="idb-kpi-value">{totalAllDisplay}</div>
         </div>
-        {highCount > 0 && (
+        {highCount && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">High Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#0f3460' }}><AnimatedCounter end={highCount} /></div>
+            <div className="idb-kpi-value" style={{ color: '#0f3460' }}>{highCount}</div>
           </div>
         )}
-        {medCount > 0 && (
+        {medCount && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Medium Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={medCount} /></div>
+            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{medCount}</div>
           </div>
         )}
-        {lowCount > 0 && (
+        {lowCount && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Low Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#2a65a3' }}><AnimatedCounter end={lowCount} /></div>
+            <div className="idb-kpi-value" style={{ color: '#2a65a3' }}>{lowCount}</div>
           </div>
         )}
-        {hmCount > 0 && (
+        {hmCount && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">High-Medium</div>
-            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}><AnimatedCounter end={hmCount} /></div>
+            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{hmCount}</div>
           </div>
         )}
-        {gfCount > 0 && (
+        {gfCount && (
           <div className="idb-kpi-card">
             <div className="idb-kpi-label">Greenfield</div>
-            <div className="idb-kpi-value" style={{ color: '#60a5fa' }}><AnimatedCounter end={gfCount} /></div>
+            <div className="idb-kpi-value" style={{ color: '#60a5fa' }}>{gfCount}</div>
           </div>
         )}
       </div>

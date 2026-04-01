@@ -13,6 +13,8 @@ const Login = ({ onLogin }) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -67,7 +69,7 @@ const Login = ({ onLogin }) => {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, fullName, password })
+        body: JSON.stringify({ email, fullName, phoneNumber, jobTitle, password })
       });
 
       const data = await response.json();
@@ -252,8 +254,10 @@ if (newPassword !== confirmPassword) {
       <div className="login-right">
         <div className="login-form-wrapper">
           <div className="login-logo-vertical">
-
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
+            {isSignup && (
+              <p className="free-trial-heading">Free Trial</p>
+            )}
           </div>
 
           {}
@@ -560,7 +564,7 @@ if (newPassword !== confirmPassword) {
             <form onSubmit={handleSubmit} className="login-form">
             {isSignup && (
               <div className="form-group">
-                <label htmlFor="fullname">Full Name</label>
+                <label htmlFor="fullname">Full Name <span style={{ color: '#ff4d4f' }}>*</span></label>
                 <div className="input-wrapper">
                   <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -581,7 +585,7 @@ if (newPassword !== confirmPassword) {
 
             {isSignup && (
               <div className="form-group">
-                <label htmlFor="signup-email">Email</label>
+                <label htmlFor="signup-email">Business Email <span style={{ color: '#ff4d4f' }}>*</span></label>
                 <div className="input-wrapper">
                   <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -590,11 +594,50 @@ if (newPassword !== confirmPassword) {
                   <input
                     id="signup-email"
                     type="email"
-                    placeholder="Enter email"
+                    placeholder="Enter business email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-input"
                     required
+                  />
+                </div>
+              </div>
+            )}
+
+            {isSignup && (
+              <div className="form-group">
+                <label htmlFor="phone-number">Phone Number <span style={{ color: '#888', fontWeight: 400, fontSize: '0.8rem' }}>(optional)</span></label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <input
+                    id="phone-number"
+                    type="tel"
+                    placeholder="Enter phone number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            )}
+
+            {isSignup && (
+              <div className="form-group">
+                <label htmlFor="job-title">Job Title <span style={{ color: '#888', fontWeight: 400, fontSize: '0.8rem' }}>(optional)</span></label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+                  </svg>
+                  <input
+                    id="job-title"
+                    type="text"
+                    placeholder="Enter job title"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    className="form-input"
                   />
                 </div>
               </div>
@@ -621,6 +664,7 @@ if (newPassword !== confirmPassword) {
               </div>
             )}
 
+            {!isSignup && (
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-wrapper">
@@ -658,6 +702,7 @@ if (newPassword !== confirmPassword) {
                 </button>
               </div>
             </div>
+            )}
 
             {!isSignup && (
               <div className="form-remember">
@@ -691,7 +736,7 @@ if (newPassword !== confirmPassword) {
             {error && <div className="form-error">{error}</div>}
 
             <button type="submit" className="btn-signin" disabled={loading}>
-              {loading ? 'Processing...' : (isSignup ? 'Create Account' : 'Login')}
+              {loading ? 'Processing...' : (isSignup ? 'Start Free Trial' : 'Login')}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '1rem' }}>
@@ -704,6 +749,8 @@ if (newPassword !== confirmPassword) {
                     setError('');
                     setEmail('');
                     setFullName('');
+                    setPhoneNumber('');
+                    setJobTitle('');
                     setPassword('');
                   }}
                   style={{
@@ -718,7 +765,7 @@ if (newPassword !== confirmPassword) {
                     padding: 0
                   }}
                 >
-                  {isSignup ? 'Login' : 'Create Account'}
+                  {isSignup ? 'Login' : 'Start Free Trial'}
                 </button>
               </p>
             </div>
