@@ -270,38 +270,43 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
   // Fake metadata for KPIs and charts
   useEffect(() => {
     const kpis = [
-      { title: 'Total Renewals Tracked', value: 5842, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-      { title: 'Due This Quarter (Q2)', value: 318, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-      { title: 'Unlocked Companies', value: 124, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
-      { title: 'High-Urgency Renewals', value: 584, trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+      { title: 'Total Renewals Tracked', value: 34337, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
+      { title: 'Due This Quarter (Q2)', value: 1347, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
+
+      { title: 'High-Urgency Renewals', value: 3433, trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
     ];
     setKpiData(kpis);
 
     const products = [
-      { name: 'VMware', value: 142, percentage: '28.5', color: '#0ea5e9' },
-      { name: 'Microsoft', value: 118, percentage: '23.7', color: '#3b82f6' },
-      { name: 'SAP', value: 96, percentage: '19.3', color: '#1e40af' },
-      { name: 'Oracle', value: 78, percentage: '15.7', color: '#1e3a8a' },
-      { name: 'AWS', value: 64, percentage: '12.8', color: '#0c4a6e' }
+      { name: 'AI/ML', value: 101, percentage: '38.7', color: '#0ea5e9' },
+      { name: 'CRM', value: 81, percentage: '31.0', color: '#3b82f6' },
+      { name: 'Database', value: 79, percentage: '30.3', color: '#1e40af' },
     ];
     setProductData(products);
 
     setUrgencyData([
-      { label: '< 1 Month', value: 58, color: '#0c4a6e' },
-      { label: '1–3 Months', value: 146, color: '#1e3a8a' },
-      { label: '3–6 Months', value: 204, color: '#3b82f6' },
-      { label: '6–12 Months', value: 175, color: '#0ea5e9' }
+      { label: '< 1 Month', value: 3433, color: '#0c4a6e' },
+      { label: '1–3 Months', value: 8584, color: '#1e3a8a' },
+      { label: '3–6 Months', value: 12017, color: '#3b82f6' },
+      { label: '6–12 Months', value: 10301, color: '#0ea5e9' }
     ]);
 
     setTimelineData([
-      { label: 'Q1 2025', renewals: 87 },
-      { label: 'Q2 2025', renewals: 112 },
-      { label: 'Q3 2025', renewals: 134 },
-      { label: 'Q4 2025', renewals: 158 },
-      { label: 'Q1 2026', renewals: 143 },
-      { label: 'Q2 2026', renewals: 176 },
-      { label: 'Q3 2026', renewals: 98 },
-      { label: 'Q4 2026', renewals: 65 }
+      { label: 'Q1 2027', renewals: 109 },
+      { label: 'Q1 2028', renewals: 35 },
+      { label: 'Q1 2029', renewals: 148 },
+      { label: 'Q1 2030', renewals: 69 },
+      { label: 'Q1 2031', renewals: 146 },
+      { label: 'Q2 2026', renewals: 74 },
+      { label: 'Q2 2027', renewals: 148 },
+      { label: 'Q2 2028', renewals: 71 },
+      { label: 'Q2 2029', renewals: 143 },
+      { label: 'Q3 2026', renewals: 133 },
+      { label: 'Q3 2027', renewals: 107 },
+      { label: 'Q3 2028', renewals: 61 },
+      { label: 'Q4 2026', renewals: 107 },
+      { label: 'Q4 2027', renewals: 99 },
+      { label: 'Q4 2028', renewals: 99 },
     ]);
   }, []);
 
