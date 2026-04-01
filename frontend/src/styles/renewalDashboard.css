@@ -745,8 +745,7 @@
   flex-direction: column;
   gap: 10px;
   flex: 1;
-  overflow-y: auto;
-  max-height: 350px;
+  overflow-y: visible;
 }
 
 .renewal-tracker-item {
@@ -932,20 +931,12 @@
 
 /* Renewal Scrollbar Styling */
 .renewal-dashboard-modal-content::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
-.renewal-dashboard-modal-content::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-
-.renewal-dashboard-modal-content::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-
-.renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+.renewal-dashboard-modal-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 
@@ -972,7 +963,7 @@
 }
 
 .light-mode .renewal-kpi-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #ffffff;
   border-color: #cbd5e1;
 }
 
@@ -990,7 +981,7 @@
 }
 
 .light-mode .renewal-chart-container {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #ffffff;
   border-color: #cbd5e1;
 }
 
@@ -1061,12 +1052,12 @@
 }
 
 .light-mode .renewal-tracker-item {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   border-color: #cbd5e1;
 }
 
 .light-mode .renewal-tracker-item:hover {
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
   border-color: #94a3b8;
 }
 
@@ -1134,15 +1125,15 @@
 }
 
 .light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-track {
-  background: #f8fafc;
+  background: transparent;
 }
 
 .light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: transparent;
 }
 
 .light-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: transparent;
 }
 
 .light-mode .renewal-chart-header-left {
@@ -1344,15 +1335,15 @@
 }
 
 .dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: transparent;
 }
 
 .dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: transparent;
 }
 
 .dark-mode .renewal-dashboard-modal-content::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: transparent;
 }
 
 
