@@ -64,7 +64,8 @@ router.post('/signup', async (req, res) => {
       requiresVerification: true
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error during signup' });
+    console.error('[signup error]', err.message);
+    res.status(500).json({ message: 'Server error during signup', detail: err.message });
   }
 });
 

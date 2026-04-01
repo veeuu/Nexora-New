@@ -2,13 +2,17 @@ const nodemailer = require('nodemailer');
 
 const createTransporter = () => {
 
+  const port = parseInt(process.env.EMAIL_PORT) || 587;
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 587,
-    secure: false,
+    port,
+    secure: port === 465,
     auth: {
-      user: process.env.EMAIL_USER || 'demo@example.com',
-      pass: process.env.EMAIL_PASSWORD || 'demo_password'
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
+    },
+    tls: {
+      rejectUnauthorized: false // allows self-signed certs on some hosts
     }
   });
 };
@@ -18,7 +22,7 @@ const sendOTPEmail = async (email, otp, fullName) => {
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: `"Nexora" <${process.env.EMAIL_USER || 'noreply@nexora.com'}>`,
+      from: process.env.EMAIL_FROM || `"Nexora" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Verify Your Email - Nexora',
       html: `
