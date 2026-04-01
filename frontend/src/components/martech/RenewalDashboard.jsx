@@ -25,7 +25,7 @@ const AnimatedCounter = ({ end, duration = 2000 }) => {
 };
 
 // KPI Card Component
-const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
+const KPICard = ({ icon, title, value, accentColor }) => {
   return (
     <div className="renewal-kpi-card" style={{ borderTopColor: accentColor }}>
       {icon && (
@@ -37,10 +37,6 @@ const KPICard = ({ icon, title, value, trend, trendValue, accentColor }) => {
         <h3 className="renewal-kpi-title">{title}</h3>
         <div className="renewal-kpi-value">
           <AnimatedCounter end={value} />
-        </div>
-        <div className="renewal-kpi-trend" style={{ color: trend === 'up' ? '#10b981' : '#ef4444' }}>
-          <span>{trend === 'up' ? '↑' : '↓'}</span>
-          <span>{trendValue}</span>
         </div>
       </div>
     </div>
@@ -63,7 +59,7 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
       <div className="renewal-chart-header">
         <div className="renewal-chart-header-left">
           <h3>Renewal Timeline Distribution</h3>
-          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2025–2026</p>
+          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2026-2031</p>
         </div>
         <div className="renewal-timeline-legend">
           <div className="renewal-timeline-legend-item">
@@ -176,7 +172,7 @@ const UrgencyFunnelChart = ({ data }) => {
   return (
     <div className="renewal-chart-container">
       <div className="renewal-chart-header">
-        <h3>Urgency Funnel</h3>
+        <h3>Priority Funnel</h3>
         <p></p>
         <div className="renewal-active-indicator">● Active</div>
       </div>
@@ -184,15 +180,17 @@ const UrgencyFunnelChart = ({ data }) => {
         {data.map((item, idx) => (
           <div key={idx} className="renewal-funnel-item">
             <div className="renewal-funnel-label">{item.label}</div>
-            <div
-              className="renewal-funnel-bar"
-              style={{
-                width: `${(item.value / maxValue) * 100}%`,
-                backgroundColor: item.color,
-                animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
-              }}
-            >
-              <span className="renewal-funnel-value">{item.value}</span>
+            <div className="renewal-funnel-track">
+              <div
+                className="renewal-funnel-bar"
+                style={{
+                  width: `${(item.value / maxValue) * 100}%`,
+                  backgroundColor: item.color,
+                  animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
+                }}
+              >
+                <span className="renewal-funnel-value">{item.value}</span>
+              </div>
             </div>
           </div>
         ))}
@@ -201,19 +199,62 @@ const UrgencyFunnelChart = ({ data }) => {
   );
 };
 
+// Product Companies Modal
+const ProductModal = ({ product, companies, logo, onClose }) => (
+  <div className="renewal-product-modal-overlay" onClick={onClose}>
+    <div className="renewal-product-modal" onClick={e => e.stopPropagation()}>
+      <div className="renewal-product-modal-header">
+        {logo && <img src={logo} alt={product} className="renewal-product-modal-logo" />}
+        <div>
+          <div className="renewal-product-modal-title">{product}</div>
+          <div className="renewal-product-modal-sub">{companies.length} companies renewing</div>
+        </div>
+        <button className="renewal-product-modal-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="renewal-product-modal-list">
+        {companies.map((c, i) => (
+          <div key={i} className="renewal-product-modal-row">
+            <span className="renewal-product-modal-idx">{i + 1}</span>
+            <span className="renewal-product-modal-company">{c.company}</span>
+            <span className="renewal-product-modal-quarter">{c.quarter}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// All tracker items (full list, not paginated) — used for modal lookup
+const ALL_TRACKER_ITEMS = [
+  { product: 'Amazon Aurora', company: 'DBS Bank',      quarter: 'Q2 2026' },
+  { product: 'ChatGPT',       company: 'Accenture',     quarter: 'Q3 2026' },
+  { product: 'Meta AI',       company: 'Singtel',       quarter: 'Q2 2026' },
+  { product: 'Replicate',     company: 'Grab',          quarter: 'Q4 2026' },
+  { product: 'Google Gemini', company: 'OCBC Bank',     quarter: 'Q2 2026' },
+  { product: 'OpenAI',        company: 'UOB',           quarter: 'Q3 2026' },
+  { product: 'Snowflake',     company: 'CapitaLand',    quarter: 'Q2 2026' },
+  { product: 'Claude',        company: 'SIA',           quarter: 'Q4 2026' },
+  { product: 'Chroma',        company: 'Shopee',        quarter: 'Q3 2026' },
+  { product: 'Teradata',      company: 'Keppel Corp',   quarter: 'Q2 2026' },
+  { product: 'SQL Server',    company: 'StarHub',       quarter: 'Q3 2026' },
+  { product: 'Google Gemini', company: 'Lazada',        quarter: 'Q4 2026' },
+  { product: 'OpenAI',        company: 'Mediacorp',     quarter: 'Q2 2026' },
+  { product: 'Amazon Aurora', company: 'SembCorp',      quarter: 'Q3 2026' },
+  { product: 'Snowflake',     company: 'ComfortDelGro', quarter: 'Q2 2026' },
+  { product: 'ChatGPT',       company: 'Grab',          quarter: 'Q4 2026' },
+  { product: 'Replicate',     company: 'DBS Bank',      quarter: 'Q3 2026' },
+  { product: 'Claude',        company: 'Accenture',     quarter: 'Q2 2026' },
+  { product: 'Teradata',      company: 'OCBC Bank',     quarter: 'Q4 2026' },
+  { product: 'SQL Server',    company: 'Singtel',       quarter: 'Q2 2026' },
+];
+
 // Renewal Tracker Component
 const RenewalTracker = ({ data, trackerListRef, loading }) => {
-  const getUrgencyColor = (urgency) => {
-    switch (urgency) {
-      case 'critical':
-        return '#ef4444';
-      case 'watch':
-        return '#f59e0b';
-      case 'comfortable':
-        return '#10b981';
-      default:
-        return '#6b7280';
-    }
+  const [modal, setModal] = useState(null);
+
+  const handleProductClick = (item) => {
+    const companies = ALL_TRACKER_ITEMS.filter(r => r.product === item.product);
+    setModal({ product: item.product, companies, logo: item.logo });
   };
 
   return (
@@ -221,13 +262,16 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
       <div className="renewal-chart-header">
         <div className="renewal-chart-header-left">
           <h3>Renewal Tracker</h3>
-          <p>Most recent opportunities · Scroll to load more</p>
+          <p>Click a product to see all renewing companies</p>
         </div>
       </div>
       <div className="renewal-tracker-list" ref={trackerListRef} style={{ maxHeight: '400px', overflowY: 'auto' }}>
         {data.map((item, idx) => (
-          <div key={idx} className="renewal-tracker-item">
-            <div className="renewal-tracker-urgency-dot" style={{ backgroundColor: getUrgencyColor(item.urgency) }}></div>
+          <div
+            key={idx}
+            className="renewal-tracker-item renewal-tracker-item-clickable"
+            onClick={() => handleProductClick(item)}
+          >
             <div className="renewal-tracker-product-logo">
               {item.logo ? (
                 <img src={item.logo} alt={item.product} title={item.product} />
@@ -244,12 +288,20 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
         ))}
         {loading && <div style={{ padding: '10px', textAlign: 'center', color: '#999' }}>Loading more...</div>}
       </div>
+      {modal && (
+        <ProductModal
+          product={modal.product}
+          companies={modal.companies}
+          logo={modal.logo}
+          onClose={() => setModal(null)}
+        />
+      )}
     </div>
   );
 };
 
 // Main Dashboard Component
-const RenewalDashboard = ({ onClose }) => {
+const RenewalDashboard = ({ onClose, inline = false }) => {
   const [timelineMode, setTimelineMode] = useState('quarter');
   const [trackerData, setTrackerData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,88 +311,106 @@ const RenewalDashboard = ({ onClose }) => {
   const [productData, setProductData] = useState([]);
   const [urgencyData, setUrgencyData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode] = useState(false);
+  const [animDot, setAnimDot] = useState(true);
   const trackerListRef = useRef(null);
 
-  // Fetch metadata for KPIs and charts
   useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        const response = await fetch('/api/renewal-intelligence/metadata');
-        const data = await response.json();
-        
-        // Build KPI data from metadata
-        const kpis = [
-          { title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-          { title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-          { title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
-          { title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
-        ];
-        setKpiData(kpis);
-
-        // Build product breakdown from categories
-        const products = (data.categories || []).slice(0, 5).map((cat, idx) => ({
-          name: cat,
-          value: Math.floor(Math.random() * 100) + 20,
-          percentage: 0,
-          color: ['#0ea5e9', '#3b82f6', '#1e40af', '#1e3a8a', '#0c4a6e'][idx]
-        }));
-        const totalProducts = products.reduce((sum, p) => sum + p.value, 0);
-        products.forEach(p => p.percentage = ((p.value / totalProducts) * 100).toFixed(1));
-        setProductData(products);
-
-        // Build urgency funnel
-        const urgency = [
-          { label: '< 1 Month', value: Math.floor((data.totalRecords || 0) * 0.1), color: '#0c4a6e' },
-          { label: '1–3 Months', value: Math.floor((data.totalRecords || 0) * 0.25), color: '#1e3a8a' },
-          { label: '3–6 Months', value: Math.floor((data.totalRecords || 0) * 0.35), color: '#3b82f6' },
-          { label: '6–12 Months', value: Math.floor((data.totalRecords || 0) * 0.3), color: '#0ea5e9' }
-        ];
-        setUrgencyData(urgency);
-
-        // Build timeline from quarters
-        const timeline = (data.quarters || []).map(qtr => ({
-          label: qtr,
-          renewals: Math.floor(Math.random() * 120) + 30,
-          unlocked: Math.floor(Math.random() * 40) + 10
-        }));
-        setTimelineData(timeline);
-      } catch (err) {
-        console.error('Error fetching metadata:', err);
-      }
-    };
-
-    fetchMetadata();
+    const t = setInterval(() => setAnimDot(v => !v), 750);
+    return () => clearInterval(t);
   }, []);
 
-  // Fetch tracker data with pagination
-  const fetchTrackerData = useCallback(async (pageNum) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/renewal-intelligence?page=${pageNum}&limit=100`);
-      const data = await response.json();
+  // Fake metadata for KPIs and charts
+  useEffect(() => {
+    const kpis = [
+      { title: 'Total Renewals Tracked', value: 34337, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
+      { title: 'Due This Quarter (Q2)', value: 1347, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
 
-      const newTrackerData = (data.data || []).map(item => ({
-        product: item.product || 'Unknown',
-        company: item.company || 'Unknown',
-        quarter: item.qtr || 'N/A',
-        urgency: Math.random() > 0.6 ? 'critical' : Math.random() > 0.3 ? 'watch' : 'comfortable',
-        icon: ['☁️', '🤖', '🧠', '⚙️'][Math.floor(Math.random() * 4)],
-        logo: getLogoPath(item.product)
-      }));
+      { title: 'High-Urgency Renewals', value: 3433, trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+    ];
+    setKpiData(kpis);
 
-      if (pageNum === 1) {
-        setTrackerData(newTrackerData);
-      } else {
-        setTrackerData(prev => [...prev, ...newTrackerData]);
-      }
+    const products = [
+      { name: 'AI/ML', value: 101, percentage: '38.7', color: '#0ea5e9' },
+      { name: 'CRM', value: 81, percentage: '31.0', color: '#3b82f6' },
+      { name: 'Database', value: 79, percentage: '30.3', color: '#1e40af' },
+    ];
+    setProductData(products);
 
-      setHasMore(pageNum < data.pages);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching tracker data:', err);
-      setLoading(false);
+    setUrgencyData([
+      { label: '< 1 Month', value: 3433, color: '#0c4a6e' },
+      { label: '1–3 Months', value: 8584, color: '#1e3a8a' },
+      { label: '3–6 Months', value: 12017, color: '#3b82f6' },
+      { label: '6–12 Months', value: 10301, color: '#0ea5e9' }
+    ]);
+
+    setTimelineData([
+      { label: 'Q1 2026', renewals: 82 },
+      { label: 'Q2 2026', renewals: 74 },
+      { label: 'Q3 2026', renewals: 133 },
+      { label: 'Q4 2026', renewals: 107 },
+      { label: 'Q1 2027', renewals: 109 },
+      { label: 'Q2 2027', renewals: 148 },
+      { label: 'Q3 2027', renewals: 107 },
+      { label: 'Q4 2027', renewals: 99 },
+      { label: 'Q1 2028', renewals: 35 },
+      { label: 'Q2 2028', renewals: 71 },
+      { label: 'Q3 2028', renewals: 61 },
+      { label: 'Q4 2028', renewals: 99 },
+      { label: 'Q1 2029', renewals: 148 },
+      { label: 'Q2 2029', renewals: 143 },
+      { label: 'Q1 2030', renewals: 69 },
+      { label: 'Q1 2031', renewals: 146 },
+    ]);
+  }, []);
+
+  // Fake tracker data with real S3 logos
+  const fetchTrackerData = useCallback((pageNum) => {
+    setLoading(true);
+    const fakeItems = [
+      { product: 'Amazon Aurora', company: 'DBS Bank', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'ChatGPT', company: 'Accenture', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Meta AI', company: 'Singtel', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Replicate', company: 'Grab', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Google Gemini', company: 'OCBC Bank', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'OpenAI', company: 'UOB', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Snowflake', company: 'CapitaLand', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Claude', company: 'SIA', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Chroma', company: 'Shopee', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Teradata', company: 'Keppel Corp', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'SQL Server', company: 'StarHub', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Google Gemini', company: 'Lazada', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'OpenAI', company: 'Mediacorp', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Amazon Aurora', company: 'SembCorp', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Snowflake', company: 'ComfortDelGro', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'ChatGPT', company: 'Grab', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Replicate', company: 'DBS Bank', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Claude', company: 'Accenture', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Teradata', company: 'OCBC Bank', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'SQL Server', company: 'Singtel', quarter: 'Q2 2026', urgency: 'critical' }
+    ];
+
+    const pageSize = 10;
+    const start = (pageNum - 1) * pageSize;
+    const slice = fakeItems.slice(start, start + pageSize);
+
+    const newTrackerData = slice.map(item => ({
+      product: item.product,
+      company: item.company,
+      quarter: item.quarter,
+      urgency: item.urgency,
+      icon: ['☁️', '🤖', '🧠', '⚙️'][Math.floor(Math.random() * 4)],
+      logo: getLogoPath(item.product)
+    }));
+
+    if (pageNum === 1) {
+      setTrackerData(newTrackerData);
+    } else {
+      setTrackerData(prev => [...prev, ...newTrackerData]);
     }
+
+    setHasMore(start + pageSize < fakeItems.length);
+    setLoading(false);
   }, []);
 
   // Initial load
@@ -348,7 +418,6 @@ const RenewalDashboard = ({ onClose }) => {
     fetchTrackerData(1);
   }, [fetchTrackerData]);
 
-  // Load more on scroll
   const handleScroll = useCallback(() => {
     if (!trackerListRef.current || loading || !hasMore) return;
 
@@ -371,23 +440,23 @@ const RenewalDashboard = ({ onClose }) => {
   }, [handleScroll]);
 
   return (
-    <div className="renewal-modal-overlay" onClick={onClose}>
-      <div className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={inline ? 'renewal-dashboard-inline' : 'renewal-modal-overlay'}
+      onClick={inline ? undefined : onClose}
+    >
+      <div
+        className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`}
+        onClick={inline ? undefined : (e) => e.stopPropagation()}
+      >
         <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
             <h2>Renewal Intelligence Dashboard</h2>
-            <p>Dashboard overview · Q2 2026 · Last updated just now</p>
+            {/* <p><strong>Dashboard overview</strong> · Q2 2026 · Last updated just now</p> */}
           </div>
           <div className="renewal-dashboard-header-actions">
-            <div className="renewal-live-indicator">● Live</div>
-            <button 
-              className="renewal-theme-toggle-btn"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-            <button className="renewal-close-button" onClick={onClose}>✕</button>
+            <span className="renewal-live-badge">
+              <span className={`renewal-live-dot${animDot ? ' renewal-live-dot-on' : ''}`}></span> Last Updated 1 week ago
+            </span>
           </div>
         </div>
 

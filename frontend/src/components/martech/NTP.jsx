@@ -556,7 +556,7 @@ const NTP = () => {
       )}
       
       <div className="header-actions">
-        <h2>Next Tech Purchase (NTP®) </h2>
+        <h2>Next Tech Purchase - NTP® </h2>
         <div className="actions-right">
         </div>
       </div>

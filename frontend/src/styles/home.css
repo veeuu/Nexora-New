@@ -438,3 +438,176 @@
 .home-powered-by:hover {
   opacity: 0.85;
 }
+
+
+/* Main Buttons Section */
+.home-main-buttons-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.home-main-button {
+  padding: 32px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.home-main-button-intent {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 2px solid #8b5cf6;
+}
+
+.home-main-button-intent:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.home-main-button-renewal {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%);
+  border: 2px solid #ec4899;
+}
+
+.home-main-button-renewal:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(236, 72, 153, 0.2);
+}
+
+.home-button-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.home-main-button-intent .home-button-title {
+  color: #8b5cf6;
+}
+
+.home-main-button-renewal .home-button-title {
+  color: #ec4899;
+}
+
+.home-button-description {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+
+/* Quick Buttons Below Subtitle */
+.home-quick-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.home-quick-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.home-quick-btn-intent {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-intent:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-quick-btn-renewal {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-renewal:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-quick-btn-technographics {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-technographics:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-quick-btn-technographics.active {
+  background: linear-gradient(135deg, #1a56b0 0%, #1448a0 100%);
+  box-shadow: 0 4px 12px rgba(0, 61, 138, 0.4);
+}
+
+.home-technographics-inline {
+  width: 100%;
+  margin-top: 16px;
+}
+
+
+.home-quick-btn-summary {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-summary:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+
+/* Intent Summary inline section */
+.home-intent-summary {
+  margin-top: 8px;
+}
+
+.home-intent-summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.home-quick-btn.active {
+  opacity: 0.85;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+  transform: none;
+}
+
+.home-quick-btn-ntp {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  color: white;
+}
+
+.home-quick-btn-ntp:hover {
+  background: linear-gradient(135deg, #2a65a3 0%, #1a56b0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 61, 138, 0.3);
+}
+
+.home-ntp-inline {
+  width: 100%;
+  margin-top: 16px;
+}

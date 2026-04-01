@@ -647,6 +647,12 @@ body {
   max-width: 100%;
   background-color: #ffffff !important;
   margin-left: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* ========== HOME CONTENT ========== */
@@ -662,6 +668,12 @@ body {
   max-height: calc(200vh - 100px);
   background-color: #ffffff !important;
   margin-left: 30px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.home-content::-webkit-scrollbar {
+  display: none;
 }
 
 .ntp-container
