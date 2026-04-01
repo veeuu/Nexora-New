@@ -41,8 +41,6 @@ const TECH_DATA = [
   { name: 'BigQuery',     value: 39, fill: '#38bdf8' },
   { name: 'Salesforce',   value: 34, fill: '#7dd3fc' },
   { name: 'Databricks',   value: 28, fill: '#bae6fd' },
-  { name: 'Kubernetes',   value: 24, fill: '#0284c7' },
-  { name: 'Terraform',    value: 19, fill: '#0369a1' },
 ];
 
 const INDUSTRY_DATA = [
@@ -102,7 +100,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
             <div className="tg-chart-card tg-chart-wide">
               <div className="tg-chart-header">
                 <span className="tg-chart-title">Technology Adoption Frequency</span>
-                <span className="tg-badge tg-badge-blue">Top 12</span>
+                <span className="tg-badge tg-badge-blue">Top 10 Tools</span>
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={TECH_DATA} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
