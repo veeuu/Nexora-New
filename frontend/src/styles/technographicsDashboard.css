@@ -4,7 +4,7 @@
 }
 
 .tg-dashboard-content {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   width: 100%;
@@ -76,7 +76,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 /* ── KPI Grid ───────────────────────────────────────── */
@@ -87,7 +87,7 @@
 }
 
 .tg-kpi-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #ffffff;
   border: 1px solid #cbd5e1;
   border-left: 4px solid;
   border-radius: 12px;
@@ -139,7 +139,7 @@
 }
 
 .tg-chart-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   padding: 20px 22px;

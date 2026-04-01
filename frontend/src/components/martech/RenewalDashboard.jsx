@@ -227,7 +227,6 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
       <div className="renewal-tracker-list" ref={trackerListRef} style={{ maxHeight: '400px', overflowY: 'auto' }}>
         {data.map((item, idx) => (
           <div key={idx} className="renewal-tracker-item">
-            <div className="renewal-tracker-urgency-dot" style={{ backgroundColor: getUrgencyColor(item.urgency) }}></div>
             <div className="renewal-tracker-product-logo">
               {item.logo ? (
                 <img src={item.logo} alt={item.product} title={item.product} />
@@ -268,85 +267,91 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     return () => clearInterval(t);
   }, []);
 
-  // Fetch metadata for KPIs and charts
+  // Fake metadata for KPIs and charts
   useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        const response = await fetch('/api/renewal-intelligence/metadata');
-        const data = await response.json();
-        
-        // Build KPI data from metadata
-        const kpis = [
-          { title: 'Total Renewals Tracked', value: data.totalRecords || 0, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
-          { title: 'Due This Quarter (Q2)', value: data.quarterCounts?.find(q => q.label === 'Q2 2026')?.value || 0, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
-          { title: 'Unlocked Companies', value: data.companies?.length || 0, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
-          { title: 'High-Urgency Renewals', value: Math.floor((data.totalRecords || 0) * 0.1), trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
-        ];
-        setKpiData(kpis);
+    const kpis = [
+      { title: 'Total Renewals Tracked', value: 5842, trend: 'up', trendValue: '12% vs last quarter', accentColor: '#3b82f6' },
+      { title: 'Due This Quarter (Q2)', value: 318, trend: 'up', trendValue: '8 new this week', accentColor: '#f59e0b' },
+      { title: 'Unlocked Companies', value: 124, trend: 'down', trendValue: '496 still locked', accentColor: '#10b981' },
+      { title: 'High-Urgency Renewals', value: 584, trend: 'up', trendValue: '3 added this week', accentColor: '#ef4444' }
+    ];
+    setKpiData(kpis);
 
-        // Build product breakdown from categories
-        const products = (data.categories || []).slice(0, 5).map((cat, idx) => ({
-          name: cat,
-          value: Math.floor(Math.random() * 100) + 20,
-          percentage: 0,
-          color: ['#0ea5e9', '#3b82f6', '#1e40af', '#1e3a8a', '#0c4a6e'][idx]
-        }));
-        const totalProducts = products.reduce((sum, p) => sum + p.value, 0);
-        products.forEach(p => p.percentage = ((p.value / totalProducts) * 100).toFixed(1));
-        setProductData(products);
+    const products = [
+      { name: 'VMware', value: 142, percentage: '28.5', color: '#0ea5e9' },
+      { name: 'Microsoft', value: 118, percentage: '23.7', color: '#3b82f6' },
+      { name: 'SAP', value: 96, percentage: '19.3', color: '#1e40af' },
+      { name: 'Oracle', value: 78, percentage: '15.7', color: '#1e3a8a' },
+      { name: 'AWS', value: 64, percentage: '12.8', color: '#0c4a6e' }
+    ];
+    setProductData(products);
 
-        // Build urgency funnel
-        const urgency = [
-          { label: '< 1 Month', value: Math.floor((data.totalRecords || 0) * 0.1), color: '#0c4a6e' },
-          { label: '1–3 Months', value: Math.floor((data.totalRecords || 0) * 0.25), color: '#1e3a8a' },
-          { label: '3–6 Months', value: Math.floor((data.totalRecords || 0) * 0.35), color: '#3b82f6' },
-          { label: '6–12 Months', value: Math.floor((data.totalRecords || 0) * 0.3), color: '#0ea5e9' }
-        ];
-        setUrgencyData(urgency);
+    setUrgencyData([
+      { label: '< 1 Month', value: 58, color: '#0c4a6e' },
+      { label: '1–3 Months', value: 146, color: '#1e3a8a' },
+      { label: '3–6 Months', value: 204, color: '#3b82f6' },
+      { label: '6–12 Months', value: 175, color: '#0ea5e9' }
+    ]);
 
-        // Build timeline from quarters
-        const timeline = (data.quarters || []).map(qtr => ({
-          label: qtr,
-          renewals: Math.floor(Math.random() * 120) + 30,
-          unlocked: Math.floor(Math.random() * 40) + 10
-        }));
-        setTimelineData(timeline);
-      } catch (err) {
-        console.error('Error fetching metadata:', err);
-      }
-    };
-
-    fetchMetadata();
+    setTimelineData([
+      { label: 'Q1 2025', renewals: 87 },
+      { label: 'Q2 2025', renewals: 112 },
+      { label: 'Q3 2025', renewals: 134 },
+      { label: 'Q4 2025', renewals: 158 },
+      { label: 'Q1 2026', renewals: 143 },
+      { label: 'Q2 2026', renewals: 176 },
+      { label: 'Q3 2026', renewals: 98 },
+      { label: 'Q4 2026', renewals: 65 }
+    ]);
   }, []);
 
-  // Fetch tracker data with pagination
-  const fetchTrackerData = useCallback(async (pageNum) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/renewal-intelligence?page=${pageNum}&limit=100`);
-      const data = await response.json();
+  // Fake tracker data with real S3 logos
+  const fetchTrackerData = useCallback((pageNum) => {
+    setLoading(true);
+    const fakeItems = [
+      { product: 'Amazon Aurora', company: 'DBS Bank', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'ChatGPT', company: 'Accenture', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Meta AI', company: 'Singtel', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Replicate', company: 'Grab', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Google Gemini', company: 'OCBC Bank', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'OpenAI', company: 'UOB', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Snowflake', company: 'CapitaLand', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Claude', company: 'SIA', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Chroma', company: 'Shopee', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Teradata', company: 'Keppel Corp', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'SQL Server', company: 'StarHub', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Google Gemini', company: 'Lazada', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'OpenAI', company: 'Mediacorp', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Amazon Aurora', company: 'SembCorp', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Snowflake', company: 'ComfortDelGro', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'ChatGPT', company: 'Grab', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'Replicate', company: 'DBS Bank', quarter: 'Q3 2026', urgency: 'watch' },
+      { product: 'Claude', company: 'Accenture', quarter: 'Q2 2026', urgency: 'critical' },
+      { product: 'Teradata', company: 'OCBC Bank', quarter: 'Q4 2026', urgency: 'comfortable' },
+      { product: 'SQL Server', company: 'Singtel', quarter: 'Q2 2026', urgency: 'critical' }
+    ];
 
-      const newTrackerData = (data.data || []).map(item => ({
-        product: item.product || 'Unknown',
-        company: item.company || 'Unknown',
-        quarter: item.qtr || 'N/A',
-        urgency: Math.random() > 0.6 ? 'critical' : Math.random() > 0.3 ? 'watch' : 'comfortable',
-        icon: ['☁️', '🤖', '🧠', '⚙️'][Math.floor(Math.random() * 4)],
-        logo: getLogoPath(item.product)
-      }));
+    const pageSize = 10;
+    const start = (pageNum - 1) * pageSize;
+    const slice = fakeItems.slice(start, start + pageSize);
 
-      if (pageNum === 1) {
-        setTrackerData(newTrackerData);
-      } else {
-        setTrackerData(prev => [...prev, ...newTrackerData]);
-      }
+    const newTrackerData = slice.map(item => ({
+      product: item.product,
+      company: item.company,
+      quarter: item.quarter,
+      urgency: item.urgency,
+      icon: ['☁️', '🤖', '🧠', '⚙️'][Math.floor(Math.random() * 4)],
+      logo: getLogoPath(item.product)
+    }));
 
-      setHasMore(pageNum < data.pages);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching tracker data:', err);
-      setLoading(false);
+    if (pageNum === 1) {
+      setTrackerData(newTrackerData);
+    } else {
+      setTrackerData(prev => [...prev, ...newTrackerData]);
     }
+
+    setHasMore(start + pageSize < fakeItems.length);
+    setLoading(false);
   }, []);
 
   // Initial load
@@ -354,7 +359,6 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     fetchTrackerData(1);
   }, [fetchTrackerData]);
 
-  // Load more on scroll
   const handleScroll = useCallback(() => {
     if (!trackerListRef.current || loading || !hasMore) return;
 

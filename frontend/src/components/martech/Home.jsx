@@ -27,27 +27,14 @@ const Home = () => {
   const [intentData, setIntentData] = useState([]);
   const [intentLoading, setIntentLoading] = useState(false);
 
-  const fetchIntentData = async () => {
+  const fetchIntentData = () => {
     setIntentLoading(true);
-    try {
-      const res = await fetch('/api/intent');
-      const raw = await res.json();
-      const statusCounts = {};
-      raw.forEach(row => {
-        if (row.intentStatus && String(row.intentStatus).trim()) {
-          const s = String(row.intentStatus).trim();
-          statusCounts[s] = (statusCounts[s] || 0) + 1;
-        }
-      });
-      const total = Object.values(statusCounts).reduce((sum, c) => sum + c, 0);
-      setIntentData(Object.entries(statusCounts).map(([name, value]) => ({
-        name, value, percentage: ((value / total) * 100).toFixed(1)
-      })));
-    } catch {
-      setIntentData([]);
-    } finally {
-      setIntentLoading(false);
-    }
+    const fakeStatusCounts = { High: 1240, 'High-Medium': 870, Medium: 2150, Low: 980, Greenfield: 560 };
+    const total = Object.values(fakeStatusCounts).reduce((sum, c) => sum + c, 0);
+    setIntentData(Object.entries(fakeStatusCounts).map(([name, value]) => ({
+      name, value, percentage: ((value / total) * 100).toFixed(1)
+    })));
+    setIntentLoading(false);
   };
 
   const handleViewClick = (view) => {
