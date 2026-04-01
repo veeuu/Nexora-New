@@ -106,8 +106,11 @@ const IntentPieChart = ({ data }) => {
     pct: totalAll ? ((d.value / totalAll) * 100).toFixed(1) : '0',
   }));
 
-  // Filter chips — only show statuses that exist in data
-  const availableStatuses = merged.map(d => d.name);
+  // Fixed display order
+  const STATUS_ORDER = ['Greenfield', 'High', 'High-Medium', 'Medium', 'Low'];
+
+  // Filter chips — only show statuses that exist in data, in fixed order
+  const availableStatuses = STATUS_ORDER.filter(s => merged.some(d => d.name === s));
   const filters = ['All', ...availableStatuses];
 
   // Filtered slice for charts
@@ -129,8 +132,10 @@ const IntentPieChart = ({ data }) => {
   const medPct  = totalAll ? ((medCount  / totalAll) * 100).toFixed(1) : 0;
   const lowPct  = totalAll ? ((lowCount  / totalAll) * 100).toFixed(1) : 0;
 
-  // Bar chart — all statuses sorted by count desc
-  const barData = [...mergedWithPct].sort((a, b) => b.value - a.value);
+  // Bar chart — statuses in fixed order
+  const barData = [...mergedWithPct].sort(
+    (a, b) => STATUS_ORDER.indexOf(a.name) - STATUS_ORDER.indexOf(b.name)
+  );
 
   if (!data || data.length === 0) {
     return (
@@ -216,10 +221,9 @@ const IntentPieChart = ({ data }) => {
         {/* Donut */}
         <div className="idb-chart-card">
           <div className="idb-chart-title">Intent status breakdown</div>
-          <div className="idb-chart-sub">Distribution across {filteredTotal.toLocaleString()} companies</div>
           <div className="idb-legend">
-            {filtered.map(d => (
-              <span key={d.name} className="idb-leg">
+            {mergedWithPct.map(d => (
+              <span key={d.name} className="idb-leg" style={{ opacity: filter === 'All' || filter === d.name ? 1 : 0.35 }}>
                 <span className="idb-leg-sq" style={{ background: getColor(d.name) }}></span>
                 {d.name} {d.pct}%
               </span>
@@ -228,14 +232,19 @@ const IntentPieChart = ({ data }) => {
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
-                data={filtered}
+                data={mergedWithPct}
                 cx="50%" cy="50%"
                 innerRadius={55} outerRadius={85}
                 dataKey="value" paddingAngle={2}
                 animationDuration={600}
               >
-                {filtered.map((entry, i) => (
-                  <Cell key={i} fill={getColor(entry.name)} />
+                {mergedWithPct.map((entry, i) => (
+                  <Cell
+                    key={i}
+                    fill={getColor(entry.name)}
+                    opacity={filter === 'All' || filter === entry.name ? 1 : 0.2}
+                    style={{ transition: 'opacity 0.25s' }}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<DonutTooltip />} />
@@ -246,7 +255,6 @@ const IntentPieChart = ({ data }) => {
         {/* Bar – companies by status */}
         <div className="idb-chart-card idb-chart-card-wide">
           <div className="idb-chart-title">Companies by intent status</div>
-          <div className="idb-chart-sub">All {totalAll.toLocaleString()} companies ranked by status</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={barData}
