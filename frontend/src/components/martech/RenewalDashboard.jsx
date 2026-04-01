@@ -199,19 +199,62 @@ const UrgencyFunnelChart = ({ data }) => {
   );
 };
 
+// Product Companies Modal
+const ProductModal = ({ product, companies, logo, onClose }) => (
+  <div className="renewal-product-modal-overlay" onClick={onClose}>
+    <div className="renewal-product-modal" onClick={e => e.stopPropagation()}>
+      <div className="renewal-product-modal-header">
+        {logo && <img src={logo} alt={product} className="renewal-product-modal-logo" />}
+        <div>
+          <div className="renewal-product-modal-title">{product}</div>
+          <div className="renewal-product-modal-sub">{companies.length} companies renewing</div>
+        </div>
+        <button className="renewal-product-modal-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="renewal-product-modal-list">
+        {companies.map((c, i) => (
+          <div key={i} className="renewal-product-modal-row">
+            <span className="renewal-product-modal-idx">{i + 1}</span>
+            <span className="renewal-product-modal-company">{c.company}</span>
+            <span className="renewal-product-modal-quarter">{c.quarter}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// All tracker items (full list, not paginated) — used for modal lookup
+const ALL_TRACKER_ITEMS = [
+  { product: 'Amazon Aurora', company: 'DBS Bank',      quarter: 'Q2 2026' },
+  { product: 'ChatGPT',       company: 'Accenture',     quarter: 'Q3 2026' },
+  { product: 'Meta AI',       company: 'Singtel',       quarter: 'Q2 2026' },
+  { product: 'Replicate',     company: 'Grab',          quarter: 'Q4 2026' },
+  { product: 'Google Gemini', company: 'OCBC Bank',     quarter: 'Q2 2026' },
+  { product: 'OpenAI',        company: 'UOB',           quarter: 'Q3 2026' },
+  { product: 'Snowflake',     company: 'CapitaLand',    quarter: 'Q2 2026' },
+  { product: 'Claude',        company: 'SIA',           quarter: 'Q4 2026' },
+  { product: 'Chroma',        company: 'Shopee',        quarter: 'Q3 2026' },
+  { product: 'Teradata',      company: 'Keppel Corp',   quarter: 'Q2 2026' },
+  { product: 'SQL Server',    company: 'StarHub',       quarter: 'Q3 2026' },
+  { product: 'Google Gemini', company: 'Lazada',        quarter: 'Q4 2026' },
+  { product: 'OpenAI',        company: 'Mediacorp',     quarter: 'Q2 2026' },
+  { product: 'Amazon Aurora', company: 'SembCorp',      quarter: 'Q3 2026' },
+  { product: 'Snowflake',     company: 'ComfortDelGro', quarter: 'Q2 2026' },
+  { product: 'ChatGPT',       company: 'Grab',          quarter: 'Q4 2026' },
+  { product: 'Replicate',     company: 'DBS Bank',      quarter: 'Q3 2026' },
+  { product: 'Claude',        company: 'Accenture',     quarter: 'Q2 2026' },
+  { product: 'Teradata',      company: 'OCBC Bank',     quarter: 'Q4 2026' },
+  { product: 'SQL Server',    company: 'Singtel',       quarter: 'Q2 2026' },
+];
+
 // Renewal Tracker Component
 const RenewalTracker = ({ data, trackerListRef, loading }) => {
-  const getUrgencyColor = (urgency) => {
-    switch (urgency) {
-      case 'critical':
-        return '#ef4444';
-      case 'watch':
-        return '#f59e0b';
-      case 'comfortable':
-        return '#10b981';
-      default:
-        return '#6b7280';
-    }
+  const [modal, setModal] = useState(null);
+
+  const handleProductClick = (item) => {
+    const companies = ALL_TRACKER_ITEMS.filter(r => r.product === item.product);
+    setModal({ product: item.product, companies, logo: item.logo });
   };
 
   return (
@@ -219,12 +262,16 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
       <div className="renewal-chart-header">
         <div className="renewal-chart-header-left">
           <h3>Renewal Tracker</h3>
-          <p>Most recent opportunities · Scroll to load more</p>
+          <p>Click a product to see all renewing companies</p>
         </div>
       </div>
       <div className="renewal-tracker-list" ref={trackerListRef} style={{ maxHeight: '400px', overflowY: 'auto' }}>
         {data.map((item, idx) => (
-          <div key={idx} className="renewal-tracker-item">
+          <div
+            key={idx}
+            className="renewal-tracker-item renewal-tracker-item-clickable"
+            onClick={() => handleProductClick(item)}
+          >
             <div className="renewal-tracker-product-logo">
               {item.logo ? (
                 <img src={item.logo} alt={item.product} title={item.product} />
@@ -241,6 +288,14 @@ const RenewalTracker = ({ data, trackerListRef, loading }) => {
         ))}
         {loading && <div style={{ padding: '10px', textAlign: 'center', color: '#999' }}>Loading more...</div>}
       </div>
+      {modal && (
+        <ProductModal
+          product={modal.product}
+          companies={modal.companies}
+          logo={modal.logo}
+          onClose={() => setModal(null)}
+        />
+      )}
     </div>
   );
 };
