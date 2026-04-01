@@ -35,15 +35,17 @@ const KPICard = ({ label, value, prefix = '', suffix = '', delta, deltaUp, accen
 
 const TECH_DATA = [
   { name: 'AWS',          value: 82, fill: '#1e40af' },
-  { name: 'ChatGPT',      value: 74, fill: '#1d4ed8' },
-  { name: 'Snowflake',    value: 61, fill: '#2563eb' },
-  { name: 'GCP',          value: 55, fill: '#3b82f6' },
-  { name: 'Redis',        value: 48, fill: '#60a5fa' },
-  { name: 'LLM',          value: 43, fill: '#93c5fd' },
-  { name: 'Transformers', value: 39, fill: '#0ea5e9' },
-  { name: 'Azure',        value: 37, fill: '#38bdf8' },
-  { name: 'BigQuery',     value: 33, fill: '#7dd3fc' },
-  { name: 'Salesforce',   value: 29, fill: '#bae6fd' },
+  { name: 'Azure',        value: 76, fill: '#1d4ed8' },
+  { name: 'GCP',          value: 68, fill: '#2563eb' },
+  { name: 'ChatGPT',      value: 61, fill: '#3b82f6' },
+  { name: 'Snowflake',    value: 55, fill: '#60a5fa' },
+  { name: 'LLM',          value: 48, fill: '#93c5fd' },
+  { name: 'Transformers', value: 43, fill: '#0ea5e9' },
+  { name: 'BigQuery',     value: 39, fill: '#38bdf8' },
+  { name: 'Salesforce',   value: 34, fill: '#7dd3fc' },
+  { name: 'Databricks',   value: 28, fill: '#bae6fd' },
+  { name: 'Kubernetes',   value: 24, fill: '#0284c7' },
+  { name: 'Terraform',    value: 19, fill: '#0369a1' },
 ];
 
 const INDUSTRY_DATA = [
@@ -84,7 +86,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
           </div>
           <div className="tg-header-right">
             <span className="tg-live-badge">
-              <span className={`tg-live-dot${animDot ? ' tg-live-dot-on' : ''}`}></span> Live
+              <span className={`tg-live-dot${animDot ? ' tg-live-dot-on' : ''}`}></span> Last Updated 1 week ago
             </span>
           </div>
         </div>
@@ -103,7 +105,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
             <div className="tg-chart-card tg-chart-wide">
               <div className="tg-chart-header">
                 <span className="tg-chart-title">Technology Adoption Frequency</span>
-                <span className="tg-badge tg-badge-blue">Top 10 Tools</span>
+                <span className="tg-badge tg-badge-blue">Top 12</span>
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={TECH_DATA} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
@@ -121,7 +123,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
             <div className="tg-chart-card tg-chart-narrow">
               <div className="tg-chart-header">
                 <span className="tg-chart-title">Industry Breakdown</span>
-                <span className="tg-badge tg-badge-blue">By Sector</span>
+                <span className="tg-badge tg-badge-blue">Top 5</span>
               </div>
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>

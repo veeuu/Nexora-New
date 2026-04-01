@@ -103,7 +103,7 @@ export default function NTPDashboard() {
         </div>
         <div className="ntpd-header-actions">
           <span className="ntpd-badge-live">
-            <span className={`ntpd-dot${visible ? ' ntpd-dot-on' : ''}`}></span> Live
+            <span className={`ntpd-dot${visible ? ' ntpd-dot-on' : ''}`}></span> Last Updated 1 week ago
           </span>
         </div>
       </div>

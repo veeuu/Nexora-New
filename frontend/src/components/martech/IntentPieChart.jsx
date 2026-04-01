@@ -154,7 +154,7 @@ const IntentPieChart = ({ data }) => {
         </div>
         <div className="idb-header-actions">
           <span className="idb-badge-live">
-            <span className={`idb-dot${animDot ? ' idb-dot-on' : ''}`}></span> Live
+            <span className={`idb-dot${animDot ? ' idb-dot-on' : ''}`}></span> Last Updated 1 week ago
           </span>
 
         </div>

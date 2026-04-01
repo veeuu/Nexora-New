@@ -401,7 +401,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
           </div>
           <div className="renewal-dashboard-header-actions">
             <span className="renewal-live-badge">
-              <span className={`renewal-live-dot${animDot ? ' renewal-live-dot-on' : ''}`}></span> Live
+              <span className={`renewal-live-dot${animDot ? ' renewal-live-dot-on' : ''}`}></span> Last Updated 1 week ago
             </span>
           </div>
         </div>
