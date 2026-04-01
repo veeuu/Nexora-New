@@ -36,7 +36,7 @@ const LandingPage = () => {
       await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'Landing Page - Hero' })
+        body: JSON.stringify({ email, name: email.split('@')[0], source: 'Landing Page - Hero' })
       });
     } catch (err) {
       // show modal regardless
