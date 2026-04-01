@@ -14,12 +14,10 @@ const createTransporter = () => {
   });
 };
 
-// ─── OTP Email (account creation / password reset) ───────────────────────────
+// ─── OTP Email ────────────────────────────────────────────────────────────────
 const sendOTPEmail = async (email, otp, fullName) => {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'demo@example.com') {
-    console.log('\n=== DEMO MODE - OTP ===');
-    console.log(`To: ${email} | Name: ${fullName} | OTP: ${otp}`);
-    console.log('=======================\n');
+    console.log(`\n=== DEMO MODE - OTP | To: ${email} | OTP: ${otp} ===\n`);
     return { success: true, demo: true };
   }
 
@@ -54,16 +52,13 @@ const sendOTPEmail = async (email, otp, fullName) => {
       </div>
     `
   });
-
   return { success: true, demo: false };
 };
 
-// ─── Trial Confirmation Email (landing page form submission) ──────────────────
+// ─── Trial Confirmation Email (sent to user) ──────────────────────────────────
 const sendTrialConfirmationEmail = async (email, fullName) => {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'demo@example.com') {
-    console.log('\n=== DEMO MODE - Trial Confirmation ===');
-    console.log(`To: ${email} | Name: ${fullName}`);
-    console.log('======================================\n');
+    console.log(`\n=== DEMO MODE - Trial Confirmation | To: ${email} | Name: ${fullName} ===\n`);
     return { success: true, demo: true };
   }
 
@@ -79,7 +74,6 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nexora – Trial Request Received</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -104,7 +98,7 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
     <div class="top-bar"></div>
     <div class="body">
       <div class="logo">Nexora</div>
-      <h1>Hi ${firstName}, you're all set! 👋</h1>
+      <h1>Hi ${firstName}, you're all set! </h1>
       <p class="sub">
         Your <strong>Nexora Free Trial</strong> request has been received.
         We'll review it and get back to you shortly.
@@ -115,7 +109,7 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
       <div class="divider"></div>
       <div class="sign">
         Questions? Reach us at <a href="mailto:nexora@proplusdata.co" style="color:#4a6cf7;">nexora@proplusdata.co</a>
-        <span>— The Nexora Team</span>
+        <span>— The ProPlus Data Team</span>
       </div>
     </div>
     <div class="footer">
@@ -127,8 +121,65 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
 </body>
 </html>`
   });
-
   return { success: true, demo: false };
 };
 
-module.exports = { sendOTPEmail, sendTrialConfirmationEmail };
+// ─── Admin Notification Email (sent to swapnil@proplusdata.co) ────────────────
+const sendAdminNotificationEmail = async ({ name, email, phone, jobTitle, source }) => {
+  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'demo@example.com') {
+    console.log(`\n=== DEMO MODE - Admin Notification | Lead: ${name} | ${email} ===\n`);
+    return { success: true, demo: true };
+  }
+
+  const transporter = createTransporter();
+  const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || `"Nexora" <${process.env.EMAIL_USER}>`,
+    to: 'swapnil@proplusdata.co',
+    subject: `🔔 New Free Trial Request – ${name || email}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:40px 16px;">
+        <div style="background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e3e7f0;">
+          <div style="height:5px;background:linear-gradient(90deg,#1b2a6b,#4a6cf7);"></div>
+          <div style="padding:32px 40px;">
+            <div style="font-size:18px;font-weight:600;color:#1b2a6b;margin-bottom:20px;">Nexora · New Lead Alert</div>
+            <h2 style="font-size:20px;color:#1a1d2e;margin-bottom:20px;">A new free trial request has been submitted</h2>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <tr style="border-bottom:1px solid #edf0f7;">
+                <td style="padding:10px 0;color:#7a7f99;width:130px;">Full Name</td>
+                <td style="padding:10px 0;color:#1a1d2e;font-weight:500;">${name || '—'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #edf0f7;">
+                <td style="padding:10px 0;color:#7a7f99;">Email</td>
+                <td style="padding:10px 0;"><a href="mailto:${email}" style="color:#4a6cf7;">${email}</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid #edf0f7;">
+                <td style="padding:10px 0;color:#7a7f99;">Phone</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${phone || '—'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #edf0f7;">
+                <td style="padding:10px 0;color:#7a7f99;">Job Title</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${jobTitle || '—'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #edf0f7;">
+                <td style="padding:10px 0;color:#7a7f99;">Source</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${source || 'Landing Page'}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;color:#7a7f99;">Submitted At</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${submittedAt} IST</td>
+              </tr>
+            </table>
+          </div>
+          <div style="background:#f8f9fd;border-top:1px solid #edf0f7;padding:14px 40px;font-size:11px;color:#b0b4c8;text-align:center;">
+            © 2026 Nexora · Powered by ProPlus Data
+          </div>
+        </div>
+      </div>
+    `
+  });
+  return { success: true, demo: false };
+};
+
+module.exports = { sendOTPEmail, sendTrialConfirmationEmail, sendAdminNotificationEmail };

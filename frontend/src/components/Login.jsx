@@ -63,27 +63,38 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-    setLoading(true);
 
+    if (!fullName.trim()) return setError('Full name is required');
+    if (!email || !email.includes('@')) return setError('Valid business email is required');
+
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/signup', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, fullName, phoneNumber, jobTitle, password })
+        body: JSON.stringify({
+          email,
+          name: fullName,
+          phone: phoneNumber,
+          jobTitle,
+          source: 'Free Trial Form'
+        })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok && data.success) {
         setError('');
-        setSuccessMessage('Account created! Please check your email for the OTP.');
-        setShowOTPVerification(true);
+        setSuccessMessage('✅ Request submitted! Check your email for confirmation.');
+        // Clear form
+        setFullName('');
+        setEmail('');
+        setPhoneNumber('');
+        setJobTitle('');
       } else {
-        setError(data.message || 'Signup failed');
+        setError(data.error || 'Submission failed. Please try again.');
       }
     } catch (err) {
-      setError('Error connecting to server');
-
+      setError('Error connecting to server. Please try again.');
     } finally {
       setLoading(false);
     }
