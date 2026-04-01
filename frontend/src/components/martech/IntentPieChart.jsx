@@ -259,13 +259,24 @@ const IntentPieChart = ({ data }) => {
             <BarChart
               data={barData}
               layout="vertical"
-              margin={{ top: 4, right: 24, left: 90, bottom: 0 }}
+              margin={{ top: 4, right: 24, left: 90, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <XAxis
+                type="number"
+                tick={{ fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                label={{ value: 'Company Count', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#94a3b8' }}
+              />
               <YAxis
-                type="category" dataKey="name"
-                tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={90}
+                type="category"
+                dataKey="name"
+                tick={{ fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={90}
+                label={{ value: 'Intent Status', angle: -90, position: 'insideLeft', offset: -5, fontSize: 11, fill: '#94a3b8' }}
               />
               <Tooltip content={<BarTooltip />} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]} animationDuration={600}>
