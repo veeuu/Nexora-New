@@ -94,7 +94,6 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
     <div style="background:#f8f9fd;border-top:1px solid #edf0f7;padding:16px 44px;font-size:11px;color:#b0b4c8;text-align:center;line-height:1.6;">
       This is an automated email. Please do not reply directly.<br/>
       © 2026 Nexora · Powered by ProPlus Data &nbsp;·&nbsp;
-      <a href="#">Unsubscribe</a>
     </div>
   </div>
 </body>
