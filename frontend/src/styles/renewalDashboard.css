@@ -28,7 +28,7 @@
 
 /* Renewal Dashboard Header */
 .renewal-dashboard-modal-header {
-  padding: 24px;
+  padding: 16px;
   border-bottom: 1px solid #1e293b;
   display: flex;
   justify-content: space-between;
@@ -962,6 +962,11 @@
   color: #64748b;
 }
 
+.light-mode .renewal-dashboard-title-section p strong {
+  font-weight: 600;
+  color: #475569;
+}
+
 .light-mode .renewal-kpi-card {
   background: #ffffff;
   border-color: #cbd5e1;
@@ -1356,7 +1361,15 @@
   width: 100%;
   max-width: 100%;
   max-height: none;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: none;
+  border: none;
   margin: 0;
+  background-color: transparent;
+}
+
+/* Inline light mode — header sits flush, no card look */
+.renewal-dashboard-inline .light-mode .renewal-dashboard-modal-header {
+  border-radius: 12px;
+  margin-bottom: 16px;
 }

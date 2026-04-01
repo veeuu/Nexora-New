@@ -25,6 +25,13 @@
   gap: 4px;
 }
 
+.ntpd-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
 .ntpd-header-actions {
   display: flex;
   align-items: center;

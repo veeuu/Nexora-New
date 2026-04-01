@@ -98,7 +98,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
         <div className="tg-header">
           <div className="tg-header-left">
             <h2>Technographics Dashboard</h2>
-            <p>Visualizing technology signals across 248 companies · Q1 2026</p>
+            <p><strong>Dashboard overview</strong> · Live data · Last updated just now</p>
           </div>
           <div className="tg-header-right">
             <span className="tg-live-badge">
