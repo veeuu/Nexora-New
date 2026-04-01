@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
-  LineChart, Line, Area, AreaChart,
 } from 'recharts';
 import '../../styles/technographicsDashboard.css';
 
@@ -55,23 +54,6 @@ const INDUSTRY_DATA = [
   { name: 'Manufacturing',       value: 6  },
 ];
 const INDUSTRY_COLORS = ['#1e40af', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'];
-
-const REVENUE_DATA = [
-  { name: '<$10M',    value: 18 },
-  { name: '$10–30M',  value: 52 },
-  { name: '$30–50M',  value: 71 },
-  { name: '$50–100M', value: 63 },
-  { name: '$100M+',   value: 44 },
-];
-
-const TREND_DATA = [
-  { q: 'Q1 21', v: 12 }, { q: 'Q2 21', v: 18 }, { q: 'Q3 21', v: 15 },
-  { q: 'Q4 21', v: 22 }, { q: 'Q1 22', v: 25 }, { q: 'Q2 22', v: 30 },
-  { q: 'Q1 23', v: 38 }, { q: 'Q1 24', v: 45 }, { q: 'Q2 24', v: 52 },
-  { q: 'Q3 24', v: 60 }, { q: 'Q4 24', v: 68 }, { q: 'Q1 25', v: 85 },
-  { q: 'Q2 25', v: 97 }, { q: 'Q3 25', v: 110 },{ q: 'Q4 25', v: 125 },
-  { q: 'Q1 26', v: 137 },
-];
 
 const tooltipStyle = {
   backgroundColor: '#ffffff',
@@ -153,46 +135,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
             </div>
           </div>
 
-          {/* Row 2: Revenue + Detection Trend */}
-          <div className="tg-charts-row tg-charts-row-2">
-            <div className="tg-chart-card">
-              <div className="tg-chart-header">
-                <span className="tg-chart-title">Revenue Distribution</span>
-                <span className="tg-badge tg-badge-blue">By Band</span>
-              </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={REVENUE_DATA} layout="vertical" margin={{ top: 4, right: 16, left: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
-                  <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} />
-                  <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} width={70} />
-                  <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
-                  <Bar dataKey="value" fill="#3b82f6" radius={[0, 5, 5, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
 
-            <div className="tg-chart-card">
-              <div className="tg-chart-header">
-                <span className="tg-chart-title">Detection Trend</span>
-                <span className="tg-badge tg-badge-blue">Quarterly</span>
-              </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={TREND_DATA} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="tgBlue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#3b82f6" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="q" tick={{ fill: '#64748b', fontSize: 9 }} angle={-35} textAnchor="end" height={40} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Area type="monotone" dataKey="v" stroke="#2563eb" strokeWidth={2} fill="url(#tgBlue)" dot={{ r: 3, fill: '#2563eb' }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
         </div>
 
       </div>
