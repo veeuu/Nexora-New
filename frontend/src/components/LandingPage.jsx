@@ -396,15 +396,6 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="footer-right">
-              <div className="footer-links">
-                <h5>Help</h5>
-                <ul>
-                  <li><a href="#faq">FAQ</a></li>
-                </ul>
-              </div>
-            </div>
-
             <div className="footer-certifications-right">
               <div className="footer-cert-logos">
                 <div className="footer-cert-item">

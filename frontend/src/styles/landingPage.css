@@ -1283,16 +1283,16 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.8rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+  flex-wrap: nowrap;
 }
 
 .footer-cert-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 55px;
-  height: 55px;
+  width: 75px;
+  height: 75px;
   transition: all 0.3s ease;
 }
 
