@@ -264,7 +264,7 @@ if (newPassword !== confirmPassword) {
       {}
       <div className="login-right">
         <div className="login-form-wrapper">
-          <div className="login-logo-vertical">
+          <div className={`login-logo-vertical ${isSignup ? 'signup-compact' : ''}`}>
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
             {isSignup && (
               <p className="free-trial-heading">Free Trial</p>
@@ -572,7 +572,7 @@ if (newPassword !== confirmPassword) {
               </div>
             </form>
           ) : (
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className={`login-form ${isSignup ? 'signup-compact' : ''}`}>
             {isSignup && (
               <div className="form-group">
                 <label htmlFor="fullname">Full Name <span style={{ color: '#ff4d4f' }}>*</span></label>
@@ -850,7 +850,7 @@ if (newPassword !== confirmPassword) {
             </div>
 
             {/* Powered by ProPlus Data */}
-            <div className="powered-by">
+            <div className={`powered-by ${isSignup ? 'signup-compact' : ''}`}>
               <span>Powered by</span>
               <img 
                 src={proplusDataLogo} 
