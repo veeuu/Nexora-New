@@ -210,6 +210,36 @@ const LandingPage = () => {
         </button>
       </section>
 
+      {/* Scroll Down Arrow */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '0' }}>
+        <button
+          onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+          aria-label="Scroll to bottom"
+          style={{
+            width: '40px',
+            height: '40px',
+            minWidth: '40px',
+            minHeight: '40px',
+            maxWidth: '40px',
+            maxHeight: '40px',
+            borderRadius: '50%',
+            border: '1.5px solid #a5b4fc',
+            background: '#fff',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '18px',
+            color: '#2563eb',
+            lineHeight: 1,
+            padding: 0,
+            boxSizing: 'border-box',
+          }}
+        >
+          ↓
+        </button>
+      </div>
+
       {/* Client Logos Carousel */}
       <ClientLogosCarousel />
 
