@@ -1234,11 +1234,11 @@ const NTP = () => {
 
       {}
       {filteredData.length > 0 && (() => {
-        const totalPagesCount = Math.max(1, totalPages || Math.ceil((totalRecords || 0) / rowsPerPage));
+        const totalPagesCount = Math.max(1, totalPages || Math.ceil((totalRecords || filteredData.length) / rowsPerPage));
         const startIndex = (currentPage - 1) * rowsPerPage + 1;
-        const endIndex = Math.min(currentPage * rowsPerPage, totalRecords || 0);
+        const endIndex = Math.min(currentPage * rowsPerPage, totalRecords || filteredData.length);
 
-        return totalPagesCount > 1 ? (
+        return (
           <div className="ntp-pagination-wrapper">
             <div className="ntp-pagination-info">
               Page {currentPage} of {totalPagesCount.toLocaleString()}
@@ -1352,7 +1352,7 @@ const NTP = () => {
               Showing {startIndex}-{endIndex} of {(totalRecords || 0).toLocaleString()} results
             </div>
           </div>
-        ) : null;
+        );
       })()}
 
       <Tooltip tooltip={tooltip} />
