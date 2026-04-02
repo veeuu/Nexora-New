@@ -135,7 +135,7 @@
 
 .free-trial-heading {
   font-size: 1.6rem;
-  font-weight: 0;
+  font-weight: 600;
   color: #ffffff;
   margin: 0;
   letter-spacing: 0.5px;
@@ -594,4 +594,44 @@
     font-size: 0.75rem;
     padding: 0.6rem 0.75rem;
   }
+}
+
+/* ── Compact layout for Free Trial form (more fields, same height) ── */
+.login-form.signup-compact {
+  gap: 0.45rem;
+}
+
+.login-form.signup-compact .form-group {
+  gap: 0.2rem;
+}
+
+.login-form.signup-compact .form-group label {
+  font-size: 0.65rem;
+}
+
+.login-form.signup-compact .form-input {
+  padding: 0.45rem 0.9rem 0.45rem 2.8rem;
+  font-size: 0.78rem;
+}
+
+.login-form.signup-compact .btn-signin {
+  padding: 0.55rem 1.25rem;
+  margin-top: 0.1rem;
+}
+
+.login-logo-vertical.signup-compact {
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.login-logo-vertical.signup-compact .nexora-logo-img-small {
+  height: 38px;
+}
+
+.login-logo-vertical.signup-compact .free-trial-heading {
+  font-size: 1.3rem;
+}
+
+.powered-by.signup-compact {
+  margin-top: 0.75rem;
 }

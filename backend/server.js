@@ -47,6 +47,8 @@ app.post('/api/subscribe', async (req, res) => {
       const params = new URLSearchParams();
       params.append('email', email);
       params.append('name', name || '');
+      params.append('phone', req.body.phone || '');
+      params.append('jobTitle', req.body.jobTitle || '');
       params.append('source', source || 'Landing Page');
       params.append('timestamp', new Date().toISOString());
       try {
@@ -57,12 +59,26 @@ app.post('/api/subscribe', async (req, res) => {
     }
 
     // 2. Send trial confirmation email to user
-    const { sendTrialConfirmationEmail } = require('./config/email');
+    const { sendTrialConfirmationEmail, sendAdminNotificationEmail } = require('./config/email');
     try {
       await sendTrialConfirmationEmail(email, name || email);
       console.log(`[subscribe] Confirmation email sent to ${email}`);
     } catch (emailErr) {
       console.error('[subscribe] Email error:', emailErr.message);
+    }
+
+    // 3. Notify admin (swapnil@proplusdata.co)
+    try {
+      await sendAdminNotificationEmail({
+        name,
+        email,
+        phone: req.body.phone || '',
+        jobTitle: req.body.jobTitle || '',
+        source
+      });
+      console.log(`[subscribe] Admin notified for ${email}`);
+    } catch (adminErr) {
+      console.error('[subscribe] Admin email error:', adminErr.message);
     }
 
     res.json({ success: true });

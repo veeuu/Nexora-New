@@ -63,27 +63,38 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-    setLoading(true);
 
+    if (!fullName.trim()) return setError('Full name is required');
+    if (!email || !email.includes('@')) return setError('Valid business email is required');
+
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/signup', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, fullName, phoneNumber, jobTitle, password })
+        body: JSON.stringify({
+          email,
+          name: fullName,
+          phone: phoneNumber,
+          jobTitle,
+          source: 'Free Trial Form'
+        })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok && data.success) {
         setError('');
-        setSuccessMessage('Account created! Please check your email for the OTP.');
-        setShowOTPVerification(true);
+        setSuccessMessage('Request submitted! Check your email for confirmation.');
+        // Clear form
+        setFullName('');
+        setEmail('');
+        setPhoneNumber('');
+        setJobTitle('');
       } else {
-        setError(data.message || 'Signup failed');
+        setError(data.error || 'Submission failed. Please try again.');
       }
     } catch (err) {
-      setError('Error connecting to server');
-
+      setError('Error connecting to server. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -253,7 +264,7 @@ if (newPassword !== confirmPassword) {
       {}
       <div className="login-right">
         <div className="login-form-wrapper">
-          <div className="login-logo-vertical">
+          <div className={`login-logo-vertical ${isSignup ? 'signup-compact' : ''}`}>
             <img src={nexoraLogo} alt="Nexora" className="nexora-logo-img-small" />
             {isSignup && (
               <p className="free-trial-heading">Free Trial</p>
@@ -561,7 +572,7 @@ if (newPassword !== confirmPassword) {
               </div>
             </form>
           ) : (
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className={`login-form ${isSignup ? 'signup-compact' : ''}`}>
             {isSignup && (
               <div className="form-group">
                 <label htmlFor="fullname">Full Name <span style={{ color: '#ff4d4f' }}>*</span></label>
@@ -839,7 +850,7 @@ if (newPassword !== confirmPassword) {
             </div>
 
             {/* Powered by ProPlus Data */}
-            <div className="powered-by">
+            <div className={`powered-by ${isSignup ? 'signup-compact' : ''}`}>
               <span>Powered by</span>
               <img 
                 src={proplusDataLogo} 

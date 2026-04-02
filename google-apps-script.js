@@ -7,19 +7,22 @@ function doGet(e) {
 
     // Add header row if sheet is empty
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Email', 'Timestamp', 'Source']);
+      sheet.appendRow(['Full Name', 'Email', 'Phone', 'Job Title', 'Source', 'Timestamp']);
     }
 
-    const email = e.parameter.email || '';
-    const source = e.parameter.source || 'Landing Page';
+    const email     = e.parameter.email     || '';
+    const name      = e.parameter.name      || '';
+    const phone     = e.parameter.phone     || '';
+    const jobTitle  = e.parameter.jobTitle  || '';
+    const source    = e.parameter.source    || 'Landing Page';
     const timestamp = e.parameter.timestamp || new Date().toISOString();
 
     if (email) {
-      sheet.appendRow([email, timestamp, source]);
+      sheet.appendRow([name, email, phone, jobTitle, source, timestamp]);
     }
 
     return ContentService
-      .createTextOutput(JSON.stringify({ success: true, email: email }))
+      .createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
