@@ -1,3 +1,4 @@
+﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -491,8 +492,8 @@ useEffect(() => {
                 setLoading(true);
 
                 const [companyDetailsResponse, metadataResponse] = await Promise.all([
-                    fetch('/api/company-details'),
-                    fetch('/api/renewal-intelligence/metadata')
+                    apiFetch('/api/company-details'),
+                    apiFetch('/api/renewal-intelligence/metadata')
                 ]);
 
                 const companyDetails = await companyDetailsResponse.json();
@@ -636,7 +637,7 @@ useEffect(() => {
                 qtrFilter.forEach(qtr => queryParams.append('qtr', qtr));
             }
 
-            const response = await fetch(`/api/renewal-intelligence?${queryParams.toString()}`);
+            const response = await apiFetch(`/api/renewal-intelligence?${queryParams.toString()}`);
             const data = await response.json();
 
             if (response.status === 503 && retries > 0) {

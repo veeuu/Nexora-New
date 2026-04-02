@@ -1,4 +1,5 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react';
+﻿import apiFetch from '../../utils/apiFetch';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -964,7 +965,7 @@ const Technographics = () => {
       if (filters.employeeSize.length > 0) filters.employeeSize.forEach(size => queryParams.append('employeeSize', size));
       if (filters.revenue.length > 0) filters.revenue.forEach(rev => queryParams.append('revenue', rev));
 
-      const response = await fetch(`/api/technographics/export?${queryParams.toString()}`);
+      const response = await apiFetch(`/api/technographics/export?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to export technographics');
       }
@@ -1105,7 +1106,7 @@ const Technographics = () => {
         filters.revenue.forEach(rev => queryParams.append('revenue', rev));
       }
 
-      const response = await fetch(`/api/technographics?${queryParams.toString()}`);
+      const response = await apiFetch(`/api/technographics?${queryParams.toString()}`);
       const data = await response.json();
 
       if (response.status === 503 && retries > 0) {
@@ -1148,9 +1149,9 @@ const Technographics = () => {
         setError(null);
 
         const [metadataResponse, summaryResponse, filterOptionsResponse] = await Promise.all([
-          fetch('/api/technographics/metadata'),
-          fetch('/api/technographics/summary'),
-          fetch('/api/technographics/filter-options')
+          apiFetch('/api/technographics/metadata'),
+          apiFetch('/api/technographics/summary'),
+          apiFetch('/api/technographics/filter-options')
         ]);
 
         const metadataData = await metadataResponse.json();
@@ -1318,7 +1319,7 @@ const Technographics = () => {
         params.append('page', '1');
         params.append('limit', '500');
 
-        const response = await fetch(`/api/ntp?${params.toString()}`);
+        const response = await apiFetch(`/api/ntp?${params.toString()}`);
         const result = await response.json();
 
         setNtpDataByCompany(prev => ({

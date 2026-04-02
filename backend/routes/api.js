@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -6,11 +6,45 @@ const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
 const { cacheResponse } = require('../middleware/redisCache');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const Company = require('../models/Company');
 const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 
 router.use(cors());
+
+// ─── Plan-aware collection resolver ──────────────────────────────────────────
+// free_trial users get *_free collections, paid users get full collections
+const PLAN_COLLECTIONS = {
+  free_trial: {
+    data:                'data_free',
+    renewal_intel:       'renewal_intel_free',
+    intent_data:         'intent_data_free',
+    buyinggroups:        'buyinggroups_free',
+    ntp_flat:            'ntp_flat_free',            
+    technographics_flat: 'technographics_flat_free'  
+  },
+  paid: {
+    data:                'data',
+    renewal_intel:       'renewal_intel',
+    intent_data:         'intent_data',
+    buyinggroups:        'buyinggroups',
+    ntp_flat:            'ntp_flat',
+    technographics_flat: 'technographics_flat'
+  }
+};
+
+const getCol = (req, key) => {
+  const plan = req.user?.plan || 'free_trial';
+  const map = PLAN_COLLECTIONS[plan] || PLAN_COLLECTIONS.free_trial;
+  const col = map[key] || key;
+  return col;
+};
+
+// Apply auth to all data API routes (login/signup handled separately in auth.js)
+router.use(authMiddleware);
+
+// ─── NTP ROUTES
 
 let statsCache = null;
 let statsCacheTime = 0;
@@ -112,15 +146,12 @@ const zoomScript = `<script>
   return html;
 }
 
-// Helper to get data collection
-const getDataCollection = () => {
-  if (mongoose.connection.readyState !== 1) {
-    throw new Error('MongoDB not connected');
-  }
-  if (!mongoose.connection.db) {
-    throw new Error('MongoDB database not available');
-  }
-  return mongoose.connection.db.collection('data');
+// Helper to get data collection (plan-aware)
+const getDataCollection = (req) => {
+  if (mongoose.connection.readyState !== 1) throw new Error('MongoDB not connected');
+  if (!mongoose.connection.db) throw new Error('MongoDB database not available');
+  const colName = getCol(req, 'data');
+  return mongoose.connection.db.collection(colName);
 };
 
 // Query-level caching for repeated requests (5-minute TTL)
@@ -221,6 +252,12 @@ function setCachedQuery(key, data) {
   queryCache.set(key, { data, timestamp: Date.now() });
 }
 
+// Plan-aware cache key helper
+function planCacheKey(req, key) {
+  const plan = req.user?.plan || 'free_trial';
+  return `${plan}:${key}`;
+}
+
 async function timed(label, fn) {
   const start = Date.now();
   try {
@@ -243,22 +280,15 @@ async function findTimed(collection, query, options, label) {
   return timed(label, async () => collection.find(query, mergedOptions).toArray());
 }
 
-async function getFlatCollectionsAvailability() {
-  const now = Date.now();
-  if ((now - flatCollectionsCache.timestamp) < FLAT_COLLECTIONS_CACHE_DURATION) {
-    return { ntp: flatCollectionsCache.ntp, technographics: flatCollectionsCache.technographics };
-  }
-
+async function getFlatCollectionsAvailability(req) {
   try {
+    const ntpCol = getCol(req, 'ntp_flat');
+    const techCol = getCol(req, 'technographics_flat');
     const collections = await mongoose.connection.db.listCollections({}, { nameOnly: true }).toArray();
     const names = new Set(collections.map(c => c.name));
-    flatCollectionsCache = {
-      timestamp: now,
-      ntp: names.has('ntp_flat'),
-      technographics: names.has('technographics_flat')
-    };
+    return { ntp: names.has(ntpCol), technographics: names.has(techCol) };
   } catch (err) {
-    flatCollectionsCache = { timestamp: now, ntp: false, technographics: false };
+    return { ntp: false, technographics: false };
   }
 
   return { ntp: flatCollectionsCache.ntp, technographics: flatCollectionsCache.technographics };
@@ -299,17 +329,17 @@ router.get('/ntp/metadata', cacheResponse(300), async (req, res) => {
   try {
     const startTime = Date.now();
     
-    const cacheKey = 'ntp-metadata';
+    const cacheKey = planCacheKey(req, 'ntp-metadata');
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { ntp: false };
     const useFlat = availability.ntp;
 
-    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'ntp_flat')) : dataCollection;
     const pipeline = useFlat ? [
       {
         $group: {
@@ -382,11 +412,11 @@ router.get('/ntp/metadata', cacheResponse(300), async (req, res) => {
 // ============================================
 router.get('/ntp/summary', cacheResponse(300), async (req, res) => {
   try {
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { ntp: false };
     const useFlat = availability.ntp;
 
-    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'ntp_flat')) : dataCollection;
 
     const baseProject = useFlat ? {
       $project: {
@@ -467,16 +497,16 @@ router.get('/ntp', cacheResponse(120), async (req, res) => {
       prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
     };
 
-    const cacheKey = `ntp-page-${page}-${limit}-${JSON.stringify(filters)}`;
+    const cacheKey = planCacheKey(req, `ntp-page-${page}-${limit}-${JSON.stringify(filters)}`);
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { ntp: false };
     const useFlat = availability.ntp;
-    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'ntp_flat')) : dataCollection;
 
     const matchStage = {};
     if (filters.companyName.length > 0) matchStage[useFlat ? 'companyName' : 'Company Name'] = { $in: filters.companyName };
@@ -554,14 +584,14 @@ router.get('/ntp/all', async (req, res) => {
       prediction: req.query.prediction ? (Array.isArray(req.query.prediction) ? req.query.prediction : [req.query.prediction]) : []
     };
 
-    const cacheKey = `ntp-all-${JSON.stringify(filters)}`;
+    const cacheKey = planCacheKey(req, `ntp-all-${JSON.stringify(filters)}`);
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { ntp: false };
     const useFlat = availability.ntp;
 
     const matchStage = {};
@@ -617,7 +647,7 @@ router.get('/ntp/all', async (req, res) => {
       }
     });
 
-    const collection = useFlat ? mongoose.connection.db.collection('ntp_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'ntp_flat')) : dataCollection;
     const results = await aggregateTimed(
       collection,
       pipeline,
@@ -652,8 +682,8 @@ router.get('/ntp/export', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="ntp-export.ndjson"');
     res.setHeader('Cache-Control', 'no-store');
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { ntp: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { ntp: false };
     const useFlat = availability.ntp;
 
     if (useFlat) {
@@ -663,7 +693,7 @@ router.get('/ntp/export', async (req, res) => {
       if (filters.technology.length > 0) query.technology = { $in: filters.technology };
       if (filters.prediction.length > 0) query.purchasePrediction = { $in: filters.prediction };
 
-      const cursor = mongoose.connection.db.collection('ntp_flat')
+      const cursor = mongoose.connection.db.collection(getCol(req, 'ntp_flat'))
         .find(query, {
           projection: {
             _id: 0,
@@ -730,18 +760,20 @@ router.get('/ntp/export', async (req, res) => {
 router.get('/technographics/metadata', cacheResponse(300), async (req, res) => {
   try {
     const startTime = Date.now();
+    console.log(`[tech/metadata] user=${req.user?.email} plan=${req.user?.plan}`);
     
-    const cacheKey = 'tech-metadata';
+    const cacheKey = planCacheKey(req, 'tech-metadata');
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { technographics: false };
     const useFlat = availability.technographics;
-
-    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const actualColName = useFlat ? getCol(req, 'technographics_flat') : getCol(req, 'data');
+    console.log(`[tech/metadata] useFlat=${useFlat} actualCollection=${actualColName}`);
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'technographics_flat')) : dataCollection;
     const pipeline = useFlat ? [
       {
         $group: {
@@ -819,11 +851,11 @@ router.get('/technographics/metadata', cacheResponse(300), async (req, res) => {
 // ====================================================
 router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
   try {
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { technographics: false };
     const useFlat = availability.technographics;
 
-    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'technographics_flat')) : dataCollection;
 
     const baseProject = useFlat ? {
       $project: {
@@ -954,14 +986,14 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
       revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
     };
 
-    const cacheKey = `tech-page-${page}-${limit}-${JSON.stringify(filters)}`;
+    const cacheKey = planCacheKey(req, `tech-page-${page}-${limit}-${JSON.stringify(filters)}`);
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { technographics: false };
     const useFlat = availability.technographics;
 
     const matchStage = {};
@@ -975,7 +1007,7 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
       if (filters.industry.length > 0) matchStage.industry = { $in: filters.industry };
     }
 
-    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'technographics_flat')) : dataCollection;
     const pipeline = useFlat ? [
       ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
       {
@@ -1092,14 +1124,14 @@ router.get('/technographics/all', async (req, res) => {
       revenue: req.query.revenue ? (Array.isArray(req.query.revenue) ? req.query.revenue : [req.query.revenue]) : []
     };
 
-    const cacheKey = `tech-all-${JSON.stringify(filters)}`;
+    const cacheKey = planCacheKey(req, `tech-all-${JSON.stringify(filters)}`);
     const cached = getCachedQuery(cacheKey);
     if (cached) {
       return res.json(cached);
     }
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { technographics: false };
     const useFlat = availability.technographics;
 
     const matchStage = {};
@@ -1168,7 +1200,7 @@ router.get('/technographics/all', async (req, res) => {
       }
     });
 
-    const collection = useFlat ? mongoose.connection.db.collection('technographics_flat') : dataCollection;
+    const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'technographics_flat')) : dataCollection;
     const results = await aggregateTimed(
       collection,
       pipeline,
@@ -1206,8 +1238,8 @@ router.get('/technographics/export', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="technographics-export.ndjson"');
     res.setHeader('Cache-Control', 'no-store');
 
-    const dataCollection = getDataCollection();
-    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability() : { technographics: false };
+    const dataCollection = getDataCollection(req);
+    const availability = USE_FLAT_COLLECTIONS ? await getFlatCollectionsAvailability(req) : { technographics: false };
     const useFlat = availability.technographics;
 
     if (useFlat) {
@@ -1220,7 +1252,7 @@ router.get('/technographics/export', async (req, res) => {
       if (filters.employeeSize.length > 0) query.employeeSize = { $in: filters.employeeSize };
       if (filters.revenue.length > 0) query.revenue = { $in: filters.revenue };
 
-      const cursor = mongoose.connection.db.collection('technographics_flat')
+      const cursor = mongoose.connection.db.collection(getCol(req, 'technographics_flat'))
         .find(query, {
           projection: {
             _id: 0,
@@ -1330,22 +1362,16 @@ router.get('/company-details', cacheResponse(300), async (req, res) => {
 // ====================================================
 // RENEWAL INTELLIGENCE ROUTES
 // ====================================================
-let renewalCache = null;
-let renewalCacheTime = 0;
 const RENEWAL_CACHE_DURATION = 10 * 60 * 1000;
-
-let renewalMetadataCache = null;
-let renewalMetadataCacheTime = 0;
 
 router.get('/renewal-intelligence/metadata', cacheResponse(300), async (req, res) => {
   try {
-    const now = Date.now();
+    const plan = req.user?.plan || 'free_trial';
+    const cacheKey = `renewal-metadata-${plan}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) return res.json(cached);
 
-    if (renewalMetadataCache && (now - renewalMetadataCacheTime) < RENEWAL_CACHE_DURATION) {
-      return res.json(renewalMetadataCache);
-    }
-
-    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+    const renewalCollection = mongoose.connection.db.collection(getCol(req, 'renewal_intel'));
     const [result] = await aggregateTimed(renewalCollection, [
       {
         $facet: {
@@ -1417,18 +1443,16 @@ router.get('/renewal-intelligence/metadata', cacheResponse(300), async (req, res
       quarterCounts: []
     };
 
-    renewalMetadataCache = response;
-    renewalMetadataCacheTime = now;
-
+    setCachedQuery(cacheKey, response);
     res.json(response);
   } catch (err) {
-
     res.status(500).send('Server Error');
   }
 });
 
 router.get('/renewal-intelligence', async (req, res) => {
   try {
+    const plan = req.user?.plan || 'free_trial';
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const skip = (page - 1) * limit;
@@ -1440,11 +1464,13 @@ router.get('/renewal-intelligence', async (req, res) => {
 
     const hasFilters = companyNames.length > 0 || categories.length > 0 || products.length > 0 || qtrs.length > 0;
 
-    if (page === 1 && !hasFilters && renewalCache && (Date.now() - renewalCacheTime) < RENEWAL_CACHE_DURATION) {
-      return res.json(renewalCache);
+    const renewalCacheKey = `renewal-data-${plan}-p${page}`;
+    if (page === 1 && !hasFilters) {
+      const cached = getCachedQuery(renewalCacheKey);
+      if (cached) return res.json(cached);
     }
 
-    const renewalCollection = mongoose.connection.db.collection('renewal_intel');
+    const renewalCollection = mongoose.connection.db.collection(getCol(req, 'renewal_intel'));
     const query = {};
     if (companyNames.length > 0) query['Company Name'] = { $in: companyNames };
     if (categories.length > 0) query['Category'] = { $in: categories };
@@ -1487,8 +1513,7 @@ router.get('/renewal-intelligence', async (req, res) => {
     };
 
     if (page === 1 && !hasFilters) {
-      renewalCache = response;
-      renewalCacheTime = Date.now();
+      setCachedQuery(renewalCacheKey, response);
     }
 
     res.json(response);
@@ -1533,19 +1558,14 @@ router.get('/buyergroups', cacheResponse(120), async (req, res) => {
   }
 });
 
-let intentCache = null;
-let intentCacheTime = 0;
-const INTENT_CACHE_DURATION = 10 * 60 * 1000;
-
 router.get('/intent', cacheResponse(120), async (req, res) => {
   try {
-    const now = Date.now();
+    const plan = req.user?.plan || 'free_trial';
+    const cacheKey = `intent-all-${plan}`;
+    const cached = getCachedQuery(cacheKey);
+    if (cached) return res.json(cached);
 
-    if (intentCache && (now - intentCacheTime) < INTENT_CACHE_DURATION) {
-      return res.json(intentCache);
-    }
-
-    const intentCollection = mongoose.connection.db.collection('intent_data');
+    const intentCollection = mongoose.connection.db.collection(getCol(req, 'intent_data'));
     const intentDocs = await findTimed(
       intentCollection,
       {},
@@ -1558,9 +1578,7 @@ router.get('/intent', cacheResponse(120), async (req, res) => {
       intentStatus: item['Intent Status']
     }));
 
-    intentCache = intentData;
-    intentCacheTime = now;
-
+    setCachedQuery(cacheKey, intentData);
     res.json(intentData);
   } catch (err) {
     res.status(500).json({ error: 'Server Error', message: err.message });

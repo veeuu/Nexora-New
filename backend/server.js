@@ -29,9 +29,9 @@ const authRouter = require('./routes/auth');
 const buyingGroupRouter = require('./routes/buyingGroup');
 
 app.use('/api', rateLimiter);
-app.use('/api', apiRouter);
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authRouter);        // auth routes FIRST - no token needed
 app.use('/api/buying-groups', buyingGroupRouter);
+app.use('/api', apiRouter);              // protected routes AFTER
 
 // Google Sheets email submission proxy + trial confirmation email
 app.post('/api/subscribe', async (req, res) => {
@@ -92,6 +92,10 @@ const startServer = async () => {
   try {
     await connectDB();
     await connectPG();
+
+    // Auto-migrate: add plan column if missing
+    const PgUser = require('./models/PgUser');
+    await PgUser.sync({ alter: true });
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Backend listening on port ${PORT}`);

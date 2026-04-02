@@ -1,7 +1,8 @@
 const { cacheGet, cacheSet } = require('../config/redis');
 
 function buildCacheKey(req) {
-  return `api:${req.originalUrl}`;
+  const plan = req.user?.plan || 'free_trial';
+  return `api:${plan}:${req.originalUrl}`;
 }
 
 function cacheResponse(ttlSeconds = 300) {

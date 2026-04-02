@@ -1,3 +1,4 @@
+﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -310,7 +311,7 @@ const NTP = () => {
         filters.category.forEach(cat => queryParams.append('category', cat));
       }
 
-      const response = await fetch(`/api/ntp/export?${queryParams.toString()}`);
+      const response = await apiFetch(`/api/ntp/export?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to export ntp');
       }
@@ -377,7 +378,7 @@ const NTP = () => {
       if (filters.category.length > 0) {
         filters.category.forEach(cat => queryParams.append('category', cat));
       }
-      const response = await fetch(`/api/ntp?${queryParams.toString()}`);
+      const response = await apiFetch(`/api/ntp?${queryParams.toString()}`);
       const data = await response.json();
 
       if (response.status === 503 && retries > 0) {
@@ -401,8 +402,8 @@ const NTP = () => {
         setError(null);
 
         const [metadataResponse, summaryResponse] = await Promise.all([
-          fetch('/api/ntp/metadata'),
-          fetch('/api/ntp/summary')
+          apiFetch('/api/ntp/metadata'),
+          apiFetch('/api/ntp/summary')
         ]);
 
         const metadataData = await metadataResponse.json();

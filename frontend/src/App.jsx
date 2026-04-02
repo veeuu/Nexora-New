@@ -94,6 +94,8 @@ function App() {
     setUsername('');
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('username');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userPlan');
   };
 
   return (

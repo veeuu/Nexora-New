@@ -1,3 +1,4 @@
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -26,7 +27,7 @@ const BuyingGroup = () => {
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch('/api/buying-groups/companies');
+                const response = await apiFetch('/api/buying-groups/companies');
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
@@ -44,7 +45,7 @@ const BuyingGroup = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/buying-groups/categories');
+                const response = await apiFetch('/api/buying-groups/categories');
                 const data = await response.json();
                 let fetchedCategories = data.categories || [];
 
@@ -63,7 +64,7 @@ const BuyingGroup = () => {
     useEffect(() => {
         const fetchPersonDetails = async () => {
             try {
-                const response = await fetch('/api/buying-groups/person-details');
+                const response = await apiFetch('/api/buying-groups/person-details');
                 if (response.ok) {
                     const data = await response.json();
                     setPersonDetailsData(data);

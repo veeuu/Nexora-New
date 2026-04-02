@@ -21,6 +21,15 @@ const PgUser = sequelize.define('User', {
     type: DataTypes.STRING(255),
     allowNull: false
   },
+  plan: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    defaultValue: 'free_trial'  // 'free_trial' | 'paid'
+  },
+  mustChangePassword: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false  // set true when provisioned via script
+  },
   isVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false

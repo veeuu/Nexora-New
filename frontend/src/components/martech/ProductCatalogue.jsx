@@ -1,3 +1,4 @@
+﻿import apiFetch from '../../utils/apiFetch';
 import React, { useState, useEffect } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils.jsx';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -63,7 +64,7 @@ const ProductCatalogue = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`/api/product-catalogue?year=${selectedYear}`);
+        const response = await apiFetch(`/api/product-catalogue?year=${selectedYear}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

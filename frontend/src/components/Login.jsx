@@ -11,6 +11,7 @@ const Login = ({ onLogin }) => {
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -42,7 +43,18 @@ const Login = ({ onLogin }) => {
       const data = await response.json();
 
       if (response.ok) {
-        onLogin(email);
+        // Store token for API calls
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userPlan', data.user?.plan || 'free_trial');
+
+        if (data.requiresPasswordChange) {
+          // First login - show change password screen
+          setShowChangePassword(true);
+          setPassword('');
+          setError('');
+        } else {
+          onLogin(email);
+        }
       } else {
         if (data.requiresVerification) {
           setShowOTPVerification(true);
@@ -54,6 +66,37 @@ const Login = ({ onLogin }) => {
     } catch (err) {
       setError('Error connecting to server');
 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    if (!newPassword || !confirmPassword) return setError('All fields are required');
+    if (newPassword.length < 6) return setError('New password must be at least 6 characters');
+    if (newPassword !== confirmPassword) return setError('Passwords do not match');
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, currentPassword: password, newPassword, confirmPassword })
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage('Password changed! Redirecting...');
+        setTimeout(() => onLogin(email), 1000);
+      } else {
+        setError(data.message || 'Failed to change password');
+      }
+    } catch (err) {
+      setError('Error connecting to server');
     } finally {
       setLoading(false);
     }
@@ -237,7 +280,9 @@ if (newPassword !== confirmPassword) {
   };
 
   const handleSubmit = (e) => {
-    if (showForgotPassword) {
+    if (showChangePassword) {
+      handleChangePassword(e);
+    } else if (showForgotPassword) {
       handleForgotPassword(e);
     } else if (showResetPassword) {
       handleResetPassword(e);
@@ -272,7 +317,90 @@ if (newPassword !== confirmPassword) {
           </div>
 
           {}
-          {showOTPVerification ? (
+          {showChangePassword ? (
+            <form onSubmit={handleSubmit} className="login-form signup-compact">
+              <h2 style={{ textAlign: 'center', marginBottom: '0.5rem', color: '#ffffff', fontSize: '1.3rem', fontWeight: 600 }}>Set Your Password</h2>
+              <p style={{ textAlign: 'center', color: '#a0a8c0', fontSize: '0.8rem', marginBottom: '1rem', lineHeight: 1.5 }}>
+                For security, please set a new password before accessing the dashboard.
+              </p>
+
+              <div className="form-group">
+                <label>Current Password (from email)</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter password from email"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                  <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      {showPassword ? <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></> : <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></>}
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>New Password</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                  <button type="button" className="toggle-password" onClick={() => setShowNewPassword(!showNewPassword)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      {showNewPassword ? <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></> : <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></>}
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Confirm New Password</label>
+                <div className="input-wrapper">
+                  <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                  <button type="button" className="toggle-password" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      {showConfirmPassword ? <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></> : <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></>}
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {successMessage && <div className="form-success">{successMessage}</div>}
+              {error && <div className="form-error">{error}</div>}
+
+              <button type="submit" className="btn-signin" disabled={loading}>
+                {loading ? 'Saving...' : 'Set Password & Continue →'}
+              </button>
+            </form>
+          ) : showOTPVerification ? (
             <form onSubmit={handleSubmit} className="login-form">
               <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#333' }}>Verify Your Email</h2>
               <p style={{ textAlign: 'center', color: '#666', fontSize: '0.875rem', marginBottom: '1.5rem' }}>

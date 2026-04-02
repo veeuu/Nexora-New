@@ -1,3 +1,4 @@
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect } from 'react';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/keywords.css';
@@ -12,7 +13,7 @@ const Keywords = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/keywords-data')
+    apiFetch('/api/keywords-data')
       .then(res => res.json())
       .then(data => {
         if (data.success && data.data) {

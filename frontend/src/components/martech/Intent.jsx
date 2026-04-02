@@ -1,3 +1,4 @@
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -164,7 +165,7 @@ const Intent = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/intent');
+        const response = await apiFetch('/api/intent');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
