@@ -31,24 +31,24 @@ const KPICard = ({ label, value, prefix = '', suffix = '', accentColor }) => (
 );
 
 const TECH_DATA = [
-  { name: 'AWS',          value: 820341, fill: '#1e40af' },
-  { name: 'Azure',        value: 763218, fill: '#1d4ed8' },
-  { name: 'GCP',          value: 681472, fill: '#2563eb' },
-  { name: 'ChatGPT',      value: 614893, fill: '#3b82f6' },
-  { name: 'Snowflake',    value: 553127, fill: '#60a5fa' },
-  { name: 'LLM',          value: 482641, fill: '#93c5fd' },
-  { name: 'Transformers', value: 431856, fill: '#0ea5e9' },
-  { name: 'BigQuery',     value: 392743, fill: '#38bdf8' },
-  { name: 'Salesforce',   value: 341298, fill: '#7dd3fc' },
-  { name: 'Databricks',   value: 284517, fill: '#bae6fd' },
+  { name: 'AWS',          value: 82100000, fill: '#1e40af' },
+  { name: 'Azure',        value: 76300000, fill: '#1d4ed8' },
+  { name: 'GCP',          value: 68400000, fill: '#2563eb' },
+  { name: 'ChatGPT',      value: 61200000, fill: '#3b82f6' },
+  { name: 'Snowflake',    value: 55300000, fill: '#60a5fa' },
+  { name: 'LLM',          value: 48200000, fill: '#93c5fd' },
+  { name: 'Transformers', value: 43100000, fill: '#0ea5e9' },
+  { name: 'BigQuery',     value: 39200000, fill: '#38bdf8' },
+  { name: 'Salesforce',   value: 34100000, fill: '#7dd3fc' },
+  { name: 'Databricks',   value: 28400000, fill: '#bae6fd' },
 ];
 
 const INDUSTRY_DATA = [
-  { name: 'IT & Services',       value: 1157234 },
-  { name: 'Financial Services',  value: 530418  },
-  { name: 'Healthcare',          value: 337621  },
-  { name: 'Retail',              value: 241083  },
-  { name: 'Manufacturing',       value: 144672  },
+  { name: 'IT & Services',       value: 283200000 },
+  { name: 'Financial Services',  value: 129800000 },
+  { name: 'Healthcare',          value: 82600000  },
+  { name: 'Retail',              value: 59000000  },
+  { name: 'Manufacturing',       value: 35400000  },
 ];
 const INDUSTRY_COLORS = ['#1e40af', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'];
 
@@ -91,10 +91,10 @@ const TechnographicsDashboard = ({ inline = false }) => {
         <div className="tg-body">
           {/* KPI Cards */}
           <div className="tg-kpi-grid">
-            <KPICard label="Companies Tracked"     value="2.4M"   accentColor="#1e40af" />
-            <KPICard label="Technologies Detected"  value="6.4M"   accentColor="#2563eb" />
+            <KPICard label="Companies Tracked"     value="590M+"  accentColor="#1e40af" />
+            <KPICard label="Technologies Detected"  value="480M+"  accentColor="#2563eb" />
             <KPICard label="Avg. Revenue Band"      value="$47M"   accentColor="#3b82f6" />
-            <KPICard label="New Detections Q1 '26"  value="1.3M"   accentColor="#60a5fa" />
+            <KPICard label="New Detections Q1 '26"  value="137M+"  accentColor="#60a5fa" />
           </div>
 
           {/* Row 1: Tech Adoption Bar + Industry Donut */}

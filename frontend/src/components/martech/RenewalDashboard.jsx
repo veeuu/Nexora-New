@@ -325,24 +325,24 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
   // Fake metadata for KPIs and charts
   useEffect(() => {
     const kpis = [
-      { title: 'Total Renewals Tracked', value: '3.4M',  accentColor: '#3b82f6' },
-      { title: 'Due This Quarter (Q2)', value: '1.3M',  accentColor: '#f59e0b' },
-      { title: 'High-Urgency Renewals', value: '343.8K', accentColor: '#ef4444' }
+      { title: 'Total Renewals Tracked', value: '530M+',  accentColor: '#3b82f6' },
+      { title: 'Due This Quarter (Q2)', value: '134M+',  accentColor: '#f59e0b' },
+      { title: 'High-Urgency Renewals', value: '53M+',   accentColor: '#ef4444' }
     ];
     setKpiData(kpis);
 
     const products = [
-      { name: 'AI/ML',     value: 1328417, percentage: '38.7', color: '#0ea5e9' },
-      { name: 'CRM',       value: 1063284, percentage: '31.0', color: '#3b82f6' },
-      { name: 'Database',  value: 1039583, percentage: '30.3', color: '#1e40af' },
+      { name: 'AI/ML',     value: 205100000, percentage: '38.7', color: '#0ea5e9' },
+      { name: 'CRM',       value: 164300000, percentage: '31.0', color: '#3b82f6' },
+      { name: 'Database',  value: 160600000, percentage: '30.3', color: '#1e40af' },
     ];
     setProductData(products);
 
     setUrgencyData([
-      { label: '< 1 Month',   value: 343817,  color: '#0c4a6e' },
-      { label: '1–3 Months',  value: 858412,  color: '#1e3a8a' },
-      { label: '3–6 Months',  value: 1201743, color: '#3b82f6' },
-      { label: '6–12 Months', value: 1030128, color: '#0ea5e9' }
+      { label: '< 1 Month',   value: 53000000,  color: '#0c4a6e' },
+      { label: '1–3 Months',  value: 132500000, color: '#1e3a8a' },
+      { label: '3–6 Months',  value: 185500000, color: '#3b82f6' },
+      { label: '6–12 Months', value: 159000000, color: '#0ea5e9' }
     ]);
 
     setTimelineData([

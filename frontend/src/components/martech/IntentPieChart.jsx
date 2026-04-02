@@ -124,12 +124,12 @@ const IntentPieChart = ({ data }) => {
 
   // KPI values — hardcoded in millions
   const getCount = (name) => merged.find(d => d.name === name)?.value || 0;
-  const highCount   = '1.2M';
-  const medCount    = '2.1M';
-  const lowCount    = '983.1K';
-  const hmCount     = '872.6K';
-  const gfCount     = '563.2K';
-  const totalAllDisplay = '5.8M';
+  const highCount   = '113M+';
+  const medCount    = '196M+';
+  const lowCount    = '89M+';
+  const hmCount     = '79M+';
+  const gfCount     = '51M+';
+  const totalAllDisplay = '530M+';
 
   const highPct = totalAll ? ((highCount / totalAll) * 100).toFixed(1) : 0;
   const medPct  = totalAll ? ((medCount  / totalAll) * 100).toFixed(1) : 0;

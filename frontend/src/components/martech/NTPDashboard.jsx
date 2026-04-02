@@ -34,19 +34,19 @@ const rankBadge = (i, total) => {
   return 'Medium';
 };
 
-// All data based on total ~7.5M companies
+// All data based on total ~530M companies
 const catPieData = [
-  { name: 'Cloud',    value: 2983417 },
-  { name: 'AI/ML',   value: 672341  },
-  { name: 'Database', value: 1341892 },
-  { name: 'CRM',     value: 2461738 },
+  { name: 'Cloud',    value: 212000000 },
+  { name: 'AI/ML',   value: 47700000  },
+  { name: 'Database', value: 95400000 },
+  { name: 'CRM',     value: 174900000 },
 ];
 const catPieColors = ['#1a56b0', '#3b82f6', '#60a5fa', '#93c5fd'];
 
 const predPieData = [
-  { name: 'High',   value: 1492836 },
-  { name: 'Medium', value: 3731247 },
-  { name: 'Low',    value: 2237305 },
+  { name: 'High',   value: 106000000 },
+  { name: 'Medium', value: 265000000 },
+  { name: 'Low',    value: 159000000 },
 ];
 
 const radarData = [
@@ -113,10 +113,10 @@ export default function NTPDashboard() {
       {/* KPI Cards */}
       <div className="ntpd-kpi-grid">
         {[
-          { label: 'Total Leads',    val: '7.4M',  sub: 'companies tracked',  cls: '' },
+          { label: 'Total Leads',    val: '530M+', sub: 'companies tracked',  cls: '' },
           { label: 'Avg Propensity', val: `${avgPropensity}%`, sub: 'across all signals', cls: '' },
-          { label: 'High Priority',  val: '1.4M',  sub: 'immediate outreach', cls: 'ntpd-green' },
-          { label: 'Top Category',   val: 'Cloud', sub: '2.9M companies',     cls: 'ntpd-blue' },
+          { label: 'High Priority',  val: '106M+', sub: 'immediate outreach', cls: 'ntpd-green' },
+          { label: 'Top Category',   val: 'Cloud', sub: '212M companies',     cls: 'ntpd-blue' },
         ].map((k, i) => (
           <div key={k.label} className="ntpd-kpi ntpd-kpi-anim" style={{ animationDelay: `${i * 80}ms` }}>
             <div className="ntpd-kpi-label">{k.label}</div>
