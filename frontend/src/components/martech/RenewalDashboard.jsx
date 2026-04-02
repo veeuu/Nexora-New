@@ -129,7 +129,7 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
     <div className="renewal-chart-container">
       <div className="renewal-chart-header">
         <h3>Product Breakdown</h3>
-        <p>Share of renewals by product</p>
+        {/* <p>Share of renewals by product</p> */}
       </div>
       <div className="renewal-donut-chart-wrapper">
         <svg viewBox="0 0 200 200" className="renewal-donut-chart">
