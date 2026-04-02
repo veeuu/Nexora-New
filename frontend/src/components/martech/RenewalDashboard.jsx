@@ -143,7 +143,7 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
           ))}
           <circle cx="100" cy="100" r="50" fill={isDarkMode ? "#0f172a" : "#ffffff"} />
           <text x="100" y="100" textAnchor="middle" dy="0.3em" className="renewal-donut-center-text">
-            {total}
+            {formatM(total)}
           </text>
           <text x="100" y="115" textAnchor="middle" className="renewal-donut-center-label">
             renewals
@@ -155,7 +155,7 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
               <div className="renewal-legend-color" style={{ backgroundColor: item.color }}></div>
               <div className="renewal-legend-text">
                 <span className="renewal-legend-product">{item.name}</span>
-                <span className="renewal-legend-stats">{item.percentage}% · {item.value} cos</span>
+                <span className="renewal-legend-stats">{item.percentage}% · {formatM(item.value)}</span>
               </div>
             </div>
           ))}
@@ -166,6 +166,8 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
 };
 
 // Urgency Funnel Chart
+const formatM = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}K` : v;
+
 const UrgencyFunnelChart = ({ data }) => {
   const maxValue = Math.max(...data.map(d => d.value));
 
@@ -189,7 +191,7 @@ const UrgencyFunnelChart = ({ data }) => {
                   animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
                 }}
               >
-                <span className="renewal-funnel-value">{item.value}</span>
+                <span className="renewal-funnel-value">{formatM(item.value)}</span>
               </div>
             </div>
           </div>
@@ -330,17 +332,17 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     setKpiData(kpis);
 
     const products = [
-      { name: 'AI/ML', value: 101, percentage: '38.7', color: '#0ea5e9' },
-      { name: 'CRM', value: 81, percentage: '31.0', color: '#3b82f6' },
-      { name: 'Database', value: 79, percentage: '30.3', color: '#1e40af' },
+      { name: 'AI/ML',     value: 1328417, percentage: '38.7', color: '#0ea5e9' },
+      { name: 'CRM',       value: 1063284, percentage: '31.0', color: '#3b82f6' },
+      { name: 'Database',  value: 1039583, percentage: '30.3', color: '#1e40af' },
     ];
     setProductData(products);
 
     setUrgencyData([
-      { label: '< 1 Month', value: 3433, color: '#0c4a6e' },
-      { label: '1–3 Months', value: 8584, color: '#1e3a8a' },
-      { label: '3–6 Months', value: 12017, color: '#3b82f6' },
-      { label: '6–12 Months', value: 10301, color: '#0ea5e9' }
+      { label: '< 1 Month',   value: 343817,  color: '#0c4a6e' },
+      { label: '1–3 Months',  value: 858412,  color: '#1e3a8a' },
+      { label: '3–6 Months',  value: 1201743, color: '#3b82f6' },
+      { label: '6–12 Months', value: 1030128, color: '#0ea5e9' }
     ]);
 
     setTimelineData([

@@ -62,12 +62,14 @@ const avgPropensity = Math.round(
   leads.flatMap((l) => l.techs).length
 );
 
+const formatM = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}K` : v;
+
 const CustomPieTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div className="ntpd-tooltip">
         <div className="ntpd-tooltip-label">{payload[0].name}</div>
-        <div className="ntpd-tooltip-value">{payload[0].value.toLocaleString()} companies</div>
+        <div className="ntpd-tooltip-value">{formatM(payload[0].value)} companies</div>
       </div>
     );
   }

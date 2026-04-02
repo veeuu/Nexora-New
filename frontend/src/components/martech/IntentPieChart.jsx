@@ -49,12 +49,14 @@ const AnimatedCounter = ({ end, duration = 1500 }) => {
   return <span>{count.toLocaleString()}</span>;
 };
 
+const formatM = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}K` : v;
+
 const DonutTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="idb-tooltip">
       <span style={{ color: getColor(payload[0].name), fontWeight: 600 }}>{payload[0].name}</span>
-      <span>{payload[0].value} companies ({payload[0].payload.pct}%)</span>
+      <span>{formatM(payload[0].value)} companies ({payload[0].payload.pct}%)</span>
     </div>
   );
 };
@@ -64,7 +66,7 @@ const BarTooltip = ({ active, payload, label }) => {
   return (
     <div className="idb-tooltip">
       <span style={{ fontWeight: 600 }}>{label}</span>
-      <span>{payload[0].value} companies</span>
+      <span>{formatM(payload[0].value)} companies</span>
     </div>
   );
 };
@@ -268,6 +270,7 @@ const IntentPieChart = ({ data }) => {
                 tick={{ fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
+                tickFormatter={formatM}
                 label={{ value: 'Company Count', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#94a3b8' }}
               />
               <YAxis

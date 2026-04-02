@@ -31,24 +31,24 @@ const KPICard = ({ label, value, prefix = '', suffix = '', accentColor }) => (
 );
 
 const TECH_DATA = [
-  { name: 'AWS',          value: 82, fill: '#1e40af' },
-  { name: 'Azure',        value: 76, fill: '#1d4ed8' },
-  { name: 'GCP',          value: 68, fill: '#2563eb' },
-  { name: 'ChatGPT',      value: 61, fill: '#3b82f6' },
-  { name: 'Snowflake',    value: 55, fill: '#60a5fa' },
-  { name: 'LLM',          value: 48, fill: '#93c5fd' },
-  { name: 'Transformers', value: 43, fill: '#0ea5e9' },
-  { name: 'BigQuery',     value: 39, fill: '#38bdf8' },
-  { name: 'Salesforce',   value: 34, fill: '#7dd3fc' },
-  { name: 'Databricks',   value: 28, fill: '#bae6fd' },
+  { name: 'AWS',          value: 820341, fill: '#1e40af' },
+  { name: 'Azure',        value: 763218, fill: '#1d4ed8' },
+  { name: 'GCP',          value: 681472, fill: '#2563eb' },
+  { name: 'ChatGPT',      value: 614893, fill: '#3b82f6' },
+  { name: 'Snowflake',    value: 553127, fill: '#60a5fa' },
+  { name: 'LLM',          value: 482641, fill: '#93c5fd' },
+  { name: 'Transformers', value: 431856, fill: '#0ea5e9' },
+  { name: 'BigQuery',     value: 392743, fill: '#38bdf8' },
+  { name: 'Salesforce',   value: 341298, fill: '#7dd3fc' },
+  { name: 'Databricks',   value: 284517, fill: '#bae6fd' },
 ];
 
 const INDUSTRY_DATA = [
-  { name: 'IT & Services',       value: 48 },
-  { name: 'Financial Services',  value: 22 },
-  { name: 'Healthcare',          value: 14 },
-  { name: 'Retail',              value: 10 },
-  { name: 'Manufacturing',       value: 6  },
+  { name: 'IT & Services',       value: 1157234 },
+  { name: 'Financial Services',  value: 530418  },
+  { name: 'Healthcare',          value: 337621  },
+  { name: 'Retail',              value: 241083  },
+  { name: 'Manufacturing',       value: 144672  },
 ];
 const INDUSTRY_COLORS = ['#1e40af', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'];
 
@@ -60,6 +60,8 @@ const tooltipStyle = {
   fontSize: 12,
   boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
 };
+
+const formatM = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}K` : v;
 
 const TechnographicsDashboard = ({ inline = false }) => {
   const [animDot, setAnimDot] = useState(true);
@@ -106,8 +108,8 @@ const TechnographicsDashboard = ({ inline = false }) => {
                 <BarChart data={TECH_DATA} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 11 }} />
-                  <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={formatM} />
+                  <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(v) => [formatM(v), 'Companies']} />
                   <Bar dataKey="value" radius={[5, 5, 0, 0]}>
                     {TECH_DATA.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                   </Bar>
