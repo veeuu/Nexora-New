@@ -24,6 +24,15 @@ const BuyingGroup = () => {
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
+    // Cleanup blob URLs on unmount
+    useEffect(() => {
+        return () => {
+            if (orgChartUrl && orgChartUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(orgChartUrl);
+            }
+        };
+    }, [orgChartUrl]);
+
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -79,21 +88,41 @@ const BuyingGroup = () => {
     useEffect(() => {
         if (!selectedCompany) return;
 
+        // Revoke previous blob URL to avoid memory leaks
+        if (orgChartUrl && orgChartUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(orgChartUrl);
+        }
+
         const fetchOrgChart = async () => {
             setLoading(true);
             setError('');
+            setOrgChartUrl('');
             try {
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const chartUrl = `/api/buying-groups/${encodedCompanyName}/org-chart`;
-                setOrgChartUrl(chartUrl);
-                setOrgChartHtml('');
+                const response = await apiFetch(`/api/buying-groups/${encodedCompanyName}/org-chart`);
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to load org chart');
+                }
+
+                if (result.s3Url) {
+                    // S3 URLs are public — load directly in iframe
+                    setOrgChartUrl(result.s3Url);
+                } else if (result.html) {
+                    // Fallback: create a blob URL from the HTML string
+                    const blob = new Blob([result.html], { type: 'text/html' });
+                    setOrgChartUrl(URL.createObjectURL(blob));
+                } else {
+                    throw new Error('No chart data returned');
+                }
             } catch (err) {
                 setError('Failed to load org chart. Please try again.');
                 setOrgChartUrl('');
             } finally {
                 setTimeout(() => {
                     setLoading(false);
-                }, 2000);
+                }, 500);
             }
         };
 

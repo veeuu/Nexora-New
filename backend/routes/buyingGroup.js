@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { generateOrgChartHTML } = require('../org_chart');
 const { cacheResponse } = require('../middleware/redisCache');
 const authMiddleware = require('../middleware/authMiddleware');
-const { uploadOrgChartToS3 } = require('../config/s3');
+const { uploadOrgChartToS3, getSignedOrgChartUrl, orgChartExistsInS3 } = require('../config/s3');
 
 const MONGO_MAX_TIME_MS = Number(process.env.MONGO_MAX_TIME_MS || 1000);
 
@@ -81,7 +81,13 @@ router.get('/person-details', cacheResponse(300), async (req, res) => {
   try {
     const col = getBGCollection(req);
     const buyingGroups = await col.find({}, {
-      projection: { companyName: 1, employees: 1, _id: 0 }
+      projection: {
+        companyName: 1, employees: 1, _id: 0,
+        revenue: 1, companyPhone: 1,
+        employeeSize: 1, employeeCount: 1,
+        country: 1, industry: 1, domain: 1,
+        website: 1, linkedinProfile: 1, location: 1
+      }
     }).maxTimeMS(MONGO_MAX_TIME_MS).toArray();
 
     const companiesMap = {};
@@ -93,10 +99,20 @@ router.get('/person-details', cacheResponse(300), async (req, res) => {
           id: emp.uniqueId || '',
           name: emp.name || 'N/A',
           designation: emp.role || emp.designation || 'N/A',
+          fullRole: emp.fullRole || emp.role || emp.designation || 'N/A',
           email: emp.email || 'N/A',
           linkedin: emp.linkedin || '',
+          mobileDID: emp.mobileDID || emp.mobile || emp.did || '',
           reportsTo: emp.reportsTo || 'N/A',
-          category: emp.category || 'N/A'
+          category: emp.category || 'N/A',
+          // Company-level fields on every person entry so frontend can access via [0]
+          revenue: bg.revenue || '',
+          companyPhone: bg.companyPhone || '',
+          employeeSize: bg.employeeSize || bg.employeeCount || '',
+          country: bg.country || bg.location || '',
+          industry: bg.industry || '',
+          domain: bg.domain || bg.website || '',
+          linkedinProfile: bg.linkedinProfile || ''
         });
       });
     });
@@ -117,8 +133,19 @@ router.get('/:companyName/org-chart', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Company not found' });
     }
 
-    if (buyingGroup.orgChart?.s3Url) {
-      return res.json({ success: true, s3Url: buyingGroup.orgChart.s3Url, fromCache: true });
+    // If already in S3, return a fresh signed URL (bucket is private)
+    if (buyingGroup.orgChart?.s3Key) {
+      try {
+        const exists = await orgChartExistsInS3(buyingGroup.orgChart.s3Key);
+        if (exists) {
+          const signedUrl = await getSignedOrgChartUrl(buyingGroup.orgChart.s3Key);
+          return res.json({ success: true, s3Url: signedUrl, fromCache: true });
+        }
+        // File no longer exists in S3 — clear the stale cache and regenerate
+        await col.updateOne({ companyName: decodedCompanyName }, { $unset: { orgChart: '' } });
+      } catch (_) {
+        // fall through to regenerate
+      }
     }
 
     const employeeData = (buyingGroup.employees || []).map(emp => {
@@ -129,9 +156,10 @@ router.get('/:companyName/org-chart', async (req, res) => {
       return {
         'Unique ID': emp.uniqueId || '',
         'Company Name': buyingGroup.companyName,
-        'Hierarchy': hierarchyValue,
+        'hierarchy': hierarchyValue,
         'Name': emp.name,
         'Role': emp.designation || emp.role || 'N/A',
+        'Reports To': emp.reportsTo || '',
         'Category': emp.category || '',
         'Linkedin': emp.linkedin || '',
         'email': emp.email || '',
@@ -150,7 +178,8 @@ router.get('/:companyName/org-chart', async (req, res) => {
         { companyName: decodedCompanyName },
         { $set: { orgChart: { s3Key: s3Result.s3Key, s3Url: s3Result.s3Url, generatedAt: new Date(), fileSize: s3Result.fileSize } } }
       );
-      res.json({ success: true, s3Url: s3Result.s3Url, fromCache: false });
+      const signedUrl = await getSignedOrgChartUrl(s3Result.s3Key);
+      res.json({ success: true, s3Url: signedUrl, fromCache: false });
     } catch (s3Err) {
       res.json({ success: true, html: htmlContent, fromCache: false });
     }
