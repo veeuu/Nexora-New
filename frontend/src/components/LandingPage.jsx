@@ -74,7 +74,7 @@ const LandingPage = () => {
     },
     {
       id: 5,
-      title: 'Next Tech Purchase (NTP®)',
+      title: 'Next Tech Purchase® - NTP®',
       description: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals.',
       image: ntpSvg
     }
