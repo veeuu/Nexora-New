@@ -13,6 +13,8 @@ import '../../styles/home.css';
 
 console.log('[Home] NTPDashboard imported:', NTPDashboard);
 
+const YOUTUBE_VIDEO_ID = 'A3BCRSjS0C0';
+
 const Home = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -113,14 +115,38 @@ const Home = () => {
         ) : (
           <>
             {activeView === 'summary' && (
-              <div className="home-stats-grid">
-                <AnimatedStatCard number="600M+" label="Total Companies"      cardClass="home-stat-card-teal"   numberClass="home-stat-number-teal"   labelClass="home-stat-label-teal"   maxValue={100000} />
-                <AnimatedStatCard number="590M+" label="Technographics"       cardClass="home-stat-card-orange" numberClass="home-stat-number-orange" labelClass="home-stat-label-orange" maxValue={100000} />
-                <AnimatedStatCard number="530M+" label="Renewal Intelligence" cardClass="home-stat-card-pink"   numberClass="home-stat-number-pink"   labelClass="home-stat-label-pink"   maxValue={100000} />
-                <AnimatedStatCard number="530M+" label="Intent"               cardClass="home-stat-card-purple" numberClass="home-stat-number-purple" labelClass="home-stat-label-purple" maxValue={100000} />
-                <AnimatedStatCard number="430M+" label="Buying Group"         cardClass="home-stat-card-yellow" numberClass="home-stat-number-yellow" labelClass="home-stat-label-yellow" maxValue={100000} />
-                <AnimatedStatCard number="530M+" label="Next Tech Purchase®"  cardClass="home-stat-card-blue"   numberClass="home-stat-number-blue"   labelClass="home-stat-label-blue"   maxValue={100000} />
-              </div>
+              <>
+                <div className="home-stats-grid">
+                  <AnimatedStatCard number="600M+" label="Total Companies"      cardClass="home-stat-card-teal"   numberClass="home-stat-number-teal"   labelClass="home-stat-label-teal"   maxValue={100000} />
+                  <AnimatedStatCard number="590M+" label="Technographics"       cardClass="home-stat-card-orange" numberClass="home-stat-number-orange" labelClass="home-stat-label-orange" maxValue={100000} />
+                  <AnimatedStatCard number="530M+" label="Renewal Intelligence" cardClass="home-stat-card-pink"   numberClass="home-stat-number-pink"   labelClass="home-stat-label-pink"   maxValue={100000} />
+                  <AnimatedStatCard number="530M+" label="Intent"               cardClass="home-stat-card-purple" numberClass="home-stat-number-purple" labelClass="home-stat-label-purple" maxValue={100000} />
+                  <AnimatedStatCard number="430M+" label="Buying Group"         cardClass="home-stat-card-yellow" numberClass="home-stat-number-yellow" labelClass="home-stat-label-yellow" maxValue={100000} />
+                  <AnimatedStatCard number="530M+" label="Next Tech Purchase®"  cardClass="home-stat-card-blue"   numberClass="home-stat-number-blue"   labelClass="home-stat-label-blue"   maxValue={100000} />
+                </div>
+
+                {/* Inline Video Player — always visible */}
+                <div className="home-yt-row">
+                  <div className="home-yt-tagline">
+                    <h2 className="home-yt-tagline-heading">See Nexora in action</h2>
+                    <div className="home-yt-tagline-words">
+                      <span>Identify</span>
+                      <span>Prioritize</span>
+                      <span>Convert</span>
+                    </div>
+                  </div>
+                  <div className="home-yt-inline">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}`}
+                      title="Quick Platform Insights"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             {activeView === 'intent' && (
