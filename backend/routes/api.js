@@ -13,7 +13,7 @@ const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_char
 
 router.use(cors());
 
-// ─── Plan-aware collection resolver ──────────────────────────────────────────
+// --- Plan-aware collection resolver ------------------------------------------
 // free_trial users get *_free collections, paid users get full collections
 const PLAN_COLLECTIONS = {
   free_trial: {
@@ -44,7 +44,7 @@ const getCol = (req, key) => {
 // Apply auth to all data API routes (login/signup handled separately in auth.js)
 router.use(authMiddleware);
 
-// ─── NTP ROUTES
+// --- NTP ROUTES
 
 let statsCache = null;
 let statsCacheTime = 0;
@@ -162,6 +162,36 @@ const QUERY_CACHE_MAX = 200;
 const MONGO_MAX_TIME_MS = Number(process.env.MONGO_MAX_TIME_MS || 1000);
 const SLOW_QUERY_MS = Number(process.env.SLOW_QUERY_MS || 200);
 const USE_FLAT_COLLECTIONS = process.env.USE_FLAT_COLLECTIONS !== 'false';
+
+// Employee size range definitions (must match frontend employeeSizeRanges labels)
+const EMPLOYEE_SIZE_RANGES = [
+  { label: '1-10',        min: 1,     max: 10 },
+  { label: '11-50',       min: 11,    max: 50 },
+  { label: '51-200',      min: 51,    max: 200 },
+  { label: '201-500',     min: 201,   max: 500 },
+  { label: '501-1000',    min: 501,   max: 1000 },
+  { label: '1000-5000',   min: 1000,  max: 5000 },
+  { label: '5000-10,000+', min: 5000,  max: Infinity }
+];
+
+// Parse a raw employee size string (e.g. "1,001-5,000", "10,001+") to its lower bound number
+function parseEmployeeSizeLower(raw) {
+  if (!raw) return null;
+  const s = String(raw).replace(/,/g, '').trim();
+  const plusMatch = s.match(/^(\d+)\+?$/);
+  if (plusMatch) return parseInt(plusMatch[1]);
+  const rangeMatch = s.match(/^(\d+)[–\-](\d+)$/);
+  if (rangeMatch) return parseInt(rangeMatch[1]);
+  return null;
+}
+
+// Map a raw employeeSize string to a frontend range label
+function normalizeEmployeeSizeLabel(raw) {
+  const num = parseEmployeeSizeLower(raw);
+  if (num === null) return null;
+  const range = EMPLOYEE_SIZE_RANGES.find(r => num >= r.min && num <= r.max);
+  return range ? range.label : null;
+}
 
 const FILE_CACHE_DURATION = 5 * 60 * 1000;
 const FILE_CACHE_MAX = 50;
@@ -886,10 +916,11 @@ router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
       }
     };
 
+    // Count distinct companies per field value (not total rows, since flat collection has one row per company+technology)
     const countFacet = (field) => ([
       { $match: { [field]: { $exists: true, $ne: null, $ne: '' } } },
-      { $group: { _id: `$${field}`, value: { $sum: 1 } } },
-      { $project: { _id: 0, label: '$_id', value: 1 } },
+      { $group: { _id: `$${field}`, companies: { $addToSet: '$companyName' } } },
+      { $project: { _id: 0, label: '$_id', value: { $size: '$companies' } } },
       { $sort: { label: 1 } }
     ]);
 
@@ -935,24 +966,72 @@ router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
       regionCategoryCounts[region][category] = item.value;
     });
 
+    // Normalize raw employee size strings (e.g. "1,001-5,000", "10,001+") into
+    // the range labels the frontend uses (e.g. "1000-5000", "5000-10,000+")
+    const employeeSizeRanges = [
+      { label: '1-10',       min: 1,     max: 10 },
+      { label: '11-50',      min: 11,    max: 50 },
+      { label: '51-200',     min: 51,    max: 200 },
+      { label: '201-500',    min: 201,   max: 500 },
+      { label: '501-1000',   min: 501,   max: 1000 },
+      { label: '1000-5000',  min: 1000,  max: 5000 },
+      { label: '5000-10,000+',min: 5000,  max: Infinity }
+    ];
+
+    const parseEmployeeNum = (raw) => {
+      if (!raw) return null;
+      const s = String(raw).replace(/,/g, '').trim();
+      // Handle "10001+" style
+      const plusMatch = s.match(/^(\d+)\+?$/);
+      if (plusMatch) return parseInt(plusMatch[1]);
+      // Handle "1001-5000" style
+      const rangeMatch = s.match(/^(\d+)[–\-](\d+)$/);
+      if (rangeMatch) return parseInt(rangeMatch[1]); // use lower bound
+      return null;
+    };
+
+    const normalizedEmployeeSizes = {};
+    (result?.employeeSizes || []).forEach(({ label: rawLabel, value }) => {
+      const num = parseEmployeeNum(rawLabel);
+      if (num === null) return;
+      const range = employeeSizeRanges.find(r => num >= r.min && num <= r.max);
+      if (!range) return;
+      normalizedEmployeeSizes[range.label] = (normalizedEmployeeSizes[range.label] || 0) + value;
+    });
+    const employeeSizesNormalized = Object.entries(normalizedEmployeeSizes)
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => {
+        const ai = employeeSizeRanges.findIndex(r => r.label === a.label);
+        const bi = employeeSizeRanges.findIndex(r => r.label === b.label);
+        return ai - bi;
+      });
+
     res.json({
       totalRecords: result?.total?.[0]?.count || 0,
       regions: result?.regions || [],
       industries: result?.industries || [],
       categories: result?.categories || [],
-      employeeSizes: result?.employeeSizes || [],
+      employeeSizes: employeeSizesNormalized,
       revenues: result?.revenues || [],
       technologies: result?.technologies || [],
       companies: (result?.companies || []).map(c => c._id),
       regionCategoryCounts
     });
   } catch (err) {
-    res.status(500).json({ error: 'Server Error', message: err.message });
+    console.error('[technographics/summary] error:', err.message);
+    res.json({
+      totalRecords: 0,
+      regions: [],
+      industries: [],
+      categories: [],
+      employeeSizes: [],
+      revenues: [],
+      technologies: [],
+      companies: [],
+      regionCategoryCounts: {}
+    });
   }
 });
-
-// ====================================================
-// TECHNOGRAPHICS FILTER OPTIONS (Category -> Technology)
 // ====================================================
 router.get('/technographics/filter-options', cacheResponse(300), async (req, res) => {
   try {
@@ -1007,9 +1086,51 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
       if (filters.industry.length > 0) matchStage.industry = { $in: filters.industry };
     }
 
+    // For flat collection: build a $addFields + $match to filter by normalized employee size range labels
+    // Build employee size filter stages (works for both flat and non-flat paths)
+    // Parses raw strings like "5,001-10,000" or "10,001+" into normalized range labels
+    const buildEmpSizeStages = (empField) => {
+      if (filters.employeeSize.length === 0) return [];
+      const branches = EMPLOYEE_SIZE_RANGES.map(r => ({
+        case: { $and: [{ $gte: ['$$n', r.min] }, { $lte: ['$$n', r.max === Infinity ? 999999999 : r.max] }] },
+        then: r.label
+      }));
+      return [
+        {
+          $addFields: {
+            _empLabel: {
+              $let: {
+                vars: {
+                  n: {
+                    $convert: {
+                      input: {
+                        $replaceAll: {
+                          input: {
+                            $arrayElemAt: [
+                              { $split: [{ $replaceAll: { input: { $ifNull: [empField, '0'] }, find: ',', replacement: '' } }, '-'] },
+                              0
+                            ]
+                          },
+                          find: '+', replacement: ''
+                        }
+                      },
+                      to: 'int', onError: 0, onNull: 0
+                    }
+                  }
+                },
+                in: { $switch: { branches, default: 'N/A' } }
+              }
+            }
+          }
+        },
+        { $match: { _empLabel: { $in: filters.employeeSize } } }
+      ];
+    };
+
     const collection = useFlat ? mongoose.connection.db.collection(getCol(req, 'technographics_flat')) : dataCollection;
     const pipeline = useFlat ? [
       ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
+      ...buildEmpSizeStages('$employeeSize'),
       {
         $project: {
           _id: 0,
@@ -1029,13 +1150,8 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
       },
       {
         $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: 'count' }
-          ]
+          data: [{ $skip: skip }, { $limit: limit }],
+          total: [{ $count: 'count' }]
         }
       }
     ] : [
@@ -1072,15 +1188,11 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
           renewalDate: { $ifNull: ['$Technographics.Renewal Date', 'N/A'] }
         }
       },
+      ...buildEmpSizeStages('$employeeSize'),
       {
         $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: 'count' }
-          ]
+          data: [{ $skip: skip }, { $limit: limit }],
+          total: [{ $count: 'count' }]
         }
       }
     ];
@@ -1144,7 +1256,6 @@ router.get('/technographics/all', async (req, res) => {
       if (filters.technology.length > 0) matchStage.technology = { $in: filters.technology };
       if (filters.category.length > 0) matchStage.category = { $in: filters.category };
       if (filters.industry.length > 0) matchStage.industry = { $in: filters.industry };
-      if (filters.employeeSize.length > 0) matchStage.employeeSize = { $in: filters.employeeSize };
       if (filters.revenue.length > 0) matchStage.revenue = { $in: filters.revenue };
     }
 
@@ -1157,6 +1268,31 @@ router.get('/technographics/all', async (req, res) => {
       pipeline.push({ $match: matchStage });
     }
 
+    // Filter by employee size range labels using numeric $addFields + $match
+    if (useFlat && filters.employeeSize.length > 0) {
+      const branches = EMPLOYEE_SIZE_RANGES.map(r => ({
+        case: { $and: [{ $gte: ['$$n', r.min] }, { $lte: ['$$n', r.max === Infinity ? 999999999 : r.max] }] },
+        then: r.label
+      }));
+      pipeline.push({
+        $addFields: {
+          _empLabel: {
+            $let: {
+              vars: {
+                n: {
+                  $convert: {
+                    input: { $arrayElemAt: [{ $split: [{ $replaceAll: { input: { $ifNull: ['$employeeSize', '0'] }, find: ',', replacement: '' } }, '-'] }, 0] },
+                    to: 'int', onError: 0, onNull: 0
+                  }
+                }
+              },
+              in: { $switch: { branches, default: 'N/A' } }
+            }
+          }
+        }
+      });
+      pipeline.push({ $match: { _empLabel: { $in: filters.employeeSize } } });
+    }
     if (!useFlat) {
       if (filters.region.length > 0) {
         pipeline.push({ $match: { 'Firmographics.Location.Country': { $in: filters.region } } });

@@ -570,8 +570,7 @@ const employeeSizeRanges = [
   { label: '201-500', min: 201, max: 500 },
   { label: '501-1000', min: 501, max: 1000 },
   { label: '1000-5000', min: 1000, max: 5000 },
-  { label: '5000-10,000', min: 5000, max: 10000 },
-  { label: '10k+', min: 10000, max: Infinity }
+  { label: '5000-10,000+', min: 5000, max: Infinity },
 ];
 
 const revenueRanges = [
@@ -1155,7 +1154,8 @@ const Technographics = () => {
         ]);
 
         const metadataData = await metadataResponse.json();
-        const summaryData = await summaryResponse.json();
+        const summaryRaw = summaryResponse.ok ? await summaryResponse.json() : {};
+        const summaryData = summaryRaw.error ? {} : summaryRaw;
         let filterOptionsData = [];
         if (filterOptionsResponse && filterOptionsResponse.ok) {
           const raw = await filterOptionsResponse.json();
