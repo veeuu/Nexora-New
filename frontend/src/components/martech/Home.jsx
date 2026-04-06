@@ -128,7 +128,7 @@ const Home = () => {
                 {/* Inline Video Player — always visible */}
                 <div className="home-yt-row">
                   <div className="home-yt-tagline">
-                    <h2 className="home-yt-tagline-heading">See Nexora in action</h2>
+                    {/* <h2 className="home-yt-tagline-heading">See Nexora in action</h2> */}
                     <div className="home-yt-tagline-words">
                       <span>Identify</span>
                       <span>Prioritize</span>
