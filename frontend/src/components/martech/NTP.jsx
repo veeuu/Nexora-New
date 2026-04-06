@@ -470,14 +470,22 @@ const NTP = () => {
 
   const { handleMouseEnter, handleMouseLeave } = createTooltipHandlers(setTooltip);
 
+  const PREDICTION_ORDER = { High: 0, Medium: 1, Low: 2 };
+
   const filteredData = useMemo(() => {
     // Backend handles filters - just exclude "Not Detected" records client-side
-    return tableData.filter(row => {
-      if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
-        return false;
-      }
-      return true;
-    });
+    return tableData
+      .filter(row => {
+        if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
+          return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        const pa = PREDICTION_ORDER[a.purchasePrediction] ?? 99;
+        const pb = PREDICTION_ORDER[b.purchasePrediction] ?? 99;
+        return pa - pb;
+      });
   }, [tableData]);
 
   const handleAnalysisClick = (analysis) => {
@@ -724,9 +732,9 @@ const NTP = () => {
                 {getUniqueOptions('purchasePrediction')
                   .filter(option => option !== 'Not Detected')
                   .sort((a, b) => {
-                    const countA = getCompanyCountByPurchasePrediction(a);
-                    const countB = getCompanyCountByPurchasePrediction(b);
-                    return countB - countA;
+                    const pa = PREDICTION_ORDER[a] ?? 99;
+                    const pb = PREDICTION_ORDER[b] ?? 99;
+                    return pa - pb;
                   })
                   .map((option, idx) => {
                   const isSelected = Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.includes(option);
