@@ -1522,7 +1522,21 @@ router.get('/renewal-intelligence/metadata', cacheResponse(300), async (req, res
             { $sort: { _id: 1 } }
           ],
           quarters: [
-            { $project: { value: { $ifNull: ['$Renewal Date', 'N/A'] } } },
+            {
+              $project: {
+                value: {
+                  $trim: {
+                    input: {
+                      $ifNull: [
+                        '$Renewal Date',
+                        { $ifNull: ['$Renewal Date\n', 'N/A'] }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            { $match: { value: { $ne: 'N/A', $ne: '' } } },
             { $group: { _id: '$value' } },
             { $sort: { _id: 1 } }
           ],
@@ -1549,7 +1563,21 @@ router.get('/renewal-intelligence/metadata', cacheResponse(300), async (req, res
             { $project: { _id: 0, label: '$_id', value: 1 } }
           ],
           quarterCounts: [
-            { $project: { qtr: { $ifNull: ['$Renewal Date', 'N/A'] }, company: '$Company Name' } },
+            {
+              $project: {
+                qtr: {
+                  $trim: {
+                    input: {
+                      $ifNull: [
+                        '$Renewal Date',
+                        { $ifNull: ['$Renewal Date\n', 'N/A'] }
+                      ]
+                    }
+                  }
+                },
+                company: '$Company Name'
+              }
+            },
             { $group: { _id: { qtr: '$qtr', company: '$company' } } },
             { $group: { _id: '$_id.qtr', value: { $sum: 1 } } },
             { $sort: { _id: 1 } },
@@ -1607,37 +1635,46 @@ router.get('/renewal-intelligence', async (req, res) => {
     }
 
     const renewalCollection = mongoose.connection.db.collection(getCol(req, 'renewal_intel'));
+
+    // The field name in DB has a trailing newline due to CSV import: "Renewal Date\n"
+    // Values also have trailing \r. We normalise via $trim in the projection.
+    // For filtering we must match against both the clean and dirty field names.
+    const renewalDateField = { $trim: { input: { $ifNull: ['$Renewal Date', { $ifNull: ['$Renewal Date\n', ''] }] } } };
+
     const query = {};
     if (companyNames.length > 0) query['Company Name'] = { $in: companyNames };
     if (categories.length > 0) query['Category'] = { $in: categories };
     if (products.length > 0) query['Keyword'] = { $in: products };
-    if (qtrs.length > 0) query['Renewal Date'] = { $in: qtrs };
+    // qtr filter applied after $addFields so we can match trimmed values
+    const hasQtrFilter = qtrs.length > 0;
 
-    const [result] = await aggregateTimed(renewalCollection, [
+    const pipeline = [
       { $match: query },
+      {
+        $addFields: {
+          _renewalDateClean: renewalDateField
+        }
+      },
+      ...(hasQtrFilter ? [{ $match: { _renewalDateClean: { $in: qtrs } } }] : []),
       {
         $project: {
           _id: 0,
           companyName: '$Company Name',
           category: { $ifNull: ['$Category', 'N/A'] },
           product: '$Keyword',
-          renewalDate: '$Renewal Date',
-          qtr: '$Renewal Date'
+          renewalDate: '$_renewalDateClean',
+          qtr: '$_renewalDateClean'
         }
       },
       {
         $facet: {
-          data: [
-            { $skip: skip },
-            { $limit: limit }
-          ],
-          total: [
-            { $count: 'count' }
-          ]
+          data: [{ $skip: skip }, { $limit: limit }],
+          total: [{ $count: 'count' }]
         }
       }
-    ], { allowDiskUse: true }, 'renewal_intel.page');
+    ];
 
+    const [result] = await aggregateTimed(renewalCollection, pipeline, { allowDiskUse: true }, 'renewal_intel.page');
     const paginatedData = result?.data || [];
     const total = result?.total?.[0]?.count || 0;
     const response = {

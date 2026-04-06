@@ -2975,7 +2975,7 @@ if (aQtr.year !== bQtr.year) {
                 </div>
             )}
 
-            <style jsx>{`
+            <style>{`
                 .renewal-intelligence-container {
                     background: linear-gradient(180deg, #ffffff, #fafbff);
                     border-radius: 12px;
