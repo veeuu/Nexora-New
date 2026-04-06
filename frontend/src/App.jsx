@@ -96,6 +96,7 @@ function App() {
     localStorage.removeItem('username');
     localStorage.removeItem('authToken');
     localStorage.removeItem('userPlan');
+    window.location.href = 'https://nexora.proplusdata.co/';
   };
 
   return (
