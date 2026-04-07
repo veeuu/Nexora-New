@@ -84,7 +84,7 @@ const sendTrialConfirmationEmail = async (email, fullName) => {
         We'll review it and get back to you shortly.
       </p>
       <div class="notice">
-        ⏱ Expect a response within <strong>4–5 working days</strong> with your access details.
+        ⏱ Expect a response within <strong>2-3 working days</strong> with your access details.
       </div>
       <div class="divider"></div>
       <div class="sign">
@@ -130,6 +130,12 @@ const sendAdminNotificationEmail = async ({ name, email, phone, jobTitle, source
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;">Email</td>
+
+
+
+
+
+
                 <td style="padding:10px 0;"><a href="mailto:${email}" style="color:#4a6cf7;">${email}</a></td>
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
