@@ -9,11 +9,46 @@ import TechnographicsDashboard from './TechnographicsDashboard';
 import NTPDashboard from './NTPDashboard';
 import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
+import svg1 from '../../video/1.svg';
+import svg2 from '../../video/2.svg';
+import svg3 from '../../video/3.svg';
+import svg4 from '../../video/4.svg';
+import svg5 from '../../video/5.svg';
 import '../../styles/home.css';
 
-console.log('[Home] NTPDashboard imported:', NTPDashboard);
+const SLIDES = [svg1, svg2, svg3, svg4, svg5];
 
-const YOUTUBE_VIDEO_ID = 'A3BCRSjS0C0';
+const SvgCarousel = () => {
+  const [current, setCurrent] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimating(true);
+      setTimeout(() => {
+        setCurrent(c => (c + 1) % SLIDES.length);
+        setAnimating(false);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="home-svg-carousel">
+      <img
+        key={current}
+        src={SLIDES[current]}
+        alt={`slide-${current + 1}`}
+        className={`home-svg-slide${animating ? ' home-svg-slide-exit' : ' home-svg-slide-enter'}`}
+      />
+      <div className="home-svg-dots">
+        {SLIDES.map((_, i) => (
+          <span key={i} className={`home-svg-dot${i === current ? ' home-svg-dot-active' : ''}`} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Home = () => {
   const location = useLocation();
@@ -125,27 +160,7 @@ const Home = () => {
                   <AnimatedStatCard number="530M+" label="Next Tech Purchase®"  cardClass="home-stat-card-blue"   numberClass="home-stat-number-blue"   labelClass="home-stat-label-blue"   maxValue={100000} />
                 </div>
 
-                {/* Inline Video Player — always visible */}
-                <div className="home-yt-row">
-                  <div className="home-yt-tagline">
-                    {/* <h2 className="home-yt-tagline-heading">See Nexora in action</h2> */}
-                    <div className="home-yt-tagline-words">
-                      <span>Identify</span>
-                      <span>Prioritize</span>
-                      <span>Convert</span>
-                    </div>
-                  </div>
-                  <div className="home-yt-inline">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}`}
-                      title="Quick Platform Insights"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                </div>
+                <SvgCarousel />
               </>
             )}
 
@@ -171,7 +186,6 @@ const Home = () => {
 
             {activeView === 'ntp' && (
               <div className="home-ntp-inline">
-                {console.log('[Home] rendering NTPDashboard')}
                 <NTPDashboard />
               </div>
             )}
