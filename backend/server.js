@@ -31,9 +31,8 @@ const buyingGroupRouter = require('./routes/buyingGroup');
 app.use('/api', rateLimiter);
 app.use('/api/auth', authRouter);        // auth routes FIRST - no token needed
 app.use('/api/buying-groups', buyingGroupRouter);
-app.use('/api', apiRouter);              // protected routes AFTER
 
-// Google Sheets email submission proxy + trial confirmation email
+// Google Sheets email submission proxy + trial confirmation email — public, no auth
 app.post('/api/subscribe', async (req, res) => {
   try {
     const { email, name, source } = req.body;
@@ -87,6 +86,8 @@ app.post('/api/subscribe', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+app.use('/api', apiRouter);              // protected routes AFTER
 
 const startServer = async () => {
   try {
