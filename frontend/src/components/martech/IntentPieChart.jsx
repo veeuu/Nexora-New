@@ -121,19 +121,15 @@ const IntentPieChart = ({ data }) => {
     : mergedWithPct.filter(d => d.name === filter);
 
   const filteredTotal = filtered.reduce((s, d) => s + d.value, 0);
+  void filteredTotal; // used for potential future filtering display
 
-  // KPI values — hardcoded in millions
-  const getCount = (name) => merged.find(d => d.name === name)?.value || 0;
-  const highCount   = '113M+';
-  const medCount    = '196M+';
-  const lowCount    = '89M+';
-  const hmCount     = '79M+';
-  const gfCount     = '51M+';
+  // KPI values — hardcoded display strings (millions scale)
+  const highCount       = '113M+';
+  const medCount        = '196M+';
+  const lowCount        = '89M+';
+  const hmCount         = '79M+';
+  const gfCount         = '51M+';
   const totalAllDisplay = '530M+';
-
-  const highPct = totalAll ? ((highCount / totalAll) * 100).toFixed(1) : 0;
-  const medPct  = totalAll ? ((medCount  / totalAll) * 100).toFixed(1) : 0;
-  const lowPct  = totalAll ? ((lowCount  / totalAll) * 100).toFixed(1) : 0;
 
   // Bar chart — statuses in fixed order
   const barData = [...mergedWithPct].sort(
@@ -187,36 +183,26 @@ const IntentPieChart = ({ data }) => {
           <div className="idb-kpi-label">Total Companies</div>
           <div className="idb-kpi-value">{totalAllDisplay}</div>
         </div>
-        {highCount && (
-          <div className="idb-kpi-card">
-            <div className="idb-kpi-label">High Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#0f3460' }}>{highCount}</div>
-          </div>
-        )}
-        {medCount && (
-          <div className="idb-kpi-card">
-            <div className="idb-kpi-label">Medium Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{medCount}</div>
-          </div>
-        )}
-        {lowCount && (
-          <div className="idb-kpi-card">
-            <div className="idb-kpi-label">Low Intent</div>
-            <div className="idb-kpi-value" style={{ color: '#2a65a3' }}>{lowCount}</div>
-          </div>
-        )}
-        {hmCount && (
-          <div className="idb-kpi-card">
-            <div className="idb-kpi-label">High-Medium</div>
-            <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{hmCount}</div>
-          </div>
-        )}
-        {gfCount && (
-          <div className="idb-kpi-card">
-            <div className="idb-kpi-label">Greenfield</div>
-            <div className="idb-kpi-value" style={{ color: '#60a5fa' }}>{gfCount}</div>
-          </div>
-        )}
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">High Intent</div>
+          <div className="idb-kpi-value" style={{ color: '#0f3460' }}>{highCount}</div>
+        </div>
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">High-Medium</div>
+          <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{hmCount}</div>
+        </div>
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">Medium Intent</div>
+          <div className="idb-kpi-value" style={{ color: '#2a65a3' }}>{medCount}</div>
+        </div>
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">Low Intent</div>
+          <div className="idb-kpi-value" style={{ color: '#60a5fa' }}>{lowCount}</div>
+        </div>
+        <div className="idb-kpi-card">
+          <div className="idb-kpi-label">Greenfield</div>
+          <div className="idb-kpi-value" style={{ color: '#93c5fd' }}>{gfCount}</div>
+        </div>
       </div>
 
       {/* Charts */}

@@ -30,7 +30,7 @@ const Home = () => {
 
   const fetchIntentData = () => {
     setIntentLoading(true);
-    const fakeStatusCounts = { High: 1240, 'High-Medium': 870, Medium: 2150, Low: 980, Greenfield: 560 };
+    const fakeStatusCounts = { High: 113000000, 'High-Medium': 79000000, Medium: 196000000, Low: 89000000, Greenfield: 51000000 };
     const total = Object.values(fakeStatusCounts).reduce((sum, c) => sum + c, 0);
     setIntentData(Object.entries(fakeStatusCounts).map(([name, value]) => ({
       name, value, percentage: ((value / total) * 100).toFixed(1)
