@@ -45,7 +45,7 @@ router.get('/', cacheResponse(300), async (req, res) => {
 });
 
 // GET /api/buying-groups/companies
-router.get('/companies', cacheResponse(300), async (req, res) => {
+router.get('/companies', async (req, res) => {
   try {
     const col = getBGCollection(req);
     const companies = await col.find({}, { projection: { companyName: 1, _id: 0 } })
@@ -77,7 +77,7 @@ router.get('/categories', cacheResponse(300), async (req, res) => {
 });
 
 // GET /api/buying-groups/person-details
-router.get('/person-details', cacheResponse(300), async (req, res) => {
+router.get('/person-details', async (req, res) => {
   try {
     const col = getBGCollection(req);
     const buyingGroups = await col.find({}, {

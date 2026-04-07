@@ -94,18 +94,11 @@ function getBoxDimensionsForCompany(companyData) {
     if (roleLen > maxChars) maxChars = roleLen;
   }
 
-  let boxWidth, boxHeight;
-  if (maxChars <= 8) {
-    boxWidth = 0.45; boxHeight = 0.36;
-  } else if (maxChars <= 12) {
-    boxWidth = 0.55; boxHeight = 0.40;
-  } else if (maxChars <= 18) {
-    boxWidth = 0.65; boxHeight = 0.44;
-  } else if (maxChars <= 24) {
-    boxWidth = 0.75; boxHeight = 0.48;
-  } else {
-    boxWidth = 0.85; boxHeight = 0.52;
-  }
+  // Each character ~0.045 coordinate units wide, min 0.50, max 1.10
+  const charWidth = 0.045;
+  const padding = 0.20; // horizontal padding inside box
+  const boxWidth = Math.min(1.10, Math.max(0.50, maxChars * charWidth + padding));
+  const boxHeight = boxWidth * 0.55; // height proportional to width
 
   return { boxWidth, boxHeight, tier: 'dynamic' };
 }
