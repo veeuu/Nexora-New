@@ -113,7 +113,7 @@ export default function NTPDashboard() {
       {/* KPI Cards */}
       <div className="ntpd-kpi-grid">
         {[
-          { label: 'Total Leads',    val: '530M+', sub: 'companies tracked',  cls: '' },
+          { label: 'Total Companies',    val: '530M+', sub: 'companies tracked',  cls: '' },
           { label: 'Avg Propensity', val: `${avgPropensity}%`, sub: 'across all signals', cls: '' },
           { label: 'High Priority',  val: '106M+', sub: 'immediate outreach', cls: 'ntpd-green' },
           { label: 'Top Category',   val: 'Cloud', sub: '212M companies',     cls: 'ntpd-blue' },

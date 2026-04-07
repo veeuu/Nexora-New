@@ -360,8 +360,8 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
       { label: 'Q4 2028', renewals: 99 },
       { label: 'Q1 2029', renewals: 148 },
       { label: 'Q2 2029', renewals: 143 },
-      { label: 'Q1 2030', renewals: 69 },
-      { label: 'Q1 2031', renewals: 146 },
+      { label: 'Q3 2029', renewals: 69 },
+      { label: 'Q4 2029', renewals: 146 },
     ]);
   }, []);
 
