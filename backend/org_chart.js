@@ -9,56 +9,56 @@ const CONFIG = {
   BOX_WIDTH: 1.0,
   BOX_HEIGHT: 0.50,
   BOX_CORNER_RADIUS: 0.015,
-  HORIZONTAL_GAP: 0.05,
-  VERTICAL_GAP: 0.20,
+  HORIZONTAL_GAP: 0.08,
+  VERTICAL_GAP: 0.28,
   TOP_PADDING: 0.10,
   SIDE_PADDING: 0.02,
-  MAX_CHARS_PER_LINE: 20,
-  MAX_NAME_LINES: 1,
-  MAX_ROLE_LINES: 1,
+  MAX_CHARS_PER_LINE: 22,
+  MAX_NAME_LINES: 2,
+  MAX_ROLE_LINES: 2,
   CHART_GLOBAL_X_OFFSET: 0.0,
   SMALL_CHART_THRESHOLD: 10,
-  SMALL_CHART_BOX_WIDTH: 0.70,
-  SMALL_CHART_BOX_HEIGHT: 0.50,
+  SMALL_CHART_BOX_WIDTH: 0.90,
+  SMALL_CHART_BOX_HEIGHT: 0.60,
   MIN_VIEWPORT_SPAN: 0.9,
   AXIS_PADDING: 0.05,
 
 COLOR_DECISION_MAKER_FILL: '#003d7a',
   COLOR_INFLUENCER_FILL: '#0070C0',
   COLOR_DIRECT_REPORTEE_FILL: '#CCECFF',
-  COLOR_OTHER_NODE_FILL: '#000000',
+  COLOR_OTHER_NODE_FILL: '#0070C0',
   COLOR_LINES: '#355A9C',
   COLOR_BACKGROUND: '#FFFFFF',
 
 FONT_COLOR_ON_LIGHT_BG: '#000000',
   FONT_COLOR_ON_DARK_BG: '#FFFFFF',
   COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 14,
-  ROLE_TEXT_SIZE: 11,
+  NAME_TEXT_SIZE: 15,
+  ROLE_TEXT_SIZE: 13,
 
-CANVAS_WIDTH: 900,
-  CANVAS_HEIGHT: 500,
+  CANVAS_WIDTH: 1200,
+  CANVAS_HEIGHT: 700,
 
-MIN_CANVAS_WIDTH: 900,
-  MIN_CANVAS_HEIGHT: 500,
+  MIN_CANVAS_WIDTH: 1200,
+  MIN_CANVAS_HEIGHT: 700,
   EMPLOYEES_PER_WIDTH_UNIT: 3,
   EMPLOYEES_PER_HEIGHT_UNIT: 2,
   
-  // Dynamic sizing tiers (4-tier system)
-  TIER_XS_THRESHOLD: 5,      // 1-5 employees
-  TIER_XS_WIDTH: 0.25,
-  TIER_XS_HEIGHT: 0.15,
-  
-  TIER_S_THRESHOLD: 8,       // 6-8 employees
-  TIER_S_WIDTH: 0.40,
-  TIER_S_HEIGHT: 0.25,
-  
-  TIER_M_THRESHOLD: 12,      // 9-12 employees
-  TIER_M_WIDTH: 0.65,
-  TIER_M_HEIGHT: 0.35,
-  
-  TIER_L_WIDTH: 1.0,         // 13+ employees
-  TIER_L_HEIGHT: 0.50
+  // Fixed comfortable box size across all tiers
+  TIER_XS_THRESHOLD: 5,
+  TIER_XS_WIDTH: 0.90,
+  TIER_XS_HEIGHT: 0.60,
+
+  TIER_S_THRESHOLD: 8,
+  TIER_S_WIDTH: 0.90,
+  TIER_S_HEIGHT: 0.60,
+
+  TIER_M_THRESHOLD: 12,
+  TIER_M_WIDTH: 0.90,
+  TIER_M_HEIGHT: 0.60,
+
+  TIER_L_WIDTH: 0.90,
+  TIER_L_HEIGHT: 0.60,
 };
 
 function readCSVFile(csvFilePath) {
@@ -85,37 +85,29 @@ function readCSVFile(csvFilePath) {
 }
 
 function getBoxDimensionsForCompany(companyData) {
-  const rowCount = companyData.length;
-  
-  if (rowCount <= CONFIG.TIER_XS_THRESHOLD) {
-    // Tier XS: 1-5 employees
-    return {
-      boxWidth: CONFIG.TIER_XS_WIDTH,
-      boxHeight: CONFIG.TIER_XS_HEIGHT,
-      tier: 'XS'
-    };
-  } else if (rowCount <= CONFIG.TIER_S_THRESHOLD) {
-    // Tier S: 6-8 employees
-    return {
-      boxWidth: CONFIG.TIER_S_WIDTH,
-      boxHeight: CONFIG.TIER_S_HEIGHT,
-      tier: 'S'
-    };
-  } else if (rowCount <= CONFIG.TIER_M_THRESHOLD) {
-    // Tier M: 9-12 employees
-    return {
-      boxWidth: CONFIG.TIER_M_WIDTH,
-      boxHeight: CONFIG.TIER_M_HEIGHT,
-      tier: 'M'
-    };
-  } else {
-    // Tier L: 13+ employees
-    return {
-      boxWidth: CONFIG.TIER_L_WIDTH,
-      boxHeight: CONFIG.TIER_L_HEIGHT,
-      tier: 'L'
-    };
+  // Size boxes based on the longest name/role text in the dataset
+  let maxChars = 0;
+  for (const row of companyData) {
+    const nameLen = String(row.Name || '').trim().length;
+    const roleLen = String(row.Role || '').trim().length;
+    if (nameLen > maxChars) maxChars = nameLen;
+    if (roleLen > maxChars) maxChars = roleLen;
   }
+
+  let boxWidth, boxHeight;
+  if (maxChars <= 8) {
+    boxWidth = 0.45; boxHeight = 0.36;
+  } else if (maxChars <= 12) {
+    boxWidth = 0.55; boxHeight = 0.40;
+  } else if (maxChars <= 18) {
+    boxWidth = 0.65; boxHeight = 0.44;
+  } else if (maxChars <= 24) {
+    boxWidth = 0.75; boxHeight = 0.48;
+  } else {
+    boxWidth = 0.85; boxHeight = 0.52;
+  }
+
+  return { boxWidth, boxHeight, tier: 'dynamic' };
 }
 
 function calculateCanvasDimensions(employees, roots) {
@@ -158,18 +150,18 @@ let maxChildrenAtLevel = 0;
 
   maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
 
-let width = CONFIG.MIN_CANVAS_WIDTH;
-  let height = CONFIG.MIN_CANVAS_HEIGHT;
+  let width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 220);
+  let height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 2) * 200);
   let scaleFactor = 1;
 
-if (maxChildrenAtLevel > 5) {
+  if (maxChildrenAtLevel > 5) {
     scaleFactor = Math.max(scaleFactor, maxChildrenAtLevel / 5);
-    width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 200);
+    width = Math.max(width, maxChildrenAtLevel * 280);
   }
 
-if (maxDepth > 3) {
+  if (maxDepth > 3) {
     scaleFactor = Math.max(scaleFactor, (maxDepth + 1) / 4);
-    height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 1) * 150);
+    height = Math.max(height, (maxDepth + 1) * 220);
   }
 
   return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor };

@@ -99,7 +99,7 @@ const BuyingGroup = () => {
             setOrgChartUrl('');
             try {
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const response = await apiFetch(`/api/buying-groups/${encodedCompanyName}/org-chart`);
+                const response = await apiFetch(`/api/buying-groups/${encodedCompanyName}/org-chart?refresh=1`);
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
