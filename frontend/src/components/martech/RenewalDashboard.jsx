@@ -59,7 +59,7 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
       <div className="renewal-chart-header">
         <div className="renewal-chart-header-left">
           <h3>Renewal Timeline Distribution</h3>
-          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2026-2031</p>
+          <p>Opportunities by {mode === 'quarter' ? 'quarter' : 'month'} · 2026-2029</p>
         </div>
         <div className="renewal-timeline-legend">
           <div className="renewal-timeline-legend-item">
@@ -327,7 +327,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     const kpis = [
       { title: 'Total Renewals Tracked', value: '530M+',  accentColor: '#3b82f6' },
       { title: 'Due This Quarter (Q2)', value: '134M+',  accentColor: '#f59e0b' },
-      { title: 'High-Urgency Renewals', value: '53M+',   accentColor: '#ef4444' }
+      { title: 'High-Priority Renewals', value: '53M+',   accentColor: '#ef4444' }
     ];
     setKpiData(kpis);
 
@@ -451,7 +451,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
       >
         <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
-            <h2>Renewal Intelligence Dashboard</h2>
+            <h2>Dashboard</h2>
             {/* <p><strong>Dashboard overview</strong> · Q2 2026 · Last updated just now</p> */}
           </div>
           <div className="renewal-dashboard-header-actions">

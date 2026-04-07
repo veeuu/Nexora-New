@@ -1,7 +1,45 @@
 import apiFetch from '../../utils/apiFetch';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/keywords.css';
+
+const FilterPill = ({ label, value, options, onChange, required }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const displayLabel = value === 'All' ? label : value;
+
+  return (
+    <div className="kw-pill-wrapper" ref={ref}>
+      <button
+        className={`kw-filter-pill${value !== 'All' ? ' kw-filter-pill-active' : ''}`}
+        onClick={() => setOpen(o => !o)}
+      >
+        {displayLabel}
+        <span className="kw-pill-chevron">▾</span>
+      </button>
+      {open && (
+        <div className="kw-dropdown">
+          {['All', ...options].map(opt => (
+            <div
+              key={opt}
+              className={`kw-dropdown-item${value === opt ? ' kw-dropdown-item-active' : ''}`}
+              onClick={() => { onChange(opt); setOpen(false); }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Keywords = () => {
   const [tableData, setTableData] = useState([]);
@@ -9,6 +47,8 @@ const Keywords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showGlossary, setShowGlossary] = useState(false);
   const [glossaryData, setGlossaryData] = useState(null);
+  const [filterStageRank, setFilterStageRank] = useState('All');
+  const [filterPrimaryCategory, setFilterPrimaryCategory] = useState('All');
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -48,7 +88,11 @@ const Keywords = () => {
     );
   }
 
-  const filteredData = tableData;
+  const filteredData = tableData.filter(row => {
+    const stageMatch = filterStageRank === 'All' || String(row['Current Stage']) === filterStageRank;
+    const catMatch = filterPrimaryCategory === 'All' || row['Primary Category (Products/Services Keywords)'] === filterPrimaryCategory;
+    return stageMatch && catMatch;
+  });
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
@@ -113,6 +157,20 @@ const Keywords = () => {
       <div className="keywords-divider" />
 
       <div className="keywords-controls">
+        <div className="keywords-filters">
+          <FilterPill
+            label="Stage Rank"
+            value={filterStageRank}
+            options={[...new Set(tableData.map(r => r['Current Stage']))].filter(v => v != null).sort((a, b) => a - b).map(String)}
+            onChange={v => { setFilterStageRank(v); setCurrentPage(1); }}
+          />
+          <FilterPill
+            label="Primary Category"
+            value={filterPrimaryCategory}
+            options={[...new Set(tableData.map(r => r['Primary Category (Products/Services Keywords)']))].filter(Boolean).sort()}
+            onChange={v => { setFilterPrimaryCategory(v); setCurrentPage(1); }}
+          />
+        </div>
       </div>
 
       <div className="table-wrapper">

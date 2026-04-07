@@ -84,9 +84,9 @@ const Home = () => {
             {!showProductCatalogue && !showDataDictionary && (
               <>
                 <h1 className="home-title">Welcome to Nexora®</h1>
-                <p className="home-subtitle">Your comprehensive B2B intelligence platform</p>
+                <p className="home-subtitle"></p>
                 <div className="home-quick-buttons">
-                  <button className={`home-quick-btn home-quick-btn-summary${activeView === 'summary' ? ' active' : ''}`} onClick={() => handleViewClick('summary')}>Overall Summary</button>
+                  <button className={`home-quick-btn home-quick-btn-summary${activeView === 'summary' ? ' active' : ''}`} onClick={() => handleViewClick('summary')}> Summary</button>
                   <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>
                   <button className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`} onClick={() => handleViewClick('renewal')}>Renewal Intelligence</button>
                   <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>

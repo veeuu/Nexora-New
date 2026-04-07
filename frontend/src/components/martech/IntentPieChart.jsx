@@ -151,7 +151,7 @@ const IntentPieChart = ({ data }) => {
       {/* Header */}
       <div className="idb-header">
         <div className="idb-header-left">
-          <div className="idb-title">Intent Dashboard</div>
+          <div className="idb-title">Dashboard</div>
           {/* <div className="idb-meta">
             <span className="idb-meta-bold">Dashboard overview</span> · Live data · Last updated just now
           </div> */}
@@ -172,7 +172,7 @@ const IntentPieChart = ({ data }) => {
             className={`idb-chip${filter === f ? ' idb-chip-active' : ''}`}
             onClick={() => setFilter(f)}
           >
-            {f === 'All' ? 'All' : `${f} Intent`}
+            {f}
           </button>
         ))}
       </div>
@@ -184,7 +184,7 @@ const IntentPieChart = ({ data }) => {
           <div className="idb-kpi-value">{totalAllDisplay}</div>
         </div>
         <div className="idb-kpi-card">
-          <div className="idb-kpi-label">High Intent</div>
+          <div className="idb-kpi-label">High</div>
           <div className="idb-kpi-value" style={{ color: '#0f3460' }}>{highCount}</div>
         </div>
         <div className="idb-kpi-card">
@@ -192,11 +192,11 @@ const IntentPieChart = ({ data }) => {
           <div className="idb-kpi-value" style={{ color: '#1a56b0' }}>{hmCount}</div>
         </div>
         <div className="idb-kpi-card">
-          <div className="idb-kpi-label">Medium Intent</div>
+          <div className="idb-kpi-label">Medium</div>
           <div className="idb-kpi-value" style={{ color: '#2a65a3' }}>{medCount}</div>
         </div>
         <div className="idb-kpi-card">
-          <div className="idb-kpi-label">Low Intent</div>
+          <div className="idb-kpi-label">Low</div>
           <div className="idb-kpi-value" style={{ color: '#60a5fa' }}>{lowCount}</div>
         </div>
         <div className="idb-kpi-card">

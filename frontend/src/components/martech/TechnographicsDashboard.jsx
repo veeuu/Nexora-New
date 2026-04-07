@@ -78,7 +78,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
         {/* Header */}
         <div className="tg-header">
           <div className="tg-header-left">
-            <h2>Technographics Dashboard</h2>
+            <h2>Dashboard</h2>
             {/* <p><strong>Dashboard overview</strong> · Live data · Last updated just now</p> */}
           </div>
           <div className="tg-header-right">
