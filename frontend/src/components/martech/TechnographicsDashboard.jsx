@@ -76,17 +76,16 @@ const TechnographicsDashboard = ({ inline = false }) => {
       <div className="tg-dashboard-content">
 
         {/* Header */}
-        <div className="tg-header">
+        {/* <div className="tg-header">
           <div className="tg-header-left">
             <h2>Dashboard</h2>
-            {/* <p><strong>Dashboard overview</strong> · Live data · Last updated just now</p> */}
           </div>
           <div className="tg-header-right">
             <span className="tg-live-badge">
               <span className={`tg-live-dot${animDot ? ' tg-live-dot-on' : ''}`}></span> Last Updated 1 week ago
             </span>
           </div>
-        </div>
+        </div> */}
 
         <div className="tg-body">
           {/* KPI Cards */}

@@ -449,17 +449,16 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
         className={`renewal-dashboard-modal-content ${isDarkMode ? 'dark-mode' : 'light-mode'}`}
         onClick={inline ? undefined : (e) => e.stopPropagation()}
       >
-        <div className="renewal-dashboard-modal-header">
+        {/* <div className="renewal-dashboard-modal-header">
           <div className="renewal-dashboard-title-section">
             <h2>Dashboard</h2>
-            {/* <p><strong>Dashboard overview</strong> · Q2 2026 · Last updated just now</p> */}
           </div>
           <div className="renewal-dashboard-header-actions">
             <span className="renewal-live-badge">
               <span className={`renewal-live-dot${animDot ? ' renewal-live-dot-on' : ''}`}></span> Last Updated 1 week ago
             </span>
           </div>
-        </div>
+        </div> */}
 
         <div className="renewal-dashboard-content">
           {/* KPI Cards */}

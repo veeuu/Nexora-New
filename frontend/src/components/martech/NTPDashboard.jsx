@@ -96,19 +96,16 @@ export default function NTPDashboard() {
 
   return (
     <div className={`ntpd-wrap${visible ? ' ntpd-visible' : ''}`} ref={barsRef}>
-      <div className="ntpd-header">
+      {/* <div className="ntpd-header">
         <div className="ntpd-header-left">
           <div className="ntpd-title">Dashboard</div>
-          {/* <div className="ntpd-meta">
-            <span className="ntpd-meta-bold">Dashboard overview</span> · Next-to-Purchase Intelligence® · April 2026
-          </div> */}
         </div>
         <div className="ntpd-header-actions">
           <span className="ntpd-badge-live">
             <span className={`ntpd-dot${visible ? ' ntpd-dot-on' : ''}`}></span> Last Updated 1 week ago
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* KPI Cards */}
       <div className="ntpd-kpi-grid">

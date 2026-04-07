@@ -149,20 +149,16 @@ const IntentPieChart = ({ data }) => {
   return (
     <div className="idb-root">
       {/* Header */}
-      <div className="idb-header">
+      {/* <div className="idb-header">
         <div className="idb-header-left">
           <div className="idb-title">Dashboard</div>
-          {/* <div className="idb-meta">
-            <span className="idb-meta-bold">Dashboard overview</span> · Live data · Last updated just now
-          </div> */}
         </div>
         <div className="idb-header-actions">
           <span className="idb-badge-live">
             <span className={`idb-dot${animDot ? ' idb-dot-on' : ''}`}></span> Last Updated 1 week ago
           </span>
-
         </div>
-      </div>
+      </div> */}
 
       {/* Filter chips */}
       <div className="idb-filter-bar">
