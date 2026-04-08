@@ -49,7 +49,7 @@ router.get('/companies', async (req, res) => {
   try {
     const col = getBGCollection(req);
     const companies = await col.find({}, { projection: { companyName: 1, _id: 0 } })
-      .sort({ companyName: 1 }).maxTimeMS(MONGO_MAX_TIME_MS).toArray();
+      .maxTimeMS(MONGO_MAX_TIME_MS).toArray();
     res.json({ success: true, companies: companies.map(c => c.companyName) });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch companies' });
@@ -126,6 +126,7 @@ router.get('/person-details', async (req, res) => {
 router.get('/:companyName/org-chart', async (req, res) => {
   try {
     const decodedCompanyName = decodeURIComponent(req.params.companyName);
+    const forceRefresh = req.query.refresh === '1';
     const col = getBGCollection(req);
     const buyingGroup = await col.findOne({ companyName: decodedCompanyName });
 
@@ -133,8 +134,8 @@ router.get('/:companyName/org-chart', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Company not found' });
     }
 
-    // If already in S3, return a fresh signed URL (bucket is private)
-    if (buyingGroup.orgChart?.s3Key) {
+    // If already in S3 and not forcing refresh, return a fresh signed URL
+    if (!forceRefresh && buyingGroup.orgChart?.s3Key) {
       try {
         const exists = await orgChartExistsInS3(buyingGroup.orgChart.s3Key);
         if (exists) {

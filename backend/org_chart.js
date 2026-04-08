@@ -621,15 +621,19 @@ const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrapp
     });
   }
 
-const marginL = 20;
-  const marginR = 200;
-  // Center title over the plot area, not the full paper
-  const titleX = (marginL + (canvasWidth - marginR)) / 2 / canvasWidth;
+  const marginL = 20;
+  // Scale right margin with canvas width so legend never eats into the title on small charts
+  const marginR = Math.min(200, Math.max(120, Math.round(canvasWidth * 0.18)));
+
+  // Center title over the plot area (between left margin and right margin)
+  const plotAreaCenter = (marginL + (canvasWidth - marginR)) / 2;
+  const titleX = plotAreaCenter / canvasWidth;
 
   const layout = {
     title: {
       text: titleText,
       x: titleX,
+      xref: 'paper',
       y: 0.98,
       xanchor: 'center',
       yanchor: 'top',
@@ -762,57 +766,20 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     body {
       font-family: Calibri, Arial, sans-serif;
       background-color: white;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow: auto;
     }
 
     .container {
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
-
-    .header {
-      background: white;
-      padding: 15px 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      border-bottom: 3px solid #0070C0;
-    }
-
-    .company-logo {
-      width: 120px;
-      height: 40px;
-      object-fit: contain;
-    }
-
-    .company-logo-fallback {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .header-title {
-      flex: 1;
-      font-size: 24px;
-      color: #2d3748;
-      font-weight: 600;
     }
 
     .chart-wrapper {
       flex: 1;
-      overflow: hidden;
+      overflow: visible !important;
       background-color: white;
       display: flex;
       justify-content: center;
@@ -822,8 +789,12 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     #chart {
       background-color: white;
-      transform-origin: center center;
+      transform-origin: top center;
       transition: transform 0.2s ease;
+    }
+
+    .js-plotly-plot .plotly svg {
+      overflow: visible !important;
     }
 
     .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
@@ -879,36 +850,13 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
       
-      // Apply intelligent zoom logic after chart is rendered
+      // After render, ensure the wrapper never clips — scrolling is handled by body
       setTimeout(() => {
-        const chartDiv = document.getElementById('chart');
         const wrapper = document.querySelector('.chart-wrapper');
-        
-        if (chartDiv && wrapper) {
-          // Get the actual dimensions
-          const chartRect = chartDiv.getBoundingClientRect();
-          const wrapperRect = wrapper.getBoundingClientRect();
-          
-          const chartWidth = chartRect.width;
-          const chartHeight = chartRect.height;
-          const wrapperWidth = wrapperRect.width;
-          const wrapperHeight = wrapperRect.height;
-          
-          // Calculate if chart is "large" (exceeds wrapper dimensions)
-          const isLargeChart = chartWidth > wrapperWidth || chartHeight > wrapperHeight;
-          
-          if (isLargeChart) {
-            // For large charts, apply 80% zoom and enable scrolling
-            chartDiv.style.transform = 'scale(0.8)';
-            chartDiv.style.transformOrigin = 'top center';
-            wrapper.style.overflow = 'auto';
-          } else {
-            // For small charts that fit, keep at 100%
-            chartDiv.style.transform = 'scale(1.0)';
-            wrapper.style.overflow = 'hidden';
-          }
+        if (wrapper) {
+          wrapper.style.overflow = 'visible';
         }
-      }, 100);
+      }, 200);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }

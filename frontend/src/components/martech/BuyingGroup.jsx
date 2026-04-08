@@ -40,9 +40,7 @@ const BuyingGroup = () => {
                 const data = await response.json();
                 setCompanies(data.companies || []);
                 if (data.companies && data.companies.length > 0) {
-                    // Check if "AT&T" exists in the list
-                    const targetCompany = data.companies.find(company => company === 'AT&T');
-                    setSelectedCompany(targetCompany || data.companies[0]);
+                    setSelectedCompany(data.companies[0]);
                 }
             } catch (err) {
                 setError('Failed to load companies');
@@ -99,7 +97,7 @@ const BuyingGroup = () => {
             setOrgChartUrl('');
             try {
                 const encodedCompanyName = encodeURIComponent(selectedCompany);
-                const response = await apiFetch(`/api/buying-groups/${encodedCompanyName}/org-chart?refresh=1`);
+                const response = await apiFetch(`/api/buying-groups/${encodedCompanyName}/org-chart`);
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
