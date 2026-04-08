@@ -1,16 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
-const archiver = require('archiver');
-const puppeteer = require('puppeteer');
 const XLSX = require('xlsx');
 
 const CONFIG = {
   BOX_WIDTH: 1.0,
-  BOX_HEIGHT: 0.50,
+  BOX_HEIGHT: 0.38,
   BOX_CORNER_RADIUS: 0.015,
   HORIZONTAL_GAP: 0.08,
-  VERTICAL_GAP: 0.28,
+  VERTICAL_GAP: 0.18,
   TOP_PADDING: 0.10,
   SIDE_PADDING: 0.02,
   MAX_CHARS_PER_LINE: 22,
@@ -19,7 +17,7 @@ const CONFIG = {
   CHART_GLOBAL_X_OFFSET: 0.0,
   SMALL_CHART_THRESHOLD: 10,
   SMALL_CHART_BOX_WIDTH: 0.90,
-  SMALL_CHART_BOX_HEIGHT: 0.60,
+  SMALL_CHART_BOX_HEIGHT: 0.38,
   MIN_VIEWPORT_SPAN: 0.9,
   AXIS_PADDING: 0.05,
 
@@ -39,26 +37,26 @@ FONT_COLOR_ON_LIGHT_BG: '#000000',
   CANVAS_WIDTH: 1200,
   CANVAS_HEIGHT: 700,
 
-  MIN_CANVAS_WIDTH: 1200,
-  MIN_CANVAS_HEIGHT: 700,
+  MIN_CANVAS_WIDTH: 800,
+  MIN_CANVAS_HEIGHT: 500,
   EMPLOYEES_PER_WIDTH_UNIT: 3,
   EMPLOYEES_PER_HEIGHT_UNIT: 2,
   
   // Fixed comfortable box size across all tiers
   TIER_XS_THRESHOLD: 5,
   TIER_XS_WIDTH: 0.90,
-  TIER_XS_HEIGHT: 0.60,
+  TIER_XS_HEIGHT: 0.38,
 
   TIER_S_THRESHOLD: 8,
   TIER_S_WIDTH: 0.90,
-  TIER_S_HEIGHT: 0.60,
+  TIER_S_HEIGHT: 0.38,
 
   TIER_M_THRESHOLD: 12,
   TIER_M_WIDTH: 0.90,
-  TIER_M_HEIGHT: 0.60,
+  TIER_M_HEIGHT: 0.38,
 
   TIER_L_WIDTH: 0.90,
-  TIER_L_HEIGHT: 0.60,
+  TIER_L_HEIGHT: 0.38,
 };
 
 function readCSVFile(csvFilePath) {
@@ -85,79 +83,77 @@ function readCSVFile(csvFilePath) {
 }
 
 function getBoxDimensionsForCompany(companyData) {
-  // Size boxes based on the longest name/role text in the dataset
+  const n = companyData.length;
+
+  // Find the actual longest name/role to ensure text fits
   let maxChars = 0;
   for (const row of companyData) {
     const nameLen = String(row.Name || '').trim().length;
     const roleLen = String(row.Role || '').trim().length;
-    if (nameLen > maxChars) maxChars = nameLen;
-    if (roleLen > maxChars) maxChars = roleLen;
+    maxChars = Math.max(maxChars, nameLen, roleLen);
   }
 
-  // Each character ~0.045 coordinate units wide, min 0.50, max 1.10
-  const charWidth = 0.045;
-  const padding = 0.20; // horizontal padding inside box
-  const boxWidth = Math.min(1.10, Math.max(0.50, maxChars * charWidth + padding));
-  const boxHeight = boxWidth * 0.55; // height proportional to width
+  const charsPerLine = 18;
 
-  return { boxWidth, boxHeight, tier: 'dynamic' };
+  // Width: scale with employee count, always wide enough for text
+  const minWidthForText = Math.min(maxChars, charsPerLine) * 0.052 + 0.22;
+  let baseWidth;
+  if (n <= 3)       baseWidth = 0.90;
+  else if (n <= 6)  baseWidth = 0.95;
+  else if (n <= 10) baseWidth = 1.00;
+  else if (n <= 20) baseWidth = 1.05;
+  else              baseWidth = 1.10;
+
+  const boxWidth = Math.min(1.40, Math.max(baseWidth, minWidthForText));
+
+  // Height: always short — enforce rectangle shape (width ~3x height)
+  // Fixed at 0.22 for 1 line, 0.30 for 2 lines
+  const needsTwoLines = maxChars > charsPerLine;
+  const boxHeight = needsTwoLines ? 0.30 : 0.22;
+
+  return { boxWidth, boxHeight, charsPerLine };
 }
 
 function calculateCanvasDimensions(employees, roots) {
-  const employeeCount = Object.keys(employees).length;
+  const n = Object.keys(employees).length;
 
-let maxDepth = 0;
+  let maxDepth = 0;
   const queue = roots.map(r => [r, 0]);
   let head = 0;
-
   while (head < queue.length) {
-    const [nodeName, depth] = queue[head];
-    head++;
+    const [nodeName, depth] = queue[head++];
     maxDepth = Math.max(maxDepth, depth);
-
     if (nodeName in employees) {
-      for (const child of employees[nodeName].children) {
-        queue.push([child, depth + 1]);
-      }
+      for (const child of employees[nodeName].children) queue.push([child, depth + 1]);
     }
   }
 
-let maxChildrenAtLevel = 0;
   const levelCounts = {};
-
   const levelQueue = roots.map(r => [r, 0]);
   let levelHead = 0;
-
   while (levelHead < levelQueue.length) {
-    const [nodeName, level] = levelQueue[levelHead];
-    levelHead++;
-
+    const [nodeName, level] = levelQueue[levelHead++];
     levelCounts[level] = (levelCounts[level] || 0) + 1;
-
     if (nodeName in employees) {
-      for (const child of employees[nodeName].children) {
-        levelQueue.push([child, level + 1]);
-      }
+      for (const child of employees[nodeName].children) levelQueue.push([child, level + 1]);
     }
   }
 
-  maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
+  const maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
+  const numLevels = maxDepth + 1;
 
-  let width = Math.max(CONFIG.MIN_CANVAS_WIDTH, maxChildrenAtLevel * 220);
-  let height = Math.max(CONFIG.MIN_CANVAS_HEIGHT, (maxDepth + 2) * 200);
-  let scaleFactor = 1;
+  // Scale px-per-node based on employee count — small charts get tighter spacing
+  let nodePx, levelPx;
+  if (n <= 3)       { nodePx = 180; levelPx = 120; }
+  else if (n <= 6)  { nodePx = 185; levelPx = 125; }
+  else if (n <= 10) { nodePx = 190; levelPx = 130; }
+  else if (n <= 20) { nodePx = 195; levelPx = 135; }
+  else              { nodePx = 210; levelPx = 140; }
 
-  if (maxChildrenAtLevel > 5) {
-    scaleFactor = Math.max(scaleFactor, maxChildrenAtLevel / 5);
-    width = Math.max(width, maxChildrenAtLevel * 280);
-  }
+  const width  = Math.max(350, Math.min(maxChildrenAtLevel * nodePx + 180, 4000));
+  const height = Math.max(300, Math.min(numLevels * levelPx + 180, 2500));
 
-  if (maxDepth > 3) {
-    scaleFactor = Math.max(scaleFactor, (maxDepth + 1) / 4);
-    height = Math.max(height, (maxDepth + 1) * 220);
-  }
-
-  return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor };
+  return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor: 1 };
 }
 function wrapText(text, maxChars, maxLines = null) {
   if (typeof text !== 'string') {
@@ -418,11 +414,12 @@ function generateOrgChartPlotly(data, companyName = 'Organization', location = '
   const { employees, roots, edges } = buildTreeFromData(data);
 
   // Get dynamic box dimensions based on company data size
-  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight, isSmall } = getBoxDimensionsForCompany(data);
-  
+  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight, charsPerLine: dynamicCharsPerLine } = getBoxDimensionsForCompany(data);
+
   // Use custom dimensions if provided, otherwise use dynamic
   const boxWidth = customBoxWidth !== null ? customBoxWidth : dynamicBoxWidth;
   const boxHeight = customBoxHeight !== null ? customBoxHeight : dynamicBoxHeight;
+  const charsPerLine = dynamicCharsPerLine;
 
 const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
 
@@ -558,8 +555,8 @@ for (const [nameKey, [x, y]] of Object.entries(nodePositions)) {
     const originalName = empData.name;
     const originalRole = empData.role;
 
-    const wrappedName = wrapText(originalName, CONFIG.MAX_CHARS_PER_LINE, CONFIG.MAX_NAME_LINES);
-    const wrappedRole = wrapText(originalRole, CONFIG.MAX_CHARS_PER_LINE, CONFIG.MAX_ROLE_LINES);
+    const wrappedName = wrapText(originalName, charsPerLine, CONFIG.MAX_NAME_LINES);
+    const wrappedRole = wrapText(originalRole, charsPerLine, CONFIG.MAX_ROLE_LINES);
 
     const hierarchyType = empData.hierarchy_type.toLowerCase();
     let nodeFillColor, nodeFontColor;
@@ -624,10 +621,15 @@ const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrapp
     });
   }
 
-const layout = {
+const marginL = 20;
+  const marginR = 200;
+  // Center title over the plot area, not the full paper
+  const titleX = (marginL + (canvasWidth - marginR)) / 2 / canvasWidth;
+
+  const layout = {
     title: {
       text: titleText,
-      x: 0.5,
+      x: titleX,
       y: 0.98,
       xanchor: 'center',
       yanchor: 'top',
@@ -635,7 +637,7 @@ const layout = {
     },
     showlegend: true,
     hovermode: 'closest',
-    margin: { l: 20, r: 20, t: 150, b: 5 },
+    margin: { l: marginL, r: marginR, t: 80, b: 20 },
     width: canvasWidth,
     height: canvasHeight,
     plot_bgcolor: CONFIG.COLOR_BACKGROUND,
@@ -657,9 +659,9 @@ const layout = {
     legend: {
       orientation: 'v',
       yanchor: 'top',
-      y: 1.12,
-      xanchor: 'right',
-      x: 0.98,
+      y: 1.0,
+      xanchor: 'left',
+      x: 1.04,
       bgcolor: 'rgba(255, 255, 255, 0.75)',
       bordercolor: 'Black',
       borderwidth: 0
@@ -694,8 +696,7 @@ function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CO
 }
 
 async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
-  // Get dynamic box dimensions based on company data size
-  const { boxWidth, boxHeight, isSmall } = getBoxDimensionsForCompany(data);
+  const { boxWidth, boxHeight } = getBoxDimensionsForCompany(data);
   
   const htmlContent = generateOrgChartHTML(data, companyName, location);
   const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
@@ -736,8 +737,7 @@ await page.screenshot({ path: outputPath, fullPage: false });
 }
 
 function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
-  // Get dynamic box dimensions based on company data size
-  const { boxWidth, boxHeight, isSmall } = getBoxDimensionsForCompany(data);
+  const { boxWidth, boxHeight } = getBoxDimensionsForCompany(data);
   
   const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
   const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
@@ -1087,117 +1087,91 @@ async function getCompaniesFromCSV(csvFilePath) {
   }
 }
 
+async function readJSONFile(jsonFilePath) {
+  const raw = fs.readFileSync(jsonFilePath, 'utf-8');
+  const companies = JSON.parse(raw);
+
+  // Flatten JSON companies+employees into CSV-like rows
+  const rows = [];
+  for (const company of companies) {
+    for (const emp of (company.employees || [])) {
+      rows.push({
+        'Unique ID':    emp.uniqueId    || '',
+        'Company Name': company.companyName || '',
+        'Name':         emp.name        || '',
+        'Role':         emp.designation || emp.fullRole || '',
+        'Reports To':   emp.reportsTo   || '',
+        'hierarchy':    emp.hierarchy   || 'Other',
+        'Category':     emp.category    || '',
+        'Linkedin':     emp.linkedin    || '',
+        'email':        emp.email       || '',
+        'Mobile DID':   emp.mobileDID   || '',
+        'Location':     company.location || '',
+      });
+    }
+  }
+  return rows;
+}
+
 async function main() {
-  const csvFilePath = 'Nexora Buying groups 13_02_2026.csv';
-  const OUTPUT_FOLDER = 'org_charts_output_js';
+  const jsonFilePath = 'buying_group_combined.json';
 
   try {
-
-    if (!fs.existsSync(OUTPUT_FOLDER)) {
-      fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
-
-    } else {
-
-      const existingFiles = fs.readdirSync(OUTPUT_FOLDER);
-      const existingHtmlFiles = existingFiles.filter(f => f.endsWith('.html'));
-      if (existingHtmlFiles.length > 0) {
-
-      }
-    }
-
-if (!fs.existsSync(csvFilePath)) {
-
+    if (!fs.existsSync(jsonFilePath)) {
+      console.error(`JSON file not found: ${jsonFilePath}`);
       return;
     }
 
-    const data = await readCSVFile(csvFilePath);
+    const { uploadOrgChartToS3, orgChartExistsInS3, ORG_CHART_FOLDER } = require('./config/s3');
 
-if (!data[0] || !('Company Name' in data[0])) {
-      data.forEach(row => row['Company Name'] = 'Overall_Organization');
-    }
-
-    if (!data[0] || !('hierarchy' in data[0])) {
-      data.forEach(row => row.hierarchy = row.hierarchy || 'Other');
-    }
-
+    const data = await readJSONFile(jsonFilePath);
     const hasLocationColumn = data[0] && 'Location' in data[0];
-
-const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
+    const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
 
     if (!uniqueCompanies.length) {
-
+      console.error('No companies found in JSON');
       return;
     }
 
-const generatedFiles = [];
     const chartMappingData = [];
     const allPersonDetails = [];
-
-const existingFiles = fs.readdirSync(OUTPUT_FOLDER).filter(f => f.endsWith('.html'));
-    const existingCompanies = new Set();
-
-    for (const file of existingFiles) {
-
-      const companyKey = file.replace('.html', '');
-      existingCompanies.add(companyKey);
-    }
-
     let newChartsGenerated = 0;
     let chartsSkipped = 0;
 
-for (const companyName of uniqueCompanies) {
+    for (const companyName of uniqueCompanies) {
       const companyData = data.filter(row => row['Company Name'] === companyName);
 
-      if (!companyData.length) {
-
-        continue;
-      }
-
-      if (!companyData[0]['Name'] || !companyData[0]['Role']) {
-
-        continue;
-      }
+      if (!companyData.length || !companyData[0]['Name'] || !companyData[0]['Role']) continue;
 
       let companyLocation = '';
       if (hasLocationColumn && companyData[0]['Location']) {
         companyLocation = String(companyData[0]['Location']).trim();
       }
 
-const safeCompanyName = sanitizeFilename(companyName);
-      let baseFilename = '';
+      const safeCompanyName = sanitizeFilename(companyName);
+      const baseFilename = companyLocation
+        ? `${safeCompanyName}_${sanitizeFilename(companyLocation)}.html`
+        : `${safeCompanyName}.html`;
 
-      if (companyLocation) {
-        const safeLocation = sanitizeFilename(companyLocation);
-        baseFilename = `${safeCompanyName}_${safeLocation}.html`;
-      } else {
-        baseFilename = `${safeCompanyName}.html`;
-      }
+      const s3Key = `${ORG_CHART_FOLDER}/${baseFilename}`;
 
-const fileKeyWithoutExtension = baseFilename.replace('.html', '');
-      if (existingCompanies.has(fileKeyWithoutExtension)) {
-
+      // Skip if already in S3
+      const exists = await orgChartExistsInS3(s3Key).catch(() => false);
+      if (exists) {
         chartsSkipped++;
-
-chartMappingData.push({
-          'Account Name': companyName,
-          'Chart Name': baseFilename
-        });
+        chartMappingData.push({ 'Account Name': companyName, 'Chart Name': baseFilename });
         continue;
       }
 
-const outputFilePath = path.join(OUTPUT_FOLDER, baseFilename);
-
-try {
+      try {
         const htmlContent = generateOrgChartHTML(companyData, companyName, companyLocation);
-        fs.writeFileSync(outputFilePath, htmlContent, 'utf-8');
-
-        generatedFiles.push(outputFilePath);
+        await uploadOrgChartToS3(baseFilename, htmlContent);
         newChartsGenerated++;
       } catch (error) {
-
+        console.error(`Failed to upload chart for ${companyName}:`, error.message);
       }
 
-for (const person of companyData) {
+      for (const person of companyData) {
         if (person.Name && person.email) {
           allPersonDetails.push({
             'Unique ID': person['Unique ID'] || '',
@@ -1211,54 +1185,14 @@ for (const person of companyData) {
         }
       }
 
-chartMappingData.push({
-        'Account Name': companyName,
-        'Chart Name': baseFilename
-      });
+      chartMappingData.push({ 'Account Name': companyName, 'Chart Name': baseFilename });
     }
 
-if (allPersonDetails.length > 0) {
-
-      const csvPath = path.join(OUTPUT_FOLDER, 'personDetails.csv');
-      const csvContent = convertToCSV(allPersonDetails);
-      fs.writeFileSync(csvPath, csvContent, 'utf-8');
-
-      generatedFiles.push(csvPath);
-    }
-
-if (chartMappingData.length > 0) {
-
-      const mappingWorkbook = XLSX.utils.book_new();
-      const mappingSheet = XLSX.utils.json_to_sheet(chartMappingData);
-      XLSX.utils.book_append_sheet(mappingWorkbook, mappingSheet, 'Mapping');
-
-      const mappingExcelPath = path.join(OUTPUT_FOLDER, 'chart_filename_mapping.xlsx');
-      XLSX.writeFile(mappingWorkbook, mappingExcelPath);
-
-      generatedFiles.push(mappingExcelPath);
-    }
-
-if (generatedFiles.length > 0) {
-      const zipFilePath = path.join(OUTPUT_FOLDER, 'organization_charts.zip');
-
-const output = fs.createWriteStream(zipFilePath);
-      const archive = archiver('zip', { zlib: { level: 9 } });
-
-      archive.pipe(output);
-
-      for (const filePath of generatedFiles) {
-        archive.file(filePath, { name: path.basename(filePath) });
-      }
-
-      await archive.finalize();
-
-} else {
-
-    }
+    console.log(`Done: ${newChartsGenerated} uploaded, ${chartsSkipped} skipped (already in S3)`);
 
   } catch (error) {
-
-}
+    console.error('main() error:', error);
+  }
 }
 
 function convertToCSV(data) {

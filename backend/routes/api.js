@@ -10,6 +10,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const Company = require('../models/Company');
 const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
+const { uploadOrgChartToS3, getSignedOrgChartUrl, orgChartExistsInS3, ORG_CHART_FOLDER } = require('../config/s3');
 
 router.use(cors());
 
@@ -1926,8 +1927,6 @@ router.get('/org-chart/:companyName', async (req, res) => {
       return res.status(404).json({ error: 'CSV file not found' });
     }
 
-    const outputFolder = path.join(__dirname, '../org_charts_output_js');
-
     const data = await readCsvCached(csvPath);
     const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
     const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
@@ -1945,25 +1944,22 @@ router.get('/org-chart/:companyName', async (req, res) => {
     }
 
     const htmlFileName = `${safeFileName}.html`;
-    const htmlFilePath = path.join(outputFolder, htmlFileName);
+    const s3Key = `${ORG_CHART_FOLDER}/${htmlFileName}`;
 
-    if (fs.existsSync(htmlFilePath)) {
-      let html = await readTextCached(htmlFilePath);
-      html = injectScrollableCSS(html);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(html);
+    // Check S3 cache first
+    const exists = await orgChartExistsInS3(s3Key).catch(() => false);
+    if (exists) {
+      const signedUrl = await getSignedOrgChartUrl(s3Key);
+      return res.json({ success: true, s3Url: signedUrl, fromCache: true });
     }
 
-    let html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
-    html = injectScrollableCSS(html);
+    // Generate and upload to S3
+    const html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+    const s3Result = await uploadOrgChartToS3(htmlFileName, html);
+    const signedUrl = await getSignedOrgChartUrl(s3Result.s3Key);
 
-    await fsp.mkdir(outputFolder, { recursive: true });
-    await fsp.writeFile(htmlFilePath, html, 'utf-8');
-
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(html);
+    res.json({ success: true, s3Url: signedUrl, fromCache: false });
   } catch (err) {
-
     res.status(500).json({ error: err.message || 'Failed to fetch org chart' });
   }
 });
@@ -1976,18 +1972,9 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
       csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
     }
 
-    const outputFolder = path.join(__dirname, '../org_charts_output_js');
-
     if (!selectedCompanies || selectedCompanies.length === 0) {
       return { success: false, message: 'No companies selected' };
     }
-
-    if (!fs.existsSync(outputFolder)) {
-      await fsp.mkdir(outputFolder, { recursive: true });
-    }
-
-    const existingFiles = (await fsp.readdir(outputFolder)).filter(f => f.endsWith('.html'));
-    const existingCompanies = new Set(existingFiles.map(f => f.replace('.html', '')));
 
     const sanitizeFilename = (name) => {
       name = String(name);
@@ -2000,22 +1987,23 @@ async function generateSelectedOrgCharts(selectedCompanies = []) {
     let chartsSkipped = 0;
 
     for (const company of selectedCompanies) {
-      let safeFileName = sanitizeFilename(company);
+      const safeFileName = sanitizeFilename(company);
+      const htmlFileName = `${safeFileName}.html`;
+      const s3Key = `${ORG_CHART_FOLDER}/${htmlFileName}`;
 
-      if (existingCompanies.has(safeFileName)) {
+      // Skip if already in S3
+      const exists = await orgChartExistsInS3(s3Key).catch(() => false);
+      if (exists) {
         chartsSkipped++;
         continue;
       }
 
       try {
         const html = await generateOrgChartForCompany(csvPath, company);
-        const htmlFileName = `${safeFileName}.html`;
-        const htmlFilePath = path.join(outputFolder, htmlFileName);
-
-        await fsp.writeFile(htmlFilePath, html, 'utf-8');
-
+        await uploadOrgChartToS3(htmlFileName, html);
         newChartsGenerated++;
       } catch (err) {
+        // continue on per-company errors
       }
     }
 
