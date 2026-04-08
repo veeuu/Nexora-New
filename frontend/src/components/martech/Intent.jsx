@@ -799,14 +799,12 @@ useEffect(() => {
                         className={`reveal-button ${isRevealed ? 'reveal-button-unlocked' : 'reveal-button-locked'}`}
                         onMouseEnter={(e) => {
                           if (!isRevealed) {
-                            e.currentTarget.style.backgroundColor = '#a7f3d0';
-                            e.currentTarget.style.borderColor = '#6ee7b7';
+                            e.currentTarget.style.backgroundColor = '#f3f4f6';
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (!isRevealed) {
-                            e.currentTarget.style.backgroundColor = '#d1fae5';
-                            e.currentTarget.style.borderColor = '#a7f3d0';
+                            e.currentTarget.style.backgroundColor = 'transparent';
                           }
                         }}
                         title={isRevealed ? 'Company details revealed' : 'Reveal company details'}
@@ -818,7 +816,7 @@ useEffect(() => {
                         )}
                       </button>
                     </td>
-                    <td onMouseEnter={(e) => handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
+                    <td onMouseEnter={(e) => isRevealed && handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {isRevealed ? (
                         <div className="company-name-revealed">
                           {row.companyName}

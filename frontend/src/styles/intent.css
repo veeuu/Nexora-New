@@ -944,18 +944,17 @@ tbody tr:hover {
 }
 
 .reveal-button-locked {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background-color: transparent;
+  border: none;
 }
 
 .reveal-button-locked:hover {
-  background-color: #a7f3d0;
-  border-color: #6ee7b7;
+  background-color: #f3f4f6;
 }
 
 .reveal-button-unlocked {
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background-color: transparent;
+  border: none;
 }
 
 /* Company Name Cell Blurred */
