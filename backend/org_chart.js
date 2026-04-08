@@ -622,17 +622,31 @@ const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrapp
   }
 
   const marginL = 20;
-  // Scale right margin with canvas width so legend never eats into the title on small charts
   const marginR = Math.min(200, Math.max(120, Math.round(canvasWidth * 0.18)));
 
-  // Center title over the plot area (between left margin and right margin)
-  const plotAreaCenter = (marginL + (canvasWidth - marginR)) / 2;
-  const titleX = plotAreaCenter / canvasWidth;
+  // The chart nodes are centered at centerXChart in data coords.
+  // Convert that to paper fraction: (centerXChart - xRange[0]) / (xRange[1] - xRange[0])
+  // Then map to paper coords (plot area is 0..1 in paper space)
+  const chartDataCenter = (minX + maxX) / 2;
+  const xRangeFinal = (() => {
+    // replicate the xRange after xShiftAmount is applied
+    let r = [minX - CONFIG.AXIS_PADDING, maxX + CONFIG.AXIS_PADDING];
+    const span = r[1] - r[0];
+    if (span < CONFIG.MIN_VIEWPORT_SPAN) {
+      const c = (r[0] + r[1]) / 2;
+      r = [c - CONFIG.MIN_VIEWPORT_SPAN / 2, c + CONFIG.MIN_VIEWPORT_SPAN / 2];
+    }
+    const cChart = (minX + maxX) / 2;
+    const cVP = (r[0] + r[1]) / 2;
+    const shift = cChart - cVP;
+    return [r[0] + shift, r[1] + shift];
+  })();
+  const titleXPaper = (chartDataCenter - xRangeFinal[0]) / (xRangeFinal[1] - xRangeFinal[0]);
 
   const layout = {
     title: {
       text: titleText,
-      x: titleX,
+      x: Math.max(0.05, Math.min(0.95, titleXPaper)),
       xref: 'paper',
       y: 0.98,
       xanchor: 'center',
