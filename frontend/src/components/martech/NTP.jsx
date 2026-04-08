@@ -297,6 +297,30 @@ const NTP = () => {
 
   const handleDownloadCSV = async () => {
     try {
+      // If rows are selected, download only those rows from filteredData
+      if (selectedRows.size > 0) {
+        const selectedData = filteredData.filter((_, index) => selectedRows.has(index));
+        const headers = [
+          'companyName', 'domain', 'category', 'technology',
+          'purchaseProbability', 'purchasePrediction'
+        ];
+        const csvContent = [
+          headers.join(','),
+          ...selectedData.map(row =>
+            headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`).join(',')
+          )
+        ].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'ntp_data.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
       const queryParams = new URLSearchParams();
       if (filters.companyName.length > 0) {
         filters.companyName.forEach(name => queryParams.append('companyName', name));
