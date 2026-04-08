@@ -818,7 +818,8 @@ const Technographics = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [pageLoading, setPageLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0); 
-  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0); 
+  const [totalGroupedRecords, setTotalGroupedRecords] = useState(0);
+  const isInitialMount = useRef(true); // skip currentPage effect on first render
   const rowsPerPage = 100;
   const scrollRefsMap = useRef(new Map()); 
 
@@ -1128,18 +1129,8 @@ const Technographics = () => {
     }
   };
 
-  const prefetchAdjacentPages = async (pageNum) => {
-    const pagesToPrefetch = [];
-    
-    if (pageNum > 1) pagesToPrefetch.push(pageNum - 1); 
-    if (pageNum < totalPages) pagesToPrefetch.push(pageNum + 1); 
-
-    pagesToPrefetch.forEach(page => {
-      if (!pageCache[page]) {
-        fetchPage(page).catch(() => {});
-      }
-    });
-  };
+  // Removed prefetchAdjacentPages - it caused data overwriting when prefetch
+  // called setTableData and replaced the currently displayed page's data
 
   useEffect(() => {
     const initializeData = async () => {
@@ -1198,12 +1189,31 @@ const Technographics = () => {
   useEffect(() => {
     setPageCache({});
     setCurrentPage(1);
+    setSelectedRows(new Set());
+    setRevealedRows(new Set());
+    setTableData([]);
     setPageLoading(true);
     fetchPage(1).finally(() => setPageLoading(false));
   }, [filters]);
 
   useEffect(() => {
-    if (currentPage === 1) return;
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    // Check frontend cache first - instant, no flash
+    if (pageCache[currentPage]) {
+      const cached = pageCache[currentPage];
+      setTableData(cached.data || []);
+      setTotalRecords(cached.total || 0);
+      setTotalPages(cached.pages || 0);
+      setSelectedRows(new Set());
+      setRevealedRows(new Set());
+      return;
+    }
+    // Not cached - keep old data visible while fetching (like NTP does)
+    setSelectedRows(new Set());
+    setRevealedRows(new Set());
     setPageLoading(true);
     fetchPage(currentPage).finally(() => setPageLoading(false));
   }, [currentPage]);
@@ -3360,27 +3370,14 @@ const Technographics = () => {
               <th style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }}>
                 <input
                   type="checkbox"
-                  checked={(() => {
-                    const rowsPerPageConst = rowsPerPage;
-                    const startIndex = (currentPage - 1) * rowsPerPageConst;
-                    const endIndex = startIndex + rowsPerPageConst;
-                    const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
-                    return currentPageRows.length > 0 && currentPageRows.every((_, idx) => selectedRows.has(startIndex + idx));
-                  })()}
+                  checked={groupedDataArray.length > 0 && groupedDataArray.every((_, idx) => selectedRows.has(idx))}
                   onChange={(e) => {
-                    const rowsPerPageConst = rowsPerPage;
-                    const startIndex = (currentPage - 1) * rowsPerPageConst;
-                    const endIndex = startIndex + rowsPerPageConst;
-                    const currentPageRows = groupedDataArray.slice(startIndex, endIndex);
-                    
                     if (e.target.checked) {
-                      const newSelected = new Set(selectedRows);
-                      currentPageRows.forEach((_, idx) => newSelected.add(startIndex + idx));
+                      const newSelected = new Set();
+                      groupedDataArray.forEach((_, idx) => newSelected.add(idx));
                       setSelectedRows(newSelected);
                     } else {
-                      const newSelected = new Set(selectedRows);
-                      currentPageRows.forEach((_, idx) => newSelected.delete(startIndex + idx));
-                      setSelectedRows(newSelected);
+                      setSelectedRows(new Set());
                     }
                   }}
                   style={{
@@ -3454,12 +3451,11 @@ const Technographics = () => {
                 
                 const rowsPerPageConst = rowsPerPage;
                 const pageNum = currentPage || 1;
-                const startIndex = (pageNum - 1) * rowsPerPageConst;
                 const paginatedData = groupedDataArray;
                 const totalPagesCount = totalPages || Math.ceil((totalRecords || 0) / rowsPerPageConst);
 
                 return paginatedData.map((row, index) => {
-                    const actualIndex = startIndex + index;
+                    const actualIndex = index;  // always 0-based since backend paginates
                     const isHighlighted = rowMatchesSearch(row);
                     const rowKey = `${actualIndex}-${row.companyName}`;
 
