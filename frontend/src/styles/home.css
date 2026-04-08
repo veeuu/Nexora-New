@@ -740,7 +740,6 @@
 .home-svg-carousel {
   width: 100%;
   position: relative;
-  overflow: hidden;
   border-radius: 12px;
   margin-top: 0px;
   background: #f8fafc;
@@ -749,29 +748,34 @@
   align-items: center;
 }
 
+.home-svg-carousel-inner {
+  width: 100%;
+  position: relative;
+  min-height: 200px;
+}
+
 .home-svg-slide {
   width: 100%;
   max-height: 420px;
   object-fit: contain;
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
 }
 
-.home-svg-slide-enter {
-  animation: slideInRight 0.4s ease forwards;
+.home-svg-slide-active {
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
 }
 
-.home-svg-slide-exit {
-  animation: slideOutLeft 0.4s ease forwards;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(60px); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-
-@keyframes slideOutLeft {
-  from { transform: translateX(0);     opacity: 1; }
-  to   { transform: translateX(-60px); opacity: 0; }
+.home-svg-slide-hidden {
+  opacity: 0;
+  position: absolute;
 }
 
 .home-svg-dots {

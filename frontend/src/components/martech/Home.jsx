@@ -20,27 +20,40 @@ const SLIDES = [svg1, svg2, svg3, svg4, svg5];
 
 const SvgCarousel = () => {
   const [current, setCurrent] = useState(0);
-  const [animating, setAnimating] = useState(false);
+  const [loaded, setLoaded] = useState(() => Array(SLIDES.length).fill(false));
+
+  // Preload all slides immediately
+  useEffect(() => {
+    SLIDES.forEach((src, i) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => setLoaded(prev => {
+        const next = [...prev];
+        next[i] = true;
+        return next;
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimating(true);
-      setTimeout(() => {
-        setCurrent(c => (c + 1) % SLIDES.length);
-        setAnimating(false);
-      }, 400);
+      setCurrent(c => (c + 1) % SLIDES.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="home-svg-carousel">
-      <img
-        key={current}
-        src={SLIDES[current]}
-        alt={`slide-${current + 1}`}
-        className={`home-svg-slide${animating ? ' home-svg-slide-exit' : ' home-svg-slide-enter'}`}
-      />
+      <div className="home-svg-carousel-inner">
+        {SLIDES.map((src, i) => (
+          <img
+            key={i}
+            src={src}
+            alt={`slide-${i + 1}`}
+            className={`home-svg-slide ${i === current ? 'home-svg-slide-active' : 'home-svg-slide-hidden'}`}
+          />
+        ))}
+      </div>
       <div className="home-svg-dots">
         {SLIDES.map((_, i) => (
           <span key={i} className={`home-svg-dot${i === current ? ' home-svg-dot-active' : ''}`} />
