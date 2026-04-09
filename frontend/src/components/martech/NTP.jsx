@@ -1082,9 +1082,9 @@ const NTP = () => {
                 />
               </th>
               <th>Company Name</th>
-              <th>Category</th>
-              <th>Purchase Prediction</th>
+              {/* <th>Category</th> */}
               <th>Technology</th>
+              <th>Purchase Prediction</th>
               <th>Purchase Propensity (%)</th>
             </tr>
           </thead>
@@ -1190,21 +1190,7 @@ const NTP = () => {
                         </td>
                       )}
 
-                      {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan}>
-                          <span className="ntp-table-cell-category">
-                            {renderTechLogo(company.category)}
-                            {company.category}
-                          </span>
-                        </td>
-                      )}
-
-                      {}
-                      {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan}>
-                          {company.purchasePrediction}
-                        </td>
-                      )}
+                      {/* Category column hidden */}
 
                       {}
                       <td>
@@ -1228,6 +1214,13 @@ const NTP = () => {
                           </span>
                         )}
                       </td>
+
+                      {}
+                      {isFirstTechRow && (
+                        <td rowSpan={companyRowSpan}>
+                          {company.purchasePrediction}
+                        </td>
+                      )}
 
                       {}
                       <td>
