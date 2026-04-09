@@ -1373,9 +1373,7 @@ const NTP = () => {
               })()}
             </div>
 
-            <div className="ntp-pagination-results">
-              Showing {startIndex}-{endIndex} of {(totalRecords || 0).toLocaleString()} results
-            </div>
+            <div style={{ minWidth: '120px' }} />
           </div>
         );
       })()}

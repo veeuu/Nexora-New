@@ -313,9 +313,7 @@ const Keywords = () => {
             })()}
           </div>
 
-          <div className="pagination-results">
-            Showing {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, filteredData.length)} of {filteredData.length.toLocaleString()} results
-          </div>
+          <div style={{ minWidth: '120px' }} />
         </div>
       )}
     </div>

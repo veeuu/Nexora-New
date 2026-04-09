@@ -4055,13 +4055,8 @@ const Technographics = () => {
               })()}
             </div>
 
-            <div style={{
-              fontSize: '14px',
-              color: '#6b7280',
-              fontWeight: '500'
-            }}>
-              Showing {startIndex + 1}-{endIndex} of {(totalRecords || 0).toLocaleString()} results
-            </div>
+            <div style={{ minWidth: '120px' }} />
+
           </div>
         );
       })()}

@@ -2932,13 +2932,7 @@ if (aQtr.year !== bQtr.year) {
                             })()}
                         </div>
 
-                        <div style={{
-                            fontSize: '14px',
-                            color: '#6b7280',
-                            fontWeight: '500'
-                        }}>
-                            Showing {totalRecords === 0 ? 0 : ((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, totalRecords)} of {totalRecords.toLocaleString()} results
-                        </div>
+                        <div style={{ minWidth: '120px' }} />
                     </div>
                     )}
                 </div>
