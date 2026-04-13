@@ -179,46 +179,52 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     }
   };
 
-  const handleAnalyzeDifferentCategory = () => {
+  const handleAnalyzeDifferentCategory = async () => {
     setConversationStage('category-input');
     
-    // Get company-specific categories instead of all categories
     const data = ntpData || tableData;
-    if (!data || data.length === 0) {
-      setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no data available.' }]);
-      return;
+
+    // Try local data first
+    const localRows = (data || []).filter(row =>
+      String(row.companyName || '').toLowerCase() === (selectedCompany || '').toLowerCase() &&
+      row.category !== 'Not Detected' &&
+      row.purchasePrediction !== 'Not Detected' &&
+      row.purchasePrediction !== 'NOT detected'
+    );
+
+    let rows = localRows;
+
+    // If not in local data, fetch from API
+    if (rows.length === 0 && selectedCompany) {
+      try {
+        const params = new URLSearchParams();
+        params.append('companyName', selectedCompany);
+        params.append('page', '1');
+        params.append('limit', '100');
+        const resp = await apiFetch(`/api/ntp?${params.toString()}`);
+        if (resp.ok) {
+          const json = await resp.json();
+          rows = (json.data || []).filter(row =>
+            String(row.companyName || '').toLowerCase() === selectedCompany.toLowerCase() &&
+            row.category !== 'Not Detected' &&
+            row.purchasePrediction !== 'Not Detected' &&
+            row.purchasePrediction !== 'NOT detected'
+          );
+        }
+      } catch (e) { /* ignore */ }
     }
-    
-    // Get unique categories for this company only
+
     const companyCategoriesSet = new Set();
-    data.forEach(row => {
-      if (String(row.companyName || '').toLowerCase() === selectedCompany.toLowerCase() &&
-          row.category !== 'Not Detected' &&
-          row.purchasePrediction !== 'Not Detected' &&
-          row.purchasePrediction !== 'NOT detected') {
-        companyCategoriesSet.add(row.category);
-      }
-    });
+    rows.forEach(row => companyCategoriesSet.add(row.category));
     
     const companyCategories = Array.from(companyCategoriesSet)
       .map(cat => {
         const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-        const categoryMap = {
-          'database': 'Database',
-          'ai-ml': 'AI/ML',
-          'crm': 'CRM',
-          'cloud': 'Cloud',
-          'security': 'Security',
-          'analytics': 'Analytics',
-          'infrastructure': 'Infrastructure',
-          'devops': 'DevOps'
-        };
-        const label = categoryMap[catLower] || cat;
-        return { id: catLower, label: label, originalName: cat };
+        const categoryMap = { 'database': 'Database', 'ai-ml': 'AI/ML', 'crm': 'CRM', 'cloud': 'Cloud', 'security': 'Security', 'analytics': 'Analytics', 'infrastructure': 'Infrastructure', 'devops': 'DevOps' };
+        return { id: catLower, label: categoryMap[catLower] || cat, originalName: cat };
       })
       .sort((a, b) => a.label.localeCompare(b.label));
     
-    // Add ALL option at the end
     companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
     
     setMessages(prev => [...prev, {
@@ -554,7 +560,8 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     let categoryToMatch = null;
     if (categoryId && categoryId !== 'all') {
       const categoryObj = dynamicCategories.find(c => c.id === categoryId);
-      categoryToMatch = categoryObj ? categoryObj.originalName : null;
+      // Use originalName if found, otherwise use categoryId directly as fallback
+      categoryToMatch = categoryObj ? categoryObj.originalName : categoryId;
     }
 
     data.forEach(row => {
@@ -565,7 +572,11 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
       if (rowCompanyName === companyLower) {
         // If category is provided, also match category
         if (categoryToMatch) {
-          if (rowCategory && rowCategory.toLowerCase() === categoryToMatch.toLowerCase()) {
+          if (rowCategory && (
+            rowCategory.toLowerCase() === categoryToMatch.toLowerCase() ||
+            rowCategory.toLowerCase().replace(/[\s\/]+/g, '-') === categoryId.toLowerCase() ||
+            rowCategory.toLowerCase().replace(/[\s\/]+/g, '') === categoryId.toLowerCase().replace(/-/g, '')
+          )) {
             results.push({
               companyName: row.companyName,
               technology: row.technology,
