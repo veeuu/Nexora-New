@@ -701,13 +701,13 @@ const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrapp
 
   const layout = {
     title: {
-      text: titleText,
+      text: `<b>${titleText}</b>`,
       x: Math.max(0.05, Math.min(0.95, titleXPaper)),
       xref: 'paper',
       y: 0.98,
       xanchor: 'center',
       yanchor: 'top',
-      font: { family: 'Calibri, Arial', size: 28, color: CONFIG.FONT_COLOR_ON_LIGHT_BG }
+      font: { family: 'Calibri, Arial', size: 31, color: CONFIG.FONT_COLOR_ON_LIGHT_BG }
     },
     showlegend: true,
     hovermode: 'closest',
