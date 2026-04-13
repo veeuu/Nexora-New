@@ -21,6 +21,14 @@ const SLIDES = [svg1, svg2, svg3, svg4, svg5];
 const SvgCarousel = () => {
   const [current, setCurrent] = useState(0);
   const [loaded, setLoaded] = useState(() => Array(SLIDES.length).fill(false));
+  const intervalRef = useRef(null);
+
+  const startInterval = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCurrent(c => (c + 1) % SLIDES.length);
+    }, 5000);
+  };
 
   // Preload all slides immediately
   useEffect(() => {
@@ -36,11 +44,14 @@ const SvgCarousel = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent(c => (c + 1) % SLIDES.length);
-    }, 5000);
-    return () => clearInterval(interval);
+    startInterval();
+    return () => clearInterval(intervalRef.current);
   }, []);
+
+  const handleDotClick = (i) => {
+    setCurrent(i);
+    startInterval(); // reset timer so it doesn't jump immediately
+  };
 
   return (
     <div className="home-svg-carousel">
@@ -56,7 +67,12 @@ const SvgCarousel = () => {
       </div>
       <div className="home-svg-dots">
         {SLIDES.map((_, i) => (
-          <span key={i} className={`home-svg-dot${i === current ? ' home-svg-dot-active' : ''}`} />
+          <span
+            key={i}
+            className={`home-svg-dot${i === current ? ' home-svg-dot-active' : ''}`}
+            onClick={() => handleDotClick(i)}
+            style={{ cursor: 'pointer' }}
+          />
         ))}
       </div>
     </div>
