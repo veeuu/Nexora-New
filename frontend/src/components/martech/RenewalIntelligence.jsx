@@ -1267,87 +1267,92 @@ if (aQtr.year !== bQtr.year) {
                       </div>
                       <div
                         onClick={() => {
-                          if (filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0) {
-
-                            handleFilterChange('companyName', []);
+                          const filteredCompanies = getUniqueCompanies()
+                            .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                          const allFilteredSelected = filteredCompanies.length > 0 &&
+                            filteredCompanies.every(c => filters.companyName.includes(c));
+                          if (allFilteredSelected) {
+                            handleFilterChange('companyName', filters.companyName.filter(c => !filteredCompanies.includes(c)));
                           } else {
-
-                            handleFilterChange('companyName', getUniqueCompanies());
+                            handleFilterChange('companyName', [...new Set([...filters.companyName, ...filteredCompanies])]);
                           }
                         }}
                         style={{
                           padding: '10px 12px',
                           cursor: 'pointer',
-                          backgroundColor: filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white',
+                          backgroundColor: 'white',
                           borderBottom: '1px solid #e5e7eb',
                           fontSize: '14px',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '8px'
                         }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0 ? '#f3f4f6' : 'white'}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
                       >
                         <input
                           type="checkbox"
-                          checked={filters.companyName.length === getUniqueCompanies().length && filters.companyName.length > 0}
+                          checked={(() => {
+                            const filteredCompanies = getUniqueCompanies()
+                              .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                            return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.companyName.includes(c));
+                          })()}
                           onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
+                          style={{ cursor: 'pointer', width: '16px', height: '16px' }}
                         />
                         All
                       </div>
-                      {getUniqueCompanies()
-                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
-                        .map((option, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => {
-                            const newCompanies = filters.companyName.includes(option)
-                              ? filters.companyName.filter(c => c !== option)
-                              : [...filters.companyName, option];
-                            handleFilterChange('companyName', newCompanies);
-                          }}
-                          style={{
-                            padding: '10px 12px',
-                            cursor: 'pointer',
-                            backgroundColor: filters.companyName.includes(option) ? '#dbeafe' : 'white',
-                            borderBottom: '1px solid #e5e7eb',
-                            fontSize: '14px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = filters.companyName.includes(option) ? '#dbeafe' : 'white'}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={filters.companyName.includes(option)}
-                            onChange={() => {}}
-                            style={{
-                              cursor: 'pointer',
-                              width: '16px',
-                              height: '16px'
-                            }}
-                          />
-                          <span style={{ color: '#1f2937' }}>{option}</span>
-                        </div>
-                      ))}
-
-                      {getUniqueCompanies().filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueCompanies().length > 0 && (
-                        <div style={{
-                          padding: '10px 12px',
-                          textAlign: 'center',
-                          color: '#999',
-                          fontSize: '13px'
-                        }}>
-                          No companies found
-                        </div>
-                      )}
+                      {(() => {
+                        const allFiltered = getUniqueCompanies()
+                          .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                        const visible = allFiltered.slice(0, 100);
+                        const hasMore = allFiltered.length > 100;
+                        return (
+                          <>
+                            {visible.map((option, idx) => (
+                              <div
+                                key={idx}
+                                onClick={() => {
+                                  const newCompanies = filters.companyName.includes(option)
+                                    ? filters.companyName.filter(c => c !== option)
+                                    : [...filters.companyName, option];
+                                  handleFilterChange('companyName', newCompanies);
+                                }}
+                                style={{
+                                  padding: '10px 12px',
+                                  cursor: 'pointer',
+                                  backgroundColor: filters.companyName.includes(option) ? '#dbeafe' : 'white',
+                                  borderBottom: '1px solid #e5e7eb',
+                                  fontSize: '14px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = filters.companyName.includes(option) ? '#dbeafe' : 'white'}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={filters.companyName.includes(option)}
+                                  onChange={() => {}}
+                                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                />
+                                <span style={{ color: '#1f2937' }}>{option}</span>
+                              </div>
+                            ))}
+                            {hasMore && (
+                              <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
+                                Showing 100 of {allFiltered.length} — type to search
+                              </div>
+                            )}
+                            {allFiltered.length === 0 && getUniqueCompanies().length > 0 && (
+                              <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
+                                No companies found
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
 
                       {}
                       <div style={{

@@ -669,28 +669,44 @@ const NTP = () => {
                     className="ntp-filter-search-input"
                   />
                 </div>
-                {getUniqueOptions('companyName')
-                  .filter(option => option.toLowerCase().includes(companyNameSearch.toLowerCase()))
-                  .map((option, idx) => {
-                  const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
+                {(() => {
+                  const allFiltered = getUniqueOptions('companyName')
+                    .filter(option => option.toLowerCase().includes(companyNameSearch.toLowerCase()));
+                  const visible = allFiltered.slice(0, 100);
+                  const hasMore = allFiltered.length > 100;
                   return (
-                    <div
-                      key={idx}
-                      onClick={() => {
-                        handleFilterChange('companyName', option);
-                      }}
-                      className={`ntp-filter-option ${isSelected ? 'selected' : ''}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        className="ntp-filter-option-checkbox"
-                      />
-                      {option}
-                    </div>
+                    <>
+                      {visible.map((option, idx) => {
+                        const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => handleFilterChange('companyName', option)}
+                            className={`ntp-filter-option ${isSelected ? 'selected' : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}}
+                              className="ntp-filter-option-checkbox"
+                            />
+                            {option}
+                          </div>
+                        );
+                      })}
+                      {hasMore && (
+                        <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
+                          Showing 100 of {allFiltered.length} — type to search
+                        </div>
+                      )}
+                      {allFiltered.length === 0 && (
+                        <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
+                          No companies found
+                        </div>
+                      )}
+                    </>
                   );
-                })}
+                })()}
 
                 {}
                 <div className="ntp-filter-footer">

@@ -1,5 +1,5 @@
 import apiFetch from '../../utils/apiFetch';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import IntentPieChart from './IntentPieChart';
@@ -199,7 +199,23 @@ const Intent = () => {
     setCurrentPage(1);
   };
 
+  // Memoized unique companies - only recomputes when tableData changes
+  const uniqueCompanies = useMemo(() => {
+    if (!tableData || tableData.length === 0) return [];
+    const seen = new Set();
+    const result = [];
+    for (const item of tableData) {
+      const v = item.companyName;
+      if (v && v.trim() && !seen.has(v)) {
+        seen.add(v);
+        result.push(v);
+      }
+    }
+    return result.sort();
+  }, [tableData]);
+
   const getUniqueOptions = (key) => {
+    if (key === 'companyName') return uniqueCompanies;
     if (!tableData) return [];
     const allValues = tableData.map(item => item[key]);
     return [...new Set(allValues)].filter(v => v && v.trim()).sort();
