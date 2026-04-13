@@ -570,7 +570,7 @@ traces.push({
     mode: 'markers',
     marker: { size: 15, color: CONFIG.COLOR_DIRECT_REPORTEE_FILL, symbol: 'square' },
     name: 'Direct Reportee &nbsp; &nbsp; &nbsp;',
-    showlegend: true,
+    showlegend: false,
     hoverinfo: 'none'
   });
 
