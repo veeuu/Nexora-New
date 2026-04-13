@@ -1918,10 +1918,21 @@ const Technographics = () => {
                 {}
                 <div
                   onClick={() => {
-                    if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                      setFilters(prev => ({ ...prev, companyName: [] }));
+                    const filteredCompanies = getUniqueOptions('companyName')
+                      .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                    const allFilteredSelected = filteredCompanies.length > 0 &&
+                      filteredCompanies.every(c => filters.companyName.includes(c));
+
+                    if (allFilteredSelected) {
+                      // Deselect only the filtered ones
+                      setFilters(prev => ({
+                        ...prev,
+                        companyName: prev.companyName.filter(c => !filteredCompanies.includes(c))
+                      }));
                     } else {
-                      setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
+                      // Select all filtered ones (merge with existing selections)
+                      const merged = [...new Set([...filters.companyName, ...filteredCompanies])];
+                      setFilters(prev => ({ ...prev, companyName: merged }));
                     }
                     setCurrentPage(1);
                     setPageCache({});
@@ -1941,12 +1952,25 @@ const Technographics = () => {
                 >
                   <input
                     type="checkbox"
-                    checked={filters.companyName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
+                    checked={(() => {
+                      const filteredCompanies = getUniqueOptions('companyName')
+                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                      return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.companyName.includes(c));
+                    })()}
                     onChange={() => {
-                      if (filters.companyName.length === getUniqueOptions('companyName').length && filters.companyName.length > 0) {
-                        setFilters(prev => ({ ...prev, companyName: [] }));
+                      const filteredCompanies = getUniqueOptions('companyName')
+                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                      const allFilteredSelected = filteredCompanies.length > 0 &&
+                        filteredCompanies.every(c => filters.companyName.includes(c));
+
+                      if (allFilteredSelected) {
+                        setFilters(prev => ({
+                          ...prev,
+                          companyName: prev.companyName.filter(c => !filteredCompanies.includes(c))
+                        }));
                       } else {
-                        setFilters(prev => ({ ...prev, companyName: getUniqueOptions('companyName') }));
+                        const merged = [...new Set([...filters.companyName, ...filteredCompanies])];
+                        setFilters(prev => ({ ...prev, companyName: merged }));
                       }
                       setCurrentPage(1);
                       setPageCache({});
@@ -1968,49 +1992,65 @@ const Technographics = () => {
                     {loading ? 'Loading companies...' : 'No companies found'}
                   </div>
                 ) : (
-                  getUniqueOptions('companyName')
-                    .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
-                    .map((company, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      handleFilterChange('companyName', company);
-                    }}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      justifyContent: 'space-between'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <input
-                        type="checkbox"
-                        checked={filters.companyName.includes(company)}
-                        onChange={() => {}}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ color: '#1f2937' }}>{company}</span>
-                    </div>
-                  </div>
-                ))
-                )}
+                  (() => {
+                    const allCompanies = getUniqueOptions('companyName');
+                    const filtered = allCompanies.filter(company =>
+                      company.toLowerCase().includes(companySearchTerm.toLowerCase())
+                    );
+                    // Only render first 100 to prevent browser freeze
+                    const visible = filtered.slice(0, 100);
+                    const hasMore = filtered.length > 100;
 
-                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueOptions('companyName').length > 0 && (
-                  <div style={{
-                    padding: '10px 12px',
-                    textAlign: 'center',
-                    color: '#999',
-                    fontSize: '13px'
-                  }}>
-                    No companies found
-                  </div>
+                    return (
+                      <>
+                        {visible.map((company, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => handleFilterChange('companyName', company)}
+                            style={{
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              borderBottom: '1px solid #e5e7eb',
+                              fontSize: '14px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              justifyContent: 'space-between'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <input
+                                type="checkbox"
+                                checked={filters.companyName.includes(company)}
+                                onChange={() => {}}
+                                style={{ cursor: 'pointer' }}
+                              />
+                              <span style={{ color: '#1f2937' }}>{company}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {hasMore && (
+                          <div style={{
+                            padding: '10px 12px',
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '12px',
+                            background: '#f9fafb',
+                            borderTop: '1px solid #e5e7eb'
+                          }}>
+                            Showing 100 of {filtered.length} — type to search
+                          </div>
+                        )}
+                        {filtered.length === 0 && (
+                          <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
+                            No companies match "{companySearchTerm}"
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()
                 )}
 
                 {}
