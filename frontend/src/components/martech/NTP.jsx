@@ -1114,17 +1114,14 @@ const NTP = () => {
 
               return allCompanies.map((company, companyIndex) => {
                 const actualIndex = companyIndex;
-                const companyRowSpan = company.technologies.length > 3 ? 1 : company.technologies.length;
+                const companyRowSpan = 1;
 
-                return company.technologies.map((tech, techIndex) => {
-                  const isFirstTechRow = techIndex === 0;
-                  
-                  if (company.technologies.length > 3 && techIndex > 0) {
-                    return null;
-                  }
+                // Only render one row per company — all techs stacked in the cell
+                const tech = company.technologies[0] || {};
+                const isFirstTechRow = true;
 
-                  return (
-                    <tr key={`${actualIndex}-${techIndex}`} className={isFirstTechRow ? 'company-separator' : ''}>
+                  return [(
+                    <tr key={`${companyIndex}-0`} className="company-separator">
                       {}
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} className="ntp-table-cell-checkbox">
@@ -1193,27 +1190,28 @@ const NTP = () => {
                       {/* Category column hidden */}
 
                       {}
-                      <td>
-                        {company.technologies.length > 3 ? (
-                          <div 
-                            ref={techScrollRef}
+                      {isFirstTechRow && (
+                        <td className="ntp-tech-cell" rowSpan={companyRowSpan}>
+                          <div
                             className="ntp-tech-scroll-container"
-                            onScroll={handleTechScroll}
+                            data-sync-index={companyIndex}
+                            data-sync-role="tech"
+                            onScroll={(e) => {
+                              const paired = document.querySelector(
+                                `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="propensity"]`
+                              );
+                              if (paired) paired.scrollTop = e.target.scrollTop;
+                            }}
                           >
                             {company.technologies.map((t, idx) => (
                               <span key={idx} className="ntp-tech-item">
-                                {renderTechLogo(t.technology)}
+                                <span className="ntp-tech-icon-slot">{renderTechLogo(t.technology)}</span>
                                 {t.technology}
                               </span>
                             ))}
                           </div>
-                        ) : (
-                          <span className="ntp-tech-item">
-                            {renderTechLogo(tech.technology)}
-                            {tech.technology}
-                          </span>
-                        )}
-                      </td>
+                        </td>
+                      )}
 
                       {}
                       {isFirstTechRow && (
@@ -1223,15 +1221,21 @@ const NTP = () => {
                       )}
 
                       {}
-                      <td>
-                        {company.technologies.length > 3 ? (
-                          <div 
-                            ref={propensityScrollRef}
+                      {isFirstTechRow && (
+                        <td className="ntp-propensity-cell" rowSpan={companyRowSpan}>
+                          <div
                             className="ntp-tech-scroll-container"
-                            onScroll={handlePropensityScroll}
+                            data-sync-index={companyIndex}
+                            data-sync-role="propensity"
+                            onScroll={(e) => {
+                              const paired = document.querySelector(
+                                `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="tech"]`
+                              );
+                              if (paired) paired.scrollTop = e.target.scrollTop;
+                            }}
                           >
                             {company.technologies.map((t, idx) => (
-                              <span key={idx} className="ntp-propensity-item">
+                              <span key={idx} className="ntp-propensity-item" style={{ height: '24px', display: 'flex', alignItems: 'center' }}>
                                 {(() => {
                                   const val = String(t.purchaseProbability || '0').replace('%', '');
                                   return `${parseFloat(val).toFixed(2)}%`;
@@ -1239,18 +1243,10 @@ const NTP = () => {
                               </span>
                             ))}
                           </div>
-                        ) : (
-                          <span className="ntp-propensity-item">
-                            {(() => {
-                              const val = String(tech.purchaseProbability || '0').replace('%', '');
-                              return `${parseFloat(val).toFixed(2)}%`;
-                            })()}
-                          </span>
-                        )}
-                      </td>
+                        </td>
+                      )}
                     </tr>
-                  );
-                }).filter(row => row !== null);
+                  )];
               });
             })()}
           </tbody>

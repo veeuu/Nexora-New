@@ -734,12 +734,49 @@ tr:hover {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 96px;
+  max-height: 88px; /* shows exactly 3 items (3×24px + 2×8px gaps) */
   overflow-y: auto;
   padding-right: 4px;
   width: 100%;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.ntp-tech-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.ntp-tech-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  height: 24px;
+  line-height: 24px;
+}
+
+/* Fixed-width icon slot so text always starts at the same position */
+.ntp-tech-icon-slot {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ntp-tech-icon-slot img,
+.ntp-tech-icon-slot svg {
+  width: 20px !important;
+  height: 20px !important;
+  object-fit: contain;
+}
+
+/* Technology column td always top-aligned */
+.ntp-container td.ntp-tech-cell {
+  vertical-align: top !important;
+  padding-top: 14px !important;
 }
 
 .ntp-tech-scroll-container::-webkit-scrollbar {
@@ -758,13 +795,6 @@ tr:hover {
 
 .ntp-tech-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
-}
-
-.ntp-tech-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
 }
 
 .ntp-propensity-cell {
