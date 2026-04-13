@@ -1935,18 +1935,6 @@ if (aQtr.year !== bQtr.year) {
                       maxHeight: '300px',
                       overflowY: 'auto'
                     }}>
-                      <div style={{
-                        padding: '10px 12px',
-                        fontSize: '11px',
-                        color: '#6b7280',
-                        borderBottom: '1px solid #e5e7eb',
-                        backgroundColor: '#f9fafb'
-                      }}>
-                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>Renewal Ranges:</div>
-                        <div>• Immediate (&lt;1 year)</div>
-                        <div>• Mid-Term (1–2 years)</div>
-                        <div>• Long-Term (2+ years)</div>
-                      </div>
                       <div
                         onClick={() => {
                           if (filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0) {
