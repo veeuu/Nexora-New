@@ -961,7 +961,11 @@ const Technographics = () => {
       if (filters.region.length > 0) filters.region.forEach(region => queryParams.append('region', region));
       if (filters.technology.length > 0) filters.technology.forEach(tech => queryParams.append('technology', tech));
       if (filters.category.length > 0) filters.category.forEach(cat => queryParams.append('category', cat));
-      if (filters.industry.length > 0) filters.industry.forEach(ind => queryParams.append('industry', ind));
+      if (filters.industry.length > 0) {
+        const allIndustries = getUniqueOptions('industry');
+        const isAllSelected = allIndustries.length > 0 && filters.industry.length >= allIndustries.length;
+        if (!isAllSelected) filters.industry.forEach(ind => queryParams.append('industry', ind));
+      }
       if (filters.employeeSize.length > 0) filters.employeeSize.forEach(size => queryParams.append('employeeSize', size));
       if (filters.revenue.length > 0) filters.revenue.forEach(rev => queryParams.append('revenue', rev));
 
@@ -1097,7 +1101,12 @@ const Technographics = () => {
         filters.category.forEach(cat => queryParams.append('category', cat));
       }
       if (filters.industry.length > 0) {
-        filters.industry.forEach(ind => queryParams.append('industry', ind));
+        // Only send industry filter if NOT all industries selected (all = no filter needed)
+        const allIndustries = getUniqueOptions('industry');
+        const isAllSelected = allIndustries.length > 0 && filters.industry.length >= allIndustries.length;
+        if (!isAllSelected) {
+          filters.industry.forEach(ind => queryParams.append('industry', ind));
+        }
       }
       if (filters.employeeSize.length > 0) {
         filters.employeeSize.forEach(size => queryParams.append('employeeSize', size));
