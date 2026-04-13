@@ -136,8 +136,26 @@ const BuyingGroup = () => {
 
         window.addEventListener('message', handleMessage);
 
+        // Scroll iframe content to horizontal center after load
+        const iframe = iframeRef.current;
+        const scrollToCenter = () => {
+            try {
+                const doc = iframe.contentDocument || iframe.contentWindow?.document;
+                if (doc && doc.documentElement) {
+                    const scrollWidth = doc.documentElement.scrollWidth;
+                    const clientWidth = doc.documentElement.clientWidth;
+                    doc.documentElement.scrollLeft = (scrollWidth - clientWidth) / 2;
+                    doc.body.scrollLeft = (scrollWidth - clientWidth) / 2;
+                }
+            } catch (err) {
+                // cross-origin fallback — ignore
+            }
+        };
+        iframe.addEventListener('load', scrollToCenter);
+
         return () => {
             window.removeEventListener('message', handleMessage);
+            iframe.removeEventListener('load', scrollToCenter);
         };
     }, [orgChartUrl]);
 

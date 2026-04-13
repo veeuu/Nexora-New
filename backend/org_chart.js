@@ -11,7 +11,7 @@ const CONFIG = {
   VERTICAL_GAP: 0.18,
   TOP_PADDING: 0.10,
   SIDE_PADDING: 0.02,
-  MAX_CHARS_PER_LINE: 22,
+  MAX_CHARS_PER_LINE: 12,
   MAX_NAME_LINES: 2,
   MAX_ROLE_LINES: 2,
   CHART_GLOBAL_X_OFFSET: 0.0,
@@ -84,32 +84,48 @@ function readCSVFile(csvFilePath) {
 
 function getBoxDimensionsForCompany(companyData) {
   const n = companyData.length;
+  const charsPerLine = CONFIG.MAX_CHARS_PER_LINE;
 
-  // Find the actual longest name/role to ensure text fits
-  let maxChars = 0;
+  // Find the longest single line after wrapping (what actually renders in the box)
+  let maxLineChars = 0;
   for (const row of companyData) {
-    const nameLen = String(row.Name || '').trim().length;
-    const roleLen = String(row.Role || '').trim().length;
-    maxChars = Math.max(maxChars, nameLen, roleLen);
+    const name = String(row.Name || '').trim();
+    const role = String(row.Role || '').trim();
+    // Simulate wrapping: find longest word-wrapped line
+    for (const text of [name, role]) {
+      const words = text.split(' ');
+      let line = '';
+      for (const word of words) {
+        const candidate = line ? line + ' ' + word : word;
+        if (candidate.length <= charsPerLine) {
+          line = candidate;
+        } else {
+          maxLineChars = Math.max(maxLineChars, line.length);
+          line = word;
+        }
+      }
+      maxLineChars = Math.max(maxLineChars, line.length);
+    }
   }
 
-  const charsPerLine = 18;
+  // Each char needs ~0.095 coordinate units at current font size, plus padding
+  const minWidthForText = maxLineChars * 0.095 + 0.40;
 
-  // Width: scale with employee count, always wide enough for text
-  const minWidthForText = Math.min(maxChars, charsPerLine) * 0.052 + 0.22;
   let baseWidth;
-  if (n <= 3)       baseWidth = 0.90;
-  else if (n <= 6)  baseWidth = 0.95;
-  else if (n <= 10) baseWidth = 1.00;
-  else if (n <= 20) baseWidth = 1.05;
-  else              baseWidth = 1.10;
+  if (n <= 3)       baseWidth = 1.50;
+  else if (n <= 6)  baseWidth = 1.60;
+  else if (n <= 10) baseWidth = 1.70;
+  else if (n <= 20) baseWidth = 1.80;
+  else              baseWidth = 1.90;
 
-  const boxWidth = Math.min(1.40, Math.max(baseWidth, minWidthForText));
+  const boxWidth = Math.min(2.80, Math.max(baseWidth, minWidthForText));
 
-  // Height: always short — enforce rectangle shape (width ~3x height)
-  // Fixed at 0.22 for 1 line, 0.30 for 2 lines
-  const needsTwoLines = maxChars > charsPerLine;
-  const boxHeight = needsTwoLines ? 0.30 : 0.22;
+  // Height based on whether wrapping produces 2 lines
+  const maxTotalChars = Math.max(...companyData.map(r =>
+    Math.max(String(r.Name || '').trim().length, String(r.Role || '').trim().length)
+  ));
+  const needsTwoLines = maxTotalChars > charsPerLine;
+  const boxHeight = needsTwoLines ? 0.50 : 0.40;
 
   return { boxWidth, boxHeight, charsPerLine };
 }
@@ -223,6 +239,43 @@ function sanitizeFilename(name) {
   name = name.replace(/[^\w\s-]/g, '').trim();
   name = name.replace(/[-\s]+/g, '_');
   return name || 'untitled_chart';
+}
+
+/**
+ * If a name exceeds charsPerLine, insert an extra space after the first word
+ * so it wraps consistently at the same point everywhere it appears.
+ */
+function normalizeNameForWrapping(name, charsPerLine) {
+  if (!name || name.length <= charsPerLine) return name;
+  const spaceIdx = name.indexOf(' ');
+  if (spaceIdx === -1) return name; // single word, can't split
+  return name.slice(0, spaceIdx) + '  ' + name.slice(spaceIdx + 1);
+}
+
+/**
+ * Pre-process data rows: normalize all Name and Reports To fields
+ * so wrapping is consistent everywhere the name appears.
+ */
+function normalizeDataNames(data, charsPerLine) {
+  // First pass: build mapping of original name -> normalized name
+  const nameMap = new Map();
+  for (const row of data) {
+    const original = String(row.Name || '').trim();
+    if (original) {
+      nameMap.set(original, normalizeNameForWrapping(original, charsPerLine));
+    }
+  }
+
+  // Second pass: apply normalization to Name and Reports To
+  return data.map(row => {
+    const originalName = String(row.Name || '').trim();
+    const originalReportsTo = String(row['Reports To'] || '').trim();
+    return {
+      ...row,
+      'Name': nameMap.get(originalName) || originalName,
+      'Reports To': nameMap.get(originalReportsTo) || originalReportsTo,
+    };
+  });
 }
 
 function buildTreeFromData(data) {
@@ -411,15 +464,18 @@ function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
 }
 
 function generateOrgChartPlotly(data, companyName = 'Organization', location = '', customBoxWidth = null, customBoxHeight = null) {
+  // Normalize names for consistent wrapping before anything else
+  const charsPerLine = CONFIG.MAX_CHARS_PER_LINE;
+  data = normalizeDataNames(data, charsPerLine);
+
   const { employees, roots, edges } = buildTreeFromData(data);
 
   // Get dynamic box dimensions based on company data size
-  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight, charsPerLine: dynamicCharsPerLine } = getBoxDimensionsForCompany(data);
+  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight } = getBoxDimensionsForCompany(data);
 
   // Use custom dimensions if provided, otherwise use dynamic
   const boxWidth = customBoxWidth !== null ? customBoxWidth : dynamicBoxWidth;
   const boxHeight = customBoxHeight !== null ? customBoxHeight : dynamicBoxHeight;
-  const charsPerLine = dynamicCharsPerLine;
 
 const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
 
@@ -793,18 +849,23 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 
     .chart-wrapper {
       flex: 1;
-      overflow: visible !important;
+      overflow-x: auto;
+      overflow-y: visible;
       background-color: white;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
       position: relative;
+    }
+
+    .chart-inner {
+      display: inline-block;
+      padding: 0 50%;
+      min-width: 100%;
     }
 
     #chart {
       background-color: white;
       transform-origin: top center;
       transition: transform 0.2s ease;
+      display: inline-block;
     }
 
     .js-plotly-plot .plotly svg {
@@ -819,8 +880,10 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
 </head>
 <body>
   <div class="container">
-    <div class="chart-wrapper">
-      <div id="chart"></div>
+    <div class="chart-wrapper" id="chartWrapper">
+      <div class="chart-inner">
+        <div id="chart"></div>
+      </div>
     </div>
   </div>
   <script>
@@ -864,13 +927,13 @@ function generateOrgChartHTML(data, companyName = 'Organization', location = '')
     if (layout && layout.annotations) {
       Plotly.newPlot('chart', data, layout, config);
       
-      // After render, ensure the wrapper never clips — scrolling is handled by body
+      // After render, scroll wrapper to horizontal center
       setTimeout(() => {
-        const wrapper = document.querySelector('.chart-wrapper');
+        const wrapper = document.getElementById('chartWrapper');
         if (wrapper) {
-          wrapper.style.overflow = 'visible';
+          wrapper.scrollLeft = (wrapper.scrollWidth - wrapper.clientWidth) / 2;
         }
-      }, 200);
+      }, 300);
     } else {
       document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
     }
