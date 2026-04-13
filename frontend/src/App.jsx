@@ -1,10 +1,20 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import LandingPage from './components/LandingPage';
+import trackPageView from './utils/pageTracker';
 import './styles.css';
+
+// Track route changes
+function RouteTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+  return null;
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -101,6 +111,7 @@ function App() {
 
   return (
     <div className="App">
+      <RouteTracker />
       <Routes>
         <Route 
           path="/" 

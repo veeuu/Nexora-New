@@ -6,7 +6,7 @@ const connectDB = require('./config/db');
 const { connectPG } = require('./config/pgdb');
 const requestLogger = require('./middleware/requestLogger');
 const rateLimiter = require('./middleware/rateLimit');
-const { analyticsMiddleware, getAnalyticsLog, getLogsByDate, getAvailableLogDates } = require('./middleware/analytics');
+const { analyticsMiddleware, getAnalyticsLog, getLogsByDate, getAvailableLogDates, logEntry } = require('./middleware/analytics');
 
 const app = express();
 
@@ -63,6 +63,35 @@ app.get('/api/admin/analytics', (req, res) => {
 
   const result = logs.slice(-limit).reverse();
   res.json({ total: logs.length, showing: result.length, date: req.query.date || 'today (memory)', logs: result });
+});
+
+// ─── Frontend page view tracking (public) ────────────────────────────────────
+app.post('/api/track', (req, res) => {
+  try {
+    const jwt = require('jsonwebtoken');
+    let user = 'anonymous';
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_jwt_secret_change_in_production');
+        user = decoded.email || 'anonymous';
+      }
+    } catch {}
+
+    const ip = req.headers['x-real-ip'] ||
+               req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+               req.ip || 'unknown';
+
+    logEntry({
+      timestamp: new Date().toISOString(),
+      ip,
+      user,
+      method: 'PAGE_VIEW',
+      page: req.body?.page || 'unknown',
+      ua: req.headers['user-agent'] || 'unknown'
+    });
+  } catch {}
+  res.status(204).end();
 });
 
 // ─── Subscribe endpoint (public) ─────────────────────────────────────────────

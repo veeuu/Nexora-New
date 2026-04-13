@@ -81,7 +81,6 @@ function analyticsMiddleware() {
       ua
     };
 
-    // Console log
     console.log(`[analytics] ${timestamp} | IP: ${ip} | User: ${entry.user} | ${method} ${page}`);
 
     // In-memory store
@@ -126,4 +125,11 @@ function getAvailableLogDates() {
   }
 }
 
-module.exports = { analyticsMiddleware, getAnalyticsLog, getLogsByDate, getAvailableLogDates };
+function logEntry(entry) {
+  analyticsLog.push(entry);
+  if (analyticsLog.length > MAX_LOG_SIZE) analyticsLog.shift();
+  writeToFile(entry);
+  console.log(`[analytics] ${entry.timestamp} | IP: ${entry.ip} | User: ${entry.user} | ${entry.method} ${entry.page}`);
+}
+
+module.exports = { analyticsMiddleware, getAnalyticsLog, getLogsByDate, getAvailableLogDates, logEntry };
