@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaTimes, FaMinus } from 'react-icons/fa';
 import copilotImage from '../assets/ChatGPT_Image_Mar_25__2026__10_39_07_AM-removebg-preview (1).png';
+import apiFetch from '../utils/apiFetch';
 import '../styles/chatbot.css';
 // import chatbotVideo from '../video/Video_Generation_For_Chatbot (online-video-cutter,com)-Picsart-BackgroundRemover.mp4';
 
@@ -286,24 +287,45 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     }, 1500);
   };
 
-  const handleSuggestedCompanyClick = (companyName) => {
+  const handleSuggestedCompanyClick = async (companyName) => {
     setSelectedOptionId(companyName);
     setMessages(prev => [...prev, { type: 'user', text: companyName }]);
     
-    // Treat it as if the user typed the company name
     const data = ntpData || tableData;
-    if (!data || data.length === 0) return;
+
+    // Try local data first
+    const localRows = (data || []).filter(row =>
+      String(row.companyName || '').toLowerCase() === companyName.toLowerCase() &&
+      row.category !== 'Not Detected' &&
+      row.purchasePrediction !== 'Not Detected' &&
+      row.purchasePrediction !== 'NOT detected'
+    );
+
+    let rows = localRows;
+
+    // If not in local data, fetch from API
+    if (rows.length === 0) {
+      try {
+        const params = new URLSearchParams();
+        params.append('companyName', companyName);
+        params.append('page', '1');
+        params.append('limit', '100');
+        const resp = await apiFetch(`/api/ntp?${params.toString()}`);
+        if (resp.ok) {
+          const json = await resp.json();
+          rows = (json.data || []).filter(row =>
+            String(row.companyName || '').toLowerCase() === companyName.toLowerCase()
+          );
+        }
+      } catch (e) { /* ignore */ }
+    }
 
     setSelectedCompany(companyName);
     setConversationStage('category-input');
     
-    // Get unique categories for this company only
     const companyCategoriesSet = new Set();
-    data.forEach(row => {
-      if (String(row.companyName || '').toLowerCase() === companyName.toLowerCase() &&
-          row.category !== 'Not Detected' &&
-          row.purchasePrediction !== 'Not Detected' &&
-          row.purchasePrediction !== 'NOT detected') {
+    rows.forEach(row => {
+      if (row.category !== 'Not Detected' && row.purchasePrediction !== 'Not Detected' && row.purchasePrediction !== 'NOT detected') {
         companyCategoriesSet.add(row.category);
       }
     });
@@ -311,22 +333,11 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     const companyCategories = Array.from(companyCategoriesSet)
       .map(cat => {
         const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-        const categoryMap = {
-          'database': 'Database',
-          'ai-ml': 'AI/ML',
-          'crm': 'CRM',
-          'cloud': 'Cloud',
-          'security': 'Security',
-          'analytics': 'Analytics',
-          'infrastructure': 'Infrastructure',
-          'devops': 'DevOps'
-        };
-        const label = categoryMap[catLower] || cat;
-        return { id: catLower, label: label, originalName: cat };
+        const categoryMap = { 'database': 'Database', 'ai-ml': 'AI/ML', 'crm': 'CRM', 'cloud': 'Cloud', 'security': 'Security', 'analytics': 'Analytics', 'infrastructure': 'Infrastructure', 'devops': 'DevOps' };
+        return { id: catLower, label: categoryMap[catLower] || cat, originalName: cat };
       })
       .sort((a, b) => a.label.localeCompare(b.label));
     
-    // Add ALL option at the end
     companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
     
     if (companyCategories.length === 1) {
@@ -359,14 +370,23 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
 
     try {
       let data = ntpData || tableData;
-      if (!data || data.length === 0) {
+      
+      // Always try to get fresh data for this specific company from API
+      const companyRows = (data || []).filter(row =>
+        String(row.companyName || '').toLowerCase() === (selectedCompany || '').toLowerCase()
+      );
+      
+      if (companyRows.length === 0) {
+        // Fetch from API with company name filter
         const params = new URLSearchParams();
         params.append('companyName', selectedCompany);
         params.append('page', '1');
         params.append('limit', '500');
-        const response = await fetch(`/api/ntp?${params.toString()}`);
+        const response = await apiFetch(`/api/ntp?${params.toString()}`);
         const result = await response.json();
         data = result.data || [];
+      } else {
+        data = companyRows;
       }
 
       // Add thinking message
@@ -586,111 +606,91 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     setMessages(prev => [...prev, { type: 'user', text: userMessage }]);
 
     try {
-      // Check if user input matches a company name from the data
       const data = ntpData || tableData;
-      
-      if (!data || data.length === 0) {
-        setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no data available. Please try again later.' }]);
-        return;
-      }
 
-      // Filter out "Not Detected" records and find matching company
-      const matchedCompany = data.find(row => 
-        String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
-        row.category !== 'Not Detected' &&
-        row.purchasePrediction !== 'Not Detected' &&
-        row.purchasePrediction !== 'NOT detected'
-      );
-
-      // If company name is found, show category selection for that company (works from any stage)
-      if (matchedCompany) {
-        setSelectedCompany(userMessage);
+      // Helper: process matched rows into category selection
+      const processMatchedRows = (rows, companyName) => {
+        setSelectedCompany(companyName);
         setConversationStage('category-input');
-        
-        // Get unique categories for this company only
         const companyCategoriesSet = new Set();
-        data.forEach(row => {
-          if (String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
-              row.category !== 'Not Detected' &&
+        rows.forEach(row => {
+          if (row.category !== 'Not Detected' &&
               row.purchasePrediction !== 'Not Detected' &&
               row.purchasePrediction !== 'NOT detected') {
             companyCategoriesSet.add(row.category);
           }
         });
-        
         const companyCategories = Array.from(companyCategoriesSet)
           .map(cat => {
             const catLower = cat.toLowerCase().replace(/\s+/g, '-');
-            const categoryMap = {
-              'database': 'Database',
-              'ai-ml': 'AI/ML',
-              'crm': 'CRM',
-              'cloud': 'Cloud',
-              'security': 'Security',
-              'analytics': 'Analytics',
-              'infrastructure': 'Infrastructure',
-              'devops': 'DevOps'
-            };
-            const label = categoryMap[catLower] || cat;
-            return { id: catLower, label: label, originalName: cat };
+            const categoryMap = { 'database': 'Database', 'ai-ml': 'AI/ML', 'crm': 'CRM', 'cloud': 'Cloud', 'security': 'Security', 'analytics': 'Analytics', 'infrastructure': 'Infrastructure', 'devops': 'DevOps' };
+            return { id: catLower, label: categoryMap[catLower] || cat, originalName: cat };
           })
           .sort((a, b) => a.label.localeCompare(b.label));
-        
-        // Add ALL option at the end
         companyCategories.push({ id: 'all', label: 'ALL', originalName: 'ALL' });
-        
         if (companyCategories.length === 1) {
           setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, no categories available for this company.' }]);
           setSelectedCompany(null);
           setConversationStage('greeting');
           return;
         }
-        
-        setMessages(prev => [...prev, {
-          type: 'bot',
-          text: `Got it, ${userMessage} selected. What would you like to explore?`,
-          showCategories: true,
-          categories: companyCategories
-        }]);
+        setMessages(prev => [...prev, { type: 'bot', text: `Got it, ${companyName} selected. What would you like to explore?`, showCategories: true, categories: companyCategories }]);
+      };
+
+      // First try local data
+      const localRows = (data || []).filter(row =>
+        String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
+        row.category !== 'Not Detected' &&
+        row.purchasePrediction !== 'Not Detected' &&
+        row.purchasePrediction !== 'NOT detected'
+      );
+
+      if (localRows.length > 0) {
+        processMatchedRows(localRows, userMessage);
         return;
       }
 
-      // If no exact match, suggest similar company names (works from any stage)
-      if (!matchedCompany) {
-        const userMessageLower = userMessage.toLowerCase();
-        
-        // Get unique companies with valid data
-        const uniqueCompanies = new Set();
-        data.forEach(row => {
-          if (row.category !== 'Not Detected' &&
-              row.purchasePrediction !== 'Not Detected' &&
-              row.purchasePrediction !== 'NOT detected') {
-            uniqueCompanies.add(row.companyName);
+      // Not in local data — use summary to get all company names for partial match
+      setMessages(prev => [...prev, { type: 'bot', text: `Searching for "${userMessage}"...` }]);
+      const userMessageLower = userMessage.toLowerCase();
+
+      // Fetch all company names from summary endpoint
+      const summaryResp = await apiFetch('/api/ntp/summary');
+      let allCompanyNames = [];
+      if (summaryResp.ok) {
+        const summaryJson = await summaryResp.json();
+        allCompanyNames = summaryJson.companies || [];
+      }
+
+      // Exact match (case-insensitive)
+      const exactMatch = allCompanyNames.find(n => n.toLowerCase() === userMessageLower);
+      if (exactMatch) {
+        const exactParams = new URLSearchParams();
+        exactParams.append('companyName', exactMatch);
+        exactParams.append('page', '1');
+        exactParams.append('limit', '100');
+        const exactResp = await apiFetch(`/api/ntp?${exactParams.toString()}`);
+        if (exactResp.ok) {
+          const exactJson = await exactResp.json();
+          const exactRows = exactJson.data || [];
+          if (exactRows.length > 0) {
+            setMessages(prev => prev.filter(m => m.text !== `Searching for "${userMessage}"...`));
+            processMatchedRows(exactRows, exactMatch);
+            return;
           }
-        });
-        
-        // Find companies that contain the user input (one-way matching only)
-        const suggestedCompanies = Array.from(uniqueCompanies)
-          .filter(company => 
-            company.toLowerCase().includes(userMessageLower)
-          )
-          .slice(0, 5); // Limit to 5 suggestions
-        
-        if (suggestedCompanies.length > 0) {
-          setMessages(prev => [...prev, {
-            type: 'bot',
-            text: `I couldn't find an exact match for "${userMessage}". Did you mean one of these?`,
-            showSuggestedCompanies: true,
-            suggestedCompanies: suggestedCompanies
-          }]);
-          return;
-        } else {
-          setMessages(prev => [...prev, {
-            type: 'bot',
-            text: `Sorry, I couldn't find any company matching "${userMessage}". Please try another company name.`
-          }]);
-          return;
         }
+      }
+
+      // Partial match from full company list
+      const suggestions = allCompanyNames
+        .filter(n => n.toLowerCase().includes(userMessageLower))
+        .slice(0, 5);
+
+      setMessages(prev => prev.filter(m => m.text !== `Searching for "${userMessage}"...`));
+      if (suggestions.length > 0) {
+        setMessages(prev => [...prev, { type: 'bot', text: `I couldn't find an exact match for "${userMessage}". Did you mean one of these?`, showSuggestedCompanies: true, suggestedCompanies: suggestions }]);
+      } else {
+        setMessages(prev => [...prev, { type: 'bot', text: `Sorry, I couldn't find any company matching "${userMessage}". Please try another company name.` }]);
       }
     } catch (error) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
