@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const { connectPG } = require('./config/pgdb');
 const requestLogger = require('./middleware/requestLogger');
 const rateLimiter = require('./middleware/rateLimit');
+const { analyticsMiddleware, getAnalyticsLog, getLogsByDate, getAvailableLogDates } = require('./middleware/analytics');
 
 const app = express();
 
@@ -14,6 +15,7 @@ if (process.env.TRUST_PROXY === 'true') {
 }
 
 app.use(requestLogger());
+app.use(analyticsMiddleware());
 app.use(cors());
 app.use(express.json());
 app.use(compression());
@@ -29,10 +31,41 @@ const authRouter = require('./routes/auth');
 const buyingGroupRouter = require('./routes/buyingGroup');
 
 app.use('/api', rateLimiter);
-app.use('/api/auth', authRouter);        // auth routes FIRST - no token needed
+app.use('/api/auth', authRouter);
 app.use('/api/buying-groups', buyingGroupRouter);
 
-// Google Sheets email submission proxy + trial confirmation email — public, no auth
+// ─── Admin analytics endpoint ─────────────────────────────────────────────────
+// GET /api/admin/analytics?key=nexora-admin-2026
+// Optional: &date=2026-04-13 &user=email &page=/api/technographics &ip=1.2.3.4 &limit=100
+// GET /api/admin/analytics/dates?key=nexora-admin-2026  → list available log dates
+app.get('/api/admin/analytics/dates', (req, res) => {
+  if (req.query.key !== process.env.ADMIN_PROVISION_KEY) {
+    return res.status(403).json({ error: 'Unauthorized' });
+  }
+  res.json({ dates: getAvailableLogDates() });
+});
+
+app.get('/api/admin/analytics', (req, res) => {
+  if (req.query.key !== process.env.ADMIN_PROVISION_KEY) {
+    return res.status(403).json({ error: 'Unauthorized' });
+  }
+
+  const limit = parseInt(req.query.limit) || 200;
+
+  // If date param provided, read from file; otherwise use in-memory
+  let logs = req.query.date
+    ? getLogsByDate(req.query.date)
+    : getAnalyticsLog();
+
+  if (req.query.user) logs = logs.filter(l => l.user.includes(req.query.user));
+  if (req.query.page) logs = logs.filter(l => l.page.includes(req.query.page));
+  if (req.query.ip)   logs = logs.filter(l => l.ip === req.query.ip);
+
+  const result = logs.slice(-limit).reverse();
+  res.json({ total: logs.length, showing: result.length, date: req.query.date || 'today (memory)', logs: result });
+});
+
+// ─── Subscribe endpoint (public) ─────────────────────────────────────────────
 app.post('/api/subscribe', async (req, res) => {
   try {
     const { email, name, source } = req.body;
@@ -40,7 +73,6 @@ app.post('/api/subscribe', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid email' });
     }
 
-    // 1. Send to Google Sheet
     const SHEET_URL = process.env.GOOGLE_SHEET_URL || '';
     if (SHEET_URL) {
       const params = new URLSearchParams();
@@ -57,7 +89,6 @@ app.post('/api/subscribe', async (req, res) => {
       }
     }
 
-    // 2. Send trial confirmation email to user
     const { sendTrialConfirmationEmail, sendAdminNotificationEmail } = require('./config/email');
     try {
       await sendTrialConfirmationEmail(email, name || email);
@@ -66,11 +97,9 @@ app.post('/api/subscribe', async (req, res) => {
       console.error('[subscribe] Email error:', emailErr.message);
     }
 
-    // 3. Notify admin (swapnil@proplusdata.co)
     try {
       await sendAdminNotificationEmail({
-        name,
-        email,
+        name, email,
         phone: req.body.phone || '',
         jobTitle: req.body.jobTitle || '',
         source
@@ -87,14 +116,14 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
-app.use('/api', apiRouter);              // protected routes AFTER
+// ─── Protected API routes ─────────────────────────────────────────────────────
+app.use('/api', apiRouter);
 
 const startServer = async () => {
   try {
     await connectDB();
     await connectPG();
 
-    // Auto-migrate: add plan column if missing
     const PgUser = require('./models/PgUser');
     await PgUser.sync({ alter: true });
 
@@ -108,4 +137,3 @@ const startServer = async () => {
 };
 
 startServer();
-
