@@ -670,7 +670,16 @@ const NTP = () => {
                   />
                 </div>
                 {getUniqueOptions('companyName')
-                  .filter(option => option.toLowerCase().includes(companyNameSearch.toLowerCase()))
+                  .filter(option => {
+                    // Only show companies that have valid NTP data (not "Not Detected")
+                    const hasValidData = tableData.some(row => 
+                      row.companyName === option && 
+                      row.category !== 'Not Detected' && 
+                      row.purchasePrediction !== 'Not Detected' && 
+                      row.purchasePrediction !== 'NOT detected'
+                    );
+                    return hasValidData && option.toLowerCase().includes(companyNameSearch.toLowerCase());
+                  })
                   .map((option, idx) => {
                   const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
                   return (

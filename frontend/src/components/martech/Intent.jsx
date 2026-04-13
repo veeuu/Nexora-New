@@ -498,50 +498,68 @@ useEffect(() => {
                 </div>
                 <div
                   onClick={() => {
-                    if (Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0) {
-
-                      setFilters(prev => ({ ...prev, accountName: [] }));
+                    const filteredCompanies = getUniqueOptions('companyName')
+                      .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                    const allFilteredSelected = filteredCompanies.length > 0 &&
+                      filteredCompanies.every(c => filters.accountName.includes(c));
+                    if (allFilteredSelected) {
+                      setFilters(prev => ({ ...prev, accountName: prev.accountName.filter(c => !filteredCompanies.includes(c)) }));
                     } else {
-
-                      setFilters(prev => ({ ...prev, accountName: getUniqueOptions('companyName') }));
+                      setFilters(prev => ({ ...prev, accountName: [...new Set([...prev.accountName, ...filteredCompanies])] }));
                     }
                   }}
                   className="filter-option"
                 >
                   <input
                     type="checkbox"
-                    checked={Array.isArray(filters.accountName) && filters.accountName.length === getUniqueOptions('companyName').length && getUniqueOptions('companyName').length > 0}
+                    checked={(() => {
+                      const filteredCompanies = getUniqueOptions('companyName')
+                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
+                      return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.accountName.includes(c));
+                    })()}
                     onChange={() => {}}
                     className="filter-option-checkbox"
                   />
                   All
                 </div>
-                {getUniqueOptions('companyName')
-                  .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()))
-                  .map((option, idx) => {
-                  const isSelected = Array.isArray(filters.accountName) && filters.accountName.includes(option);
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => handleFilterChange('accountName', option)}
-                      className={`filter-option ${isSelected ? 'selected' : ''}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => {}}
-                        className="filter-option-checkbox"
-                      />
-                      <span style={{ color: '#1f2937' }}>{option}</span>
-                    </div>
+                {(() => {
+                  const allCompanies = getUniqueOptions('companyName');
+                  const filtered = allCompanies.filter(company =>
+                    company.toLowerCase().includes(companySearchTerm.toLowerCase())
                   );
-                })}
-
-                {getUniqueOptions('companyName').filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase())).length === 0 && getUniqueOptions('companyName').length > 0 && (
-                  <div className="no-companies-found">
-                    No companies found
-                  </div>
-                )}
+                  const visible = filtered.slice(0, 100);
+                  const hasMore = filtered.length > 100;
+                  return (
+                    <>
+                      {visible.map((option, idx) => {
+                        const isSelected = Array.isArray(filters.accountName) && filters.accountName.includes(option);
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => handleFilterChange('accountName', option)}
+                            className={`filter-option ${isSelected ? 'selected' : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}}
+                              className="filter-option-checkbox"
+                            />
+                            <span style={{ color: '#1f2937' }}>{option}</span>
+                          </div>
+                        );
+                      })}
+                      {hasMore && (
+                        <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
+                          Showing 100 of {filtered.length} — type to search
+                        </div>
+                      )}
+                      {filtered.length === 0 && allCompanies.length > 0 && (
+                        <div className="no-companies-found">No companies found</div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 {}
                 <div className="filter-dropdown-footer">
