@@ -798,14 +798,13 @@ tr:hover {
 }
 
 .ntp-propensity-cell {
-  text-align: left !important;
-  padding-left: 40px !important;
+  text-align: center !important;
 }
 
 .ntp-propensity-item {
   white-space: nowrap;
   display: block;
-  text-align: left !important;
+  text-align: center !important;
   width: 100%;
 }
 

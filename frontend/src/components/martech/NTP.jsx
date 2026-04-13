@@ -670,16 +670,7 @@ const NTP = () => {
                   />
                 </div>
                 {getUniqueOptions('companyName')
-                  .filter(option => {
-                    // Only show companies that have valid NTP data (not "Not Detected")
-                    const hasValidData = tableData.some(row => 
-                      row.companyName === option && 
-                      row.category !== 'Not Detected' && 
-                      row.purchasePrediction !== 'Not Detected' && 
-                      row.purchasePrediction !== 'NOT detected'
-                    );
-                    return hasValidData && option.toLowerCase().includes(companyNameSearch.toLowerCase());
-                  })
+                  .filter(option => option.toLowerCase().includes(companyNameSearch.toLowerCase()))
                   .map((option, idx) => {
                   const isSelected = Array.isArray(filters.companyName) && filters.companyName.includes(option);
                   return (
@@ -1106,6 +1097,7 @@ const NTP = () => {
                 companiesMap.get(row.companyName).technologies.push({
                   technology: row.technology,
                   purchaseProbability: row.purchaseProbability,
+                  purchasePrediction: row.purchasePrediction,
                   ntpAnalysis: row.ntpAnalysis
                 });
               });
@@ -1197,10 +1189,12 @@ const NTP = () => {
                             data-sync-index={companyIndex}
                             data-sync-role="tech"
                             onScroll={(e) => {
-                              const paired = document.querySelector(
-                                `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="propensity"]`
-                              );
-                              if (paired) paired.scrollTop = e.target.scrollTop;
+                              ['propensity', 'prediction'].forEach(role => {
+                                const paired = document.querySelector(
+                                  `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="${role}"]`
+                                );
+                                if (paired) paired.scrollTop = e.target.scrollTop;
+                              });
                             }}
                           >
                             {company.technologies.map((t, idx) => (
@@ -1215,8 +1209,26 @@ const NTP = () => {
 
                       {}
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan}>
-                          {company.purchasePrediction}
+                        <td rowSpan={companyRowSpan} style={{ textAlign: 'center' }}>
+                          <div
+                            className="ntp-tech-scroll-container"
+                            data-sync-index={companyIndex}
+                            data-sync-role="prediction"
+                            onScroll={(e) => {
+                              ['tech', 'propensity'].forEach(role => {
+                                const paired = document.querySelector(
+                                  `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="${role}"]`
+                                );
+                                if (paired) paired.scrollTop = e.target.scrollTop;
+                              });
+                            }}
+                          >
+                            {company.technologies.map((t, idx) => (
+                              <span key={idx} style={{ height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {t.purchasePrediction || company.purchasePrediction}
+                              </span>
+                            ))}
+                          </div>
                         </td>
                       )}
 
@@ -1228,14 +1240,16 @@ const NTP = () => {
                             data-sync-index={companyIndex}
                             data-sync-role="propensity"
                             onScroll={(e) => {
-                              const paired = document.querySelector(
-                                `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="tech"]`
-                              );
-                              if (paired) paired.scrollTop = e.target.scrollTop;
+                              ['tech', 'prediction'].forEach(role => {
+                                const paired = document.querySelector(
+                                  `.ntp-tech-scroll-container[data-sync-index="${companyIndex}"][data-sync-role="${role}"]`
+                                );
+                                if (paired) paired.scrollTop = e.target.scrollTop;
+                              });
                             }}
                           >
                             {company.technologies.map((t, idx) => (
-                              <span key={idx} className="ntp-propensity-item" style={{ height: '24px', display: 'flex', alignItems: 'center' }}>
+                              <span key={idx} className="ntp-propensity-item" style={{ height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 {(() => {
                                   const val = String(t.purchaseProbability || '0').replace('%', '');
                                   return `${parseFloat(val).toFixed(2)}%`;
