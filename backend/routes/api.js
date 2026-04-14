@@ -1779,6 +1779,7 @@ router.get('/product-catalogue', cacheResponse(300), async (req, res) => {
           'Product Name': 1,
           Category: 1,
           'Sub Category': 1,
+          SubCategory: 1,
           Description: 1,
           prodName: 1,
           category: 1,

@@ -342,7 +342,7 @@ const getProductCountBySubCategory = (subCategory) => {
             <tr>
               <th>Product Name</th>
               <th>Category</th>
-              {/* <th>Sub Category</th> */}
+              <th>Sub Category</th>
               <th>Description</th>
             </tr>
           </thead>
@@ -363,9 +363,9 @@ const getProductCountBySubCategory = (subCategory) => {
                     <td onMouseEnter={(e) => handleMouseEnter(e, row.category)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.category, searchTerm)}
                     </td>
-                    {/* <td onMouseEnter={(e) => handleMouseEnter(e, row.subCategory)} onMouseLeave={handleMouseLeave}>
+                    <td onMouseEnter={(e) => handleMouseEnter(e, row.subCategory)} onMouseLeave={handleMouseLeave}>
                       {highlightText(row.subCategory, searchTerm)}
-                    </td> */}
+                    </td>
                     <td
                       onClick={() => handleDescriptionClick(row.description)}
                       className="table-cell-description"
