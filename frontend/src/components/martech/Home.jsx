@@ -104,13 +104,10 @@ const Home = () => {
 
   const handleViewClick = (view) => {
     console.log('[Home] handleViewClick:', view);
-    if (activeView === view) {
-      setActiveView(null);
-    } else {
-      setActiveView(view);
-      if (view === 'intent' && intentData.length === 0) {
-        fetchIntentData();
-      }
+    if (activeView === view) return; // already active, do nothing
+    setActiveView(view);
+    if (view === 'intent' && intentData.length === 0) {
+      fetchIntentData();
     }
   };
 
