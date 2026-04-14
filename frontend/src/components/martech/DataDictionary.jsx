@@ -20,14 +20,14 @@ const dataDictionary = [
       'Use Case': 'Understand buying signals and product interest levels'
     },
     {
-      'Data Attribute': 'First discovered',
+      'Data Attribute': 'Previous detected',
       'Definition': 'Date when technology usage was first discovered',
       'Standard / Special': 'Standard',
       'Example': 'Q2 2025',
       'Use Case': 'Track when a company started using a technology'
     },
     {
-      'Data Attribute': 'Last discovered',
+      'Data Attribute': 'Latest detected',
       'Definition': 'Last date the technology usage was discovered',
       'Standard / Special': 'Standard',
       'Example': 'Q4 2025',
@@ -40,13 +40,13 @@ const dataDictionary = [
       'Example': 'Cloud, AI/ML, Database, CRM',
       'Use Case': 'Group technologies by business function'
     },
-    {
-      'Data Attribute': 'SubCategory',
-      'Definition': 'Sub-classification of the product within its Category',
-      'Standard / Special': 'Standard',
-      'Example': 'Email Marketing, Infrastructure, Platform',
-      'Use Case': 'Narrow down specific technology types within broader categories'
-    },
+    // {
+    //   'Data Attribute': 'SubCategory',
+    //   'Definition': 'Sub-classification of the product within its Category',
+    //   'Standard / Special': 'Standard',
+    //   'Example': 'Email Marketing, Infrastructure, Platform',
+    //   'Use Case': 'Narrow down specific technology types within broader categories'
+    // },
     {
       'Data Attribute': 'Description',
       'Definition': 'Brief summary of the product description',
