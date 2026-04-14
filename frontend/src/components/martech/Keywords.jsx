@@ -180,12 +180,12 @@ const Keywords = () => {
               {/* <th colSpan="6" className="table-master-header-cell">PRODUCTS & SERVICES MASTER TABLE — 100 Products · Renamed Lifecycle Stages · Deep Metadata</th> */}
             </tr>
             <tr className="table-column-headers">
-              <th>PRODUCT / SERVICE</th>
-              <th>PRIMARY CATEGORY</th>
-              <th>SECONDARY CATEGORY</th>
-              <th>FIRST DETECTED</th>
-              <th>LIFECYCLE STAGE</th>
-              <th>STAGE RANK(1-4)</th>
+              <th>Product / Service</th>
+              <th>Primary Category</th>
+              <th>Secondary Category</th>
+              <th>First Detected</th>
+              <th>Lifecycle Stage</th>
+              <th>Stage Rank(1-4)</th>
             </tr>
           </thead>
           <tbody>

@@ -1698,7 +1698,7 @@ const Technographics = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '60px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           {}
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', order: 0 }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
               style={{
@@ -1747,8 +1747,7 @@ const Technographics = () => {
                   { label: 'Region', key: 'region', mandatory: false },
                   { label: 'Industry', key: 'industry', mandatory: false },
                   { label: 'Employee Size', key: 'employeeSize', mandatory: false },
-                  { label: 'Revenue', key: 'revenue', mandatory: false },
-                  { label: 'Technology', key: 'technology', mandatory: false }
+                  { label: 'Revenue', key: 'revenue', mandatory: false }
                 ].map((filterOption) => (
                   <div
                     key={filterOption.key}
@@ -2101,7 +2100,7 @@ const Technographics = () => {
 
           {}
           {activeFilterMenu === 'region' && (
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', order: 10 }}>
               <div style={{
                 backgroundColor: '#f0f9ff',
                 border: '1px solid #bfdbfe',
@@ -2281,7 +2280,7 @@ const Technographics = () => {
           )}
 
           {}
-          {filters.region.length > 0 && activeFilterMenu !== 'region' && (
+          {false && filters.region.length > 0 && activeFilterMenu !== 'region' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -2500,7 +2499,7 @@ const Technographics = () => {
 
           {}
           {activeFilterMenu === 'industry' && (
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', order: 10 }}>
               <div style={{
                 backgroundColor: '#f0f9ff',
                 border: '1px solid #bfdbfe',
@@ -2676,47 +2675,8 @@ const Technographics = () => {
             </div>
           )}
 
-          {filters.industry.length > 0 && activeFilterMenu !== 'industry' && (
-            <div style={{
-              backgroundColor: '#f0f9ff',
-              border: '1px solid #bfdbfe',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#1e40af',
-              cursor: 'pointer'
-            }}
-            onClick={() => setActiveFilterMenu('industry')}
-            >
-              <span>Industry</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFilters(prev => ({ ...prev, industry: [] }));
-                  setCurrentPage(1);
-                  setPageCache({});
-                  setTotalRecords(0);
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  padding: '0',
-                  color: '#1e40af',
-                  lineHeight: '1'
-                }}
-              >
-                {'\u00d7'}
-              </button>
-            </div>
-          )}
-
           {activeFilterMenu === 'employeeSize' && (
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', order: 10 }}>
               <div style={{
                 backgroundColor: '#f0f9ff',
                 border: '1px solid #bfdbfe',
@@ -2886,7 +2846,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {filters.employeeSize.length > 0 && activeFilterMenu !== 'employeeSize' && (
+          {false && filters.employeeSize.length > 0 && activeFilterMenu !== 'employeeSize' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -2926,7 +2886,7 @@ const Technographics = () => {
           )}
 
           {activeFilterMenu === 'revenue' && (
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', order: 10 }}>
               <div style={{
                 backgroundColor: '#f0f9ff',
                 border: '1px solid #bfdbfe',
@@ -3093,7 +3053,7 @@ const Technographics = () => {
             </div>
           )}
 
-          {filters.revenue.length > 0 && activeFilterMenu !== 'revenue' && (
+          {false && filters.revenue.length > 0 && activeFilterMenu !== 'revenue' && (
             <div style={{
               backgroundColor: '#f0f9ff',
               border: '1px solid #bfdbfe',
@@ -3148,7 +3108,7 @@ const Technographics = () => {
               }}
               onClick={() => setOpenFilterDropdown(openFilterDropdown === 'technology' ? null : 'technology')}
               >
-                <span>Technology</span>
+                <span>Technology <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -3331,7 +3291,7 @@ const Technographics = () => {
               setOpenFilterDropdown('technology');
             }}
             >
-              <span>Technology</span>
+              <span>Technology <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3386,7 +3346,7 @@ const Technographics = () => {
                   e.target.style.borderColor = '#d1d5db';
                 }}
               >
-                <span>Technology</span>
+                <span>Technology <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
             </div>
           )}
@@ -3395,6 +3355,36 @@ const Technographics = () => {
           {(filters.companyName.length > 0 || filters.region || filters.category || filters.technology) && !activeFilterMenu && (
             <>
             </>
+          )}
+
+          {/* Additional optional filter badges — always render after mandatory filters */}
+          {filters.industry.length > 0 && activeFilterMenu !== 'industry' && (
+            <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
+            onClick={() => setActiveFilterMenu('industry')}>
+              <span>Industry</span>
+              <button onClick={(e) => { e.stopPropagation(); setFilters(prev => ({ ...prev, industry: [] })); setCurrentPage(1); setPageCache({}); setTotalRecords(0); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}>{'\u00d7'}</button>
+            </div>
+          )}
+          {filters.region.length > 0 && activeFilterMenu !== 'region' && (
+            <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
+            onClick={() => setActiveFilterMenu('region')}>
+              <span>Region</span>
+              <button onClick={(e) => { e.stopPropagation(); setFilters(prev => ({ ...prev, region: [] })); setCurrentPage(1); setPageCache({}); setTotalRecords(0); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}>{'\u00d7'}</button>
+            </div>
+          )}
+          {filters.employeeSize.length > 0 && activeFilterMenu !== 'employeeSize' && (
+            <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
+            onClick={() => setActiveFilterMenu('employeeSize')}>
+              <span>Employee Size</span>
+              <button onClick={(e) => { e.stopPropagation(); setFilters(prev => ({ ...prev, employeeSize: [] })); setCurrentPage(1); setPageCache({}); setTotalRecords(0); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}>{'\u00d7'}</button>
+            </div>
+          )}
+          {filters.revenue.length > 0 && activeFilterMenu !== 'revenue' && (
+            <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
+            onClick={() => setActiveFilterMenu('revenue')}>
+              <span>Revenue</span>
+              <button onClick={(e) => { e.stopPropagation(); setFilters(prev => ({ ...prev, revenue: [] })); setCurrentPage(1); setPageCache({}); setTotalRecords(0); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}>{'\u00d7'}</button>
+            </div>
           )}
           </div>
           
