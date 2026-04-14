@@ -40,13 +40,13 @@ const dataDictionary = [
       'Example': 'Cloud, AI/ML, Database, CRM',
       'Use Case': 'Group technologies by business function'
     },
-    // {
-    //   'Data Attribute': 'SubCategory',
-    //   'Definition': 'Sub-classification of the product within its Category',
-    //   'Standard / Special': 'Standard',
-    //   'Example': 'Email Marketing, Infrastructure, Platform',
-    //   'Use Case': 'Narrow down specific technology types within broader categories'
-    // },
+    {
+      'Data Attribute': 'SubCategory',
+      'Definition': 'Sub-classification of the product within its Category',
+      'Standard / Special': 'Standard',
+      'Example': 'Email Marketing, Infrastructure, Platform',
+      'Use Case': 'Narrow down specific technology types within broader categories'
+    },
     {
       'Data Attribute': 'Description',
       'Definition': 'Brief summary of the product description',
