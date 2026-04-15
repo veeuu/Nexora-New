@@ -17,11 +17,10 @@
     <meta name="twitter:title" content="Nexora" />
     <meta name="twitter:description" content="Nexora - B2B Intelligence Platform" />
     <meta name="twitter:image" content="https://nexora.proplusdata.co/og-image.png" />
+    <!-- Warmly visitor tracking (commented out)
     <script>
       console.log('[Warmly] Script tag injected, waiting for load...');
       window.__warmlyDebug = true;
-
-      // Check if Warmly loaded after page is ready
       window.addEventListener('load', function () {
         var warmlyScript = document.getElementById('warmly-script-loader');
         if (warmlyScript) {
@@ -29,8 +28,6 @@
         } else {
           console.warn('[Warmly] Script element NOT found in DOM');
         }
-
-        // Poll for warmly object availability
         var attempts = 0;
         var interval = setInterval(function () {
           attempts++;
@@ -38,7 +35,7 @@
             console.log('[Warmly] ✅ Warmly object detected on window:', window.warmly || window.Warmly || window._warmly);
             clearInterval(interval);
           } else if (attempts >= 10) {
-            console.warn('[Warmly] ❌ Warmly object not found after 5 seconds. Possible reasons: script blocked, wrong clientId, or localhost environment.');
+            console.warn('[Warmly] ❌ Warmly object not found after 5 seconds.');
             clearInterval(interval);
           } else {
             console.log('[Warmly] Waiting for Warmly to initialize... attempt', attempts);
@@ -51,8 +48,9 @@
       src="https://opps-widget.getwarmly.com/warmly.js?clientId=57ff1a92c2f12f2d2c90a861c59f4335"
       defer
       onload="console.log('[Warmly] ✅ Script loaded successfully')"
-      onerror="console.error('[Warmly] ❌ Script FAILED to load — check network tab for blocked request')"
+      onerror="console.error('[Warmly] ❌ Script FAILED to load')"
     ></script>
+    -->
   </head>
   <body>
     <div id="root"></div>
