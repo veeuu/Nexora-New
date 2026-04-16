@@ -121,6 +121,11 @@ async function createIndexes() {
     await technographicsFlatCollection.createIndex({ technology: 1 });
     await technographicsFlatCollection.createIndex({ region: 1 });
     await technographicsFlatCollection.createIndex({ industry: 1 });
+    // Compound indexes for common filter combinations
+    await technographicsFlatCollection.createIndex({ category: 1, technology: 1, region: 1 });
+    await technographicsFlatCollection.createIndex({ category: 1, industry: 1, region: 1 });
+    await technographicsFlatCollection.createIndex({ technology: 1, region: 1, industry: 1 });
+    await technographicsFlatCollection.createIndex({ employeeSize: 1, category: 1 });
     console.log('✓ Indexes created: technographics_flat');
 
     console.log('\n✅ All indexes created successfully!');

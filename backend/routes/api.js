@@ -1132,6 +1132,7 @@ router.get('/technographics', cacheResponse(120), async (req, res) => {
     const pipeline = useFlat ? [
       ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
       ...buildEmpSizeStages('$employeeSize'),
+      { $sort: { companyName: 1 } },
       {
         $project: {
           _id: 0,
