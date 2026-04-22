@@ -102,6 +102,16 @@ app.post('/api/subscribe', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid email' });
     }
 
+    // Block free/personal email domains
+    const blockedDomains = ['gmail.com','yahoo.com','hotmail.com','outlook.com','live.com',
+      'icloud.com','me.com','aol.com','protonmail.com','proton.me','yandex.com','mail.ru',
+      'mailinator.com','guerrillamail.com','tempmail.com','yopmail.com','trashmail.com',
+      'throwam.com','fakeinbox.com','discard.email','maildrop.cc','qq.com','163.com'];
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (blockedDomains.includes(domain)) {
+      return res.status(400).json({ success: false, error: 'Please use a work or business email address' });
+    }
+
     const SHEET_URL = process.env.GOOGLE_SHEET_URL || '';
     if (SHEET_URL) {
       const params = new URLSearchParams();

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
 import ClientLogosCarousel from './ClientLogosCarousel';
 import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
@@ -26,11 +27,15 @@ const LandingPage = () => {
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const [emailError, setEmailError] = useState('');
+
   const handleStartFreeTrial = async () => {
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address.');
+    const validation = validateBusinessEmail(email);
+    if (!validation.valid) {
+      setEmailError(validation.message);
       return;
     }
+    setEmailError('');
     setSubmitting(true);
     try {
       await fetch('/api/subscribe', {
@@ -160,14 +165,22 @@ const LandingPage = () => {
               Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights to identify, prioritize, and convert the right accounts, faster.
             </p>
             <div className="hero-cta">
-              <input 
-                type="email" 
-                placeholder="Enter your business email" 
-                className="email-input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleStartFreeTrial()}
-              />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <input 
+                  type="email" 
+                  placeholder="Enter your business email" 
+                  className="email-input"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleStartFreeTrial()}
+                  style={emailError ? { borderColor: '#ef4444' } : {}}
+                />
+                {emailError && (
+                  <span style={{ fontSize: '0.78rem', color: '#ef4444', paddingLeft: '4px' }}>
+                    {emailError}
+                  </span>
+                )}
+              </div>
               <button 
                 className="btn-free-trial" 
                 onClick={handleStartFreeTrial}
