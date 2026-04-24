@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
 import heroImage from '../assets/Nexora Login Page Updated without Starhub.svg';
 import proplusDataLogo from '../assets/unnamed (1).png';
+import validateBusinessEmail from '../utils/emailValidator';
 import '../styles/login.css';
 import '../styles/loginPageHero.css';
 
@@ -108,7 +109,8 @@ const Login = ({ onLogin }) => {
     setSuccessMessage('');
 
     if (!fullName.trim()) return setError('Full name is required');
-    if (!email || !email.includes('@')) return setError('Valid business email is required');
+    const emailValidation = validateBusinessEmail(email);
+    if (!emailValidation.valid) return setError(emailValidation.message);
 
     setLoading(true);
     try {
