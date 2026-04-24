@@ -19,7 +19,8 @@ Get-ChildItem "$logosDir\*.png" | ForEach-Object {
 
     $logoFile    = $_.Name
     $safeCompany = ($companyName -replace '[^a-zA-Z0-9 ]', '' -replace ' ', '-').ToLower()
-    $outFile     = "$outputDir\$safeCompany.html"
+    $safePerson  = ($personName  -replace '[^a-zA-Z0-9 ]', '' -replace ' ', '-').ToLower()
+    $outFile     = "$outputDir\$safeCompany-$safePerson.html"
 
     $html = $template `
         -replace '\{\{COMPANY_LOGO\}\}', $logoFile `
