@@ -2280,8 +2280,13 @@ if (aQtr.year !== bQtr.year) {
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                                                    ������������������
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                                    <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                        <span>------------------</span>
+                                                                    </div>
+                                                                    <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                                                        <span>----------</span>
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                         </td>
@@ -2469,8 +2474,13 @@ if (aQtr.year !== bQtr.year) {
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                                                    ������������������
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                                    <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                        <span>------------------</span>
+                                                                    </div>
+                                                                    <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' }}>
+                                                                        <span>----------</span>
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                         </td>
