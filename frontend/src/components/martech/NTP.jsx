@@ -905,6 +905,10 @@ const NTP = () => {
               <div className="ntp-filter-dropdown-wrapper">
                 {getUniqueOptions('technology')
                   .sort((a, b) => {
+                    const aND = a === 'Not Detected' || a === 'NOT detected';
+                    const bND = b === 'Not Detected' || b === 'NOT detected';
+                    if (aND) return 1;
+                    if (bND) return -1;
                     const countA = getCompanyCountByTechnology(a);
                     const countB = getCompanyCountByTechnology(b);
                     return countB - countA;
