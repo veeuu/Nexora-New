@@ -739,27 +739,6 @@ const NTP = () => {
                 </button>
               </div>
               <div className="ntp-filter-dropdown-wrapper">
-                <div
-                  onClick={() => {
-                    const validOptions = getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected');
-                    if (Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === validOptions.length && validOptions.length > 0) {
-                      
-                      setFilters(prev => ({ ...prev, purchasePrediction: [] }));
-                    } else {
-                      
-                      setFilters(prev => ({ ...prev, purchasePrediction: validOptions }));
-                    }
-                  }}
-                  className="ntp-filter-option-item"
-                >
-                  <input
-                    type="checkbox"
-                    checked={Array.isArray(filters.purchasePrediction) && filters.purchasePrediction.length === getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length && getUniqueOptions('purchasePrediction').filter(option => option !== 'NOT detected').length > 0}
-                    onChange={() => {}}
-                    className="ntp-filter-option-item-checkbox"
-                  />
-                  All
-                </div>
                 {getUniqueOptions('purchasePrediction')
                   .filter(option => option !== 'Not Detected')
                   .sort((a, b) => {
@@ -836,27 +815,6 @@ const NTP = () => {
                 </button>
               </div>
               <div className="ntp-filter-dropdown-wrapper">
-                <div
-                  onClick={() => {
-                    const validOptions = getUniqueOptions('category').filter(option => option !== 'Not Detected');
-                    if (Array.isArray(filters.category) && filters.category.length === validOptions.length && validOptions.length > 0) {
-                      
-                      setFilters(prev => ({ ...prev, category: [] }));
-                    } else {
-                      
-                      setFilters(prev => ({ ...prev, category: validOptions }));
-                    }
-                  }}
-                  className="ntp-filter-option-item"
-                >
-                  <input
-                    type="checkbox"
-                    checked={Array.isArray(filters.category) && filters.category.length === getUniqueOptions('category').filter(option => option !== 'NOT detected').length && getUniqueOptions('category').filter(option => option !== 'NOT detected').length > 0}
-                    onChange={() => {}}
-                    className="ntp-filter-option-item-checkbox"
-                  />
-                  All
-                </div>
                 {getUniqueOptions('category')
                   .filter(option => option !== 'Not Detected')
                   .sort((a, b) => {
@@ -945,26 +903,6 @@ const NTP = () => {
                 </button>
               </div>
               <div className="ntp-filter-dropdown-wrapper">
-                <div
-                  onClick={() => {
-                    if (Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0) {
-                      
-                      setFilters(prev => ({ ...prev, technology: [] }));
-                    } else {
-                      
-                      setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
-                    }
-                  }}
-                  className="ntp-filter-option-item"
-                >
-                  <input
-                    type="checkbox"
-                    checked={Array.isArray(filters.technology) && filters.technology.length === getUniqueOptions('technology').length && getUniqueOptions('technology').length > 0}
-                    onChange={() => {}}
-                    className="ntp-filter-option-item-checkbox"
-                  />
-                  All
-                </div>
                 {getUniqueOptions('technology')
                   .sort((a, b) => {
                     const countA = getCompanyCountByTechnology(a);
