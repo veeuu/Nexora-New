@@ -285,6 +285,7 @@ const RenewalIntelligence = () => {
     });
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [metadata, setMetadata] = useState(null);
     const [companyDetailsMap, setCompanyDetailsMap] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -517,10 +518,10 @@ useEffect(() => {
 
         const fetchPage = async () => {
             try {
-                setLoading(true);
+                setIsFetching(true);
                 await fetchRenewalPage(currentPage, companyDetailsMap, metadata);
             } finally {
-                setLoading(false);
+                setIsFetching(false);
             }
         };
 
@@ -2987,6 +2988,11 @@ if (aQtr.year !== bQtr.year) {
                     border-radius: 10px;
                     background-color: #fff;
                     padding-bottom: 0;
+                }
+
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                 }
 
                 .sticky-header {
