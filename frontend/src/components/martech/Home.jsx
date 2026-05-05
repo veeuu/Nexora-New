@@ -131,8 +131,26 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="loading-overlay">
-        <img src={loadingGif} alt="Loading" />
+      <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: '#fff', padding: '40px 20px' }}>
+        {/* Blurred skeleton background */}
+        <div style={{ position: 'absolute', inset: 0, padding: '40px 20px', filter: 'blur(4px)', opacity: 0.6, pointerEvents: 'none', overflow: 'hidden' }}>
+          <div style={{ height: '36px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '12px', width: '280px' }} />
+          <div style={{ height: '16px', background: '#f3f4f6', borderRadius: '4px', marginBottom: '24px', width: '200px' }} />
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '32px' }}>
+            {[1,2,3,4,5].map(i => <div key={i} style={{ height: '36px', background: '#f3f4f6', borderRadius: '8px', width: '140px' }} />)}
+          </div>
+          <div style={{ height: '1px', background: '#e5e7eb', marginBottom: '28px' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px', marginBottom: '28px' }}>
+            {[1,2,3,4].map(i => <div key={i} style={{ height: '100px', background: '#f3f4f6', borderRadius: '12px' }} />)}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            {[1,2,3,4].map(i => <div key={i} style={{ height: '180px', background: '#f3f4f6', borderRadius: '12px' }} />)}
+          </div>
+        </div>
+        {/* Centered loading gif */}
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+          <img src={loadingGif} alt="Loading" style={{ width: '600px', height: '600px', objectFit: 'contain' }} />
+        </div>
       </div>
     );
   }
