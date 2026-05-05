@@ -1298,43 +1298,6 @@ if (aQtr.year !== bQtr.year) {
                           }}
                         />
                       </div>
-                      <div
-                        onClick={() => {
-                          const filteredCompanies = getUniqueCompanies()
-                            .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                          const allFilteredSelected = filteredCompanies.length > 0 &&
-                            filteredCompanies.every(c => filters.companyName.includes(c));
-                          if (allFilteredSelected) {
-                            handleFilterChange('companyName', filters.companyName.filter(c => !filteredCompanies.includes(c)));
-                          } else {
-                            handleFilterChange('companyName', [...new Set([...filters.companyName, ...filteredCompanies])]);
-                          }
-                        }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={(() => {
-                            const filteredCompanies = getUniqueCompanies()
-                              .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                            return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.companyName.includes(c));
-                          })()}
-                          onChange={() => {}}
-                          style={{ cursor: 'pointer', width: '16px', height: '16px' }}
-                        />
-                        All
-                      </div>
                       {(() => {
                         const allFiltered = getUniqueCompanies()
                           .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
@@ -1470,39 +1433,6 @@ if (aQtr.year !== bQtr.year) {
                       maxHeight: '300px',
                       overflowY: 'auto'
                     }}>
-                      <div
-                        onClick={() => {
-                          if (filters.category.length === getUniqueCategories().length && filters.category.length > 0) {
-                            handleFilterChange('category', []);
-                          } else {
-                            handleFilterChange('category', getUniqueCategories());
-                          }
-                        }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.category.length === getUniqueCategories().length && filters.category.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.category.length === getUniqueCategories().length && filters.category.length > 0 ? '#f3f4f6' : 'white'}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.category.length === getUniqueCategories().length && filters.category.length > 0}
-                          onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        />
-                        All
-                      </div>
                       {getUniqueCategories()
                         .sort((a, b) => {
                           const countA = getAccountCountByCategory(a);
@@ -1632,40 +1562,6 @@ if (aQtr.year !== bQtr.year) {
                       maxHeight: '400px',
                       overflowY: 'auto'
                     }}>
-                      <div
-                        onClick={() => {
-                          if (filters.product.length === getUniqueProducts().length && filters.product.length > 0) {
-                            handleFilterChange('product', []);
-                          } else {
-                            handleFilterChange('product', getUniqueProducts());
-                          }
-                        }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.product.length === getUniqueProducts().length && filters.product.length > 0 ? '#f3f4f6' : 'white'}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.product.length === getUniqueProducts().length && filters.product.length > 0}
-                          onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        />
-                        All
-                      </div>
-
                       {}
                       {getUniqueProducts()
                         .sort((a, b) => {
@@ -1796,41 +1692,6 @@ if (aQtr.year !== bQtr.year) {
                       maxHeight: '300px',
                       overflowY: 'auto'
                     }}>
-                      <div
-                        onClick={() => {
-                          if (filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0) {
-
-                            handleFilterChange('qtr', []);
-                          } else {
-
-                            handleFilterChange('qtr', getUniqueQtrs());
-                          }
-                        }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0 ? '#f3f4f6' : 'white'}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.qtr.length === getUniqueQtrs().length && filters.qtr.length > 0}
-                          onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        />
-                        All
-                      </div>
                       {getUniqueQtrs()
                         .sort((a, b) => {
                           const countA = getAccountCountByQtr(a);
@@ -1959,39 +1820,6 @@ if (aQtr.year !== bQtr.year) {
                       maxHeight: '300px',
                       overflowY: 'auto'
                     }}>
-                      <div
-                        onClick={() => {
-                          if (filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0) {
-                            handleFilterChange('renewalProximity', []);
-                          } else {
-                            handleFilterChange('renewalProximity', getUniqueRenewalProximity());
-                          }
-                        }}
-                        style={{
-                          padding: '10px 12px',
-                          cursor: 'pointer',
-                          backgroundColor: filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0 ? '#f3f4f6' : 'white',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: '14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0 ? '#f3f4f6' : 'white'}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.renewalProximity.length === getUniqueRenewalProximity().length && filters.renewalProximity.length > 0}
-                          onChange={() => {}}
-                          style={{
-                            cursor: 'pointer',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        />
-                        All
-                      </div>
                       {getUniqueRenewalProximity().map((option, idx) => (
                         <div
                           key={idx}
