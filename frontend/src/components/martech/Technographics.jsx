@@ -2048,7 +2048,7 @@ const Technographics = () => {
                             background: '#f9fafb',
                             borderTop: '1px solid #e5e7eb'
                           }}>
-                            Showing 100 of {filtered.length} — type to search
+                            Loading more
                           </div>
                         )}
                         {filtered.length === 0 && (
@@ -2235,9 +2235,6 @@ const Technographics = () => {
                         {renderCountryFlag(region)}
                         <span>{formatRegionLabel(region)}</span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByRegion(region)}
-                      </span>
                     </div>
                   ))}
 
@@ -2455,9 +2452,6 @@ const Technographics = () => {
                       {renderTechLogo(option)}
                       <span>{option}</span>
                     </div>
-                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                      {getCompanyCountByCategory(option)}
-                    </span>
                   </div>
                 ))}
 
@@ -2632,9 +2626,6 @@ const Technographics = () => {
                         />
                         <span>{industry}</span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByIndustry(industry)}
-                      </span>
                     </div>
                   ))}
 
@@ -2803,9 +2794,6 @@ const Technographics = () => {
                         />
                         <span>{range.label}</span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByEmployeeSize(range.label)}
-                      </span>
                     </div>
                   ))}
 
@@ -3228,9 +3216,6 @@ const Technographics = () => {
                         {renderTechLogo(tech)}
                         <span>{tech}</span>
                       </div>
-                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                        {getCompanyCountByTechnology(tech)}
-                      </span>
                     </div>
                   ))}
 
