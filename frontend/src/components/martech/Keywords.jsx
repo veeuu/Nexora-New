@@ -144,8 +144,27 @@ const Keywords = () => {
 
   if (loading) {
     return (
-      <div className="loading-overlay">
-        <img src={loadingGif} alt="Loading" />
+      <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: '#fff', padding: '40px 20px' }}>
+        {/* Blurred skeleton background */}
+        <div style={{ position: 'absolute', inset: 0, padding: '40px 20px', filter: 'blur(4px)', opacity: 0.6, pointerEvents: 'none', overflow: 'hidden' }}>
+          <div style={{ height: '32px', background: '#e5e7eb', borderRadius: '4px', marginBottom: '24px', width: '200px' }} />
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+            {[1,2,3].map(i => <div key={i} style={{ height: '36px', background: '#f3f4f6', borderRadius: '6px', width: '120px' }} />)}
+          </div>
+          <div style={{ height: '1px', background: '#e5e7eb', marginBottom: '20px' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: '12px', marginBottom: '16px', padding: '16px', background: '#f9fafb', borderRadius: '6px' }}>
+            {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: '18px', background: '#e5e7eb', borderRadius: '4px' }} />)}
+          </div>
+          {[1,2,3,4,5,6,7,8,9,10].map(row => (
+            <div key={row} style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: '12px', padding: '16px', borderBottom: '1px solid #e5e7eb' }}>
+              {[1,2,3,4,5,6].map(col => <div key={col} style={{ height: '14px', background: '#f3f4f6', borderRadius: '4px' }} />)}
+            </div>
+          ))}
+        </div>
+        {/* Centered loading gif */}
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+          <img src={loadingGif} alt="Loading" style={{ width: '600px', height: '600px', objectFit: 'contain' }} />
+        </div>
       </div>
     );
   }
