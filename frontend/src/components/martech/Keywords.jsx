@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/keywords.css';
 
-const FilterPill = ({ label, value, options, onChange, required }) => {
+const FilterPill = ({ label, selected, options, onChange }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -13,28 +13,90 @@ const FilterPill = ({ label, value, options, onChange, required }) => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const displayLabel = value === 'All' ? label : value;
+  const isActive = selected.length > 0;
+
+  const toggle = (opt) => {
+    if (selected.includes(opt)) {
+      onChange(selected.filter(v => v !== opt));
+    } else {
+      onChange([...selected, opt]);
+    }
+  };
 
   return (
-    <div className="kw-pill-wrapper" ref={ref}>
-      <button
-        className={`kw-filter-pill${value !== 'All' ? ' kw-filter-pill-active' : ''}`}
-        onClick={() => setOpen(o => !o)}
-      >
-        {displayLabel}
-        <span className="kw-pill-chevron">▾</span>
-      </button>
+    <div style={{ position: 'relative' }} ref={ref}>
+      {isActive ? (
+        <div style={{
+          backgroundColor: '#dbeafe', border: '1px solid #93c5fd',
+          padding: '6px 12px', borderRadius: '6px', fontSize: '13px',
+          display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer'
+        }} onClick={() => setOpen(o => !o)}>
+          <span>{label}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onChange([]); setOpen(false); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}
+          >✕</button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setOpen(o => !o)}
+          style={{
+            padding: '8px 14px', backgroundColor: 'white', color: '#3b82f6',
+            border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer',
+            fontSize: '14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px'
+          }}
+        >
+          <span>{label}</span>
+        </button>
+      )}
+
       {open && (
-        <div className="kw-dropdown">
-          {['All', ...options].map(opt => (
-            <div
-              key={opt}
-              className={`kw-dropdown-item${value === opt ? ' kw-dropdown-item-active' : ''}`}
-              onClick={() => { onChange(opt); setOpen(false); }}
-            >
-              {opt}
-            </div>
-          ))}
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, marginTop: '8px',
+          backgroundColor: 'white', border: '1px solid #d1d5db', borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 1000,
+          minWidth: '220px', maxHeight: '300px', overflowY: 'auto'
+        }}>
+          {options.map(opt => {
+            const isSelected = selected.includes(opt);
+            return (
+              <div
+                key={opt}
+                onClick={() => toggle(opt)}
+                style={{
+                  padding: '10px 12px', cursor: 'pointer',
+                  backgroundColor: isSelected ? '#dbeafe' : 'white',
+                  borderBottom: '1px solid #e5e7eb', fontSize: '14px',
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  transition: 'background-color 0.15s'
+                }}
+                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isSelected ? '#dbeafe' : 'white'; }}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => {}}
+                  style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#3b82f6' }}
+                />
+                {opt}
+              </div>
+            );
+          })}
+          <div style={{
+            padding: '10px 12px', borderTop: '1px solid #e5e7eb',
+            display: 'flex', justifyContent: 'flex-end', background: '#f9fafb',
+            position: 'sticky', bottom: 0
+          }}>
+            <button
+              onClick={() => setOpen(false)}
+              style={{
+                padding: '6px 16px', backgroundColor: '#3b82f6', color: 'white',
+                border: 'none', borderRadius: '6px', cursor: 'pointer',
+                fontSize: '13px', fontWeight: '500'
+              }}
+            >Save</button>
+          </div>
         </div>
       )}
     </div>
@@ -47,8 +109,8 @@ const Keywords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showGlossary, setShowGlossary] = useState(false);
   const [glossaryData, setGlossaryData] = useState(null);
-  const [filterStageRank, setFilterStageRank] = useState('All');
-  const [filterPrimaryCategory, setFilterPrimaryCategory] = useState('All');
+  const [filterStageRank, setFilterStageRank] = useState([]);
+  const [filterPrimaryCategory, setFilterPrimaryCategory] = useState([]);
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -89,8 +151,8 @@ const Keywords = () => {
   }
 
   const filteredData = tableData.filter(row => {
-    const stageMatch = filterStageRank === 'All' || String(row['Current Stage']) === filterStageRank;
-    const catMatch = filterPrimaryCategory === 'All' || row['Primary Category (Products/Services Keywords)'] === filterPrimaryCategory;
+    const stageMatch = filterStageRank.length === 0 || filterStageRank.includes(String(row['Current Stage']));
+    const catMatch = filterPrimaryCategory.length === 0 || filterPrimaryCategory.includes(row['Primary Category (Products/Services Keywords)']);
     return stageMatch && catMatch;
   });
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -160,13 +222,13 @@ const Keywords = () => {
         <div className="keywords-filters">
           <FilterPill
             label="Stage Rank"
-            value={filterStageRank}
+            selected={filterStageRank}
             options={[...new Set(tableData.map(r => r['Current Stage']))].filter(v => v != null).sort((a, b) => a - b).map(String)}
             onChange={v => { setFilterStageRank(v); setCurrentPage(1); }}
           />
           <FilterPill
             label="Primary Category"
-            value={filterPrimaryCategory}
+            selected={filterPrimaryCategory}
             options={[...new Set(tableData.map(r => r['Primary Category (Products/Services Keywords)']))].filter(Boolean).sort()}
             onChange={v => { setFilterPrimaryCategory(v); setCurrentPage(1); }}
           />
