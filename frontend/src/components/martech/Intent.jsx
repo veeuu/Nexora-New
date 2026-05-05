@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import IntentPieChart from './IntentPieChart';
-import { FaLock, FaUnlock } from 'react-icons/fa';
+import { FaLock, FaUnlock, FaGlobe, FaLinkedin } from 'react-icons/fa';
 import '../../styles/intent.css';
 
 const IntentStatusVisualizer = ({ status }) => {
@@ -159,27 +159,31 @@ const Intent = () => {
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const rowsPerPage = 10;
   const filterRef = useRef(null);
+  const [companyDetailsMap, setCompanyDetailsMap] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await apiFetch('/api/intent');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const [intentRes, detailsRes] = await Promise.all([
+          apiFetch('/api/intent'),
+          apiFetch('/api/company-details')
+        ]);
+        if (!intentRes.ok) throw new Error(`HTTP error! status: ${intentRes.status}`);
+        const data = await intentRes.json();
         setTableData(data);
+        if (detailsRes.ok) {
+          const details = await detailsRes.json();
+          setCompanyDetailsMap(details);
+        }
       } catch (e) {
         setError(e.message);
-
         setTableData([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -784,7 +788,35 @@ useEffect(() => {
                     <td onMouseEnter={(e) => isRevealed && handleMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                       {isRevealed ? (
                         <div className="company-name-revealed">
-                          {row.companyName}
+                          <div style={{ fontWeight: '600', color: '#1f2937' }}>{row.companyName}</div>
+                          <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                            {companyDetailsMap[row.companyName]?.domain && companyDetailsMap[row.companyName].domain !== 'N/A' && (
+                              <a
+                                href={companyDetailsMap[row.companyName].domain.startsWith('http') ? companyDetailsMap[row.companyName].domain : `https://${companyDetailsMap[row.companyName].domain}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#3b82f6', textDecoration: 'none', transition: 'opacity 0.2s' }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                title={`Visit ${companyDetailsMap[row.companyName].domain}`}
+                              >
+                                <FaGlobe size={16} />
+                              </a>
+                            )}
+                            {companyDetailsMap[row.companyName]?.linkedinUrl && (
+                              <a
+                                href={companyDetailsMap[row.companyName].linkedinUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#0a66c2', textDecoration: 'none', transition: 'opacity 0.2s' }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                                title="View LinkedIn Profile"
+                              >
+                                <FaLinkedin size={18} />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <div className="company-name-blurred">

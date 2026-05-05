@@ -1,4 +1,4 @@
-﻿import apiFetch from '../../utils/apiFetch';
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -31,7 +31,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>▼</span>
+        <span style={{ fontSize: '12px' }}>?</span>
       </button>
 
       {isOpen && (
@@ -125,7 +125,7 @@ const RenewalMeter = ({ renewalDate }) => {
 
   const getStatusLabel = (proximity) => {
     if (proximity >= 86) return '<1 year';
-    if (proximity >= 46) return '1–2 years';
+    if (proximity >= 46) return '1�2 years';
     return '2+ years';
   };
 
@@ -208,7 +208,7 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
           {value && renderIcon(value)}
           {value || 'All'}
         </span>
-        <span style={{ fontSize: '12px' }}>▼</span>
+        <span style={{ fontSize: '12px' }}>?</span>
       </button>
 
       {isOpen && (
@@ -697,7 +697,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['<1 year', '1–2 years', '2+ years'];
+        return ['<1 year', '1�2 years', '2+ years'];
     };
 
     const getUniqueCategories = () => {
@@ -837,7 +837,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['<1 year', '1–2 years', '2+ years'];
+            const statusLabels = ['<1 year', '1�2 years', '2+ years'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -1258,7 +1258,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                     <div style={{
@@ -1416,7 +1416,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                     <div style={{
@@ -1545,7 +1545,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                     <div style={{
@@ -1675,7 +1675,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                     <div style={{
@@ -1805,7 +1805,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                     <div style={{
@@ -1928,7 +1928,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ✕
+                      ?
                     </button>
                   </div>
                 )}
@@ -1967,7 +1967,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ✕
+                      ?
                     </button>
                   </div>
                 )}
@@ -2006,7 +2006,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ✕
+                      ?
                     </button>
                   </div>
                 )}
@@ -2045,7 +2045,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ✕
+                      ?
                     </button>
                   </div>
                 )}
@@ -2243,7 +2243,7 @@ if (aQtr.year !== bQtr.year) {
                                                                     <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                                         {row.domain && row.domain !== 'N/A' && (
                                                                             <a
-                                                                                href={`https://${row.domain}`}
+                                                                                href={row.domain.startsWith('http') ? row.domain : `https://${row.domain}`}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                                 style={{
@@ -2281,7 +2281,7 @@ if (aQtr.year !== bQtr.year) {
                                                                 </div>
                                                             ) : (
                                                                 <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                                                    ••••••••••••••••••
+                                                                    ������������������
                                                                 </div>
                                                             )}
                                                         </td>
@@ -2432,7 +2432,7 @@ if (aQtr.year !== bQtr.year) {
                                                                     <div style={{ fontSize: '13px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                                         {row.domain && row.domain !== 'N/A' && (
                                                                             <a
-                                                                                href={`https://${row.domain}`}
+                                                                                href={row.domain.startsWith('http') ? row.domain : `https://${row.domain}`}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                                 style={{
@@ -2470,7 +2470,7 @@ if (aQtr.year !== bQtr.year) {
                                                                 </div>
                                                             ) : (
                                                                 <div style={{ fontWeight: '600', color: '#1f2937', filter: 'blur(8px)', userSelect: 'none', pointerEvents: 'none' }}>
-                                                                    ••••••••••••••••••
+                                                                    ������������������
                                                                 </div>
                                                             )}
                                                         </td>
