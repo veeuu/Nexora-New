@@ -1986,7 +1986,6 @@ const Technographics = () => {
                     }}
                     style={{ cursor: 'pointer' }}
                   />
-                  All
                 </div>
 
                 {}
@@ -2191,7 +2190,6 @@ const Technographics = () => {
                         height: '16px'
                       }}
                     />
-                    <span>ALL</span>
                   </div>
                   {getUniqueOptions('region')
                     .sort((a, b) => {
@@ -2406,7 +2404,6 @@ const Technographics = () => {
                     }}
                     style={{ cursor: 'pointer' }}
                   />
-                  All
                 </div>
                 {getAvailableCategoriesForCompanies()
                   .sort((a, b) => {
@@ -2583,7 +2580,6 @@ const Technographics = () => {
                         height: '16px'
                       }}
                     />
-                    <span>ALL</span>
                   </div>
                   {getUniqueOptions('industry')
                     .sort((a, b) => {
@@ -2757,7 +2753,6 @@ const Technographics = () => {
                         height: '16px'
                       }}
                     />
-                    <span>ALL</span>
                   </div>
                   {employeeSizeRanges.map((range) => (
                     <div
@@ -2964,7 +2959,6 @@ const Technographics = () => {
                         height: '16px'
                       }}
                     />
-                    <span>ALL</span>
                   </div>
                   {revenueRanges.map((range) => (
                     <div
@@ -3172,7 +3166,6 @@ const Technographics = () => {
                         height: '16px'
                       }}
                     />
-                    <span>ALL</span>
                   </div>
                   {getUniqueOptions('technology')
                     .sort((a, b) => {
