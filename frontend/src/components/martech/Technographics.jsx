@@ -1924,71 +1924,6 @@ const Technographics = () => {
                 </div>
 
                 {}
-                <div
-                  onClick={() => {
-                    const filteredCompanies = getUniqueOptions('companyName')
-                      .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                    const allFilteredSelected = filteredCompanies.length > 0 &&
-                      filteredCompanies.every(c => filters.companyName.includes(c));
-
-                    if (allFilteredSelected) {
-                      // Deselect only the filtered ones
-                      setFilters(prev => ({
-                        ...prev,
-                        companyName: prev.companyName.filter(c => !filteredCompanies.includes(c))
-                      }));
-                    } else {
-                      // Select all filtered ones (merge with existing selections)
-                      const merged = [...new Set([...filters.companyName, ...filteredCompanies])];
-                      setFilters(prev => ({ ...prev, companyName: merged }));
-                    }
-                    setCurrentPage(1);
-                    setPageCache({});
-                    setTotalRecords(0);
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                >
-                  <input
-                    type="checkbox"
-                    checked={(() => {
-                      const filteredCompanies = getUniqueOptions('companyName')
-                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                      return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.companyName.includes(c));
-                    })()}
-                    onChange={() => {
-                      const filteredCompanies = getUniqueOptions('companyName')
-                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                      const allFilteredSelected = filteredCompanies.length > 0 &&
-                        filteredCompanies.every(c => filters.companyName.includes(c));
-
-                      if (allFilteredSelected) {
-                        setFilters(prev => ({
-                          ...prev,
-                          companyName: prev.companyName.filter(c => !filteredCompanies.includes(c))
-                        }));
-                      } else {
-                        const merged = [...new Set([...filters.companyName, ...filteredCompanies])];
-                        setFilters(prev => ({ ...prev, companyName: merged }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  />
-                </div>
-
-                {}
                 {getUniqueOptions('companyName').length === 0 ? (
                   <div style={{
                     padding: '20px 12px',
@@ -2322,51 +2257,6 @@ const Technographics = () => {
                 maxHeight: '300px',
                 overflowY: 'auto'
               }}>
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const allOptions = getAvailableCategoriesForCompanies();
-                    
-                    if (filters.category.length === allOptions.length) {
-                      setFilters(prev => ({ ...prev, category: [] }));
-                    } else {
-                      setFilters(prev => ({ ...prev, category: allOptions }));
-                    }
-                    setCurrentPage(1);
-                    setPageCache({});
-                    setTotalRecords(0);
-                  }}
-                  style={{
-                    padding: '10px 12px',
-                    cursor: 'pointer',
-                    backgroundColor: 'white',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.category.length === getAvailableCategoriesForCompanies().length && getAvailableCategoriesForCompanies().length > 0}
-                    onChange={() => {
-                      const allOptions = getAvailableCategoriesForCompanies();
-                      
-                      if (filters.category.length === allOptions.length) {
-                        setFilters(prev => ({ ...prev, category: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, category: allOptions }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  />
-                </div>
                 {getAvailableCategoriesForCompanies()
                   .sort((a, b) => {
                     // Move "Not Detected" to the end
