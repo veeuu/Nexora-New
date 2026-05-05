@@ -567,7 +567,7 @@ useEffect(() => {
                       })}
                       {hasMore && (
                         <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
-                          Showing 100 of {filtered.length} — type to search
+                          Loading more
                         </div>
                       )}
                       {filtered.length === 0 && allCompanies.length > 0 && (
@@ -652,9 +652,6 @@ useEffect(() => {
                         />
                         {option}
                       </div>
-                      <span className="filter-option-count">
-                        {getAccountCountByIntentStatus(option)}
-                      </span>
                     </div>
                   );
                 })}
