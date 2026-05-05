@@ -1096,8 +1096,7 @@ if (aQtr.year !== bQtr.year) {
                   >
                     {[
                       { label: 'Company Name', key: 'companyName', mandatory: false },
-                      { label: 'Product', key: 'product', mandatory: false },
-                      { label: 'Renewal Tracker', key: 'renewalProximity', mandatory: false }
+                      { label: 'Product', key: 'product', mandatory: false }
                     ].map((filterOption) => (
                       <div
                         key={filterOption.key}
@@ -1191,6 +1190,39 @@ if (aQtr.year !== bQtr.year) {
                     }}
                   >
                     <span>Renewal Timelines <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+                  </button>
+                </div>
+              )}
+
+              {}
+              {activeFilterMenu !== 'renewalProximity' && filters.renewalProximity.length === 0 && (
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setActiveFilterMenu('renewalProximity')}
+                    style={{
+                      padding: '8px 14px',
+                      backgroundColor: 'white',
+                      color: '#3b82f6',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#f3f4f6';
+                      e.target.style.borderColor = '#3b82f6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <span>Renewal Tracker</span>
                   </button>
                 </div>
               )}
