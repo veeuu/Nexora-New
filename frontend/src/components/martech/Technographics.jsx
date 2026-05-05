@@ -2153,44 +2153,6 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.region.length === getUniqueOptions('region').length && filters.region.length > 0) {
-                        setFilters(prev => ({ ...prev, region: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, region: getUniqueOptions('region') }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.region.length === getUniqueOptions('region').length && filters.region.length > 0 ? '#f0f9ff' : 'white'}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={filters.region.length === getUniqueOptions('region').length && filters.region.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                  </div>
                   {getUniqueOptions('region')
                     .sort((a, b) => {
                       const countA = getCompanyCountByRegion(a);
@@ -2543,44 +2505,6 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0) {
-                        setFilters(prev => ({ ...prev, industry: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, industry: getUniqueOptions('industry') }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0 ? '#f0f9ff' : 'white'}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={filters.industry.length === getUniqueOptions('industry').length && filters.industry.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                  </div>
                   {getUniqueOptions('industry')
                     .sort((a, b) => {
                       const countA = getCompanyCountByIndustry(a);
@@ -2716,44 +2640,6 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0) {
-                        setFilters(prev => ({ ...prev, employeeSize: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, employeeSize: employeeSizeRanges.map(r => r.label) }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0 ? '#f0f9ff' : 'white'}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={filters.employeeSize.length === employeeSizeRanges.length && filters.employeeSize.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                  </div>
                   {employeeSizeRanges.map((range) => (
                     <div
                       key={range.label}
@@ -2922,44 +2808,6 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.revenue.length === revenueRanges.length && filters.revenue.length > 0) {
-                        setFilters(prev => ({ ...prev, revenue: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, revenue: revenueRanges.map(r => r.label) }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.revenue.length === revenueRanges.length && filters.revenue.length > 0 ? '#f0f9ff' : 'white'}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={filters.revenue.length === revenueRanges.length && filters.revenue.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                  </div>
                   {revenueRanges.map((range) => (
                     <div
                       key={range.label}
@@ -3129,44 +2977,6 @@ const Technographics = () => {
                     overflowY: 'auto'
                   }}
                 >
-                  <div
-                    onClick={() => {
-                      if (filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0) {
-                        setFilters(prev => ({ ...prev, technology: [] }));
-                      } else {
-                        setFilters(prev => ({ ...prev, technology: getUniqueOptions('technology') }));
-                      }
-                      setCurrentPage(1);
-                      setPageCache({});
-                      setTotalRecords(0);
-                    }}
-                    style={{
-                      padding: '12px 16px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #e5e7eb',
-                      fontSize: '14px',
-                      color: '#1f2937',
-                      backgroundColor: filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '#f0f9ff' : 'white',
-                      fontWeight: filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '600' : '400',
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0 ? '#f0f9ff' : 'white'}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={filters.technology.length === getUniqueOptions('technology').length && filters.technology.length > 0}
-                      onChange={() => {}}
-                      style={{
-                        cursor: 'pointer',
-                        width: '16px',
-                        height: '16px'
-                      }}
-                    />
-                  </div>
                   {getUniqueOptions('technology')
                     .sort((a, b) => {
                       const countA = getCompanyCountByTechnology(a);
