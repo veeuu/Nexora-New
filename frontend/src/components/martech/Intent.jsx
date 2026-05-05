@@ -492,32 +492,6 @@ useEffect(() => {
                     className="company-search-input"
                   />
                 </div>
-                <div
-                  onClick={() => {
-                    const filteredCompanies = getUniqueOptions('companyName')
-                      .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                    const allFilteredSelected = filteredCompanies.length > 0 &&
-                      filteredCompanies.every(c => filters.accountName.includes(c));
-                    if (allFilteredSelected) {
-                      setFilters(prev => ({ ...prev, accountName: prev.accountName.filter(c => !filteredCompanies.includes(c)) }));
-                    } else {
-                      setFilters(prev => ({ ...prev, accountName: [...new Set([...prev.accountName, ...filteredCompanies])] }));
-                    }
-                  }}
-                  className="filter-option"
-                >
-                  <input
-                    type="checkbox"
-                    checked={(() => {
-                      const filteredCompanies = getUniqueOptions('companyName')
-                        .filter(company => company.toLowerCase().includes(companySearchTerm.toLowerCase()));
-                      return filteredCompanies.length > 0 && filteredCompanies.every(c => filters.accountName.includes(c));
-                    })()}
-                    onChange={() => {}}
-                    className="filter-option-checkbox"
-                  />
-                  All
-                </div>
                 {(() => {
                   const allCompanies = getUniqueOptions('companyName');
                   const filtered = allCompanies.filter(company =>
@@ -588,26 +562,6 @@ useEffect(() => {
                 </button>
               </div>
               <div className="filter-dropdown-content">
-                <div
-                  onClick={() => {
-                    if (Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0) {
-
-                      setFilters(prev => ({ ...prev, intentStatus: [] }));
-                    } else {
-
-                      setFilters(prev => ({ ...prev, intentStatus: getUniqueOptions('intentStatus') }));
-                    }
-                  }}
-                  className="filter-option"
-                >
-                  <input
-                    type="checkbox"
-                    checked={Array.isArray(filters.intentStatus) && filters.intentStatus.length === getUniqueOptions('intentStatus').length && getUniqueOptions('intentStatus').length > 0}
-                    onChange={() => {}}
-                    className="filter-option-checkbox"
-                  />
-                  All
-                </div>
                 {getUniqueOptions('intentStatus')
                   .sort((a, b) => {
                     const countA = getAccountCountByIntentStatus(a);
