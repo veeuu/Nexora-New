@@ -696,7 +696,7 @@ const NTP = () => {
                       })}
                       {hasMore && (
                         <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
-                          Showing 100 of {allFiltered.length} — type to search
+                          Loading more
                         </div>
                       )}
                       {allFiltered.length === 0 && (
