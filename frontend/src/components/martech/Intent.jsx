@@ -441,38 +441,6 @@ useEffect(() => {
       <div style={{ marginBottom: '20px' }} ref={filterRef}>
         <div className="filter-controls-container">
           <div className="filter-controls-left">
-          {}
-          <div className="filter-dropdown-wrapper-relative">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="filter-button"
-            >
-              <span>+ Filter</span>
-            </button>
-
-            {}
-            {showFilters && (
-              <div className="filter-menu">
-                {[
-                  { label: 'Company Name', key: 'accountName', mandatory: false }
-                ].map((filterOption) => (
-                  <div
-                    key={filterOption.key}
-                    onClick={() => {
-                      setActiveFilterMenu(filterOption.key);
-                      setShowFilters(false);
-                    }}
-                    className="filter-menu-item"
-                  >
-                    {filterOption.label}
-                    {filterOption.mandatory && (
-                      <span className="filter-menu-item mandatory-indicator">*</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {}
           {activeFilterMenu !== 'intentStatus' && (
@@ -482,6 +450,18 @@ useEffect(() => {
                 className="filter-button"
               >
                 <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
+              </button>
+            </div>
+          )}
+
+          {}
+          {activeFilterMenu !== 'accountName' && (
+            <div className="filter-dropdown-wrapper-relative">
+              <button
+                onClick={() => setActiveFilterMenu('accountName')}
+                className="filter-button"
+              >
+                <span>Company Name</span>
               </button>
             </div>
           )}
