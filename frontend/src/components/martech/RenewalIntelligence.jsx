@@ -1694,9 +1694,11 @@ if (aQtr.year !== bQtr.year) {
                     }}>
                       {getUniqueQtrs()
                         .sort((a, b) => {
-                          const countA = getAccountCountByQtr(a);
-                          const countB = getAccountCountByQtr(b);
-                          return countB - countA;
+                          const parseQtr = (q) => {
+                            const m = String(q).match(/Q(\d+)\s+(\d{4})/i);
+                            return m ? parseInt(m[2]) * 10 + parseInt(m[1]) : 0;
+                          };
+                          return parseQtr(a) - parseQtr(b);
                         })
                         .map((option, idx) => (
                         <div
