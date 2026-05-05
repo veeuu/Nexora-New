@@ -1342,7 +1342,7 @@ if (aQtr.year !== bQtr.year) {
                             ))}
                             {hasMore && (
                               <div style={{ padding: '8px 12px', textAlign: 'center', color: '#6b7280', fontSize: '12px', background: '#f9fafb', borderTop: '1px solid #e5e7eb' }}>
-                                Showing 100 of {allFiltered.length} — type to search
+                                Loading more
                               </div>
                             )}
                             {allFiltered.length === 0 && getUniqueCompanies().length > 0 && (
@@ -1513,9 +1513,6 @@ if (aQtr.year !== bQtr.year) {
                             {renderCategoryLogo(option)}
                             {option}
                           </div>
-                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                            {getAccountCountByCategory(option)}
-                          </span>
                         </div>
                       ))}
 
@@ -1680,9 +1677,6 @@ if (aQtr.year !== bQtr.year) {
                             {renderProductIcon(option)}
                             {option}
                           </div>
-                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                            {getAccountCountByProduct(option)}
-                          </span>
                         </div>
                       ))}
 
@@ -1846,9 +1840,6 @@ if (aQtr.year !== bQtr.year) {
                             />
                             <span>{option}</span>
                           </div>
-                          <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>
-                            {getAccountCountByQtr(option)}
-                          </span>
                         </div>
                       ))}
 
