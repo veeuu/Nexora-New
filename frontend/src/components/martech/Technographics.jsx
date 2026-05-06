@@ -808,6 +808,7 @@ const Technographics = () => {
   const [openFilterDropdown, setOpenFilterDropdown] = useState(null);
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const filterRef = useRef(null);
+  const containerRef = useRef(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [ntpDataByCompany, setNtpDataByCompany] = useState({});
   const [selectedRows, setSelectedRows] = useState(new Set());
@@ -1074,6 +1075,15 @@ const Technographics = () => {
     }
   }, [openFilterDropdown, showFilters]);
 
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const fetchPage = async (pageNum, retries = 3, delay = 500) => {
     const cached = pageCache[pageNum];
     if (cached) {
@@ -1201,8 +1211,8 @@ const Technographics = () => {
     setSelectedRows(new Set());
     setRevealedRows(new Set());
     setTableData([]);
-    setPageLoading(true);
-    fetchPage(1).finally(() => setPageLoading(false));
+    setLoading(true);
+    fetchPage(1).finally(() => setLoading(false));
   }, [filters]);
 
   useEffect(() => {
@@ -1223,8 +1233,8 @@ const Technographics = () => {
     // Not cached - keep old data visible while fetching (like NTP does)
     setSelectedRows(new Set());
     setRevealedRows(new Set());
-    setPageLoading(true);
-    fetchPage(currentPage).finally(() => setPageLoading(false));
+    setLoading(true);
+    fetchPage(currentPage).finally(() => setLoading(false));
   }, [currentPage]);
 
   const getAvailableTechnologies = () => {
@@ -1639,7 +1649,7 @@ const Technographics = () => {
 
   return (
     <>
-    <div className="technographics-container">
+    <div className="technographics-container" ref={containerRef}>
       {}
       {error && (
         <div style={{
