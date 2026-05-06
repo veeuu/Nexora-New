@@ -203,7 +203,11 @@ const Intent = () => {
     setCurrentPage(1);
   };
 
-  // Memoized unique companies - only recomputes when tableData changes
+  const goToPage = (page) => {
+    setLoading(true);
+    setCurrentPage(page);
+    setTimeout(() => setLoading(false), 0);
+  };
   const uniqueCompanies = useMemo(() => {
     if (!tableData || tableData.length === 0) return [];
     const seen = new Set();
@@ -869,7 +873,7 @@ useEffect(() => {
                           {}
                           <button
                               key="first"
-                              onClick={() => setCurrentPage(1)}
+                              onClick={() => goToPage(1)}
                               disabled={currentPage === 1}
                               className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="First page"
@@ -880,7 +884,7 @@ useEffect(() => {
                           {}
                           <button
                               key="prev"
-                              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                              onClick={() => goToPage(Math.max(1, currentPage - 1))}
                               disabled={currentPage === 1}
                               className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
                               title="Previous page"
@@ -893,7 +897,7 @@ useEffect(() => {
                               <>
                                   <button
                                       key={1}
-                                      onClick={() => setCurrentPage(1)}
+                                      onClick={() => goToPage(1)}
                                       className="pagination-button"
                                   >
                                       1
@@ -905,7 +909,7 @@ useEffect(() => {
                           {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
                               <button
                                   key={i}
-                                  onClick={() => setCurrentPage(i)}
+                                  onClick={() => goToPage(i)}
                                   className={`pagination-button ${i === currentPage ? 'active' : ''}`}
                               >
                                   {i}
@@ -917,7 +921,7 @@ useEffect(() => {
                                   {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
                                   <button
                                       key={totalPages}
-                                      onClick={() => setCurrentPage(totalPages)}
+                                      onClick={() => goToPage(totalPages)}
                                       className="pagination-button"
                                   >
                                       {totalPages}
@@ -928,7 +932,7 @@ useEffect(() => {
                           {}
                           <button
                               key="next"
-                              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                              onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
                               disabled={currentPage === totalPages}
                               className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Next page"
@@ -939,7 +943,7 @@ useEffect(() => {
                           {}
                           <button
                               key="last"
-                              onClick={() => setCurrentPage(totalPages)}
+                              onClick={() => goToPage(totalPages)}
                               disabled={currentPage === totalPages}
                               className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
                               title="Last page"
