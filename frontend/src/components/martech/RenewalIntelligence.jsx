@@ -518,10 +518,10 @@ useEffect(() => {
 
         const fetchPage = async () => {
             try {
-                setIsFetching(true);
+                setLoading(true);
                 await fetchRenewalPage(currentPage, companyDetailsMap, metadata);
             } finally {
-                setIsFetching(false);
+                setLoading(false);
             }
         };
 
