@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
@@ -158,17 +158,22 @@ const LandingPage = () => {
       <section className="hero-section">
         <div className="hero-wrapper">
           <div className="hero-content">
+            <div className="hero-badge">
+              <span className="hero-badge-dot"></span>
+              POWERED BY PROPLUS DATA INTELLIGENCE
+            </div>
             <h1 className="hero-title">
-              AI Platform for a Predictable Pipeline<span className="highlight"></span>
+              AI Platform for a<br />
+              <span className="hero-title-accent">Predictable Pipeline</span>
             </h1>
             <p className="hero-subtitle">
-              Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights to identify, prioritize, and convert the right accounts, faster.
+              Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights  identify, prioritize, and convert the right accounts faster.
             </p>
             <div className="hero-cta">
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <input 
-                  type="email" 
-                  placeholder="Enter your business email" 
+                <input
+                  type="email"
+                  placeholder="Enter your business email"
                   className="email-input"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
@@ -181,16 +186,25 @@ const LandingPage = () => {
                   </span>
                 )}
               </div>
-              <button 
-                className="btn-free-trial" 
+              <button
+                className="btn-free-trial"
                 onClick={handleStartFreeTrial}
                 disabled={submitting}
               >
-                {submitting ? 'Submitting...' : 'Start Free Trial'}
+                {submitting ? 'Submitting...' : 'Start Free Trial →'}
               </button>
             </div>
-
-            {/* Divider + Sign In */}
+            <div className="hero-social-proof">
+              <div className="hero-avatars">
+                <span className="hero-avatar" style={{ background: '#2563eb' }}>JR</span>
+                <span className="hero-avatar" style={{ background: '#16a34a' }}>MK</span>
+                <span className="hero-avatar" style={{ background: '#d97706' }}>AL</span>
+                <span className="hero-avatar" style={{ background: '#7c3aed' }}>PT</span>
+              </div>
+              <p className="hero-social-text">
+                Trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens &amp; more
+              </p>
+            </div>
           </div>
           <div className="hero-visual">
             <img src={heroSvg} alt="Nexora Dashboard" className="hero-image" />
