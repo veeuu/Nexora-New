@@ -1762,6 +1762,8 @@
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 10px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: -0.5px;
 }
 
 .testimonials-header p {
@@ -1811,11 +1813,12 @@
 }
 
 .testimonial-quote {
-  font-size: 2.5rem;
+  font-size: 4rem;
   line-height: 1;
-  color: #00b4d8;
+  color: #b2dfdb;
   font-family: Georgia, serif;
   font-weight: 700;
+  margin-bottom: -8px;
 }
 
 .testimonial-stars {

@@ -382,7 +382,7 @@ const LandingPage = () => {
               { name: 'David C.', role: 'Sales Operations Lead', badge: 'Verified User', stars: 4, text: 'Nexora\'s data quality is exceptional. Clean, enriched, and always up to date. Our reps spend less time researching and more time selling.' },
             ]).map((t, i) => (
               <div key={i} className="testimonial-card">
-                <div className="testimonial-quote">"</div>
+                <div className="testimonial-quote">❝</div>
                 <p className="testimonial-text">{t.text}</p>
                 <div className="testimonial-footer">
                   <div className="testimonial-avatar">{t.name.split(' ').map(n => n[0]).join('')}</div>
