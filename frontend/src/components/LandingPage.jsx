@@ -358,6 +358,47 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="testimonials-section">
+        <div className="testimonials-header">
+          <h2>Trusted by Revenue Teams</h2>
+          <p>See what GTM leaders are saying about Nexora</p>
+        </div>
+        <div className="testimonials-track-wrapper">
+          <div className="testimonials-track">
+            {[
+              { name: 'Sarah M.', role: 'VP of Sales', badge: 'G2 Verified', stars: 5, text: 'Nexora completely transformed how we prioritize accounts. The renewal intelligence alone saved us from losing three major contracts last quarter.' },
+              { name: 'James R.', role: 'Head of RevOps', badge: 'Verified User', stars: 5, text: 'The technographics data is incredibly accurate. We\'ve been able to target the right buyers at exactly the right time in their buying journey.' },
+              { name: 'Priya K.', role: 'Director of Demand Gen', badge: 'G2 Verified', stars: 5, text: 'Intent signals from Nexora are far more actionable than anything we\'ve used before. Our pipeline velocity has increased by 40% since we started.' },
+              { name: 'Michael T.', role: 'Chief Revenue Officer', badge: 'Verified User', stars: 5, text: 'Finally a platform that brings together all the data signals we need in one place. The NTP predictions are scarily accurate.' },
+              { name: 'Aisha L.', role: 'ABM Manager', badge: 'G2 Verified', stars: 5, text: 'The buying group intelligence helped us identify the full decision-making unit at our top accounts. Game changer for our ABM strategy.' },
+              { name: 'David C.', role: 'Sales Operations Lead', badge: 'Verified User', stars: 4, text: 'Nexora\'s data quality is exceptional. Clean, enriched, and always up to date. Our reps spend less time researching and more time selling.' },
+            ].concat([
+              { name: 'Sarah M.', role: 'VP of Sales', badge: 'G2 Verified', stars: 5, text: 'Nexora completely transformed how we prioritize accounts. The renewal intelligence alone saved us from losing three major contracts last quarter.' },
+              { name: 'James R.', role: 'Head of RevOps', badge: 'Verified User', stars: 5, text: 'The technographics data is incredibly accurate. We\'ve been able to target the right buyers at exactly the right time in their buying journey.' },
+              { name: 'Priya K.', role: 'Director of Demand Gen', badge: 'G2 Verified', stars: 5, text: 'Intent signals from Nexora are far more actionable than anything we\'ve used before. Our pipeline velocity has increased by 40% since we started.' },
+              { name: 'Michael T.', role: 'Chief Revenue Officer', badge: 'Verified User', stars: 5, text: 'Finally a platform that brings together all the data signals we need in one place. The NTP predictions are scarily accurate.' },
+              { name: 'Aisha L.', role: 'ABM Manager', badge: 'G2 Verified', stars: 5, text: 'The buying group intelligence helped us identify the full decision-making unit at our top accounts. Game changer for our ABM strategy.' },
+              { name: 'David C.', role: 'Sales Operations Lead', badge: 'Verified User', stars: 4, text: 'Nexora\'s data quality is exceptional. Clean, enriched, and always up to date. Our reps spend less time researching and more time selling.' },
+            ]).map((t, i) => (
+              <div key={i} className="testimonial-card">
+                <div className="testimonial-quote">"</div>
+                <div className="testimonial-stars">{'★'.repeat(t.stars)}{'☆'.repeat(5 - t.stars)}</div>
+                <p className="testimonial-text">{t.text}</p>
+                <div className="testimonial-footer">
+                  <div className="testimonial-avatar">{t.name.split(' ').map(n => n[0]).join('')}</div>
+                  <div>
+                    <div className="testimonial-name">{t.name}</div>
+                    <div className="testimonial-role">{t.role}</div>
+                  </div>
+                  <span className="testimonial-badge">{t.badge}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section id="faq" className="faq-section">
         <div className="faq-accordion">
