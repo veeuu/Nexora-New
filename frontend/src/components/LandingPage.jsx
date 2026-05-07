@@ -361,7 +361,7 @@ const LandingPage = () => {
       {/* Testimonials Section */}
       <section className="testimonials-section">
         <div className="testimonials-header">
-          <h2>Trusted by Revenue Teams</h2>
+          <h2>Testimonals</h2>
           <p>See what GTM leaders are saying about Nexora</p>
         </div>
         <div className="testimonials-track-wrapper">
@@ -383,7 +383,6 @@ const LandingPage = () => {
             ]).map((t, i) => (
               <div key={i} className="testimonial-card">
                 <div className="testimonial-quote">"</div>
-                <div className="testimonial-stars">{'★'.repeat(t.stars)}{'☆'.repeat(5 - t.stars)}</div>
                 <p className="testimonial-text">{t.text}</p>
                 <div className="testimonial-footer">
                   <div className="testimonial-avatar">{t.name.split(' ').map(n => n[0]).join('')}</div>
