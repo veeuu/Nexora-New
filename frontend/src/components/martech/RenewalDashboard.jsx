@@ -226,7 +226,7 @@ const ProductModal = ({ product, companies, logo, onClose }) => (
   </div>
 );
 
-// All tracker items (full list, not paginated) — used for modal lookup
+// All tracker items (full list, not paginated)  used for modal lookup
 const ALL_TRACKER_ITEMS = [
   { product: 'Amazon Aurora', company: 'DBS Bank',      quarter: 'Q2 2026' },
   { product: 'ChatGPT',       company: 'Accenture',     quarter: 'Q3 2026' },

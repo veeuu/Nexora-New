@@ -1377,7 +1377,7 @@
   background-color: transparent;
 }
 
-/* Inline light mode — header sits flush, no card look */
+/* Inline light mode  header sits flush, no card look */
 .renewal-dashboard-inline .light-mode .renewal-dashboard-modal-header {
   border-radius: 12px;
   margin-bottom: 16px;

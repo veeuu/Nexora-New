@@ -28,7 +28,7 @@ const normalizeStatus = (raw) => {
 
 const getColor = (name) => STATUS_COLORS[name] || DEFAULT_COLOR;
 
-// Animated counter — counts up from 0 to `end` over `duration` ms
+// Animated counter  counts up from 0 to `end` over `duration` ms
 const AnimatedCounter = ({ end, duration = 1500 }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -111,7 +111,7 @@ const IntentPieChart = ({ data }) => {
   // Fixed display order
   const STATUS_ORDER = ['Greenfield', 'High', 'High-Medium', 'Medium', 'Low'];
 
-  // Filter chips — only show statuses that exist in data, in fixed order
+  // Filter chips  only show statuses that exist in data, in fixed order
   const availableStatuses = STATUS_ORDER.filter(s => merged.some(d => d.name === s));
   const filters = ['All', ...availableStatuses];
 
@@ -123,7 +123,7 @@ const IntentPieChart = ({ data }) => {
   const filteredTotal = filtered.reduce((s, d) => s + d.value, 0);
   void filteredTotal; // used for potential future filtering display
 
-  // KPI values — hardcoded display strings (millions scale)
+  // KPI values  hardcoded display strings (millions scale)
   const highCount       = '113M+';
   const medCount        = '196M+';
   const lowCount        = '89M+';
@@ -131,7 +131,7 @@ const IntentPieChart = ({ data }) => {
   const gfCount         = '51M+';
   const totalAllDisplay = '530M+';
 
-  // Bar chart — statuses in fixed order
+  // Bar chart  statuses in fixed order
   const barData = [...mergedWithPct].sort(
     (a, b) => STATUS_ORDER.indexOf(a.name) - STATUS_ORDER.indexOf(b.name)
   );

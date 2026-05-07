@@ -158,7 +158,7 @@ function calculateCanvasDimensions(employees, roots) {
   const maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
   const numLevels = maxDepth + 1;
 
-  // Scale px-per-node based on employee count — small charts get tighter spacing
+  // Scale px-per-node based on employee count  small charts get tighter spacing
   let nodePx, levelPx;
   if (n <= 3)       { nodePx = 180; levelPx = 120; }
   else if (n <= 6)  { nodePx = 185; levelPx = 125; }

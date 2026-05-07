@@ -45,6 +45,21 @@ const getCol = (req, key) => {
 // Apply auth to all data API routes (login/signup handled separately in auth.js)
 router.use(authMiddleware);
 
+// --- ON-DEMAND REQUEST ROUTE
+router.post('/on-demand-request', async (req, res) => {
+  const { requestedName, filterType, searchValue } = req.body;
+  const { email } = req.user;
+
+  console.log('\n========== ON-DEMAND DATA REQUEST ==========');
+  console.log(`Requested Name: ${requestedName}`);
+  console.log(`Filter Type:    ${filterType}`);
+  console.log(`Search Term:    ${searchValue}`);
+  console.log(`Requested By:   ${email}`);
+  console.log(`Timestamp:      ${new Date().toISOString()}`);
+  console.log('============================================\n');
+  res.json({ success: true });
+});
+
 // --- NTP ROUTES
 
 let statsCache = null;

@@ -142,7 +142,7 @@ router.get('/:companyName/org-chart', async (req, res) => {
           const signedUrl = await getSignedOrgChartUrl(buyingGroup.orgChart.s3Key);
           return res.json({ success: true, s3Url: signedUrl, fromCache: true });
         }
-        // File no longer exists in S3 — clear the stale cache and regenerate
+        // File no longer exists in S3  clear the stale cache and regenerate
         await col.updateOne({ companyName: decodedCompanyName }, { $unset: { orgChart: '' } });
       } catch (_) {
         // fall through to regenerate

@@ -258,7 +258,7 @@ const Keywords = () => {
         <table className="keywords-table">
           <thead>
             <tr className="table-master-header">
-              {/* <th colSpan="6" className="table-master-header-cell">PRODUCTS & SERVICES MASTER TABLE — 100 Products · Renamed Lifecycle Stages · Deep Metadata</th> */}
+              {/* <th colSpan="6" className="table-master-header-cell">PRODUCTS & SERVICES MASTER TABLE  100 Products · Renamed Lifecycle Stages · Deep Metadata</th> */}
             </tr>
             <tr className="table-column-headers">
               <th>Product / Service</th>

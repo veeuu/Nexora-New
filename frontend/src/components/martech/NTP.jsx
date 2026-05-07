@@ -1066,7 +1066,7 @@ const NTP = () => {
                 const actualIndex = companyIndex;
                 const companyRowSpan = 1;
 
-                // Only render one row per company — all techs stacked in the cell
+                // Only render one row per company  all techs stacked in the cell
                 const tech = company.technologies[0] || {};
                 const isFirstTechRow = true;
 

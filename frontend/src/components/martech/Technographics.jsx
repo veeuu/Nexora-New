@@ -3247,7 +3247,7 @@ const Technographics = () => {
             </>
           )}
 
-          {/* Additional optional filter badges — always render after mandatory filters */}
+          {/* Additional optional filter badges  always render after mandatory filters */}
           {filters.industry.length > 0 && activeFilterMenu !== 'industry' && (
             <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
             onClick={() => setActiveFilterMenu('industry')}>

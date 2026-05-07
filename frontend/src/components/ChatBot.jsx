@@ -661,7 +661,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         return;
       }
 
-      // Not in local data — use summary to get all company names for partial match
+      // Not in local data  use summary to get all company names for partial match
       setMessages(prev => [...prev, { type: 'bot', text: `Searching for "${userMessage}"...` }]);
       const userMessageLower = userMessage.toLowerCase();
 

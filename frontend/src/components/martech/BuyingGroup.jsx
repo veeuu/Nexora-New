@@ -105,7 +105,7 @@ const BuyingGroup = () => {
                 }
 
                 if (result.s3Url) {
-                    // S3 URLs are public — load directly in iframe
+                    // S3 URLs are public  load directly in iframe
                     setOrgChartUrl(result.s3Url);
                 } else if (result.html) {
                     // Fallback: create a blob URL from the HTML string
@@ -148,7 +148,7 @@ const BuyingGroup = () => {
                     doc.body.scrollLeft = (scrollWidth - clientWidth) / 2;
                 }
             } catch (err) {
-                // cross-origin fallback — ignore
+                // cross-origin fallback  ignore
             }
         };
         iframe.addEventListener('load', scrollToCenter);

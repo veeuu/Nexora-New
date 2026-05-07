@@ -126,7 +126,7 @@ const sendAdminNotificationEmail = async ({ name, email, phone, jobTitle, source
             <table style="width:100%;border-collapse:collapse;font-size:14px;">
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;width:130px;">Full Name</td>
-                <td style="padding:10px 0;color:#1a1d2e;font-weight:500;">${name || '—'}</td>
+                <td style="padding:10px 0;color:#1a1d2e;font-weight:500;">${name || ''}</td>
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;">Email</td>
@@ -140,11 +140,11 @@ const sendAdminNotificationEmail = async ({ name, email, phone, jobTitle, source
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;">Phone</td>
-                <td style="padding:10px 0;color:#1a1d2e;">${phone || '—'}</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${phone || ''}</td>
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;">Job Title</td>
-                <td style="padding:10px 0;color:#1a1d2e;">${jobTitle || '—'}</td>
+                <td style="padding:10px 0;color:#1a1d2e;">${jobTitle || ''}</td>
               </tr>
               <tr style="border-bottom:1px solid #edf0f7;">
                 <td style="padding:10px 0;color:#7a7f99;">Source</td>
