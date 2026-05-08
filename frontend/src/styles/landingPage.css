@@ -2208,10 +2208,12 @@
 }
 
 .d1-desc {
-  font-size: 14px;
-  color: #475569;
-  line-height: 1.8;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293bb3;
+  line-height: 1.7;
   padding-top: 4px;
+  font-family: 'DM Serif Display', Georgia, serif;
 }
 
 .d1-cards {
@@ -2277,12 +2279,14 @@
   color: #0f172a;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .d1-card p {
   font-size: 13px;
   color: #64748b;
   line-height: 1.7;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .d1-card-num {
