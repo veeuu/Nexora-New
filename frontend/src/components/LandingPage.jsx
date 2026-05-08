@@ -537,6 +537,18 @@ const LandingPage = () => {
         <EnterpriseIntel />
       </section>
 
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="cta-glass-container">
+          <div className="cta-content">
+            <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
+            {/* <button className="btn-cta-primary" disabled>
+              Coming Soon
+            </button> */}
+          </div>
+        </div>
+      </section>
+
       {/* What Makes Us Different Section */}
       <section className="difference-section">
         <div className="d1">
@@ -568,18 +580,6 @@ const LandingPage = () => {
               <p>We align Sales, Marketing, and Product teams with one shared view of what comes next.</p>
               <div className="d1-card-num">03</div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-glass-container">
-          <div className="cta-content">
-            <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
-            {/* <button className="btn-cta-primary" disabled>
-              Coming Soon
-            </button> */}
           </div>
         </div>
       </section>
