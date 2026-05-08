@@ -163,11 +163,11 @@ const LandingPage = () => {
               POWERED BY PROPLUS DATA INTELLIGENCE
             </div>
             <h1 className="hero-title">
-              AI Platform for a<br />
-              <span className="hero-title-accent">Predictable Pipeline</span>
+              The Timing Layer for<br />
+              <span className="hero-title-accent">Predictable Revenue</span>
             </h1>
             <p className="hero-subtitle">
-              Access 600M+ companies with real-time technographics, intent data, renewal intelligence, and buying group insights  identify, prioritize, and convert the right accounts faster.
+              Most teams chase demand. Nexora, a GTM AI platform, makes revenue predictable,revealing what’s next, the right stakeholders to engage, and exactly when to act.
             </p>
             <div className="hero-cta">
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
