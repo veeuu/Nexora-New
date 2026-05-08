@@ -544,11 +544,14 @@ const LandingPage = () => {
       <section className="cta-section">
         <div className="cta-glass-container">
           <div className="cta-content">
-            <h2>Try Nexora <span className="bold-word">free</span>.<br />No credit card required.</h2>
-            {/* <button className="btn-cta-primary" disabled>
-              Coming Soon
-            </button> */}
+            <h2>Try Nexora <span className="cta-free-word">free</span>.<br /><span className="cta-sub">No credit card required.</span></h2>
           </div>
+        </div>
+        <div className="cta-wave">
+          <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,100 C240,200 480,0 720,100 C960,200 1200,0 1440,100 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.45)" />
+            <path d="M0,130 C300,30 600,180 900,110 C1100,65 1300,160 1440,120 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.28)" />
+          </svg>
         </div>
       </section>
 
