@@ -19,6 +19,141 @@ import heroSvg from '../landing/LP HERO UPDATED.svg';
 import '../styles/landingPage.css';
 import '../styles/landingPageHero.css';
 
+// ── Enterprise-Grade B2B Intelligence section ────────────────────────────────
+const sdata = [
+  {
+    title: 'Technographics',
+    badge: '590M+ Companies',
+    desc: 'Shows you what technologies companies currently use and the maturity of their technology stack. Identify upgrade opportunities and ideal timing.',
+    chips: [{ t: 'Tech Stack Detection', c: 'a' }, { t: 'Vendor Mapping', c: 'b' }, { t: 'Stack Maturity Score', c: 'c' }],
+    items: [
+      { av: 'AG', name: 'AgileSoft Corp', tag: 'ChatGPT · AWS', badge: 'Q1 2025', bc: 'b' },
+      { av: 'BS', name: 'B-Stack Solutions', tag: 'Transformers · GCP', badge: 'Q4 2024', bc: 'b' },
+      { av: 'CM', name: 'Cazme', tag: 'Microsoft 365 · GCP', badge: 'Q1 2025', bc: 'y' },
+    ],
+  },
+  {
+    title: 'Renewal Intelligence',
+    badge: '530M+ Companies',
+    desc: 'Identify when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving before your competitors do.',
+    chips: [{ t: 'Contract Timelines', c: 'a' }, { t: 'Churn Signals', c: 'b' }, { t: 'Vendor Switch Risk', c: 'c' }],
+    items: [
+      { av: 'JD', name: 'Judge Direct', tag: 'Amazon RDS', badge: 'Q1 2026', bc: 'b' },
+      { av: 'SK', name: 'Skin Inc.', tag: 'Google BigQuery', badge: 'Q1 2027', bc: 'y' },
+      { av: 'AA', name: 'Actively AI', tag: 'Google BigQuery', badge: 'Q1 2027', bc: 'y' },
+    ],
+  },
+  {
+    title: 'Intent',
+    badge: '530M+ Companies',
+    desc: "Captures behavioral signals indicating a company's interest in specific technologies, helping prioritize outreach and improve conversion efficiency.",
+    chips: [{ t: 'Buying Signals', c: 'a' }, { t: 'Topic Surge', c: 'b' }, { t: 'Competitor Research', c: 'c' }],
+    items: [
+      { av: 'AV', name: 'Apex Ventures', tag: 'Cloud Migration · High', badge: 'Surge +42%', bc: 'b' },
+      { av: 'TC', name: 'TechCorp Inc', tag: 'CRM Tools · Med', badge: '+18%', bc: 'y' },
+      { av: 'DF', name: 'DataFlow Co', tag: 'Security Ops · High', badge: 'Surge +67%', bc: 'b' },
+    ],
+  },
+  {
+    title: 'Buying Group',
+    badge: '430M+ Companies',
+    desc: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements.',
+    chips: [{ t: 'Decision Makers', c: 'a' }, { t: 'Influencers', c: 'b' }, { t: 'Org Chart Mapping', c: 'c' }],
+    items: [
+      { av: 'SC', name: 'Sarah Chen', tag: 'VP Engineering', badge: 'Decision Maker', bc: 'p' },
+      { av: 'MT', name: 'Marcus T.', tag: 'IT Director', badge: 'Influencer', bc: 'y' },
+      { av: 'PK', name: 'Priya K.', tag: 'CTO', badge: 'Champion', bc: 'b' },
+    ],
+  },
+  {
+    title: 'NTP®',
+    badge: '530M+ Companies',
+    desc: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals to time your outreach perfectly.',
+    chips: [{ t: 'Predictive Scoring', c: 'a' }, { t: 'Investment Signals', c: 'b' }, { t: 'Pipeline Timing', c: 'c' }],
+    items: [
+      { av: 'NT', name: 'NovaTech', tag: 'Cloud Security', badge: 'Score 92%', bc: 'b' },
+      { av: 'DF', name: 'DataFirst', tag: 'AI/ML Platform', badge: 'Score 88%', bc: 'b' },
+      { av: 'SO', name: 'ScaleOps', tag: 'DevOps Tools', badge: 'Score 81%', bc: 'y' },
+    ],
+  },
+];
+
+const chipClass = { a: 'st-chip-a', b: 'st-chip-b', c: 'st-chip-c' };
+const badgeClass = { b: 'st-badge-b', y: 'st-badge-y', p: 'st-badge-p' };
+
+const EnterpriseIntel = () => {
+  const [cur, setCur] = useState(0);
+  const d = sdata[cur];
+  return (
+    <div className="st-wrap">
+      <div className="st-head">
+        <h2>Enterprise-Grade B2B Intelligence</h2>
+        <p>Explore our comprehensive data attributes that power smarter go-to-market decisions</p>
+      </div>
+      <div className="st-layout">
+        {/* Steps sidebar */}
+        <div className="st-steps">
+          {sdata.map((s, i) => (
+            <div
+              key={i}
+              className={`st-step${cur === i ? ' act' : ''}`}
+              onClick={() => setCur(i)}
+            >
+              <div className="st-num">{i + 1}</div>
+              <div className="st-step-text">
+                <div className="st-step-name">{s.title}</div>
+                <div className="st-step-sub">{s.badge}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Content panel */}
+        <div className="st-content">
+          <div className="st-content-top">
+            <div className="st-ct-header">
+              <div className="st-ct-title">{d.title}</div>
+              <div className="st-ct-badge">{d.badge}</div>
+            </div>
+            <div className="st-ct-desc">{d.desc}</div>
+            <div className="st-ct-chips">
+              {d.chips.map((c, i) => (
+                <span key={i} className={`st-chip ${chipClass[c.c]}`}>{c.t}</span>
+              ))}
+            </div>
+          </div>
+          <div className="st-mock-mini">
+            <div className="st-mock-head">
+              <div className="st-mock-dots2">
+                <div className="st-mock-dot2" />
+                <div className="st-mock-dot2" />
+                <div className="st-mock-dot2" />
+              </div>
+              <span>{d.title}</span>
+            </div>
+            <div className="st-mock-content">
+              {d.items.map((it, i) => (
+                <div key={i} className="st-mock-item">
+                  <div className="st-mi-left">
+                    <div className="st-mi-avatar">{it.av}</div>
+                    <div>
+                      <div className="st-mi-name">{it.name}</div>
+                      <div className="st-mi-tag">{it.tag}</div>
+                    </div>
+                  </div>
+                  <div className="st-mi-right">
+                    <span className={`st-badge-sm ${badgeClass[it.bc]}`}>{it.badge}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── Scroll-jacked stats section ──────────────────────────────────────────────
 const StatsScrollSection = ({ stats }) => {
   const sectionRef = useRef(null);
@@ -399,67 +534,40 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <section id="features" className="features-section">
-        <div className="features-header">
-          <h2>Enterprise-Grade B2B Intelligence</h2>
-          <p>Explore our comprehensive data attributes that power smarter go-to-market decisions</p>
-        </div>
-        <div className="features-accordion">
-          <div className="accordion-left">
-            {features.map((feature) => (
-              <div key={feature.id} className="accordion-item">
-                <button 
-                  className={`accordion-header ${expandedFeature === feature.id ? 'active' : ''}`}
-                  onClick={() => setExpandedFeature(expandedFeature === feature.id ? feature.id : feature.id)}
-                >
-                  <span className="accordion-title">{feature.title}</span>
-                  <span className="accordion-toggle">
-                    {expandedFeature === feature.id ? '−' : '+'}
-                  </span>
-                </button>
-                {expandedFeature === feature.id && (
-                  <div className="accordion-content">
-                    <p>{feature.description}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="accordion-right">
-            {expandedFeature && (
-              <img 
-                src={features.find(f => f.id === expandedFeature)?.image} 
-                alt="Feature Screenshot" 
-                className="feature-image" 
-              />
-            )}
-          </div>
-        </div>
+        <EnterpriseIntel />
       </section>
 
       {/* What Makes Us Different Section */}
       <section className="difference-section">
-        <div className="difference-wrapper">
-          <div className="difference-header">
-            <h2>Here's what makes us different</h2>
-            <p>Find and close your next customer before your competitors do with our all-in-one platform that tells you who to reach and how to reach them. With Nexora, you can unite sales and marketing teams around a single source of truth. And you can scale faster by automating tasks across all outreach channels.</p>
+        <div className="d1">
+          <div className="d1-top">
+            <div>
+              <div className="d1-eyebrow">Why Nexora</div>
+              <div className="d1-h2">Here's what makes<br />us <span>different</span></div>
+            </div>
+            <div className="d1-desc">
+              Find and close your next customer before your competitors do with our all-in-one platform that tells you who to reach and how to reach them. With Nexora, you can unite sales and marketing teams around a single source of truth.
+            </div>
           </div>
-          <div className="difference-cards">
-            <div className="difference-card">
+          <div className="d1-cards">
+            <div className="d1-card">
+              <div className="d1-icon"><i className="ti ti-shield-check" aria-hidden="true" /></div>
               <h3>Strategic Imperative</h3>
               <p>Build the standard. We are creating the most trusted intelligence engine for enterprise technology decisions.</p>
+              <div className="d1-card-num">01</div>
             </div>
-            <div className="difference-card">
+            <div className="d1-card">
+              <div className="d1-icon"><i className="ti ti-chart-arrows-vertical" aria-hidden="true" /></div>
               <h3>Change how teams sell</h3>
-              <p>We help teams stop reacting to the past and start anticipating future revenue.</p>
+              <p>We help teams stop reacting to the past and start anticipating future revenue with predictive signals.</p>
+              <div className="d1-card-num">02</div>
             </div>
-            <div className="difference-card">
+            <div className="d1-card">
+              <div className="d1-icon"><i className="ti ti-topology-star-3" aria-hidden="true" /></div>
               <h3>Unite your organization</h3>
               <p>We align Sales, Marketing, and Product teams with one shared view of what comes next.</p>
+              <div className="d1-card-num">03</div>
             </div>
-            {/* <div className="difference-card">
-              <h3>Win with timing</h3>
-              <p>We give you the advantage of knowing when to act, before your competitors do.</p>
-            </div> */}
           </div>
         </div>
       </section>
