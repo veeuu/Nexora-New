@@ -3,235 +3,85 @@ const path = require('path');
 const csv = require('csv-parser');
 const XLSX = require('xlsx');
 
+// ─────────────────────────────────────────────
+//  DESIGN TOKENS
+// ─────────────────────────────────────────────
 const CONFIG = {
-  BOX_WIDTH: 1.0,
-  BOX_HEIGHT: 0.38,
-  BOX_CORNER_RADIUS: 0.015,
-  HORIZONTAL_GAP: 0.08,
-  VERTICAL_GAP: 0.18,
-  TOP_PADDING: 0.10,
-  SIDE_PADDING: 0.02,
-  MAX_CHARS_PER_LINE: 12,
-  MAX_NAME_LINES: 2,
-  MAX_ROLE_LINES: 2,
-  CHART_GLOBAL_X_OFFSET: 0.0,
-  SMALL_CHART_THRESHOLD: 10,
-  SMALL_CHART_BOX_WIDTH: 0.90,
-  SMALL_CHART_BOX_HEIGHT: 0.38,
-  MIN_VIEWPORT_SPAN: 0.9,
-  AXIS_PADDING: 0.05,
+  // Card dimensions (px) — equal for ALL hierarchy types
+  CARD_W: 210,
+  CARD_H: 80,
+  HGAP:   28,   // horizontal gap between sibling cards
+  VGAP:   72,   // vertical gap between levels
 
-COLOR_DECISION_MAKER_FILL: '#003d7a',
-  COLOR_INFLUENCER_FILL: '#0070C0',
-  COLOR_DIRECT_REPORTEE_FILL: '#CCECFF',
-  COLOR_OTHER_NODE_FILL: '#0070C0',
-  COLOR_LINES: '#355A9C',
-  COLOR_BACKGROUND: '#FFFFFF',
+  // Hierarchy visual tokens
+  HIERARCHY: {
+    'decision maker': {
+      strip:    '#10b981',
+      badge_bg: '#ecfdf5',
+      badge_txt:'#065f46',
+      dot:      '#10b981',
+      label:    'Decision Maker',
+    },
+    'influencer': {
+      strip:    '#f59e0b',
+      badge_bg: '#fffbeb',
+      badge_txt:'#92400e',
+      dot:      '#f59e0b',
+      label:    'Influencer',
+    },
+    'direct reportee': {
+      strip:    '#6366f1',
+      badge_bg: '#eef2ff',
+      badge_txt:'#3730a3',
+      dot:      '#6366f1',
+      label:    'Direct Reportee',
+    },
+  },
 
-FONT_COLOR_ON_LIGHT_BG: '#000000',
-  FONT_COLOR_ON_DARK_BG: '#FFFFFF',
-  COLOR_DIRECT_REPORTEE_FONT: '#002060',
-  NAME_TEXT_SIZE: 15,
-  ROLE_TEXT_SIZE: 13,
+  // Avatar gradient pairs  [from, to]
+  AVATAR_GRADIENTS: [
+    ['#4f46e5','#818cf8'], ['#0891b2','#22d3ee'], ['#be185d','#f472b6'],
+    ['#7c3aed','#a78bfa'], ['#0d9488','#2dd4bf'], ['#c2410c','#fb923c'],
+    ['#1d4ed8','#60a5fa'], ['#15803d','#4ade80'],
+  ],
 
-  CANVAS_WIDTH: 1200,
-  CANVAS_HEIGHT: 700,
+  COLOR_CONNECTOR: '#94a3b8',
+  COLOR_BG:        '#f1f5f9',
+  COLOR_CARD_BG:   '#ffffff',
+  FONT_FAMILY:     "'Segoe UI', system-ui, -apple-system, sans-serif",
 
-  MIN_CANVAS_WIDTH: 800,
+  // Legacy compat kept for PNG/puppeteer path
+  MIN_CANVAS_WIDTH:  900,
   MIN_CANVAS_HEIGHT: 500,
-  EMPLOYEES_PER_WIDTH_UNIT: 3,
-  EMPLOYEES_PER_HEIGHT_UNIT: 2,
-  
-  // Fixed comfortable box size across all tiers
-  TIER_XS_THRESHOLD: 5,
-  TIER_XS_WIDTH: 0.90,
-  TIER_XS_HEIGHT: 0.38,
-
-  TIER_S_THRESHOLD: 8,
-  TIER_S_WIDTH: 0.90,
-  TIER_S_HEIGHT: 0.38,
-
-  TIER_M_THRESHOLD: 12,
-  TIER_M_WIDTH: 0.90,
-  TIER_M_HEIGHT: 0.38,
-
-  TIER_L_WIDTH: 0.90,
-  TIER_L_HEIGHT: 0.38,
 };
 
-function readCSVFile(csvFilePath) {
-  return new Promise((resolve, reject) => {
-    const data = [];
-
-    if (!fs.existsSync(csvFilePath)) {
-      reject(new Error(`CSV file not found: ${csvFilePath}`));
-      return;
-    }
-
-    fs.createReadStream(csvFilePath)
-      .pipe(csv())
-      .on('data', (row) => {
-        data.push(row);
-      })
-      .on('end', () => {
-        resolve(data);
-      })
-      .on('error', (error) => {
-        reject(error);
-      });
-  });
+// ─────────────────────────────────────────────
+//  UTILITY HELPERS
+// ─────────────────────────────────────────────
+function nameHash(str) {
+  let h = 0;
+  for (const c of String(str)) h = (h * 31 + c.charCodeAt(0)) & 0xfffffff;
+  return h;
 }
 
-function getBoxDimensionsForCompany(companyData) {
-  const n = companyData.length;
-  const charsPerLine = CONFIG.MAX_CHARS_PER_LINE;
-
-  // Find the longest single line after wrapping (what actually renders in the box)
-  let maxLineChars = 0;
-  for (const row of companyData) {
-    const name = String(row.Name || '').trim();
-    const role = String(row.Role || '').trim();
-    // Simulate wrapping: find longest word-wrapped line
-    for (const text of [name, role]) {
-      const words = text.split(' ');
-      let line = '';
-      for (const word of words) {
-        const candidate = line ? line + ' ' + word : word;
-        if (candidate.length <= charsPerLine) {
-          line = candidate;
-        } else {
-          maxLineChars = Math.max(maxLineChars, line.length);
-          line = word;
-        }
-      }
-      maxLineChars = Math.max(maxLineChars, line.length);
-    }
-  }
-
-  // Each char needs ~0.095 coordinate units at current font size, plus padding
-  const minWidthForText = maxLineChars * 0.095 + 0.40;
-
-  let baseWidth;
-  if (n <= 3)       baseWidth = 1.50;
-  else if (n <= 6)  baseWidth = 1.60;
-  else if (n <= 10) baseWidth = 1.70;
-  else if (n <= 20) baseWidth = 1.80;
-  else              baseWidth = 1.90;
-
-  const boxWidth = Math.min(2.80, Math.max(baseWidth, minWidthForText));
-
-  // Height based on whether wrapping produces 2 lines
-  const maxTotalChars = Math.max(...companyData.map(r =>
-    Math.max(String(r.Name || '').trim().length, String(r.Role || '').trim().length)
-  ));
-  const needsTwoLines = maxTotalChars > charsPerLine;
-  const boxHeight = needsTwoLines ? 0.50 : 0.40;
-
-  return { boxWidth, boxHeight, charsPerLine };
+function initials(name) {
+  return String(name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function calculateCanvasDimensions(employees, roots) {
-  const n = Object.keys(employees).length;
-
-  let maxDepth = 0;
-  const queue = roots.map(r => [r, 0]);
-  let head = 0;
-  while (head < queue.length) {
-    const [nodeName, depth] = queue[head++];
-    maxDepth = Math.max(maxDepth, depth);
-    if (nodeName in employees) {
-      for (const child of employees[nodeName].children) queue.push([child, depth + 1]);
-    }
-  }
-
-  const levelCounts = {};
-  const levelQueue = roots.map(r => [r, 0]);
-  let levelHead = 0;
-  while (levelHead < levelQueue.length) {
-    const [nodeName, level] = levelQueue[levelHead++];
-    levelCounts[level] = (levelCounts[level] || 0) + 1;
-    if (nodeName in employees) {
-      for (const child of employees[nodeName].children) levelQueue.push([child, level + 1]);
-    }
-  }
-
-  const maxChildrenAtLevel = Math.max(...Object.values(levelCounts));
-  const numLevels = maxDepth + 1;
-
-  // Scale px-per-node based on employee count  small charts get tighter spacing
-  let nodePx, levelPx;
-  if (n <= 3)       { nodePx = 180; levelPx = 120; }
-  else if (n <= 6)  { nodePx = 185; levelPx = 125; }
-  else if (n <= 10) { nodePx = 190; levelPx = 130; }
-  else if (n <= 20) { nodePx = 195; levelPx = 135; }
-  else              { nodePx = 210; levelPx = 140; }
-
-  const width  = Math.max(350, Math.min(maxChildrenAtLevel * nodePx + 180, 4000));
-  const height = Math.max(300, Math.min(numLevels * levelPx + 180, 2500));
-
-  return { width, height, depth: maxDepth, maxChildrenAtLevel, scaleFactor: 1 };
-}
-function wrapText(text, maxChars, maxLines = null) {
-  if (typeof text !== 'string') {
-    text = String(text);
-  }
-
-  if (text.includes('<br>')) {
-    return text;
-  }
-
-  const words = text.split(' ');
-  const lines = [];
-  let currentLine = '';
-  let isTruncated = false;
-
-  for (const word of words) {
-    if (!currentLine) {
-      currentLine = word;
-    } else if (currentLine.length + 1 + word.length <= maxChars) {
-      currentLine += ' ' + word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-
-  if (currentLine) {
-    lines.push(currentLine);
-  }
-
-  // Check if we need to truncate due to maxLines
-  if (maxLines !== null && lines.length > maxLines) {
-    lines.splice(maxLines);
-    isTruncated = true;
-  }
-
-  // Ensure each line doesn't exceed maxChars, add ellipsis if truncated
-  if (lines.length > 0) {
-    const lastLineIndex = lines.length - 1;
-    if (lines[lastLineIndex].length > maxChars) {
-      lines[lastLineIndex] = lines[lastLineIndex].substring(0, Math.max(1, maxChars - 3)) + '...';
-      isTruncated = true;
-    } else if (isTruncated) {
-      // If truncated due to maxLines, add ellipsis to last line
-      if (lines[lastLineIndex].length + 3 <= maxChars) {
-        lines[lastLineIndex] += '...';
-      } else {
-        lines[lastLineIndex] = lines[lastLineIndex].substring(0, Math.max(1, maxChars - 3)) + '...';
-      }
-    }
-  }
-
-  return lines.join('<br>');
+function avatarGradient(name) {
+  const [a, b] = CONFIG.AVATAR_GRADIENTS[nameHash(name) % CONFIG.AVATAR_GRADIENTS.length];
+  return `linear-gradient(135deg,${a},${b})`;
 }
 
-function createRoundedRectPath(xCenter, yCenter, width, height, radius) {
-  const x0 = xCenter - width / 2;
-  const y0 = yCenter - height / 2;
-  const x1 = xCenter + width / 2;
-  const y1 = yCenter + height / 2;
-
-  return `M ${x0 + radius},${y1} L ${x1 - radius},${y1} Q ${x1},${y1} ${x1},${y1 - radius} L ${x1},${y0 + radius} Q ${x1},${y0} ${x1 - radius},${y0} L ${x0 + radius},${y0} Q ${x0},${y0} ${x0},${y0 + radius} L ${x0},${y1 - radius} Q ${x0},${y1} ${x0 + radius},${y1} Z`;
+function hierarchyConfig(raw) {
+  const key = String(raw || '').toLowerCase().trim();
+  return CONFIG.HIERARCHY[key] || {
+    strip:    '#94a3b8',
+    badge_bg: '#f8fafc',
+    badge_txt:'#475569',
+    dot:      '#94a3b8',
+    label:    raw || 'Other',
+  };
 }
 
 function sanitizeFilename(name) {
@@ -241,882 +91,27 @@ function sanitizeFilename(name) {
   return name || 'untitled_chart';
 }
 
-/**
- * If a name exceeds charsPerLine, insert an extra space after the first word
- * so it wraps consistently at the same point everywhere it appears.
- */
-function normalizeNameForWrapping(name, charsPerLine) {
-  if (!name || name.length <= charsPerLine) return name;
-  const spaceIdx = name.indexOf(' ');
-  if (spaceIdx === -1) return name; // single word, can't split
-  return name.slice(0, spaceIdx) + '  ' + name.slice(spaceIdx + 1);
-}
-
-/**
- * Pre-process data rows: normalize all Name and Reports To fields
- * so wrapping is consistent everywhere the name appears.
- */
-function normalizeDataNames(data, charsPerLine) {
-  // First pass: build mapping of original name -> normalized name
-  const nameMap = new Map();
-  for (const row of data) {
-    const original = String(row.Name || '').trim();
-    if (original) {
-      nameMap.set(original, normalizeNameForWrapping(original, charsPerLine));
-    }
-  }
-
-  // Second pass: apply normalization to Name and Reports To
-  return data.map(row => {
-    const originalName = String(row.Name || '').trim();
-    const originalReportsTo = String(row['Reports To'] || '').trim();
-    return {
-      ...row,
-      'Name': nameMap.get(originalName) || originalName,
-      'Reports To': nameMap.get(originalReportsTo) || originalReportsTo,
-    };
-  });
-}
-
-function buildTreeFromData(data) {
-  const employees = {};
-  const allNamesInInput = new Set(data.map(row => String(row.Name || '').trim()).filter(Boolean));
-
-  for (const row of data) {
-    const name = String(row.Name || 'Unnamed').trim();
-    const role = String(row.Role || 'N/A');
-    const reportsTo = row['Reports To'];
-    const hierarchy = String(row.hierarchy || 'Other').trim();
-
-const uniqueId = row['Unique ID'] || '';
-    const companyName = row['Company Name'] || '';
-    const linkedin = row['Linkedin'] || '';
-    const email = row['email'] || '';
-    const category = row['Category'] || 'N/A';
-
-    let managerName = null;
-    if (reportsTo && String(reportsTo).trim() && String(reportsTo).trim() !== '-') {
-      managerName = String(reportsTo).trim();
-      if (!allNamesInInput.has(managerName)) {
-        managerName = null;
-      }
-    }
-
-    employees[name] = {
-      name,
-      role,
-      reports_to: managerName,
-      hierarchy_type: hierarchy,
-      children: [],
-      level: -1,
-      y: 0.0,
-      x: 0.0,
-      cached_width: 0.0,
-
-      uniqueId,
-      companyName,
-      linkedin,
-      email,
-      category
-    };
-  }
-
-  const managedEmployees = new Set();
-  for (const [name, empData] of Object.entries(employees)) {
-    if (empData.reports_to && empData.reports_to in employees) {
-      employees[empData.reports_to].children.push(name);
-      managedEmployees.add(name);
-    }
-  }
-
-  let roots = Object.keys(employees).filter(name => !managedEmployees.has(name));
-  if (roots.length === 0 && Object.keys(employees).length > 0) {
-    roots = [Object.keys(employees)[0]];
-  }
-
-  const edges = [];
-  for (const [name, empData] of Object.entries(employees)) {
-    for (const childName of empData.children) {
-      edges.push([name, childName]);
-    }
-  }
-
-  return { employees, roots, edges };
-}
-
-function calculateLevelsAndY(employees, roots, boxHeight = CONFIG.BOX_HEIGHT) {
-  if (!roots.length || !Object.keys(employees).length) {
-    return 0;
-  }
-
-  const queue = [];
-  const visitedForLeveling = new Set();
-  let maxLevel = 0;
-
-  const validRoots = roots.filter(r => r in employees);
-  for (const rootName of validRoots) {
-    employees[rootName].level = 0;
-    queue.push([rootName, 0]);
-    visitedForLeveling.add(rootName);
-  }
-
-  let head = 0;
-  while (head < queue.length) {
-    const [currentName, level] = queue[head];
-    head++;
-    maxLevel = Math.max(maxLevel, level);
-
-    if (!(currentName in employees)) continue;
-
-    for (const childName of employees[currentName].children) {
-      if (childName in employees && !visitedForLeveling.has(childName)) {
-        employees[childName].level = level + 1;
-        queue.push([childName, level + 1]);
-        visitedForLeveling.add(childName);
-      }
-    }
-  }
-
-  for (const [name, empData] of Object.entries(employees)) {
-    if (empData.level !== -1) {
-      empData.y = 1.0 - CONFIG.TOP_PADDING - (empData.level * (boxHeight + CONFIG.VERTICAL_GAP)) - boxHeight / 2;
-    }
-  }
-
-  return maxLevel;
-}
-
-function getSubtreeWidth(nodeName, employees, boxWidth = CONFIG.BOX_WIDTH) {
-  const node = employees[nodeName];
-  if (node.cached_width > 0) {
-    return node.cached_width;
-  }
-
-  let width;
-  if (!node.children.length) {
-    width = boxWidth;
-  } else {
-    const childrenWidths = node.children.map(child => getSubtreeWidth(child, employees, boxWidth));
-    width = childrenWidths.reduce((a, b) => a + b, 0) + Math.max(0, node.children.length - 1) * CONFIG.HORIZONTAL_GAP;
-  }
-
-  node.cached_width = Math.max(width, boxWidth);
-  return node.cached_width;
-}
-
-function assignXCoordinatesRecursive(nodeName, currentXSlotStart, employees, boxWidth = CONFIG.BOX_WIDTH) {
-  const node = employees[nodeName];
-  const children = node.children;
-  const totalCachedWidth = node.cached_width;
-
-  if (!children.length) {
-    node.x = currentXSlotStart + boxWidth / 2 + CONFIG.CHART_GLOBAL_X_OFFSET;
-    return;
-  }
-
-  const childrenCollectiveSpanWidth = children.reduce((sum, c) => sum + employees[c].cached_width, 0) +
-    Math.max(0, children.length - 1) * CONFIG.HORIZONTAL_GAP;
-
-  const parentXCenter = currentXSlotStart + totalCachedWidth / 2;
-  node.x = parentXCenter + CONFIG.CHART_GLOBAL_X_OFFSET;
-
-  const childrenLayoutBlockStartX = parentXCenter - (childrenCollectiveSpanWidth / 2);
-  let tempChildStartX = childrenLayoutBlockStartX;
-
-  for (const childName of children) {
-    const childSubtreeWidth = employees[childName].cached_width;
-    assignXCoordinatesRecursive(childName, tempChildStartX, employees, boxWidth);
-    tempChildStartX += childSubtreeWidth + CONFIG.HORIZONTAL_GAP;
-  }
-}
-
-function calculateAllXPositions(employees, roots, boxWidth = CONFIG.BOX_WIDTH) {
-  if (!roots.length || !Object.keys(employees).length) {
-    return;
-  }
-
-  const validRoots = roots.filter(r => r in employees);
-  if (!validRoots.length) {
-    return;
-  }
-
-  for (const rootName of validRoots) {
-    getSubtreeWidth(rootName, employees, boxWidth);
-  }
-
-  const totalChartSpanNeeded = validRoots.reduce((sum, r) => sum + employees[r].cached_width, 0) +
-    Math.max(0, validRoots.length - 1) * CONFIG.HORIZONTAL_GAP;
-
-  let currentOverallXOffset = CONFIG.SIDE_PADDING;
-  if (totalChartSpanNeeded < (1.0 - 2 * CONFIG.SIDE_PADDING) && totalChartSpanNeeded > 0) {
-    currentOverallXOffset = (1.0 - totalChartSpanNeeded) / 2;
-  } else if (totalChartSpanNeeded === 0) {
-    currentOverallXOffset = 0.5;
-  }
-
-  const sortedValidRoots = validRoots.sort();
-  for (const rootName of sortedValidRoots) {
-    if (rootName in employees) {
-      assignXCoordinatesRecursive(rootName, currentOverallXOffset, employees, boxWidth);
-      currentOverallXOffset += employees[rootName].cached_width + CONFIG.HORIZONTAL_GAP;
-    }
-  }
-}
-
-function generateOrgChartPlotly(data, companyName = 'Organization', location = '', customBoxWidth = null, customBoxHeight = null) {
-  // Normalize names for consistent wrapping before anything else
-  const charsPerLine = CONFIG.MAX_CHARS_PER_LINE;
-  data = normalizeDataNames(data, charsPerLine);
-
-  const { employees, roots, edges } = buildTreeFromData(data);
-
-  // Get dynamic box dimensions based on company data size
-  const { boxWidth: dynamicBoxWidth, boxHeight: dynamicBoxHeight } = getBoxDimensionsForCompany(data);
-
-  // Use custom dimensions if provided, otherwise use dynamic
-  const boxWidth = customBoxWidth !== null ? customBoxWidth : dynamicBoxWidth;
-  const boxHeight = customBoxHeight !== null ? customBoxHeight : dynamicBoxHeight;
-
-const { width: canvasWidth, height: canvasHeight, depth, maxChildrenAtLevel, scaleFactor } = calculateCanvasDimensions(employees, roots);
-
-  const verticalGap = CONFIG.VERTICAL_GAP;
-  const horizontalGap = CONFIG.HORIZONTAL_GAP;
-
-const nameTextSize = Math.round(CONFIG.NAME_TEXT_SIZE * scaleFactor);
-  const roleTextSize = Math.round(CONFIG.ROLE_TEXT_SIZE * scaleFactor);
-
-  const titleText = String(companyName);
-
-  if (!Object.keys(employees).length) {
-    return createErrorPlotly(`No Employee Data for ${titleText}`, canvasWidth, canvasHeight);
-  }
-
-  if (!roots.length) {
-    return createErrorPlotly(`Error: No Hierarchy Roots for ${titleText}`, canvasWidth, canvasHeight);
-  }
-
-calculateLevelsAndY(employees, roots, boxHeight);
-  calculateAllXPositions(employees, roots, boxWidth);
-
-  const nodePositions = {};
-  for (const [name, data] of Object.entries(employees)) {
-    if (data.level !== -1 && 'x' in data && 'y' in data) {
-      nodePositions[name] = [data.x, data.y];
-    }
-  }
-
-  if (!Object.keys(nodePositions).length) {
-    return createErrorPlotly(`${titleText} - No Visualizable Chart Data`, canvasWidth, canvasHeight);
-  }
-
-let minX = Infinity, maxX = -Infinity;
-  let minY = Infinity, maxY = -Infinity;
-
-  for (const [x, y] of Object.values(nodePositions)) {
-    minX = Math.min(minX, x - boxWidth / 2);
-    maxX = Math.max(maxX, x + boxWidth / 2);
-    minY = Math.min(minY, y - boxHeight / 2);
-    maxY = Math.max(maxY, y + boxHeight / 2);
-  }
-
-  let xRange = [minX - CONFIG.AXIS_PADDING, maxX + CONFIG.AXIS_PADDING];
-  let yRange = [minY - CONFIG.AXIS_PADDING, maxY + CONFIG.AXIS_PADDING];
-
-let xSpan = xRange[1] - xRange[0];
-  let ySpan = yRange[1] - yRange[0];
-
-  if (xSpan < CONFIG.MIN_VIEWPORT_SPAN) {
-    const centerX = (xRange[0] + xRange[1]) / 2;
-    xRange = [centerX - CONFIG.MIN_VIEWPORT_SPAN / 2, centerX + CONFIG.MIN_VIEWPORT_SPAN / 2];
-  }
-
-  if (ySpan < CONFIG.MIN_VIEWPORT_SPAN) {
-    const centerY = (yRange[0] + yRange[1]) / 2;
-    yRange = [centerY - CONFIG.MIN_VIEWPORT_SPAN / 2, centerY + CONFIG.MIN_VIEWPORT_SPAN / 2];
-  }
-
-const centerXChart = (minX + maxX) / 2;
-  const centerXViewport = (xRange[0] + xRange[1]) / 2;
-  const xShiftAmount = centerXChart - centerXViewport;
-  xRange = [xRange[0] + xShiftAmount, xRange[1] + xShiftAmount];
-
-const traces = [];
-  const shapes = [];
-  const annotations = [];
-
-traces.push({
-    x: [null],
-    y: [null],
-    mode: 'markers',
-    marker: { size: 15, color: CONFIG.COLOR_DECISION_MAKER_FILL, symbol: 'square' },
-    name: 'Decision Maker &nbsp; &nbsp; &nbsp;',
-    showlegend: true,
-    hoverinfo: 'none'
-  });
-
-  traces.push({
-    x: [null],
-    y: [null],
-    mode: 'markers',
-    marker: { size: 15, color: CONFIG.COLOR_INFLUENCER_FILL, symbol: 'square' },
-    name: 'Influencer &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;',
-    showlegend: true,
-    hoverinfo: 'none'
-  });
-
-  traces.push({
-    x: [null],
-    y: [null],
-    mode: 'markers',
-    marker: { size: 15, color: CONFIG.COLOR_DIRECT_REPORTEE_FILL, symbol: 'square' },
-    name: 'Direct Reportee &nbsp; &nbsp; &nbsp;',
-    showlegend: false,
-    hoverinfo: 'none'
-  });
-
-const lineXs = [];
-  const lineYs = [];
-
-// Don't draw lines above root nodes - they are independent decision makers
-  // const validRootsInChart = roots.filter(r => r in nodePositions);
-  // Multiple roots should not have connecting lines above them
-
-for (const [parentName, childName] of edges) {
-    if (parentName in nodePositions && childName in nodePositions) {
-      const [x0, y0] = nodePositions[parentName];
-      const [x1, y1] = nodePositions[childName];
-      const x0Shifted = x0 + xShiftAmount;
-      const x1Shifted = x1 + xShiftAmount;
-      const yJunction = y0 - boxHeight / 2 - verticalGap / 3;
-
-      lineXs.push(x0Shifted, x0Shifted, x1Shifted, x1Shifted, null);
-      lineYs.push(y0 - boxHeight / 2, yJunction, yJunction, y1 + boxHeight / 2, null);
-    }
-  }
-
-if (lineXs.length > 0) {
-    traces.push({
-      x: lineXs,
-      y: lineYs,
-      mode: 'lines',
-      line: { color: CONFIG.COLOR_LINES, width: 2 },
-      hoverinfo: 'none',
-      showlegend: false
-    });
-  }
-
-for (const [nameKey, [x, y]] of Object.entries(nodePositions)) {
-    const xShifted = x + xShiftAmount;
-    const empData = employees[nameKey];
-    const originalName = empData.name;
-    const originalRole = empData.role;
-
-    const wrappedName = wrapText(originalName, charsPerLine, CONFIG.MAX_NAME_LINES);
-    const wrappedRole = wrapText(originalRole, charsPerLine, CONFIG.MAX_ROLE_LINES);
-
-    const hierarchyType = empData.hierarchy_type.toLowerCase();
-    let nodeFillColor, nodeFontColor;
-
-    if (hierarchyType === 'decision maker') {
-      nodeFillColor = CONFIG.COLOR_DECISION_MAKER_FILL;
-      nodeFontColor = CONFIG.FONT_COLOR_ON_DARK_BG;
-    } else if (hierarchyType === 'influencer') {
-      nodeFillColor = CONFIG.COLOR_INFLUENCER_FILL;
-      nodeFontColor = CONFIG.FONT_COLOR_ON_DARK_BG;
-    } else if (hierarchyType === 'direct reportee') {
-      nodeFillColor = CONFIG.COLOR_DIRECT_REPORTEE_FILL;
-      nodeFontColor = CONFIG.COLOR_DIRECT_REPORTEE_FONT;
-    } else {
-      nodeFillColor = CONFIG.COLOR_OTHER_NODE_FILL;
-      nodeFontColor = CONFIG.FONT_COLOR_ON_DARK_BG;
-    }
-
-const x0 = xShifted - boxWidth / 2;
-    const y0 = y - boxHeight / 2;
-    const x1 = xShifted + boxWidth / 2;
-    const y1 = y + boxHeight / 2;
-
-const categories = (empData.category || 'N/A')
-      .split(',')
-      .map(cat => cat.trim())
-      .filter(cat => cat.length > 0);
-
-    shapes.push({
-      type: 'rect',
-      x0: x0,
-      y0: y0,
-      x1: x1,
-      y1: y1,
-      fillcolor: nodeFillColor,
-      line: { color: nodeFillColor, width: 0 },
-      xref: 'x',
-      yref: 'y',
-      name: originalName,
-      categories: categories
-    });
-
-const label = `<b>${wrappedName}</b><br><span style="font-size: 0.85em;">${wrappedRole}</span>`;
-
-    annotations.push({
-      x: xShifted,
-      y: y,
-      text: label,
-      showarrow: false,
-      font: {
-        size: nameTextSize,
-        color: nodeFontColor,
-        family: 'Calibri, Arial'
-      },
-      xref: 'x',
-      yref: 'y',
-      align: 'center',
-      xanchor: 'center',
-      yanchor: 'middle',
-      name: originalName,
-      categories: categories
-    });
-  }
-
-  const marginL = 20;
-  const marginR = Math.min(200, Math.max(120, Math.round(canvasWidth * 0.18)));
-
-  // The chart nodes are centered at centerXChart in data coords.
-  // Convert that to paper fraction: (centerXChart - xRange[0]) / (xRange[1] - xRange[0])
-  // Then map to paper coords (plot area is 0..1 in paper space)
-  const chartDataCenter = (minX + maxX) / 2;
-  const xRangeFinal = (() => {
-    // replicate the xRange after xShiftAmount is applied
-    let r = [minX - CONFIG.AXIS_PADDING, maxX + CONFIG.AXIS_PADDING];
-    const span = r[1] - r[0];
-    if (span < CONFIG.MIN_VIEWPORT_SPAN) {
-      const c = (r[0] + r[1]) / 2;
-      r = [c - CONFIG.MIN_VIEWPORT_SPAN / 2, c + CONFIG.MIN_VIEWPORT_SPAN / 2];
-    }
-    const cChart = (minX + maxX) / 2;
-    const cVP = (r[0] + r[1]) / 2;
-    const shift = cChart - cVP;
-    return [r[0] + shift, r[1] + shift];
-  })();
-  const titleXPaper = (chartDataCenter - xRangeFinal[0]) / (xRangeFinal[1] - xRangeFinal[0]);
-
-  const layout = {
-    title: {
-      text: `<b>${titleText}</b>`,
-      x: Math.max(0.05, Math.min(0.95, titleXPaper)),
-      xref: 'paper',
-      y: 0.98,
-      xanchor: 'center',
-      yanchor: 'top',
-      font: { family: 'Calibri, Arial', size: 31, color: CONFIG.FONT_COLOR_ON_LIGHT_BG }
-    },
-    showlegend: true,
-    hovermode: 'closest',
-    margin: { l: marginL, r: marginR, t: 80, b: 20 },
-    width: canvasWidth,
-    height: canvasHeight,
-    plot_bgcolor: CONFIG.COLOR_BACKGROUND,
-    paper_bgcolor: CONFIG.COLOR_BACKGROUND,
-    xaxis: {
-      showgrid: false,
-      zeroline: false,
-      visible: false,
-      range: xRange,
-      autorange: false
-    },
-    yaxis: {
-      showgrid: false,
-      zeroline: false,
-      visible: false,
-      range: yRange,
-      autorange: false
-    },
-    legend: {
-      orientation: 'v',
-      yanchor: 'top',
-      y: 1.0,
-      xanchor: 'left',
-      x: 1.04,
-      bgcolor: 'rgba(255, 255, 255, 0.75)',
-      bordercolor: 'Black',
-      borderwidth: 0
-    },
-    shapes: shapes,
-    annotations: annotations
-  };
-
-  return { data: traces, layout, canvasWidth, canvasHeight };
-}
-
-function createErrorPlotly(message, width = CONFIG.MIN_CANVAS_WIDTH, height = CONFIG.MIN_CANVAS_HEIGHT) {
-  return {
-    data: [{
-      x: [0],
-      y: [0],
-      mode: 'text',
-      text: [message],
-      textposition: 'middle center',
-      showlegend: false
-    }],
-    layout: {
-      title: message,
-      width: width,
-      height: height,
-      plot_bgcolor: CONFIG.COLOR_BACKGROUND,
-      paper_bgcolor: CONFIG.COLOR_BACKGROUND
-    },
-    canvasWidth: width,
-    canvasHeight: height
-  };
-}
-
-async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
-  const { boxWidth, boxHeight } = getBoxDimensionsForCompany(data);
-  
-  const htmlContent = generateOrgChartHTML(data, companyName, location);
-  const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
-  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
-  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
-
-  let browser;
-  try {
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
-    });
-    const page = await browser.newPage();
-
-await page.setViewport({ width: canvasWidth, height: canvasHeight });
-
-await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
-
-await page.waitForFunction(() => {
-      const plotDiv = document.querySelector('#chart');
-      return plotDiv && plotDiv.data && plotDiv.data.length > 0;
-    }, { timeout: 5000 }).catch(() => {
-    });
-
-await new Promise(resolve => setTimeout(resolve, 1000));
-
-await page.screenshot({ path: outputPath, fullPage: false });
-
-    await browser.close();
-
-    return true;
-  } catch (error) {
-
-    if (browser) await browser.close();
-    return false;
-  }
-}
-
-function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
-  const { boxWidth, boxHeight } = getBoxDimensionsForCompany(data);
-  
-  const plotlyData = generateOrgChartPlotly(data, companyName, location, boxWidth, boxHeight);
-  const canvasWidth = plotlyData.canvasWidth || CONFIG.MIN_CANVAS_WIDTH;
-  const canvasHeight = plotlyData.canvasHeight || CONFIG.MIN_CANVAS_HEIGHT;
-
-  // Generate favicon URL from company name
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(companyName.toLowerCase())}.com&sz=64`;
-  const logoUrl = `https://logo.clearbit.com/${encodeURIComponent(companyName.toLowerCase())}.com`;
-
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Calibri, Arial, sans-serif;
-      background-color: white;
-      min-height: 100vh;
-      overflow: auto;
-    }
-
-    .container {
-      width: 100%;
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chart-wrapper {
-      flex: 1;
-      overflow-x: auto;
-      overflow-y: visible;
-      background-color: white;
-      position: relative;
-    }
-
-    .chart-inner {
-      display: inline-block;
-      padding: 0 50%;
-      min-width: 100%;
-    }
-
-    #chart {
-      background-color: white;
-      transform-origin: top center;
-      transition: transform 0.2s ease;
-      display: inline-block;
-    }
-
-    .js-plotly-plot .plotly svg {
-      overflow: visible !important;
-    }
-
-    .highlight-IT rect { stroke: #000000ff !important; stroke-width: 3 !important; }
-    .highlight-Generalized rect { stroke: #000000ff !important; stroke-width: 3 !important; }
-    .highlight-AI rect { stroke: #000000ff !important; stroke-width: 3 !important; }
-    .highlight-Cloud rect { stroke: #000000ff !important; stroke-width: 3 !important; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="chart-wrapper" id="chartWrapper">
-      <div class="chart-inner">
-        <div id="chart"></div>
-      </div>
-    </div>
-  </div>
-  <script>
-    // Build employee data map
-    const employeeDataMap = {};
-    const rawData = ${JSON.stringify(data)};
-    rawData.forEach(row => {
-      const name = String(row.Name || 'Unnamed').trim();
-      employeeDataMap[name] = {
-        name: row.Name || '',
-        role: row.Role || '',
-        email: row.email || '',
-        linkedin: row.Linkedin || '',
-        reportsTo: row['Reports To'] || '',
-        category: row.Category || '',
-        hierarchy: row.hierarchy || 'Other',
-        uniqueId: row['Unique ID'] || '',
-        companyName: row['Company Name'] || ''
-      };
-    });
-    window.employeeDataMap = employeeDataMap;
-
-    const data = ${JSON.stringify(plotlyData.data)};
-    const layout = ${JSON.stringify(plotlyData.layout)};
-    const config = {
-      responsive: false,
-      displayModeBar: false,
-      staticPlot: true,
-      scrollZoom: false
-    };
-
-    window.categoriesMap = {};
-    if (layout && layout.shapes) {
-      layout.shapes.forEach((shape, index) => {
-        if (shape.categories && Array.isArray(shape.categories)) {
-          window.categoriesMap[index] = shape.categories;
-        }
-      });
-    }
-
-    if (layout && layout.annotations) {
-      Plotly.newPlot('chart', data, layout, config);
-      
-      // After render, scroll wrapper to horizontal center
-      setTimeout(() => {
-        const wrapper = document.getElementById('chartWrapper');
-        if (wrapper) {
-          wrapper.scrollLeft = (wrapper.scrollWidth - wrapper.clientWidth) / 2;
-        }
-      }, 300);
-    } else {
-      document.getElementById('chart').innerHTML = '<p style="text-align: center; color: #999;">Unable to generate chart</p>';
-    }
-
-    // ===== API FUNCTIONS =====
-    window.OrgChartAPI = {
-      getAllEmployees: function() {
-        return window.employeeDataMap;
-      },
-      
-      getEmployee: function(name) {
-        return window.employeeDataMap[name] || null;
-      },
-      
-      getEmployeesByRole: function(role) {
-        return Object.values(window.employeeDataMap).filter(emp => emp.role.includes(role));
-      },
-      
-      getEmployeesByCategory: function(category) {
-        return Object.values(window.employeeDataMap).filter(emp => emp.category.includes(category));
-      },
-      
-      getEmployeesByHierarchy: function(hierarchy) {
-        return Object.values(window.employeeDataMap).filter(emp => emp.hierarchy === hierarchy);
-      },
-      
-      getDirectReports: function(managerName) {
-        return Object.values(window.employeeDataMap).filter(emp => emp.reportsTo === managerName);
-      },
-      
-      highlightCategory: function(category) {
-        const plotDiv = document.querySelector('#chart');
-        if (!plotDiv || !plotDiv.layout) return;
-        
-        const plotLayout = plotDiv.layout;
-        if (!plotLayout || !plotLayout.shapes) return;
-        
-        const updateObj = {};
-        plotLayout.shapes.forEach((shape, index) => {
-          const shapeCategories = window.categoriesMap[index] || [];
-          
-          if (category === 'All' || category === '') {
-            updateObj[\`shapes[\${index}].line.width\`] = 0;
-            updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
-          } else if (shapeCategories.includes(category)) {
-            updateObj[\`shapes[\${index}].line.width\`] = 3;
-            updateObj[\`shapes[\${index}].line.color\`] = '#000000';
-          } else {
-            updateObj[\`shapes[\${index}].line.width\`] = 0;
-            updateObj[\`shapes[\${index}].line.color\`] = shape.fillcolor;
-          }
-        });
-        
-        Plotly.relayout(plotDiv, updateObj);
-      },
-      
-      exportAsJSON: function() {
-        return JSON.stringify(window.employeeDataMap, null, 2);
-      },
-      
-      exportAsCSV: function() {
-        const employees = Object.values(window.employeeDataMap);
-        if (employees.length === 0) return '';
-        
-        const headers = Object.keys(employees[0]);
-        const csvHeaders = headers.join(',');
-        const csvRows = employees.map(emp => {
-          return headers.map(header => {
-            const value = emp[header];
-            if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-              return \`"\${value.replace(/"/g, '""')}"\`;
-            }
-            return value;
-          }).join(',');
-        });
-        
-        return [csvHeaders, ...csvRows].join('\\n');
-      },
-      
-      getStatistics: function() {
-        const employees = Object.values(window.employeeDataMap);
-        const roles = {};
-        const categories = {};
-        const hierarchies = {};
-        
-        employees.forEach(emp => {
-          roles[emp.role] = (roles[emp.role] || 0) + 1;
-          hierarchies[emp.hierarchy] = (hierarchies[emp.hierarchy] || 0) + 1;
-          
-          if (emp.category) {
-            emp.category.split(',').forEach(cat => {
-              const trimmed = cat.trim();
-              categories[trimmed] = (categories[trimmed] || 0) + 1;
-            });
-          }
-        });
-        
-        return {
-          totalEmployees: employees.length,
-          roles: roles,
-          categories: categories,
-          hierarchies: hierarchies
-        };
-      }
-    };
-
-    // ===== MESSAGE HANDLER =====
-    let currentZoom = 100;
-    
-    window.addEventListener('message', function(event) {
-      if (event.data && event.data.type === 'highlightCategory') {
-        window.OrgChartAPI.highlightCategory(event.data.category);
-      } else if (event.data && event.data.type === 'setZoom') {
-        currentZoom = event.data.zoomLevel;
-        const chartDiv = document.getElementById('chart');
-        if (chartDiv) {
-          chartDiv.style.transform = 'scale(' + (currentZoom / 100) + ')';
-        }
-      }
-    });
-
-    // ===== CUSTOM EVENTS =====
-    window.addEventListener('employeeClicked', function(event) {
-    });
-  </script>
-</body>
-</html>`;
-
-  return html;
-}
-
-async function generateOrgChartForCompany(csvFilePath, companyName) {
-  try {
+// ─────────────────────────────────────────────
+//  CSV / FILE READERS
+// ─────────────────────────────────────────────
+function readCSVFile(csvFilePath) {
+  return new Promise((resolve, reject) => {
+    const data = [];
     if (!fs.existsSync(csvFilePath)) {
-      throw new Error(`CSV file not found: ${csvFilePath}`);
+      reject(new Error(`CSV file not found: ${csvFilePath}`));
+      return;
     }
-
-    const allData = await readCSVFile(csvFilePath);
-
-allData.forEach(row => {
-      row.hierarchy = row.hierarchy || 'Other';
-    });
-
-const companyData = allData.filter(row => row['Company Name'] === companyName);
-
-    if (!companyData.length) {
-      throw new Error(`No data found for company: ${companyName}`);
-    }
-
-    if (!companyData[0]['Name'] || !companyData[0]['Role']) {
-      throw new Error(`Company ${companyName} missing 'Name' or 'Role' columns`);
-    }
-
-    const companyLocation = companyData[0]['Location'] ? String(companyData[0]['Location']).trim() : '';
-    const html = generateOrgChartHTML(companyData, companyName, companyLocation);
-
-    return html;
-  } catch (error) {
-
-    throw error;
-  }
-}
-
-async function getCompaniesFromCSV(csvFilePath) {
-  try {
-    if (!fs.existsSync(csvFilePath)) {
-      throw new Error(`CSV file not found: ${csvFilePath}`);
-    }
-
-    const data = await readCSVFile(csvFilePath);
-    const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
-    return uniqueCompanies;
-  } catch (error) {
-
-    throw error;
-  }
+    fs.createReadStream(csvFilePath)
+      .pipe(csv())
+      .on('data', row => data.push(row))
+      .on('end', () => resolve(data))
+      .on('error', err => reject(err));
+  });
 }
 
 async function readJSONFile(jsonFilePath) {
   const raw = fs.readFileSync(jsonFilePath, 'utf-8');
   const companies = JSON.parse(raw);
-
-  // Flatten JSON companies+employees into CSV-like rows
   const rows = [];
   for (const company of companies) {
     for (const emp of (company.employees || [])) {
@@ -1138,110 +133,583 @@ async function readJSONFile(jsonFilePath) {
   return rows;
 }
 
-async function main() {
-  const jsonFilePath = 'buying_group_combined.json';
+// ─────────────────────────────────────────────
+//  TREE BUILDER
+// ─────────────────────────────────────────────
+function buildTreeFromData(data) {
+  const employees = {};
+  const allNames = new Set(data.map(r => String(r.Name || '').trim()).filter(Boolean));
 
-  try {
-    if (!fs.existsSync(jsonFilePath)) {
-      console.error(`JSON file not found: ${jsonFilePath}`);
-      return;
+  for (const row of data) {
+    const name      = String(row.Name || 'Unnamed').trim();
+    const reportsTo = String(row['Reports To'] || '').trim();
+    const manager   = reportsTo && reportsTo !== '-' && allNames.has(reportsTo) ? reportsTo : null;
+
+    employees[name] = {
+      name,
+      role:       String(row.Role || row['Short Role'] || 'N/A'),
+      shortRole:  String(row['Short Role'] || row.Role || 'N/A'),
+      fullRole:   String(row['Full role'] || row.Role || 'N/A'),
+      reports_to: manager,
+      hierarchy:  String(row.hierarchy || 'Other').trim(),
+      children:   [],
+      uniqueId:   row['Unique ID']    || '',
+      companyName:row['Company Name'] || '',
+      linkedin:   row['Linkedin']     || '',
+      email:      row['email']        || '',
+      category:   row['Category']     || '',
+    };
+  }
+
+  const managed = new Set();
+  for (const emp of Object.values(employees)) {
+    if (emp.reports_to && emp.reports_to in employees) {
+      employees[emp.reports_to].children.push(emp.name);
+      managed.add(emp.name);
     }
+  }
 
-    const { uploadOrgChartToS3, orgChartExistsInS3, ORG_CHART_FOLDER } = require('./config/s3');
+  let roots = Object.keys(employees).filter(n => !managed.has(n));
+  if (!roots.length && Object.keys(employees).length) roots = [Object.keys(employees)[0]];
 
-    const data = await readJSONFile(jsonFilePath);
-    const hasLocationColumn = data[0] && 'Location' in data[0];
-    const uniqueCompanies = [...new Set(data.map(row => row['Company Name']).filter(Boolean))];
+  const edges = [];
+  for (const emp of Object.values(employees)) {
+    for (const child of emp.children) edges.push([emp.name, child]);
+  }
 
-    if (!uniqueCompanies.length) {
-      console.error('No companies found in JSON');
-      return;
-    }
+  return { employees, roots, edges };
+}
 
-    const chartMappingData = [];
-    const allPersonDetails = [];
-    let newChartsGenerated = 0;
-    let chartsSkipped = 0;
+// ─────────────────────────────────────────────
+//  PIXEL-BASED TREE LAYOUT
+// ─────────────────────────────────────────────
+function subtreeWidth(name, cm, memo = {}) {
+  if (name in memo) return memo[name];
+  const kids = cm[name] || [];
+  if (!kids.length) { memo[name] = CONFIG.CARD_W; return CONFIG.CARD_W; }
+  const w = kids.reduce((s, c) => s + subtreeWidth(c, cm, memo), 0) + (kids.length - 1) * CONFIG.HGAP;
+  memo[name] = Math.max(CONFIG.CARD_W, w);
+  return memo[name];
+}
 
-    for (const companyName of uniqueCompanies) {
-      const companyData = data.filter(row => row['Company Name'] === companyName);
+function placeNodes(name, slotX, level, cm, memo, pos) {
+  const w  = memo[name];
+  const cx = slotX + w / 2;
+  pos[name] = {
+    x:  cx - CONFIG.CARD_W / 2,
+    y:  level * (CONFIG.CARD_H + CONFIG.VGAP),
+    cx, cy: level * (CONFIG.CARD_H + CONFIG.VGAP) + CONFIG.CARD_H / 2,
+  };
+  const kids = cm[name] || [];
+  if (!kids.length) return;
+  const kw = kids.reduce((s, c) => s + memo[c], 0) + (kids.length - 1) * CONFIG.HGAP;
+  let kx = cx - kw / 2;
+  kids.forEach(c => { placeNodes(c, kx, level + 1, cm, memo, pos); kx += memo[c] + CONFIG.HGAP; });
+}
 
-      if (!companyData.length || !companyData[0]['Name'] || !companyData[0]['Role']) continue;
+function computeLayout(employees, roots) {
+  const cm = {};
+  Object.values(employees).forEach(e => { cm[e.name] = e.children; });
 
-      let companyLocation = '';
-      if (hasLocationColumn && companyData[0]['Location']) {
-        companyLocation = String(companyData[0]['Location']).trim();
-      }
+  const memo = {};
+  roots.forEach(r => subtreeWidth(r, cm, memo));
 
-      const safeCompanyName = sanitizeFilename(companyName);
-      const baseFilename = companyLocation
-        ? `${safeCompanyName}_${sanitizeFilename(companyLocation)}.html`
-        : `${safeCompanyName}.html`;
+  const totalRootsW = roots.reduce((s, r) => s + memo[r], 0) + (roots.length - 1) * CONFIG.HGAP;
+  // Start from x=0 (no left padding) — centering is done at runtime via JS
+  const pos = {};
+  let rx = 0;
+  roots.forEach(r => { placeNodes(r, rx, 0, cm, memo, pos); rx += memo[r] + CONFIG.HGAP; });
 
-      const s3Key = `${ORG_CHART_FOLDER}/${baseFilename}`;
+  let maxY = 0;
+  Object.values(pos).forEach(p => { maxY = Math.max(maxY, p.y + CONFIG.CARD_H); });
 
-      // Skip if already in S3
-      const exists = await orgChartExistsInS3(s3Key).catch(() => false);
-      if (exists) {
-        chartsSkipped++;
-        chartMappingData.push({ 'Account Name': companyName, 'Chart Name': baseFilename });
-        continue;
-      }
+  // treeWidth = actual pixel span of the tree (no padding)
+  const treeWidth = totalRootsW;
+  return { pos, treeWidth, totalW: treeWidth, totalH: maxY + 40 };
+}
 
-      try {
-        const htmlContent = generateOrgChartHTML(companyData, companyName, companyLocation);
-        await uploadOrgChartToS3(baseFilename, htmlContent);
-        newChartsGenerated++;
-      } catch (error) {
-        console.error(`Failed to upload chart for ${companyName}:`, error.message);
-      }
+// ─────────────────────────────────────────────
+//  SVG CONNECTORS
+// ─────────────────────────────────────────────
+function buildConnectorsSVG(employees, pos, totalW, totalH) {
+  const lines = [];
+  Object.values(employees).forEach(emp => {
+    const rt = emp.reports_to;
+    if (!rt || !pos[emp.name] || !pos[rt]) return;
+    const p  = pos[rt];
+    const c  = pos[emp.name];
+    const x1 = p.cx, y1 = p.y + CONFIG.CARD_H;
+    const x2 = c.cx, y2 = c.y;
+    const my = y1 + (y2 - y1) / 2;
 
-      for (const person of companyData) {
-        if (person.Name && person.email) {
-          allPersonDetails.push({
-            'Unique ID': person['Unique ID'] || '',
-            'Company Name': person['Company Name'] || '',
-            'Name': person.Name || '',
-            'Role': person.Role || '',
-            'Email': person.email || '',
-            'LinkedIn': person.Linkedin || '',
-            'Reports To': person['Reports To'] || ''
-          });
+    lines.push(`<path d="M${x1},${y1} L${x1},${my} L${x2},${my} L${x2},${y2}"
+      fill="none" stroke="${CONFIG.COLOR_CONNECTOR}" stroke-width="1.5"/>`);
+    lines.push(`<circle cx="${x2}" cy="${my}" r="3" fill="${CONFIG.COLOR_CONNECTOR}"/>`);
+  });
+
+  return `<svg class="og-svg" width="100%" height="${totalH}"
+    xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible">
+    ${lines.join('\n    ')}
+  </svg>`;
+}
+
+// ─────────────────────────────────────────────
+//  CARD HTML
+// ─────────────────────────────────────────────
+function buildCardHTML(emp, pos) {
+  const p   = pos[emp.name];
+  if (!p) return '';
+  const hc  = hierarchyConfig(emp.hierarchy);
+  const av  = avatarGradient(emp.name);
+  const ini = initials(emp.name);
+  const shortRole = emp.shortRole || emp.role;
+
+  // Escape for HTML attribute
+  const dataStr = JSON.stringify({
+    name:       emp.name,
+    fullRole:   emp.fullRole,
+    shortRole:  emp.shortRole,
+    email:      emp.email,
+    linkedin:   emp.linkedin,
+    category:   emp.category,
+    hierarchy:  emp.hierarchy,
+    reportsTo:  emp.reports_to || '',
+    companyName:emp.companyName,
+  }).replace(/"/g, '&quot;');
+
+  return `
+  <div class="og-card" data-name="${emp.name.replace(/"/g,'&quot;')}"
+       data-hierarchy="${emp.hierarchy.toLowerCase()}" data-emp='${dataStr}'
+       style="left:${p.x}px;top:${p.y}px;width:${CONFIG.CARD_W}px;height:${CONFIG.CARD_H}px">
+    <div class="og-inner">
+      <div class="og-strip" style="background:${hc.strip}"></div>
+      <div class="og-body">
+        <div class="og-av" style="background:${av}">${ini}</div>
+        <div class="og-info">
+          <div class="og-badge" style="background:${hc.badge_bg};color:${hc.badge_txt}">
+            <span class="og-bdot" style="background:${hc.dot}"></span>${hc.label}
+          </div>
+          <div class="og-name" title="${emp.name}">${emp.name}</div>
+          <div class="og-role" title="${shortRole}">${shortRole}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  MAIN HTML GENERATOR  (replaces old Plotly version)
+// ─────────────────────────────────────────────
+function generateOrgChartHTML(data, companyName = 'Organization', location = '') {
+  // Normalise hierarchy field
+  data.forEach(r => { r.hierarchy = r.hierarchy || 'Other'; });
+
+  const { employees, roots } = buildTreeFromData(data);
+  const { pos, treeWidth, totalW, totalH } = computeLayout(employees, roots);
+
+  const connectorsSVG = buildConnectorsSVG(employees, pos, totalW, totalH);
+  const cardHTMLs     = Object.values(employees).map(e => buildCardHTML(e, pos)).join('');
+
+  const title = String(companyName);
+
+  // Serialise employee map for detail panel
+  const empMapJSON = JSON.stringify(
+    Object.fromEntries(Object.entries(employees).map(([k, v]) => [k, {
+      name: v.name, fullRole: v.fullRole, shortRole: v.shortRole,
+      email: v.email, linkedin: v.linkedin, category: v.category,
+      hierarchy: v.hierarchy, reportsTo: v.reports_to || '', companyName: v.companyName,
+      directReports: v.children,
+    }]))
+  );
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title} – Org Chart</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:${CONFIG.FONT_FAMILY};background:${CONFIG.COLOR_BG};min-height:100vh;color:#0f172a}
+
+/* ── Header ── */
+.og-header{padding:18px 24px 0}
+.og-brand{display:flex;align-items:center;gap:10px}
+.og-icon{width:38px;height:38px;border-radius:8px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:700;letter-spacing:-.5px;flex-shrink:0}
+.og-title{font-size:18px;font-weight:700;color:#0f172a;letter-spacing:-.3px}
+
+/* ── Chart area ── */
+.og-scroll{overflow-x:auto;overflow-y:visible;padding:16px 0 20px;width:100%}
+.og-chart-wrap{width:100%;padding:0 24px}
+.og-chart{position:relative;width:100%}
+
+/* ── Cards ── */
+.og-card{position:absolute;cursor:pointer;transition:transform .16s,opacity .16s}
+.og-card:hover .og-inner{box-shadow:0 6px 22px rgba(15,23,42,.13);transform:translateY(-2px)}
+.og-card.selected .og-inner{outline:2.5px solid var(--strip-color,#10b981);outline-offset:2px}
+.og-card.dimmed{opacity:.25;filter:grayscale(.4)}
+.og-card.highlighted .og-inner{
+  outline:2.5px solid #f59e0b;outline-offset:2px;
+  box-shadow:0 0 0 4px rgba(245,158,11,.18),0 4px 16px rgba(245,158,11,.22);
+  transform:translateY(-2px)
+}
+.og-card.highlighted .og-strip{visibility:hidden}
+.og-inner{background:${CONFIG.COLOR_CARD_BG};border-radius:10px;display:flex;overflow:hidden;
+  height:100%;box-shadow:0 1px 4px rgba(15,23,42,.07),0 1px 2px rgba(15,23,42,.04);
+  transition:box-shadow .16s,transform .16s;border:1px solid #eef0f3}
+.og-strip{width:5px;flex-shrink:0}
+.og-body{display:flex;align-items:center;gap:10px;padding:10px 12px;flex:1;min-width:0}
+.og-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:.3px}
+.og-info{flex:1;min-width:0}
+.og-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;
+  font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:4px}
+.og-bdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.og-name{font-size:12.5px;font-weight:600;color:#0f172a;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.og-role{font-size:11px;color:#64748b;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;line-height:1.3;margin-top:1px}
+
+/* ── SVG connectors ── */
+.og-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+
+/* ── Detail panel ── */
+.og-detail{margin:4px 24px 24px;background:#fff;border-radius:12px;
+  border:1px solid #e8edf2;padding:20px 22px;
+  box-shadow:0 2px 16px rgba(15,23,42,.06);animation:dpIn .18s ease}
+@keyframes dpIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dp-head{display:flex;align-items:center;gap:12px;padding-bottom:16px;
+  border-bottom:1px solid #f1f5f9;margin-bottom:16px}
+.dp-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.dp-name{font-size:15px;font-weight:700;color:#0f172a}
+.dp-hrole{font-size:11px;font-weight:700;margin-top:3px}
+.dp-close{margin-left:auto;background:none;border:none;cursor:pointer;
+  color:#94a3b8;font-size:22px;line-height:1;padding:4px 6px;border-radius:4px;transition:color .12s}
+.dp-close:hover{color:#475569}
+.dp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
+.dp-f .dp-l{font-size:9.5px;color:#94a3b8;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:3px}
+.dp-f .dp-v{font-size:12px;color:#334155;line-height:1.5;word-break:break-word}
+.dp-f .dp-v a{color:#2563eb;text-decoration:none}
+.dp-f .dp-v a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="og-header">
+  <div class="og-brand">
+    <div class="og-icon" id="og-icon">?</div>
+    <div class="og-title" id="og-title">${title}</div>
+  </div>
+</div>
+
+<div class="og-scroll">
+  <div class="og-chart-wrap">
+    <div class="og-chart" id="og-chart" style="height:${totalH}px">
+      ${connectorsSVG}
+      ${cardHTMLs}
+    </div>
+  </div>
+</div>
+
+<div id="og-detail"></div>
+
+<script>
+(function(){
+  const EMP = ${empMapJSON};
+  const HIER_COLORS = {
+    'decision maker': { strip:'#10b981', badge_bg:'#ecfdf5', badge_txt:'#065f46', dot:'#10b981', label:'Decision Maker' },
+    'influencer':     { strip:'#f59e0b', badge_bg:'#fffbeb', badge_txt:'#92400e', dot:'#f59e0b', label:'Influencer' },
+    'direct reportee':{ strip:'#6366f1', badge_bg:'#eef2ff', badge_txt:'#3730a3', dot:'#6366f1', label:'Direct Reportee' },
+  };
+  const AV = [['#4f46e5','#818cf8'],['#0891b2','#22d3ee'],['#be185d','#f472b6'],['#7c3aed','#a78bfa'],['#0d9488','#2dd4bf'],['#c2410c','#fb923c'],['#1d4ed8','#60a5fa'],['#15803d','#4ade80']];
+  function nh(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))&0xfffffff;return h;}
+  function avGrad(n){const[a,b]=AV[nh(n)%AV.length];return 'linear-gradient(135deg,'+a+','+b+')';}
+  function ini(n){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+  function hc(raw){return HIER_COLORS[String(raw||'').toLowerCase().trim()]||{strip:'#94a3b8',badge_bg:'#f8fafc',badge_txt:'#475569',dot:'#94a3b8',label:raw||'Other'};}
+
+  let selected = null;
+
+  // ── Card icon & click ──
+  const coName = Object.values(EMP)[0]?.companyName || '?';
+  document.getElementById('og-icon').textContent = (coName[0]||'?').toUpperCase();
+
+  document.querySelectorAll('.og-card').forEach((card,i) => {
+    // stagger fade-in
+    card.style.opacity='0'; card.style.transform='translateY(8px)';
+    setTimeout(()=>{ card.style.transition='opacity .25s ease,transform .25s ease';
+      card.style.opacity='1'; card.style.transform='none'; }, i*30);
+
+    card.addEventListener('click', () => {
+      const name = card.dataset.name;
+      selected = selected===name ? null : name;
+      document.querySelectorAll('.og-card').forEach(c=>{
+        c.classList.toggle('selected', c.dataset.name===selected);
+        const emp = EMP[c.dataset.name];
+        if(emp){ const h=hc(emp.hierarchy); c.style.setProperty('--strip-color',h.strip); }
+      });
+      renderDetail();
+    });
+  });
+
+  // ── Detail panel ──
+  function renderDetail() {
+    const el = document.getElementById('og-detail');
+    if (!selected) { el.innerHTML=''; return; }
+    const e = EMP[selected];
+    if (!e) { el.innerHTML=''; return; }
+    const h = hc(e.hierarchy);
+    const reports = (e.directReports||[]).join(', ')||'None';
+    el.innerHTML = \`
+    <div class="og-detail">
+      <div class="dp-head">
+        <div class="dp-av" style="background:\${avGrad(e.name)}">\${ini(e.name)}</div>
+        <div>
+          <div class="dp-name">\${e.name}</div>
+          <div class="dp-hrole" style="color:\${h.strip}">\${h.label}</div>
+        </div>
+        <button class="dp-close" id="dp-close">×</button>
+      </div>
+      <div class="dp-grid">
+        \${[
+          ['Full Role',       e.fullRole||'—'],
+          ['Email',           e.email ? '<a href="mailto:'+e.email+'">'+e.email+'</a>' : '—'],
+          ['Category',        e.category||'—'],
+          ['Reports To',      e.reportsTo||'Independent'],
+          ['LinkedIn',        e.linkedin ? '<a href="'+e.linkedin+'" target="_blank">View Profile ↗</a>' : '—'],
+          ['Direct Reports',  reports],
+          ['Company',         e.companyName||'—'],
+        ].map(([l,v])=>\`<div class="dp-f"><div class="dp-l">\${l}</div><div class="dp-v">\${v}</div></div>\`).join('')}
+      </div>
+    </div>\`;
+    document.getElementById('dp-close').onclick = () => {
+      selected=null;
+      document.querySelectorAll('.og-card').forEach(c=>c.classList.remove('selected'));
+      el.innerHTML='';
+    };
+  }
+
+  // ── Public API (iframe postMessage compatible) ──
+  window.OrgChartAPI = {
+    getAllEmployees: () => EMP,
+    getEmployee: name => EMP[name]||null,
+    getEmployeesByHierarchy: h => Object.values(EMP).filter(e=>e.hierarchy===h),
+    getEmployeesByCategory: cat => Object.values(EMP).filter(e=>(e.category||'').includes(cat)),
+    getDirectReports: manager => Object.values(EMP).filter(e=>e.reportsTo===manager),
+    highlightCategory: cat => {
+      const isAll = !cat || cat.toLowerCase() === 'all';
+      document.querySelectorAll('.og-card').forEach(card => {
+        const e = EMP[card.dataset.name];
+        if (isAll) {
+          card.classList.remove('dimmed', 'highlighted');
+          return;
         }
-      }
+        const empCats = (e?.category || '').split(',').map(c => c.trim().toLowerCase());
+        const match = empCats.includes(cat.trim().toLowerCase());
+        card.classList.toggle('highlighted', match);
+        card.classList.toggle('dimmed', !match);
+      });
+    },
+    getStatistics: () => {
+      const emps = Object.values(EMP);
+      const roles={}, categories={}, hierarchies={};
+      emps.forEach(e=>{
+        roles[e.fullRole]=(roles[e.fullRole]||0)+1;
+        hierarchies[e.hierarchy]=(hierarchies[e.hierarchy]||0)+1;
+        (e.category||'').split(',').forEach(c=>{const t=c.trim();if(t)categories[t]=(categories[t]||0)+1;});
+      });
+      return {totalEmployees:emps.length,roles,categories,hierarchies};
+    },
+    exportAsJSON: () => JSON.stringify(EMP,null,2),
+  };
 
-      chartMappingData.push({ 'Account Name': companyName, 'Chart Name': baseFilename });
+  window.addEventListener('message', ev => {
+    if (!ev.data) return;
+    if (ev.data.type==='highlightCategory') window.OrgChartAPI.highlightCategory(ev.data.category);
+    if (ev.data.type==='setZoom') {
+      const z = ev.data.zoomLevel/100;
+      const chart = document.getElementById('og-chart');
+      chart.style.transformOrigin = 'top center';
+      chart.style.transform = 'scale('+z+')';
+      // Re-center after zoom changes effective width
+      setTimeout(centerTree, 50);
     }
+  });
 
-    console.log(`Done: ${newChartsGenerated} uploaded, ${chartsSkipped} skipped (already in S3)`);
+  // ── Center tree horizontally at runtime ──
+  const TREE_W = ${treeWidth};
+  function centerTree() {
+    const chart = document.getElementById('og-chart');
+    if (!chart) return;
+    const containerW = chart.offsetWidth;
+    const offset = Math.max(0, (containerW - TREE_W) / 2);
+    // Shift all cards
+    document.querySelectorAll('.og-card').forEach(card => {
+      const origLeft = parseFloat(card.dataset.origLeft);
+      card.style.left = (origLeft + offset) + 'px';
+    });
+    // Shift SVG contents via a group transform
+    const svg = chart.querySelector('.og-svg');
+    if (svg) {
+      let g = svg.querySelector('g.og-shift');
+      if (!g) {
+        g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.classList.add('og-shift');
+        while (svg.firstChild) g.appendChild(svg.firstChild);
+        svg.appendChild(g);
+      }
+      g.setAttribute('transform', 'translate('+offset+',0)');
+    }
+  }
 
-  } catch (error) {
-    console.error('main() error:', error);
+  // Store original left values before any centering
+  document.querySelectorAll('.og-card').forEach(card => {
+    card.dataset.origLeft = parseFloat(card.style.left) || 0;
+  });
+
+  window.addEventListener('load', centerTree);
+  window.addEventListener('resize', centerTree);
+})();
+</script>
+</body>
+</html>`;
+}
+
+// ─────────────────────────────────────────────
+//  PNG EXPORT  (puppeteer — unchanged contract)
+// ─────────────────────────────────────────────
+async function generateOrgChartPNG(data, companyName = 'Organization', location = '', outputPath = '') {
+  let puppeteer;
+  try { puppeteer = require('puppeteer'); } catch { return false; }
+
+  const { employees } = buildTreeFromData(data);
+  const { totalW, totalH } = computeLayout(employees, Object.keys(employees).filter(n =>
+    !Object.values(employees).some(e => e.children.includes(n))));
+  const w = Math.max(totalW + 48, CONFIG.MIN_CANVAS_WIDTH);
+  const h = Math.max(totalH + 80, CONFIG.MIN_CANVAS_HEIGHT);
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: w, height: h });
+    await page.setContent(generateOrgChartHTML(data, companyName, location), { waitUntil: 'networkidle2' });
+    await new Promise(r => setTimeout(r, 800));
+    await page.screenshot({ path: outputPath, fullPage: false });
+    await browser.close();
+    return true;
+  } catch (err) {
+    if (browser) await browser.close();
+    return false;
   }
 }
 
-function convertToCSV(data) {
-  if (!data || data.length === 0) return '';
+// ─────────────────────────────────────────────
+//  COMPANY-LEVEL HELPERS
+// ─────────────────────────────────────────────
 
-  const headers = Object.keys(data[0]);
-  const csvHeaders = headers.join(',');
-
-  const csvRows = data.map(row => {
-    return headers.map(header => {
-      const value = row[header];
-
-      if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-        return `"${value.replace(/"/g, '""')}"`;
-      }
-      return value;
-    }).join(',');
-  });
-
-  return [csvHeaders, ...csvRows].join('\n');
+/**
+ * Generate org chart HTML from a BuyingGroup MongoDB document.
+ * @param {object} buyingGroupDoc - Mongoose BuyingGroup document (plain object or Mongoose doc)
+ * @returns {string} HTML string
+ */
+function generateOrgChartFromDoc(buyingGroupDoc) {
+  const doc = buyingGroupDoc.toObject ? buyingGroupDoc.toObject() : buyingGroupDoc;
+  const rows = (doc.employees || []).map(emp => ({
+    'Unique ID':    emp.uniqueId    || '',
+    'Company Name': doc.companyName || '',
+    'Name':         emp.name        || '',
+    'Role':         emp.role        || '',
+    'Reports To':   emp.reportsTo   || '',
+    'hierarchy':    emp.hierarchy   || 'Other',
+    'Category':     emp.category    || '',
+    'Linkedin':     emp.linkedin    || '',
+    'email':        emp.email       || '',
+    'Mobile DID':   emp.mobileDID   || '',
+    'Location':     doc.location    || '',
+  }));
+  const location = String(doc.location || '').trim();
+  return generateOrgChartHTML(rows, doc.companyName, location);
 }
 
-module.exports = { generateOrgChartHTML, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
-
-if (require.main === module) {
-  main().catch(() => {});
+// CSV-based helper kept for backward compat / CLI usage
+async function generateOrgChartForCompany(csvFilePath, companyName) {
+  if (!fs.existsSync(csvFilePath)) throw new Error(`CSV file not found: ${csvFilePath}`);
+  const allData = await readCSVFile(csvFilePath);
+  allData.forEach(r => { r.hierarchy = r.hierarchy || 'Other'; });
+  const companyData = allData.filter(r => r['Company Name'] === companyName);
+  if (!companyData.length) throw new Error(`No data found for company: ${companyName}`);
+  const location = companyData[0]['Location'] ? String(companyData[0]['Location']).trim() : '';
+  return generateOrgChartHTML(companyData, companyName, location);
 }
+
+async function getCompaniesFromCSV(csvFilePath) {
+  if (!fs.existsSync(csvFilePath)) throw new Error(`CSV file not found: ${csvFilePath}`);
+  const data = await readCSVFile(csvFilePath);
+  return [...new Set(data.map(r => r['Company Name']).filter(Boolean))];
+}
+
+// ─────────────────────────────────────────────
+//  MAIN  (local HTML output — S3 upload commented out)
+// ─────────────────────────────────────────────
+async function main() {
+  const jsonFilePath = "buying_group_combined(4).json";
+  if (!fs.existsSync(jsonFilePath)) { console.error('JSON file not found:', jsonFilePath); return; }
+
+  const outputDir = path.join(__dirname, 'output_js');
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+  // S3 config — commented out
+  // const { uploadOrgChartToS3, orgChartExistsInS3, ORG_CHART_FOLDER } = require('./config/s3');
+
+  const data = await readJSONFile(jsonFilePath);
+  const uniqueCompanies = [...new Set(data.map(r => r['Company Name']).filter(Boolean))];
+  if (!uniqueCompanies.length) { console.error('No companies found in JSON'); return; }
+
+  console.log(`Found ${uniqueCompanies.length} companies. Generating HTML files...`);
+  let generated = 0;
+
+  for (const companyName of uniqueCompanies) {
+    const companyData = data.filter(r => r['Company Name'] === companyName);
+    if (!companyData.length) continue;
+
+    const location     = String(companyData[0]['Location'] || '').trim();
+    const safeCompany  = sanitizeFilename(companyName);
+    const baseFilename = location ? `${safeCompany}_${sanitizeFilename(location)}.html` : `${safeCompany}.html`;
+    const outputPath   = path.join(outputDir, baseFilename);
+
+    // S3 existence check — commented out
+    // const s3Key = `${ORG_CHART_FOLDER}/${baseFilename}`;
+    // const exists = await orgChartExistsInS3(s3Key).catch(() => false);
+    // if (exists) { console.log(`  ~ skipped (S3): ${baseFilename}`); continue; }
+
+    try {
+      const html = generateOrgChartHTML(companyData, companyName, location);
+      fs.writeFileSync(outputPath, html, 'utf-8');
+      console.log(`  ✓ ${baseFilename}`);
+      generated++;
+    } catch (err) {
+      console.error(`  ✗ Failed for "${companyName}": ${err.message}`);
+    }
+
+    // S3 upload — commented out
+    // await uploadOrgChartToS3(baseFilename, html);
+  }
+
+  console.log(`\nDone: ${generated} HTML files saved to "${outputDir}"`);
+}
+
+// ─────────────────────────────────────────────
+//  EXPORTS
+// ─────────────────────────────────────────────
+module.exports = { generateOrgChartHTML, generateOrgChartFromDoc, buildTreeFromData, generateOrgChartForCompany, getCompaniesFromCSV };
+
+if (require.main === module) main().catch(() => {});

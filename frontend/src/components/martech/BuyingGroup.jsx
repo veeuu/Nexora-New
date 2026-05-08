@@ -136,26 +136,25 @@ const BuyingGroup = () => {
 
         window.addEventListener('message', handleMessage);
 
-        // Scroll iframe content to horizontal center after load
         const iframe = iframeRef.current;
-        const scrollToCenter = () => {
+        const onLoad = () => {
+            // Apply zoom
             try {
-                const doc = iframe.contentDocument || iframe.contentWindow?.document;
-                if (doc && doc.documentElement) {
-                    const scrollWidth = doc.documentElement.scrollWidth;
-                    const clientWidth = doc.documentElement.clientWidth;
-                    doc.documentElement.scrollLeft = (scrollWidth - clientWidth) / 2;
-                    doc.body.scrollLeft = (scrollWidth - clientWidth) / 2;
-                }
-            } catch (err) {
-                // cross-origin fallback  ignore
-            }
+                iframe.contentWindow.postMessage({ type: 'setZoom', zoomLevel }, '*');
+            } catch {}
+            // Re-apply active category highlight after iframe loads
+            try {
+                iframe.contentWindow.postMessage({
+                    type: 'highlightCategory',
+                    category: selectedCategory || 'ALL'
+                }, '*');
+            } catch {}
         };
-        iframe.addEventListener('load', scrollToCenter);
+        iframe.addEventListener('load', onLoad);
 
         return () => {
             window.removeEventListener('message', handleMessage);
-            iframe.removeEventListener('load', scrollToCenter);
+            iframe.removeEventListener('load', onLoad);
         };
     }, [orgChartUrl]);
 
@@ -179,19 +178,14 @@ const BuyingGroup = () => {
     useEffect(() => {
         if (!iframeRef.current || !orgChartUrl) return;
 
-        const highlightCategory = () => {
-            try {
-                iframeRef.current.contentWindow.postMessage({
-                    type: 'highlightCategory',
-                    category: selectedCategory || 'ALL'
-                }, '*');
-            } catch (err) {
-                // Handle error silently
-            }
-        };
-
-        const timer = setTimeout(highlightCategory, 1000);
-        return () => clearTimeout(timer);
+        try {
+            iframeRef.current.contentWindow.postMessage({
+                type: 'highlightCategory',
+                category: selectedCategory || 'ALL'
+            }, '*');
+        } catch (err) {
+            // Handle error silently
+        }
     }, [selectedCategory, orgChartUrl]);
 
     useEffect(() => {

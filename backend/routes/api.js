@@ -9,7 +9,8 @@ const { cacheResponse } = require('../middleware/redisCache');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const Company = require('../models/Company');
-const { generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
+const BuyingGroup = require('../models/BuyingGroup');
+const { generateOrgChartFromDoc, generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 const { uploadOrgChartToS3, getSignedOrgChartUrl, orgChartExistsInS3, ORG_CHART_FOLDER } = require('../config/s3');
 
 router.use(cors());
@@ -1933,48 +1934,65 @@ router.get('/org-chart/person-details', cacheResponse(300), async (req, res) => 
 
 router.get('/org-chart/:companyName', async (req, res) => {
   try {
-    const { companyName } = req.params;
-    const decodedCompanyName = decodeURIComponent(companyName);
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
+    const decodedCompanyName = decodeURIComponent(req.params.companyName);
 
-    if (!fs.existsSync(csvPath)) {
-      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
+    // Load from MongoDB
+    const doc = await BuyingGroup.findOne({ companyName: decodedCompanyName }).lean();
+    if (!doc) {
+      return res.status(404).json({ error: `No buying group found for: ${decodedCompanyName}` });
     }
-
-    if (!fs.existsSync(csvPath)) {
-      return res.status(404).json({ error: 'CSV file not found' });
-    }
-
-    const data = await readCsvCached(csvPath);
-    const companyData = data.filter(row => row['Company Name'] === decodedCompanyName);
-    const location = companyData[0]?.Location ? String(companyData[0].Location).trim() : '';
 
     const sanitizeFilename = (name) => {
-      name = String(name);
-      name = name.replace(/[^\w\s-]/g, '').trim();
-      name = name.replace(/[-\s]+/g, '_');
+      name = String(name).replace(/[^\w\s-]/g, '').trim().replace(/[-\s]+/g, '_');
       return name || 'untitled_chart';
     };
 
-    let safeFileName = sanitizeFilename(decodedCompanyName);
-    if (location) {
-      safeFileName = `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`;
-    }
-
+    const location = String(doc.location || '').trim();
+    const safeFileName = location
+      ? `${sanitizeFilename(decodedCompanyName)}_${sanitizeFilename(location)}`
+      : sanitizeFilename(decodedCompanyName);
     const htmlFileName = `${safeFileName}.html`;
     const s3Key = `${ORG_CHART_FOLDER}/${htmlFileName}`;
 
-    // Check S3 cache first
+    // Return cached S3 URL if still valid (stored on the doc)
+    if (doc.orgChart?.s3Key === s3Key && doc.orgChart?.s3Url) {
+      try {
+        const signedUrl = await getSignedOrgChartUrl(s3Key);
+        return res.json({ success: true, s3Url: signedUrl, fromCache: true });
+      } catch {
+        // fall through to regenerate if signed URL fails
+      }
+    }
+
+    // Check S3 directly
     const exists = await orgChartExistsInS3(s3Key).catch(() => false);
     if (exists) {
       const signedUrl = await getSignedOrgChartUrl(s3Key);
+      // Update doc with s3Key reference if missing
+      await BuyingGroup.updateOne(
+        { companyName: decodedCompanyName },
+        { $set: { 'orgChart.s3Key': s3Key, 'orgChart.s3Url': signedUrl, 'orgChart.generatedAt': new Date() } }
+      );
       return res.json({ success: true, s3Url: signedUrl, fromCache: true });
     }
 
-    // Generate and upload to S3
-    const html = await generateOrgChartForCompany(csvPath, decodedCompanyName);
+    // Generate HTML from MongoDB doc and upload to S3
+    const html = generateOrgChartFromDoc(doc);
     const s3Result = await uploadOrgChartToS3(htmlFileName, html);
     const signedUrl = await getSignedOrgChartUrl(s3Result.s3Key);
+
+    // Persist S3 metadata back to the BuyingGroup document
+    await BuyingGroup.updateOne(
+      { companyName: decodedCompanyName },
+      {
+        $set: {
+          'orgChart.s3Key':       s3Result.s3Key,
+          'orgChart.s3Url':       s3Result.s3Url,
+          'orgChart.generatedAt': new Date(),
+          'orgChart.fileSize':    s3Result.fileSize,
+        }
+      }
+    );
 
     res.json({ success: true, s3Url: signedUrl, fromCache: false });
   } catch (err) {
@@ -1984,43 +2002,49 @@ router.get('/org-chart/:companyName', async (req, res) => {
 
 async function generateSelectedOrgCharts(selectedCompanies = []) {
   try {
-    let csvPath = path.join(__dirname, '../Nexora Buying groups 13_02_2026.csv');
-
-    if (!fs.existsSync(csvPath)) {
-      csvPath = path.join(__dirname, '../nexora Buying group.xlsx');
-    }
-
     if (!selectedCompanies || selectedCompanies.length === 0) {
       return { success: false, message: 'No companies selected' };
     }
 
     const sanitizeFilename = (name) => {
-      name = String(name);
-      name = name.replace(/[^\w\s-]/g, '').trim();
-      name = name.replace(/[-\s]+/g, '_');
+      name = String(name).replace(/[^\w\s-]/g, '').trim().replace(/[-\s]+/g, '_');
       return name || 'untitled_chart';
     };
 
     let newChartsGenerated = 0;
     let chartsSkipped = 0;
 
-    for (const company of selectedCompanies) {
-      const safeFileName = sanitizeFilename(company);
+    for (const companyName of selectedCompanies) {
+      const doc = await BuyingGroup.findOne({ companyName }).lean();
+      if (!doc) { chartsSkipped++; continue; }
+
+      const location = String(doc.location || '').trim();
+      const safeFileName = location
+        ? `${sanitizeFilename(companyName)}_${sanitizeFilename(location)}`
+        : sanitizeFilename(companyName);
       const htmlFileName = `${safeFileName}.html`;
       const s3Key = `${ORG_CHART_FOLDER}/${htmlFileName}`;
 
       // Skip if already in S3
       const exists = await orgChartExistsInS3(s3Key).catch(() => false);
-      if (exists) {
-        chartsSkipped++;
-        continue;
-      }
+      if (exists) { chartsSkipped++; continue; }
 
       try {
-        const html = await generateOrgChartForCompany(csvPath, company);
-        await uploadOrgChartToS3(htmlFileName, html);
+        const html = generateOrgChartFromDoc(doc);
+        const s3Result = await uploadOrgChartToS3(htmlFileName, html);
+        await BuyingGroup.updateOne(
+          { companyName },
+          {
+            $set: {
+              'orgChart.s3Key':       s3Result.s3Key,
+              'orgChart.s3Url':       s3Result.s3Url,
+              'orgChart.generatedAt': new Date(),
+              'orgChart.fileSize':    s3Result.fileSize,
+            }
+          }
+        );
         newChartsGenerated++;
-      } catch (err) {
+      } catch {
         // continue on per-company errors
       }
     }
@@ -2057,6 +2081,27 @@ router.post('/org-chart/generate-selected', async (req, res) => {
   }
 });
 
+// Invalidate cached org chart for a company (forces regeneration on next fetch)
+router.delete('/org-chart/:companyName', async (req, res) => {
+  try {
+    const decodedCompanyName = decodeURIComponent(req.params.companyName);
+    const { deleteOrgChartFromS3 } = require('../config/s3');
+
+    const doc = await BuyingGroup.findOne({ companyName: decodedCompanyName }).lean();
+    if (doc?.orgChart?.s3Key) {
+      await deleteOrgChartFromS3(doc.orgChart.s3Key).catch(() => {});
+    }
+
+    await BuyingGroup.updateOne(
+      { companyName: decodedCompanyName },
+      { $unset: { orgChart: '' } }
+    );
+
+    res.json({ success: true, message: `Org chart cache cleared for ${decodedCompanyName}` });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Failed to invalidate org chart' });
+  }
+});
 
 
 router.get('/keywords', cacheResponse(300), async (req, res) => {
