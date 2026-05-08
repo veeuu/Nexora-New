@@ -375,27 +375,6 @@ body{font-family:${CONFIG.FONT_FAMILY};background:${CONFIG.COLOR_BG};min-height:
 
 /* ── SVG connectors ── */
 .og-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
-
-/* ── Detail panel ── */
-.og-detail{margin:4px 24px 24px;background:#fff;border-radius:12px;
-  border:1px solid #e8edf2;padding:20px 22px;
-  box-shadow:0 2px 16px rgba(15,23,42,.06);animation:dpIn .18s ease}
-@keyframes dpIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.dp-head{display:flex;align-items:center;gap:12px;padding-bottom:16px;
-  border-bottom:1px solid #f1f5f9;margin-bottom:16px}
-.dp-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
-.dp-name{font-size:15px;font-weight:700;color:#0f172a}
-.dp-hrole{font-size:11px;font-weight:700;margin-top:3px}
-.dp-close{margin-left:auto;background:none;border:none;cursor:pointer;
-  color:#94a3b8;font-size:22px;line-height:1;padding:4px 6px;border-radius:4px;transition:color .12s}
-.dp-close:hover{color:#475569}
-.dp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px}
-.dp-f .dp-l{font-size:9.5px;color:#94a3b8;font-weight:700;text-transform:uppercase;
-  letter-spacing:.8px;margin-bottom:3px}
-.dp-f .dp-v{font-size:12px;color:#334155;line-height:1.5;word-break:break-word}
-.dp-f .dp-v a{color:#2563eb;text-decoration:none}
-.dp-f .dp-v a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -416,8 +395,6 @@ body{font-family:${CONFIG.FONT_FAMILY};background:${CONFIG.COLOR_BG};min-height:
   </div>
 </div>
 
-<div id="og-detail"></div>
-
 <script>
 (function(){
   const EMP = ${empMapJSON};
@@ -426,72 +403,17 @@ body{font-family:${CONFIG.FONT_FAMILY};background:${CONFIG.COLOR_BG};min-height:
     'influencer':     { strip:'#f59e0b', badge_bg:'#fffbeb', badge_txt:'#92400e', dot:'#f59e0b', label:'Influencer' },
     'direct reportee':{ strip:'#6366f1', badge_bg:'#eef2ff', badge_txt:'#3730a3', dot:'#6366f1', label:'Direct Reportee' },
   };
-  const AV = [['#4f46e5','#818cf8'],['#0891b2','#22d3ee'],['#be185d','#f472b6'],['#7c3aed','#a78bfa'],['#0d9488','#2dd4bf'],['#c2410c','#fb923c'],['#1d4ed8','#60a5fa'],['#15803d','#4ade80']];
-  function nh(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))&0xfffffff;return h;}
-  function avGrad(n){const[a,b]=AV[nh(n)%AV.length];return 'linear-gradient(135deg,'+a+','+b+')';}
-  function ini(n){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
   function hc(raw){return HIER_COLORS[String(raw||'').toLowerCase().trim()]||{strip:'#94a3b8',badge_bg:'#f8fafc',badge_txt:'#475569',dot:'#94a3b8',label:raw||'Other'};}
 
-  let selected = null;
-
-  // ── Card icon & click ──
+  // ── Card icon ──
   const coName = Object.values(EMP)[0]?.companyName || '?';
   document.getElementById('og-icon').textContent = (coName[0]||'?').toUpperCase();
 
   document.querySelectorAll('.og-card').forEach((card,i) => {
-    // stagger fade-in
     card.style.opacity='0'; card.style.transform='translateY(8px)';
     setTimeout(()=>{ card.style.transition='opacity .25s ease,transform .25s ease';
       card.style.opacity='1'; card.style.transform='none'; }, i*30);
-
-    card.addEventListener('click', () => {
-      const name = card.dataset.name;
-      selected = selected===name ? null : name;
-      document.querySelectorAll('.og-card').forEach(c=>{
-        c.classList.toggle('selected', c.dataset.name===selected);
-        const emp = EMP[c.dataset.name];
-        if(emp){ const h=hc(emp.hierarchy); c.style.setProperty('--strip-color',h.strip); }
-      });
-      renderDetail();
-    });
   });
-
-  // ── Detail panel ──
-  function renderDetail() {
-    const el = document.getElementById('og-detail');
-    if (!selected) { el.innerHTML=''; return; }
-    const e = EMP[selected];
-    if (!e) { el.innerHTML=''; return; }
-    const h = hc(e.hierarchy);
-    const reports = (e.directReports||[]).join(', ')||'None';
-    el.innerHTML = \`
-    <div class="og-detail">
-      <div class="dp-head">
-        <div class="dp-av" style="background:\${avGrad(e.name)}">\${ini(e.name)}</div>
-        <div>
-          <div class="dp-name">\${e.name}</div>
-          <div class="dp-hrole" style="color:\${h.strip}">\${h.label}</div>
-        </div>
-        <button class="dp-close" id="dp-close">×</button>
-      </div>
-      <div class="dp-grid">
-        \${[
-          ['Full Role',       e.fullRole||'—'],
-          ['Email',           e.email ? '<a href="mailto:'+e.email+'">'+e.email+'</a>' : '—'],
-          ['Category',        e.category||'—'],
-          ['Reports To',      e.reportsTo||'Independent'],
-          ['LinkedIn',        e.linkedin ? '<a href="'+e.linkedin+'" target="_blank">View Profile ↗</a>' : '—'],
-          ['Direct Reports',  reports],
-          ['Company',         e.companyName||'—'],
-        ].map(([l,v])=>\`<div class="dp-f"><div class="dp-l">\${l}</div><div class="dp-v">\${v}</div></div>\`).join('')}
-      </div>
-    </div>\`;
-    document.getElementById('dp-close').onclick = () => {
-      selected=null;
-      document.querySelectorAll('.og-card').forEach(c=>c.classList.remove('selected'));
-      el.innerHTML='';
-    };
-  }
 
   // ── Public API (iframe postMessage compatible) ──
   window.OrgChartAPI = {
