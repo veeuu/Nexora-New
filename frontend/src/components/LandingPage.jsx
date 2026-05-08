@@ -134,22 +134,73 @@ const EnterpriseIntel = () => {
               </div>
               <span>{d.title}</span>
             </div>
-            <div className="st-mock-content">
-              {d.items.map((it, i) => (
-                <div key={i} className="st-mock-item">
-                  <div className="st-mi-left">
-                    <div className="st-mi-avatar">{it.av}</div>
-                    <div>
-                      <div className="st-mi-name">{it.name}</div>
-                      <div className="st-mi-tag">{it.tag}</div>
+            {cur === 0 ? (
+              <div className="st-table-wrap">
+                <table className="st-table">
+                  <thead>
+                    <tr>
+                      <th>Company Name</th>
+                      <th>Industry</th>
+                      <th>Region</th>
+                      <th>Employee Size</th>
+                      <th>Revenue</th>
+                      <th>Technology</th>
+                      <th>Previous Detected</th>
+                      <th>Latest Detected</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span className="st-co-name">ABC Corp</span></td>
+                      <td>IT Services</td>
+                      <td>🇺🇸 USA</td>
+                      <td>201–500</td>
+                      <td>$43.4 M+</td>
+                      <td><span className="st-tech-tag">AWS</span></td>
+                      <td><span className="st-badge-sm st-badge-prev">Q4 2023</span></td>
+                      <td><span className="st-badge-sm st-badge-b">Q1 2025</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">XYZ Solutions</span></td>
+                      <td>Marketing</td>
+                      <td>🇬🇧 UK</td>
+                      <td>51–200</td>
+                      <td>16 M</td>
+                      <td><span className="st-tech-tag">Azure</span></td>
+                      <td><span className="st-badge-sm st-badge-prev">Q2 2023</span></td>
+                      <td><span className="st-badge-sm st-badge-y">Q4 2024</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">DEF Ventures</span></td>
+                      <td>Finance</td>
+                      <td>🇮🇳 India</td>
+                      <td>1001–5000</td>
+                      <td>$120 M+</td>
+                      <td><span className="st-tech-tag">GCP</span></td>
+                      <td><span className="st-badge-sm st-badge-prev">Q3 2023</span></td>
+                      <td><span className="st-badge-sm st-badge-b">Q1 2025</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="st-mock-content">
+                {d.items.map((it, i) => (
+                  <div key={i} className="st-mock-item">
+                    <div className="st-mi-left">
+                      <div className="st-mi-avatar">{it.av}</div>
+                      <div>
+                        <div className="st-mi-name">{it.name}</div>
+                        <div className="st-mi-tag">{it.tag}</div>
+                      </div>
+                    </div>
+                    <div className="st-mi-right">
+                      <span className={`st-badge-sm ${badgeClass[it.bc]}`}>{it.badge}</span>
                     </div>
                   </div>
-                  <div className="st-mi-right">
-                    <span className={`st-badge-sm ${badgeClass[it.bc]}`}>{it.badge}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
