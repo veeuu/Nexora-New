@@ -249,11 +249,11 @@ const LandingPage = () => {
     //   question: 'How does Nexora get its data?',
     //   answer: 'Nexora aggregates data from multiple sources including public records, web signals, technology signals, and proprietary data sources to provide comprehensive B2B intelligence.'
     // },
-    {
-      id: 5,
-      question: 'How is Nexora different from other GTM tools?',
-      answer: 'Nexora combines technographics, intent data, and buying group intelligence in one unified platform. Our AI-powered insights help you identify the right accounts and the right people to reach.'
-    },
+    // {
+    //   id: 5,
+    //   question: 'How is Nexora different from other GTM tools?',
+    //   answer: 'Nexora combines technographics, intent data, and buying group intelligence in one unified platform. Our AI-powered insights help you identify the right accounts and the right people to reach.'
+    // },
     {
       id: 6,
       question: 'Can I try Nexora before buying?',
