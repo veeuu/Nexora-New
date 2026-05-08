@@ -672,3 +672,77 @@
   background: #fef2f2;
   border-color: #f87171;
 }
+
+/* ── Upgrade Plan card ── */
+.upgrade-plan-card {
+  background: linear-gradient(135deg, #0a1f35 0%, #0050b3 100%);
+  border-radius: 14px;
+  padding: 1.25rem 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.upgrade-plan-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.upgrade-plan-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.upgrade-plan-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.2rem;
+}
+
+.upgrade-plan-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.upgrade-perks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.upgrade-perks-list li {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.upgrade-cta-btn {
+  width: 100%;
+  padding: 0.65rem;
+  background: #ffffff;
+  color: #0050b3;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.2px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.upgrade-cta-btn:hover {
+  background: #e0f2fe;
+  transform: translateY(-1px);
+}

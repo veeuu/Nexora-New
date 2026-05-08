@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import '../styles/profile.css';
 
 const FEATURES = [
-  { label: 'Technographics', icon: '🖥️' },
-  { label: 'Intent Data', icon: '🎯' },
-  { label: 'Renewal Intelligence', icon: '🔄' },
-  { label: 'Buying Group', icon: '👥' },
-  { label: 'Next Tech Purchase®', icon: '📊' },
-  { label: 'Keywords Surge', icon: '🔍' },
-  { label: 'Product Catalogue', icon: '📦' },
+  { label: 'Technographics' },
+  { label: 'Intent Data' },
+  { label: 'Renewal Intelligence' },
+  { label: 'Buying Group' },
+  { label: 'Next Tech Purchase®' },
+  { label: 'Keywords Surge' },
+  { label: 'Product Catalogue' },
 ];
 
 const PLAN_LABELS = {
@@ -17,13 +17,6 @@ const PLAN_LABELS = {
   pro: 'Pro',
   enterprise: 'Enterprise',
 };
-
-// Credit log entries — static for now, replace with API later
-const CREDIT_LOG = [
-  { id: 1, action: 'Technographics export', credits: 5, date: 'May 7, 2026', section: 'Technographics' },
-  { id: 2, action: 'Intent data filter', credits: 3, date: 'May 6, 2026', section: 'Intent' },
-  { id: 3, action: 'Buying Group lookup', credits: 2, date: 'May 5, 2026', section: 'Buying Group' },
-];
 
 const SECTION_COLORS = {
   Technographics: '#3b82f6',
@@ -143,7 +136,6 @@ const ProfilePanel = ({ isOpen, onClose, username }) => {
               <ul className="profile-features-list">
                 {FEATURES.map((f) => (
                   <li key={f.label} className="profile-feature-item">
-                    <span className="feature-icon">{f.icon}</span>
                     <span className="feature-label">{f.label}</span>
                     <span className={`feature-status ${isPaid ? 'status--active' : 'status--limited'}`}>
                       {isPaid ? 'Active' : 'Limited'}
@@ -153,22 +145,6 @@ const ProfilePanel = ({ isOpen, onClose, username }) => {
               </ul>
 
               <div className="profile-panel-divider" />
-
-              {/* Data coverage */}
-              <p className="profile-panel-section-label">Data Coverage</p>
-              <div className="profile-stats-grid">
-                {[
-                  { value: '50K+', label: 'Companies' },
-                  { value: '200+', label: 'Technologies' },
-                  { value: '15+', label: 'Industries' },
-                  { value: 'Global', label: 'Coverage' },
-                ].map((s) => (
-                  <div key={s.label} className="profile-stat">
-                    <span className="stat-value">{s.value}</span>
-                    <span className="stat-label">{s.label}</span>
-                  </div>
-                ))}
-              </div>
             </>
           )}
 
@@ -195,25 +171,26 @@ const ProfilePanel = ({ isOpen, onClose, username }) => {
                 <p className="credits-reset-note">Resets on June 1, 2026</p>
               </div>
 
+              {/* Upgrade section */}
               <div className="profile-panel-divider" />
-
-              <p className="profile-panel-section-label">Credit Usage Log</p>
-              {CREDIT_LOG.length === 0 ? (
-                <p className="empty-state-text">No credits used yet.</p>
-              ) : (
-                <ul className="credit-log-list">
-                  {CREDIT_LOG.map((entry) => (
-                    <li key={entry.id} className="credit-log-item">
-                      <div className="credit-log-dot" style={{ background: SECTION_COLORS[entry.section] || '#9ca3af' }} />
-                      <div className="credit-log-info">
-                        <p className="credit-log-action">{entry.action}</p>
-                        <p className="credit-log-meta">{entry.section} · {entry.date}</p>
-                      </div>
-                      <span className="credit-log-cost">−{entry.credits}</span>
-                    </li>
-                  ))}
+              <div className="upgrade-plan-card">
+                <div className="upgrade-plan-top">
+                  <span className="upgrade-plan-icon">⚡</span>
+                  <div>
+                    <p className="upgrade-plan-title">Upgrade Your Plan</p>
+                    <p className="upgrade-plan-subtitle">Unlock unlimited credits and full feature access</p>
+                  </div>
+                </div>
+                <ul className="upgrade-perks-list">
+                  <li>✓ Unlimited credits per cycle</li>
+                  <li>✓ Full access to all 7 features</li>
+                  <li>✓ Priority data refresh</li>
+                  <li>✓ Dedicated support</li>
                 </ul>
-              )}
+                <button className="upgrade-cta-btn" onClick={() => window.location.href = 'mailto:sales@nexora.ai?subject=Upgrade%20Plan'}>
+                  Talk to Sales
+                </button>
+              </div>
             </>
           )}
 
