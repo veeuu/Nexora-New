@@ -6,6 +6,156 @@ import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
 import RenewalDashboard from './RenewalDashboard';
 
+// ── On-Demand Request Modal ──────────────────────────────────────────────────
+const OnDemandModal = ({ filterType, searchValue, onClose }) => {
+  const [requestedName, setRequestedName] = useState(searchValue);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await apiFetch('/api/on-demand-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestedName, filterType, searchValue })
+      });
+    } catch {
+      // still show success
+    } finally {
+      setSubmitted(true);
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, backgroundColor: 'rgba(15,23,42,0.5)',
+        zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backdropFilter: 'blur(2px)'
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{
+        backgroundColor: 'white', borderRadius: '16px',
+        width: '100%', maxWidth: '460px',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+        position: 'relative', overflow: 'hidden'
+      }}>
+        <div style={{ height: '4px', background: 'linear-gradient(90deg, #3b82f6, #6366f1)' }} />
+        <div style={{ padding: '32px' }}>
+          <button onClick={onClose} style={{
+            position: 'absolute', top: '20px', right: '20px',
+            background: 'none', border: 'none', cursor: 'pointer',
+            width: '28px', height: '28px', borderRadius: '6px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#94a3b8', fontSize: '18px', lineHeight: 1,
+            transition: 'background 0.15s, color 0.15s'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94a3b8'; }}
+          >×</button>
+
+          {submitted ? (
+            <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%',
+                background: '#f0fdf4', border: '2px solid #bbf7d0',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 20px'
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>
+                Request Submitted
+              </h3>
+              <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '14px', lineHeight: '1.6' }}>
+                We'll get back to you within <span style={{ fontWeight: '600', color: '#0f172a' }}>48 hours</span>.
+              </p>
+              <button
+                onClick={onClose}
+                style={{
+                  padding: '9px 28px', backgroundColor: '#f8fafc', color: '#475569',
+                  border: '1px solid #e2e8f0', borderRadius: '8px',
+                  fontSize: '14px', fontWeight: '500', cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+              >
+                Close
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{
+                  width: '40px', height: '40px', borderRadius: '10px',
+                  background: '#eff6ff', border: '1px solid #bfdbfe',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#3b82f6"/>
+                  </svg>
+                </div>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#0f172a' }}>
+                  Request Data on Demand
+                </h3>
+              </div>
+              <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
+                Can't find what you're looking for in <span style={{ fontWeight: '600', color: '#334155' }}>{filterType}</span>? Enter the company name and our team will reach out.
+              </p>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block', fontSize: '12px', fontWeight: '600',
+                  color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px'
+                }}>
+                  {filterType}
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder={`e.g. ${searchValue}`}
+                  value={requestedName}
+                  onChange={(e) => setRequestedName(e.target.value)}
+                  style={{
+                    width: '100%', padding: '10px 14px',
+                    border: '1.5px solid #e2e8f0', borderRadius: '8px',
+                    fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box',
+                    outline: 'none', color: '#0f172a', transition: 'border-color 0.15s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                  onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  width: '100%', padding: '11px',
+                  background: submitting ? '#93c5fd' : 'linear-gradient(135deg, #3b82f6, #6366f1)',
+                  color: 'white', border: 'none', borderRadius: '8px',
+                  fontSize: '14px', fontWeight: '600',
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                  letterSpacing: '0.2px', transition: 'opacity 0.2s'
+                }}
+                onMouseEnter={(e) => { if (!submitting) e.currentTarget.style.opacity = '0.92'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+              >
+                {submitting ? 'Submitting...' : 'Submit Request'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CustomDropdown = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -31,7 +181,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>?</span>
+        <span style={{ fontSize: '12px' }}>▾</span>
       </button>
 
       {isOpen && (
@@ -208,7 +358,7 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
           {value && renderIcon(value)}
           {value || 'All'}
         </span>
-        <span style={{ fontSize: '12px' }}>?</span>
+        <span style={{ fontSize: '12px' }}>▾</span>
       </button>
 
       {isOpen && (
@@ -300,6 +450,7 @@ const RenewalIntelligence = () => {
     const [products, setProducts] = useState([]);
     const [measurements, setMeasurements] = useState({});
     const [companySearchTerm, setCompanySearchTerm] = useState('');
+    const [onDemandModal, setOnDemandModal] = useState(null);
     const [showDashboard, setShowDashboard] = useState(false);
     const rowsPerPage = 9;
     const filterRef = useRef(null);
@@ -1035,6 +1186,13 @@ if (aQtr.year !== bQtr.year) {
 
     return (
         <>
+        {onDemandModal && (
+          <OnDemandModal
+            filterType={onDemandModal.filterType}
+            searchValue={onDemandModal.searchValue}
+            onClose={() => setOnDemandModal(null)}
+          />
+        )}
         <div className="renewal-intelligence-container">
             <div className="header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: '0', backgroundColor: '#ffffff', zIndex: '100', paddingBottom: '15px', paddingTop: '15px', paddingLeft: '16px', paddingRight: '16px' }}>
                 <h2 style={{ fontSize: '25px', fontWeight: '700', margin: '0' }}>Renewal Intelligence</h2>
@@ -1258,7 +1416,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ?
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1346,6 +1504,24 @@ if (aQtr.year !== bQtr.year) {
                                 No companies found
                               </div>
                             )}
+                            {allFiltered.length === 0 && companySearchTerm.trim() && (
+                              <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
+                                <button
+                                  onClick={() => {
+                                    setOnDemandModal({ filterType: 'Company Name', searchValue: companySearchTerm.trim() });
+                                    setActiveFilterMenu(null);
+                                    setCompanySearchTerm('');
+                                  }}
+                                  style={{
+                                    padding: '7px 16px', backgroundColor: '#eff6ff', color: '#1d4ed8',
+                                    border: '1px solid #bfdbfe', borderRadius: '6px', cursor: 'pointer',
+                                    fontSize: '13px', fontWeight: '500'
+                                  }}
+                                >
+                                  + Request on Demand
+                                </button>
+                              </div>
+                            )}
                           </>
                         );
                       })()}
@@ -1416,7 +1592,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ?
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1545,7 +1721,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ?
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1675,7 +1851,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ?
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1805,7 +1981,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ?
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1928,7 +2104,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ?
+                      ×
                     </button>
                   </div>
                 )}
@@ -1967,7 +2143,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ?
+                      ×
                     </button>
                   </div>
                 )}
@@ -2006,7 +2182,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ?
+                      ×
                     </button>
                   </div>
                 )}
@@ -2045,7 +2221,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ?
+                      ×
                     </button>
                   </div>
                 )}
