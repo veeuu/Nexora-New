@@ -768,7 +768,7 @@ const Speedometer = ({ value }) => {
 };
 
 // ── On-Demand Request Modal ──────────────────────────────────────────────────
-const OnDemandModal = ({ filterType, searchValue, onClose }) => {
+const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
   const [requestedName, setRequestedName] = useState(searchValue);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -780,7 +780,7 @@ const OnDemandModal = ({ filterType, searchValue, onClose }) => {
       await apiFetch('/api/on-demand-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestedName, filterType, searchValue })
+        body: JSON.stringify({ requestedName, filterType, searchValue, sourcePage })
       });
     } catch {
       // still show success
@@ -1814,6 +1814,7 @@ const Technographics = () => {
       <OnDemandModal
         filterType={onDemandModal.filterType}
         searchValue={onDemandModal.searchValue}
+        sourcePage="Technographics"
         onClose={() => setOnDemandModal(null)}
       />
     )}
@@ -2165,7 +2166,7 @@ const Technographics = () => {
                         )}
                         {filtered.length === 0 && (
                           <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
-                            No companies match "{companySearchTerm}"
+                            Can't find it?
                           </div>
                         )}
                         {filtered.length === 0 && companySearchTerm.trim() && (

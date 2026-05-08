@@ -7,7 +7,7 @@ import { FaLock, FaUnlock, FaGlobe, FaLinkedin } from 'react-icons/fa';
 import '../../styles/intent.css';
 
 // ── On-Demand Request Modal ──────────────────────────────────────────────────
-const OnDemandModal = ({ filterType, searchValue, onClose }) => {
+const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
   const [requestedName, setRequestedName] = useState(searchValue);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -19,7 +19,7 @@ const OnDemandModal = ({ filterType, searchValue, onClose }) => {
       await apiFetch('/api/on-demand-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestedName, filterType, searchValue })
+        body: JSON.stringify({ requestedName, filterType, searchValue, sourcePage })
       });
     } catch {
       // still show success
@@ -558,6 +558,7 @@ useEffect(() => {
         <OnDemandModal
           filterType={onDemandModal.filterType}
           searchValue={onDemandModal.searchValue}
+          sourcePage="Intent"
           onClose={() => setOnDemandModal(null)}
         />
       )}
@@ -691,7 +692,7 @@ useEffect(() => {
                         </div>
                       )}
                       {filtered.length === 0 && allCompanies.length > 0 && (
-                        <div className="no-companies-found">No companies found</div>
+                        <div className="no-companies-found">Can't find it?</div>
                       )}
                       {filtered.length === 0 && companySearchTerm.trim() && (
                         <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>

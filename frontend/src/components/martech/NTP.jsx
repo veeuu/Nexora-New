@@ -8,7 +8,7 @@ import ChatBot from '../ChatBot';
 import '../../styles/ntp.css';
 
 // ── On-Demand Request Modal ──────────────────────────────────────────────────
-const OnDemandModal = ({ filterType, searchValue, onClose }) => {
+const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
   const [requestedName, setRequestedName] = useState(searchValue);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +20,7 @@ const OnDemandModal = ({ filterType, searchValue, onClose }) => {
       await apiFetch('/api/on-demand-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestedName, filterType, searchValue })
+        body: JSON.stringify({ requestedName, filterType, searchValue, sourcePage })
       });
     } catch {
       // still show success
@@ -726,6 +726,7 @@ const NTP = () => {
         <OnDemandModal
           filterType={onDemandModal.filterType}
           searchValue={onDemandModal.searchValue}
+          sourcePage="NTP"
           onClose={() => setOnDemandModal(null)}
         />
       )}
@@ -859,7 +860,7 @@ const NTP = () => {
                       )}
                       {allFiltered.length === 0 && (
                         <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
-                          No companies found
+                          Can't find it?
                         </div>
                       )}
                       {allFiltered.length === 0 && companyNameSearch.trim() && (
