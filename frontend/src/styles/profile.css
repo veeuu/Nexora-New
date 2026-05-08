@@ -746,3 +746,34 @@
   background: #e0f2fe;
   transform: translateY(-1px);
 }
+
+/* ── Sign Out footer ── */
+.profile-panel-footer {
+  flex-shrink: 0;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.profile-signout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background: none;
+  border: 1.5px solid #fca5a5;
+  border-radius: 9px;
+  color: #dc2626;
+  font-size: 0.83rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.profile-signout-btn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
+}
