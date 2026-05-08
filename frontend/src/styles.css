@@ -383,7 +383,7 @@ body {
 .menu-profile-name {
   flex: 1;
   text-align: left;
-  font-size: 0.9rem;
+  font-size: 0.99rem;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;

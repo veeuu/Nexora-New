@@ -785,6 +785,19 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
     } catch {
       // still show success
     } finally {
+      // Save to localStorage for profile panel history
+      try {
+        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+        const entry = {
+          id: Date.now(),
+          query: requestedName,
+          filterType,
+          section: sourcePage || 'Technographics',
+          status: 'Pending',
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        };
+        localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+      } catch (_) {}
       setSubmitted(true);
       setSubmitting(false);
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { IndustryProvider } from '../context/IndustryContext';
 import Menu from './Menu';
+import ProfilePanel from './ProfilePanel';
 import Home from './martech/Home';
 import MartechNTP from './martech/NTP';
 import Martechintent from './martech/Intent';
@@ -16,6 +17,7 @@ const Dashboard = ({ onLogout, onNavRef, username }) => {
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('Insights');
   const [homeResetTrigger, setHomeResetTrigger] = useState(0);
+  const [profilePanelOpen, setProfilePanelOpen] = useState(false);
 
 const routeToSection = {
     '/dashboard': 'Insights',
@@ -117,6 +119,7 @@ useEffect(() => {
             menuItems={getMenuItems()}
             username={username}
             onLogout={onLogout}
+            onProfileClick={() => setProfilePanelOpen(true)}
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             <Routes>
@@ -132,6 +135,12 @@ useEffect(() => {
             </Routes>
           </main>
         </div>
+        <ProfilePanel
+          isOpen={profilePanelOpen}
+          onClose={() => setProfilePanelOpen(false)}
+          username={username}
+          onLogout={onLogout}
+        />
       </div>
     </IndustryProvider>
   );

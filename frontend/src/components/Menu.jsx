@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
 
-const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => {
+const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onProfileClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -87,33 +87,14 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout }) => 
       <div className="menu-profile-section" ref={profileRef}>
         <button
           className="menu-profile-btn"
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
-          title="Profile"
+          onClick={() => onProfileClick && onProfileClick()}
+          title="View Profile"
         >
           <div className="menu-profile-avatar">
             {getInitials(username)}
           </div>
-          <span className="menu-profile-name">{username}</span>
+          <span className="menu-profile-name">Profile</span>
         </button>
-
-        {showProfileMenu && (
-          <div className="menu-profile-dropdown">
-            <button
-              className="menu-logout-btn"
-              onClick={() => {
-                onLogout && onLogout();
-                setShowProfileMenu(false);
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Sign Out
-            </button>
-          </div>
-        )}
       </div>
     </nav>
   );
