@@ -87,7 +87,10 @@ const EnterpriseIntel = () => {
   return (
     <div className="st-wrap">
       <div className="st-head">
-        <h2>Enterprise-Grade B2B Intelligence</h2>
+        <h2>
+          <span className="st-head-blue">Enterprise-Grade</span><br />
+          <span className="st-head-serif">B2B Intelligence</span>
+        </h2>
         <p>Explore our comprehensive data attributes that power smarter go-to-market decisions</p>
       </div>
       <div className="st-layout">

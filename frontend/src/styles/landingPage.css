@@ -1861,6 +1861,21 @@
   color: #0f172a;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
+  line-height: 1.15;
+}
+
+.st-head-blue {
+  color: #2563eb;
+  font-weight: 800;
+  font-style: normal;
+  font-family: inherit;
+}
+
+.st-head-serif {
+  color: #0f1f3d;
+  font-style: italic;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
 }
 
 .st-head p {
