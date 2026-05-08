@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
@@ -19,6 +19,113 @@ import heroSvg from '../landing/LP HERO UPDATED.svg';
 import '../styles/landingPage.css';
 import '../styles/landingPageHero.css';
 
+// ── Scroll-jacked stats section ──────────────────────────────────────────────
+const StatsScrollSection = ({ stats }) => {
+  const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [animDir, setAnimDir] = useState('down');
+  const [animKey, setAnimKey] = useState(0);
+  const prevIndex = useRef(0);
+  const isActive = useRef(false); // true when section is fully in viewport
+
+  // Scroll the internal track to the right slide
+  const scrollTrackTo = (idx) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollTo({ top: idx * track.clientHeight, behavior: 'smooth' });
+  };
+
+  // Watch internal track scroll → update active index + animation
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const onTrackScroll = () => {
+      const idx = Math.round(track.scrollTop / track.clientHeight);
+      if (idx !== prevIndex.current) {
+        setAnimDir(idx > prevIndex.current ? 'down' : 'up');
+        setAnimKey(k => k + 1);
+        setActiveIndex(idx);
+        prevIndex.current = idx;
+      }
+    };
+    track.addEventListener('scroll', onTrackScroll, { passive: true });
+    return () => track.removeEventListener('scroll', onTrackScroll);
+  }, []);
+
+  // Intercept wheel when section is in view — feed into internal track
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!section || !track) return;
+
+    // IntersectionObserver to know when section fills viewport
+    const io = new IntersectionObserver(
+      ([entry]) => { isActive.current = entry.intersectionRatio >= 0.99; },
+      { threshold: 0.99 }
+    );
+    io.observe(section);
+
+    const onWheel = (e) => {
+      if (!isActive.current) return;
+      const atTop = track.scrollTop <= 2;
+      const atBottom = track.scrollTop >= track.scrollHeight - track.clientHeight - 10;
+      // Only release to page when at the boundary in that direction
+      if (e.deltaY < 0 && atTop) return;   // scrolling up at first stat → let page scroll up
+      if (e.deltaY > 0 && atBottom) return; // scrolling down at last stat → let page scroll down
+      // Otherwise trap the scroll inside the track
+      e.preventDefault();
+      track.scrollBy({ top: e.deltaY * 2, behavior: 'smooth' });
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      io.disconnect();
+      window.removeEventListener('wheel', onWheel);
+    };
+  }, []);
+
+  const stat = stats[activeIndex];
+
+  return (
+    <section ref={sectionRef} className="stats-scroll-section">
+      {/* Watermark */}
+      <div className="stats-bg-label">Quality at scale</div>
+
+      {/* Internal scroll track */}
+      <div ref={trackRef} className="stats-track">
+        {stats.map((s, i) => (
+          <div key={i} className="stats-track-slide">
+            <div
+              className={`stats-slide-content${i === activeIndex ? ' visible' : ''}`}
+              style={{
+                animation: i === activeIndex
+                  ? `${animDir === 'down' ? 'slideFromBottom' : 'slideFromTop'} 0.5s cubic-bezier(0.22,1,0.36,1) both`
+                  : 'none'
+              }}
+            >
+              <div className="stats-slide-number">
+                <AnimatedCounter value={s.number} duration={700} />
+              </div>
+              <p className="stats-slide-sub">{s.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Wave decoration */}
+      <div className="stats-wave">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,60 C240,110 480,10 720,60 C960,110 1200,10 1440,60 L1440,120 L0,120 Z" fill="rgba(37,99,235,0.18)" />
+          <path d="M0,80 C300,30 600,100 900,60 C1100,35 1300,90 1440,70 L1440,120 L0,120 Z" fill="rgba(37,99,235,0.1)" />
+        </svg>
+      </div>
+    </section>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [expandedFeature, setExpandedFeature] = useState(1);
@@ -28,6 +135,23 @@ const LandingPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [emailError, setEmailError] = useState('');
+
+  // Scroll-reveal for stats
+  useEffect(() => {
+    const items = document.querySelectorAll('.stats-scroll-item');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    items.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, []);
 
   const handleStartFreeTrial = async () => {
     const validation = validateBusinessEmail(email);
@@ -270,28 +394,8 @@ const LandingPage = () => {
       {/* Client Logos Carousel */}
       <ClientLogosCarousel />
 
-      {/* Stats Section */}
-      <section className="stats-section">
-        <div className="stats-wrapper">
-          <div className="stats-header">
-            <h2>Powering Go-To-Market Excellence</h2>
-            <p>Join leading B2B companies leveraging ProPlus Data's intelligence to scale revenue</p>
-          </div>
-          <div className="stats-container">
-            {stats.map((stat, index) => (
-              <div key={index} className="stat-card">
-                <div className="stat-card-inner">
-                  <div className="stat-icon-bg"></div>
-                  <div className="stat-number">
-                    <AnimatedCounter value={stat.number} duration={2000} />
-                  </div>
-                  <div className="stat-label">{stat.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Stats Section — scroll-jacked */}
+      <StatsScrollSection stats={stats} />
 
       {/* Features Section */}
       <section id="features" className="features-section">
