@@ -1822,6 +1822,19 @@
   color: #1e293b;
 }
 
+.testimonial-redacted {
+  filter: blur(4px);
+  user-select: none;
+  letter-spacing: 0.15em;
+  color: #94a3b8;
+}
+
+.testimonial-avatar--blur {
+  filter: blur(6px);
+  user-select: none;
+  letter-spacing: 0;
+}
+
 .testimonial-role {
   font-size: 0.75rem;
   color: #94a3b8;

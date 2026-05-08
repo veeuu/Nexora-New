@@ -615,10 +615,6 @@ const LandingPage = () => {
                 <p className="testimonial-text">{t.text}</p>
                 <div className="testimonial-footer">
                   <div className="testimonial-avatar">{t.name.split(' ').map(n => n[0]).join('')}</div>
-                  <div>
-                    <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-role">{t.role}</div>
-                  </div>
                   <span className="testimonial-badge">{t.badge}</span>
                 </div>
               </div>
