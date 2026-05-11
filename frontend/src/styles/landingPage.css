@@ -1924,10 +1924,12 @@
   border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   position: relative;
   transition: background 0.2s;
+  min-height: 72px;
+  box-sizing: border-box;
 }
 
 .st-step:last-child {
