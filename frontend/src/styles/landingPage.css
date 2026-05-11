@@ -2443,3 +2443,18 @@
   color: #92400e;
   border-color: #fde68a;
 }
+
+/* ── Intent signal bars ── */
+.st-intent-bars {
+  font-size: 1rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.st-intent-high {
+  color: #10b981;
+}
+
+.st-intent-med {
+  color: #f59e0b;
+}

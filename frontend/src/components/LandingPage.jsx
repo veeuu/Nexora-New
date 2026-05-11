@@ -221,6 +221,64 @@ const EnterpriseIntel = () => {
                   </tbody>
                 </table>
               </div>
+            ) : cur === 2 ? (
+              <div className="st-table-wrap">
+                <table className="st-table">
+                  <thead>
+                    <tr>
+                      <th>Company Name</th>
+                      <th>Industry</th>
+                      <th>Region</th>
+                      <th>Intent Status</th>
+                      <th>Intent Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span className="st-co-name">ABC Corp</span></td>
+                      <td>IT Services</td>
+                      <td>🇺🇸 USA</td>
+                      <td><span className="st-badge-sm st-badge-b">Active</span></td>
+                      <td>
+                        <svg width="28" height="18" viewBox="0 0 28 18" fill="none">
+                          <rect x="0" y="10" width="5" height="8" rx="1" fill="#10b981"/>
+                          <rect x="7" y="6" width="5" height="12" rx="1" fill="#10b981"/>
+                          <rect x="14" y="2" width="5" height="16" rx="1" fill="#10b981"/>
+                          <rect x="21" y="0" width="5" height="18" rx="1" fill="#10b981"/>
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">XYZ Solutions</span></td>
+                      <td>Marketing</td>
+                      <td>🇬🇧 UK</td>
+                      <td><span className="st-badge-sm st-badge-y">Moderate</span></td>
+                      <td>
+                        <svg width="28" height="18" viewBox="0 0 28 18" fill="none">
+                          <rect x="0" y="10" width="5" height="8" rx="1" fill="#f59e0b"/>
+                          <rect x="7" y="6" width="5" height="12" rx="1" fill="#f59e0b"/>
+                          <rect x="14" y="2" width="5" height="16" rx="1" fill="#e5e7eb"/>
+                          <rect x="21" y="0" width="5" height="18" rx="1" fill="#e5e7eb"/>
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">DEF Ventures</span></td>
+                      <td>Finance</td>
+                      <td>🇮🇳 India</td>
+                      <td><span className="st-badge-sm st-badge-b">Active</span></td>
+                      <td>
+                        <svg width="28" height="18" viewBox="0 0 28 18" fill="none">
+                          <rect x="0" y="10" width="5" height="8" rx="1" fill="#10b981"/>
+                          <rect x="7" y="6" width="5" height="12" rx="1" fill="#10b981"/>
+                          <rect x="14" y="2" width="5" height="16" rx="1" fill="#10b981"/>
+                          <rect x="21" y="0" width="5" height="18" rx="1" fill="#10b981"/>
+                        </svg>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <div className="st-mock-content">
                 {d.items.map((it, i) => (
