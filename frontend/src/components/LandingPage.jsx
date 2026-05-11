@@ -279,6 +279,47 @@ const EnterpriseIntel = () => {
                   </tbody>
                 </table>
               </div>
+            ) : cur === 3 ? (
+              <div className="st-org-wrap">
+                {/* Root node */}
+                <div className="st-org-row st-org-row--top">
+                  <div className="st-org-card st-org-card--dm">
+                    <div className="st-org-strip st-org-strip--dm" />
+                    <div className="st-org-avatar" style={{ background: 'linear-gradient(135deg,#059669,#10b981)' }}>SC</div>
+                    <div className="st-org-info">
+                      <span className="st-org-badge st-org-badge--dm">Decision Maker</span>
+                      <p className="st-org-name">Sarah Chen</p>
+                      <p className="st-org-role">CEO</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Connector */}
+                <div className="st-org-connector">
+                  <div className="st-org-line-v" />
+                  <div className="st-org-line-h" />
+                </div>
+                {/* Children */}
+                <div className="st-org-row st-org-row--children">
+                  <div className="st-org-card st-org-card--dm">
+                    <div className="st-org-strip st-org-strip--dm" />
+                    <div className="st-org-avatar" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }}>MJ</div>
+                    <div className="st-org-info">
+                      <span className="st-org-badge st-org-badge--dm">DM</span>
+                      <p className="st-org-name">Mark J.</p>
+                      <p className="st-org-role">CTO</p>
+                    </div>
+                  </div>
+                  <div className="st-org-card st-org-card--inf">
+                    <div className="st-org-strip st-org-strip--inf" />
+                    <div className="st-org-avatar" style={{ background: 'linear-gradient(135deg,#92400e,#d97706)' }}>LT</div>
+                    <div className="st-org-info">
+                      <span className="st-org-badge st-org-badge--inf">Inf</span>
+                      <p className="st-org-name">Lori T.</p>
+                      <p className="st-org-role">CMO</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="st-mock-content">
                 {d.items.map((it, i) => (
