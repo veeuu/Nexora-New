@@ -66,7 +66,7 @@ const sdata = [
     ],
   },
   {
-    title: 'Next Tech Purchase®',
+    title: 'NTP®',
     badge: '530M+ Companies',
     desc: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals to time your outreach perfectly.',
     chips: [{ t: 'Predictive Scoring', c: 'a' }, { t: 'Investment Signals', c: 'b' }, { t: 'Pipeline Timing', c: 'c' }],
