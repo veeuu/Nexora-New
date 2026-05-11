@@ -860,17 +860,23 @@ const LandingPage = () => {
         <div className="faq-accordion">
           <div className="accordion-left-faq">
             <div className="faq-header">
-              <h2>Frequently Asked Questions</h2>
-              <p>Find answers to common questions about Nexora and how it can help your team</p>
+              <h2 className="faq-title">
+                Frequently<br />
+                <span className="faq-title-accent">Asked</span><br />
+                Questions
+              </h2>
+              <p className="faq-subtitle">Find answers about Nexora and how it powers your GTM team.</p>
+              <span className="faq-count">0{faqs.length} questions</span>
             </div>
           </div>
           <div className="accordion-right-faq">
-            {faqs.map((faq) => (
+            {faqs.map((faq, idx) => (
               <div key={faq.id} className="accordion-item-faq">
-                <button 
+                <button
                   className={`accordion-header-faq ${expandedFaq === faq.id ? 'active' : ''}`}
                   onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
                 >
+                  <span className="accordion-num-faq">0{idx + 1}</span>
                   <span className="accordion-title-faq">{faq.question}</span>
                   <span className="accordion-toggle-faq">
                     {expandedFaq === faq.id ? '−' : '+'}
