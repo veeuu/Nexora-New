@@ -4,6 +4,84 @@ import { FaLinkedin, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import '../../styles/buyingGroup.css';
 
+// ── On-Demand Request Modal ──────────────────────────────────────────────────
+const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
+  const [requestedName, setRequestedName] = useState(searchValue);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await apiFetch('/api/on-demand-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestedName, filterType, searchValue, sourcePage })
+      });
+    } catch { /* show success regardless */ } finally {
+      try {
+        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+        const entry = {
+          id: Date.now(),
+          query: requestedName,
+          filterType,
+          section: sourcePage || 'Buying Group',
+          status: 'Pending',
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        };
+        localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+      } catch (_) {}
+      setSubmitted(true);
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(15,23,42,0.5)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(2px)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{ backgroundColor: 'white', borderRadius: '16px', width: '100%', maxWidth: '460px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: '4px', background: 'linear-gradient(90deg, #3b82f6, #6366f1)' }} />
+        <div style={{ padding: '32px' }}>
+          <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '18px' }}>×</button>
+          {submitted ? (
+            <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>Request Submitted</h3>
+              <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '14px', lineHeight: '1.6' }}>We'll get back to you within <span style={{ fontWeight: '600', color: '#0f172a' }}>48 hours</span>.</p>
+              <button onClick={onClose} style={{ padding: '9px 28px', backgroundColor: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>Close</button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Request on Demand</h3>
+              <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '14px', lineHeight: '1.6' }}>Can't find the company you're looking for? Submit a request and we'll add it.</p>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Company Name</label>
+              <input
+                type="text"
+                value={requestedName}
+                onChange={(e) => setRequestedName(e.target.value)}
+                placeholder="Enter company name..."
+                required
+                style={{ width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: '20px', outline: 'none' }}
+              />
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={onClose} style={{ padding: '9px 20px', backgroundColor: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '500' }}>Cancel</button>
+                <button type="submit" disabled={submitting || !requestedName.trim()} style={{ padding: '9px 24px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', fontWeight: '600', opacity: submitting ? 0.7 : 1 }}>
+                  {submitting ? 'Submitting...' : 'Submit Request'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BuyingGroup = () => {
     const [companies, setCompanies] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -21,6 +99,7 @@ const BuyingGroup = () => {
     const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
     const [revealedEmails, setRevealedEmails] = useState(new Set());
     const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(new Set());
+    const [onDemandModal, setOnDemandModal] = useState(null);
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
@@ -303,6 +382,15 @@ const BuyingGroup = () => {
     }
 
     return (
+        <>
+        {onDemandModal && (
+            <OnDemandModal
+                filterType={onDemandModal.filterType}
+                searchValue={onDemandModal.searchValue}
+                sourcePage="Buying Group"
+                onClose={() => setOnDemandModal(null)}
+            />
+        )}
         <div className="buying-group-container">
             <h1>Buying Group</h1>
 
@@ -349,6 +437,27 @@ const BuyingGroup = () => {
                                             <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
                                         </div>
                                     ))}
+                                {companies.filter(c => c.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                                    <>
+                                        <div style={{ padding: '10px 12px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
+                                            Can't find it?
+                                        </div>
+                                        {searchQuery.trim() && (
+                                            <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
+                                                <button
+                                                    onClick={() => {
+                                                        setOnDemandModal({ filterType: 'Company Name', searchValue: searchQuery.trim() });
+                                                        setIsCompanyDropdownOpen(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    style={{ padding: '7px 16px', backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}
+                                                >
+                                                    + Request on Demand
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -653,6 +762,7 @@ const BuyingGroup = () => {
                 </>
             )}
         </div>
+        </>
     );
 };
 
