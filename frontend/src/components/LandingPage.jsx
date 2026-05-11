@@ -66,7 +66,7 @@ const sdata = [
     ],
   },
   {
-    title: 'NTP®',
+    title: 'Next Tech Purchase®',
     badge: '530M+ Companies',
     desc: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals to time your outreach perfectly.',
     chips: [{ t: 'Predictive Scoring', c: 'a' }, { t: 'Investment Signals', c: 'b' }, { t: 'Pipeline Timing', c: 'c' }],
@@ -319,6 +319,47 @@ const EnterpriseIntel = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            ) : cur === 4 ? (
+              <div className="st-table-wrap">
+                <table className="st-table">
+                  <thead>
+                    <tr>
+                      <th>Company Name</th>
+                      <th>Industry</th>
+                      <th>Region</th>
+                      <th>Technology</th>
+                      <th>Purchase Prediction</th>
+                      <th>Purchase Propensity (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span className="st-co-name">ABC Corp</span></td>
+                      <td>IT Services</td>
+                      <td>🇺🇸 USA</td>
+                      <td>Google Gemini</td>
+                      <td><span className="st-badge-sm st-badge-b">High</span></td>
+                      <td><span className="st-propensity">89.73%</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">XYZ Solutions</span></td>
+                      <td>Marketing</td>
+                      <td>🇬🇧 UK</td>
+                      <td>Snowflake</td>
+                      <td><span className="st-badge-sm st-badge-b">High</span></td>
+                      <td><span className="st-propensity">86.78%</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">DEF Ventures</span></td>
+                      <td>Finance</td>
+                      <td>🇮🇳 India</td>
+                      <td>HubSpot</td>
+                      <td><span className="st-badge-sm st-badge-y">Medium</span></td>
+                      <td><span className="st-propensity st-propensity--med">75.66%</span></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             ) : (
               <div className="st-mock-content">

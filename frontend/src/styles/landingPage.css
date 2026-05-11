@@ -2579,3 +2579,14 @@
   height: 1.5px;
   background: #cbd5e1;
 }
+
+/* ── NTP propensity score ── */
+.st-propensity {
+  font-weight: 700;
+  color: #059669;
+  font-size: 0.78rem;
+}
+
+.st-propensity--med {
+  color: #d97706;
+}
