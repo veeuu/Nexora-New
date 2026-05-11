@@ -318,6 +318,15 @@ const EnterpriseIntel = () => {
                       <p className="st-org-role">CMO</p>
                     </div>
                   </div>
+                  <div className="st-org-card st-org-card--inf">
+                    <div className="st-org-strip st-org-strip--inf" />
+                    <div className="st-org-avatar" style={{ background: 'linear-gradient(135deg,#6d28d9,#8b5cf6)' }}>PK</div>
+                    <div className="st-org-info">
+                      <span className="st-org-badge st-org-badge--inf">Inf</span>
+                      <p className="st-org-name">Priya K.</p>
+                      <p className="st-org-role">VP Sales</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : cur === 4 ? (
