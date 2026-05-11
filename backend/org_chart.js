@@ -580,53 +580,66 @@ async function getCompaniesFromCSV(csvFilePath) {
 }
 
 // ─────────────────────────────────────────────
-//  MAIN  (local HTML output — S3 upload commented out)
+//  MAIN  — reads from MongoDB, uploads to S3
 // ─────────────────────────────────────────────
 async function main() {
-  const jsonFilePath = "buying_group_combined(4).json";
-  if (!fs.existsSync(jsonFilePath)) { console.error('JSON file not found:', jsonFilePath); return; }
+  require('dotenv').config();
+  const connectDB   = require('./config/db');
+  const BuyingGroup = require('./models/BuyingGroup');
+  const { uploadOrgChartToS3, orgChartExistsInS3, ORG_CHART_FOLDER } = require('./config/s3');
 
-  const outputDir = path.join(__dirname, 'output_js');
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+  await connectDB();
 
-  // S3 config — commented out
-  // const { uploadOrgChartToS3, orgChartExistsInS3, ORG_CHART_FOLDER } = require('./config/s3');
+  const companies = await BuyingGroup.find({}).lean();
+  if (!companies.length) { console.error('No companies found in MongoDB'); process.exit(0); }
 
-  const data = await readJSONFile(jsonFilePath);
-  const uniqueCompanies = [...new Set(data.map(r => r['Company Name']).filter(Boolean))];
-  if (!uniqueCompanies.length) { console.error('No companies found in JSON'); return; }
+  console.log(`Found ${companies.length} companies. Generating & uploading HTML files...`);
+  let generated = 0, skipped = 0;
 
-  console.log(`Found ${uniqueCompanies.length} companies. Generating HTML files...`);
-  let generated = 0;
+  for (const company of companies) {
+    const companyName = company.companyName;
+    const location    = String(company.location || '').trim();
+    const safeCompany = sanitizeFilename(companyName);
+    const filename    = location ? `${safeCompany}_${sanitizeFilename(location)}.html` : `${safeCompany}.html`;
+    const s3Key       = `${ORG_CHART_FOLDER}/${filename}`;
 
-  for (const companyName of uniqueCompanies) {
-    const companyData = data.filter(r => r['Company Name'] === companyName);
-    if (!companyData.length) continue;
+    // Convert MongoDB employee docs to the flat row format generateOrgChartHTML expects
+    const rows = (company.employees || []).map(emp => ({
+      'Company Name': companyName,
+      'Location':     location,
+      'Name':         emp.name,
+      'Role':         emp.role,
+      'Email':        emp.email || '',
+      'Phone':        emp.phone || '',
+      'LinkedIn':     emp.linkedin || '',
+      'Reports To':   emp.reportsTo || '',
+      'Hierarchy':    emp.hierarchy || 'OTHER',
+      'Category':     emp.category || '',
+    }));
 
-    const location     = String(companyData[0]['Location'] || '').trim();
-    const safeCompany  = sanitizeFilename(companyName);
-    const baseFilename = location ? `${safeCompany}_${sanitizeFilename(location)}.html` : `${safeCompany}.html`;
-    const outputPath   = path.join(outputDir, baseFilename);
-
-    // S3 existence check — commented out
-    // const s3Key = `${ORG_CHART_FOLDER}/${baseFilename}`;
-    // const exists = await orgChartExistsInS3(s3Key).catch(() => false);
-    // if (exists) { console.log(`  ~ skipped (S3): ${baseFilename}`); continue; }
+    if (!rows.length) { console.log(`  ~ skipped (no employees): ${companyName}`); skipped++; continue; }
 
     try {
-      const html = generateOrgChartHTML(companyData, companyName, location);
-      fs.writeFileSync(outputPath, html, 'utf-8');
-      console.log(`  ✓ ${baseFilename}`);
+      const html = generateOrgChartHTML(rows, companyName, location);
+
+      // Upload to S3
+      const result = await uploadOrgChartToS3(filename, html);
+
+      // Update the orgChart field in MongoDB
+      await BuyingGroup.updateOne(
+        { companyName },
+        { $set: { orgChart: { s3Key: result.s3Key, s3Url: result.s3Url, generatedAt: new Date(), fileSize: result.fileSize } } }
+      );
+
+      console.log(`  ✓ ${filename} (${result.fileSize} bytes)`);
       generated++;
     } catch (err) {
       console.error(`  ✗ Failed for "${companyName}": ${err.message}`);
     }
-
-    // S3 upload — commented out
-    // await uploadOrgChartToS3(baseFilename, html);
   }
 
-  console.log(`\nDone: ${generated} HTML files saved to "${outputDir}"`);
+  console.log(`\nDone: ${generated} uploaded, ${skipped} skipped.`);
+  process.exit(0);
 }
 
 // ─────────────────────────────────────────────
