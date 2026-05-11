@@ -2423,3 +2423,23 @@
   padding: 2px 7px;
   border-radius: 4px;
 }
+
+/* ── Renewal tracker badge ── */
+.st-renewal-tracker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #bfdbfe;
+}
+
+.st-renewal-tracker--far {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}

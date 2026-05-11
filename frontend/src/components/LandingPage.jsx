@@ -91,7 +91,6 @@ const EnterpriseIntel = () => {
           <span className="st-head-blue">Enterprise-Grade</span><br />
           <span className="st-head-serif">B2B Intelligence</span>
         </h2>
-        <p>Explore our comprehensive data attributes that power smarter go-to-market decisions</p>
       </div>
       <div className="st-layout">
         {/* Steps sidebar */}
@@ -105,7 +104,6 @@ const EnterpriseIntel = () => {
               <div className="st-num">{i + 1}</div>
               <div className="st-step-text">
                 <div className="st-step-name">{s.title}</div>
-                <div className="st-step-sub">{s.badge}</div>
               </div>
             </div>
           ))}
@@ -116,7 +114,6 @@ const EnterpriseIntel = () => {
           <div className="st-content-top">
             <div className="st-ct-header">
               <div className="st-ct-title">{d.title}</div>
-              <div className="st-ct-badge">{d.badge}</div>
             </div>
             <div className="st-ct-desc">{d.desc}</div>
             <div className="st-ct-chips">
@@ -179,6 +176,47 @@ const EnterpriseIntel = () => {
                       <td><span className="st-tech-tag">GCP</span></td>
                       <td><span className="st-badge-sm st-badge-prev">Q3 2023</span></td>
                       <td><span className="st-badge-sm st-badge-b">Q1 2025</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) : cur === 1 ? (
+              <div className="st-table-wrap">
+                <table className="st-table">
+                  <thead>
+                    <tr>
+                      <th>Company Name</th>
+                      <th>Industry</th>
+                      <th>Region</th>
+                      <th>Product</th>
+                      <th>Renewal Timelines</th>
+                      <th>Renewal Tracker</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span className="st-co-name">ABC Corp</span></td>
+                      <td>IT Services</td>
+                      <td>🇺🇸 USA</td>
+                      <td>Amazon Aurora</td>
+                      <td><span className="st-badge-sm st-badge-b">Q2 2026</span></td>
+                      <td><span className="st-renewal-tracker">&lt;1 year</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">XYZ Solutions</span></td>
+                      <td>Marketing</td>
+                      <td>🇬🇧 UK</td>
+                      <td>ChatGPT</td>
+                      <td><span className="st-badge-sm st-badge-b">Q2 2026</span></td>
+                      <td><span className="st-renewal-tracker">&lt;1 year</span></td>
+                    </tr>
+                    <tr>
+                      <td><span className="st-co-name">DEF Ventures</span></td>
+                      <td>Finance</td>
+                      <td>🇮🇳 India</td>
+                      <td>Microsoft 365</td>
+                      <td><span className="st-badge-sm st-badge-y">Q4 2026</span></td>
+                      <td><span className="st-renewal-tracker st-renewal-tracker--far">1–2 years</span></td>
                     </tr>
                   </tbody>
                 </table>
