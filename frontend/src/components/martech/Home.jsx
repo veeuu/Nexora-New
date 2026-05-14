@@ -7,6 +7,7 @@ import IntentPieChart from './IntentPieChart';
 import RenewalDashboard from './RenewalDashboard';
 import TechnographicsDashboard from './TechnographicsDashboard';
 import NTPDashboard from './NTPDashboard';
+import BuyingGroupDashboard from './BuyingGroupDashboard';
 import proplusDataLogo from '../../assets/Proplus Data Logo - Horizontal Transparent (1).png';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import svg1 from '../../video/1.svg';
@@ -171,6 +172,7 @@ const Home = () => {
                   <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>
                   <button className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`} onClick={() => handleViewClick('renewal')}>Renewal Intelligence</button>
                   <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
+                  <button className={`home-quick-btn home-quick-btn-buyinggroup${activeView === 'buyinggroup' ? ' active' : ''}`} onClick={() => handleViewClick('buyinggroup')}>Buying Group</button>
                   <button className={`home-quick-btn home-quick-btn-ntp${activeView === 'ntp' ? ' active' : ''}`} onClick={() => handleViewClick('ntp')}>NTP®</button>
                 </div>
               </>
@@ -198,7 +200,7 @@ const Home = () => {
             {activeView === 'summary' && (
               <>
                 <div className="home-stats-grid">
-                  <AnimatedStatCard number="600M+" label="Total Companies"      cardClass="home-stat-card-teal"   numberClass="home-stat-number-teal"   labelClass="home-stat-label-teal"   maxValue={100000} />
+                  <AnimatedStatCard number="600M+" label="Accounts"      cardClass="home-stat-card-teal"   numberClass="home-stat-number-teal"   labelClass="home-stat-label-teal"   maxValue={100000} />
                   <AnimatedStatCard number="590M+" label="Technographics"       cardClass="home-stat-card-orange" numberClass="home-stat-number-orange" labelClass="home-stat-label-orange" maxValue={100000} />
                   <AnimatedStatCard number="530M+" label="Renewal Intelligence" cardClass="home-stat-card-pink"   numberClass="home-stat-number-pink"   labelClass="home-stat-label-pink"   maxValue={100000} />
                   <AnimatedStatCard number="530M+" label="Intent"               cardClass="home-stat-card-purple" numberClass="home-stat-number-purple" labelClass="home-stat-label-purple" maxValue={100000} />
@@ -233,6 +235,12 @@ const Home = () => {
             {activeView === 'ntp' && (
               <div className="home-ntp-inline">
                 <NTPDashboard />
+              </div>
+            )}
+
+            {activeView === 'buyinggroup' && (
+              <div className="home-buyinggroup-inline">
+                <BuyingGroupDashboard inline />
               </div>
             )}
           </>
