@@ -275,8 +275,7 @@ body {
 
 .menu-items {
   list-style: none;
-  flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   display: flex;
   flex-direction: column;
 }
@@ -302,7 +301,8 @@ body {
 
 .menu-credits-section {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #1a252f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
 }
 
 .menu-credits-label {
@@ -718,9 +718,9 @@ body {
   border-radius: 12px;
   padding: 0px 20px 0px 20px;
   margin-bottom: 0.5rem;
-  margin-left: 0.5rem;
+  margin-left: 1.5rem;
   margin-right: 2rem;
-  margin-top: -40px;
+  margin-top: 10px;
   width: calc(100% - 2.5rem);
   max-width: calc(100% - 2.5rem);
   overflow-x: hidden;
@@ -2147,4 +2147,66 @@ th {
 .intent-container .table-container table td:nth-child(2) {
   width: 50%;
   min-width: 200px;
+}
+
+/* ── Menu Resources Dropdown ─────────────────────────────────────────────── */
+.menu-resources {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.menu-resources-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-resources-btn:hover,
+.menu-resources-btn.open {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.menu-resources-arrow {
+  font-size: 12px;
+  transition: transform 0.2s;
+  display: inline-block;
+  opacity: 0.6;
+}
+
+.menu-resources-arrow.up {
+  transform: rotate(180deg);
+}
+
+.menu-resources-dropdown {
+  background: transparent;
+  overflow: hidden;
+}
+
+.menu-resources-item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 1.5rem 0.55rem 2.25rem;
+  background: none;
+  border: none;
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-resources-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }

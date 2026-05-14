@@ -10,6 +10,7 @@ import MartechTechnographics from './martech/Technographics';
 import RenewalIntelligence from './martech/RenewalIntelligence';
 import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
+import DataDictionary from './martech/DataDictionary';
 import Keywords from './martech/Keywords';
 
 const Dashboard = ({ onLogout, onNavRef, username }) => {
@@ -28,6 +29,7 @@ const routeToSection = {
     '/dashboard/buying-group': 'Buying Group',
     '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue',
+    '/dashboard/data-dictionary': 'Data Dictionary',
     '/dashboard/keywords': 'Keywords Surge'
   };
 
@@ -48,6 +50,7 @@ useEffect(() => {
       'Buying Group': '/dashboard/buying-group',
       'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue',
+      'Data Dictionary': '/dashboard/data-dictionary',
       'Keywords Surge': '/dashboard/keywords'
     };
 
@@ -130,6 +133,7 @@ useEffect(() => {
               <Route path="/buying-group" element={<MartechBuyingGroup />} />
               <Route path="/ntp" element={<MartechNTP />} />
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
+              <Route path="/data-dictionary" element={<DataDictionary />} />
               <Route path="/keywords" element={<Keywords />} />
               <Route path="/" element={<Home key={homeResetTrigger} />} />
             </Routes>

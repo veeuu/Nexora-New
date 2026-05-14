@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import ProductCatalogue from './ProductCatalogue';
-import DataDictionary from './DataDictionary';
 import AnimatedStatCard from '../AnimatedStatCard';
 import IntentPieChart from './IntentPieChart';
 import RenewalDashboard from './RenewalDashboard';
@@ -83,9 +81,6 @@ const SvgCarousel = () => {
 const Home = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showProductCatalogue, setShowProductCatalogue] = useState(false);
-  const [showDataDictionary, setShowDataDictionary] = useState(false);
   const [activeView, setActiveView] = useState('summary');
   const [intentData, setIntentData] = useState([]);
   const [intentLoading, setIntentLoading] = useState(false);
@@ -116,8 +111,6 @@ const Home = () => {
   };
 
   useEffect(() => {
-    setShowProductCatalogue(false);
-    setShowDataDictionary(false);
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
@@ -126,7 +119,6 @@ const Home = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -164,40 +156,22 @@ const Home = () => {
       <div className="home-container">
         <div className="home-header">
           <div>
-            {!showProductCatalogue && !showDataDictionary && (
-              <>
-                <h1 className="home-title">Welcome to Nexora®</h1>
-                <p className="home-subtitle"></p>
-                <div className="home-quick-buttons">
-                  <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>
-                  <button className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`} onClick={() => handleViewClick('renewal')}>Renewal Intelligence</button>
-                  <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
-                  <button className={`home-quick-btn home-quick-btn-buyinggroup${activeView === 'buyinggroup' ? ' active' : ''}`} onClick={() => handleViewClick('buyinggroup')}>Buying Group</button>
-                  <button className={`home-quick-btn home-quick-btn-ntp${activeView === 'ntp' ? ' active' : ''}`} onClick={() => handleViewClick('ntp')}>NTP®</button>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="home-header-dropdown" ref={dropdownRef}>
-            <button className="home-dropdown-btn" onClick={() => setShowDropdown(!showDropdown)}>
-              Resources <span className="home-dropdown-arrow">↓</span>
-            </button>
-            {showDropdown && (
-              <div className="home-dropdown-menu">
-                <button className="home-dropdown-item" onClick={() => { setShowProductCatalogue(true); setShowDataDictionary(false); setShowDropdown(false); }}>Product Catalogue</button>
-                <button className="home-dropdown-item" onClick={() => { setShowDataDictionary(true); setShowProductCatalogue(false); setShowDropdown(false); }}>Data Dictionary</button>
+            <>
+              <h1 className="home-title">Welcome to Nexora®</h1>
+              <p className="home-subtitle"></p>
+              <div className="home-quick-buttons">
+                <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>
+                <button className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`} onClick={() => handleViewClick('renewal')}>Renewal Intelligence</button>
+                <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
+                <button className={`home-quick-btn home-quick-btn-buyinggroup${activeView === 'buyinggroup' ? ' active' : ''}`} onClick={() => handleViewClick('buyinggroup')}>Buying Group</button>
+                <button className={`home-quick-btn home-quick-btn-ntp${activeView === 'ntp' ? ' active' : ''}`} onClick={() => handleViewClick('ntp')}>NTP®</button>
               </div>
-            )}
+            </>
           </div>
         </div>
 
-        {showProductCatalogue ? (
-          <ProductCatalogue />
-        ) : showDataDictionary ? (
-          <DataDictionary />
-        ) : (
-          <>
-            {activeView === 'summary' && (
+        <>
+          {activeView === 'summary' && (
               <>
                 <div className="home-stats-grid">
                   <AnimatedStatCard number="600M+" label="Accounts"      cardClass="home-stat-card-teal"   numberClass="home-stat-number-teal"   labelClass="home-stat-label-teal"   maxValue={100000} />
@@ -244,7 +218,6 @@ const Home = () => {
               </div>
             )}
           </>
-        )}
       </div>
 
       <div className="home-powered-by">

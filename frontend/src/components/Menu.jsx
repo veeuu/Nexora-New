@@ -5,7 +5,9 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const profileRef = useRef(null);
+  const resourcesRef = useRef(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -24,6 +26,9 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfileMenu(false);
+      }
+      if (resourcesRef.current && !resourcesRef.current.contains(event.target)) {
+        setShowResources(false);
       }
     };
 
@@ -75,6 +80,27 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
           </li>
         ))}
       </ul>
+
+      {/* Resources dropdown */}
+      <div className="menu-resources" ref={resourcesRef}>
+        <button
+          className={`menu-resources-btn${showResources ? ' open' : ''}`}
+          onClick={() => setShowResources(v => !v)}
+        >
+          <span>Resources</span>
+          <span className={`menu-resources-arrow${showResources ? ' up' : ''}`}>▾</span>
+        </button>
+        {showResources && (
+          <div className="menu-resources-dropdown">
+            <button className="menu-resources-item" onClick={() => { onMenuClick('Product Catalogue'); setShowResources(false); if (isMobile) setIsOpen(false); }}>
+              Product Catalogue
+            </button>
+            <button className="menu-resources-item" onClick={() => { onMenuClick('Data Dictionary'); setShowResources(false); if (isMobile) setIsOpen(false); }}>
+              Data Dictionary
+            </button>
+          </div>
+        )}
+      </div>
       <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">
