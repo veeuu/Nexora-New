@@ -1647,7 +1647,7 @@ router.get('/renewal-intelligence', async (req, res) => {
 
     const hasFilters = companyNames.length > 0 || categories.length > 0 || products.length > 0 || qtrs.length > 0;
 
-    const renewalCacheKey = `renewal-data-${plan}-p${page}`;
+    const renewalCacheKey = `renewal-data-${plan}-p${page}-l${limit}`;
     if (page === 1 && !hasFilters) {
       const cached = getCachedQuery(renewalCacheKey);
       if (cached) return res.json(cached);
