@@ -92,8 +92,8 @@ const TechnographicsDashboard = ({ inline = false }) => {
           <div className="tg-kpi-grid">
             <KPICard label="Companies Tracked"     value="590M+"  accentColor="#1e40af" />
             <KPICard label="Technologies Detected"  value="480M+"  accentColor="#2563eb" />
-            <KPICard label="Avg. Revenue Band"      value="$47M"   accentColor="#3b82f6" />
-            <KPICard label="New Detections Q1 '26"  value="137M+"  accentColor="#60a5fa" />
+            {/* <KPICard label="Avg. Revenue Band"      value="$47M"   accentColor="#3b82f6" />
+            <KPICard label="New Detections Q1 '26"  value="137M+"  accentColor="#60a5fa" /> */}
           </div>
 
           {/* Row 1: Tech Adoption Bar + Industry Donut */}
