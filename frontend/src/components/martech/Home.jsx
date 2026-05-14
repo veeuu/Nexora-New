@@ -104,7 +104,10 @@ const Home = () => {
 
   const handleViewClick = (view) => {
     console.log('[Home] handleViewClick:', view);
-    if (activeView === view) return; // already active, do nothing
+    if (activeView === view) {
+      setActiveView('summary'); // clicking active tab returns to summary
+      return;
+    }
     setActiveView(view);
     if (view === 'intent' && intentData.length === 0) {
       fetchIntentData();
@@ -165,7 +168,6 @@ const Home = () => {
                 <h1 className="home-title">Welcome to Nexora®</h1>
                 <p className="home-subtitle"></p>
                 <div className="home-quick-buttons">
-                  <button className={`home-quick-btn home-quick-btn-summary${activeView === 'summary' ? ' active' : ''}`} onClick={() => handleViewClick('summary')}> Summary</button>
                   <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>
                   <button className={`home-quick-btn home-quick-btn-renewal${activeView === 'renewal' ? ' active' : ''}`} onClick={() => handleViewClick('renewal')}>Renewal Intelligence</button>
                   <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
