@@ -1899,14 +1899,14 @@
 }
 
 .st-steps {
-  border-right: 1px solid #e2e8f0;
-  background: #fafbff;
+  border-right: 1px solid #162d4a;
+  background: #1e3a5f;
   padding: 0;
 }
 
 .st-step {
   padding: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1922,11 +1922,11 @@
 }
 
 .st-step:hover {
-  background: #f0f7ff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .st-step.act {
-  background: #eff6ff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .st-step.act::after {
@@ -1937,7 +1937,7 @@
   transform: translateY(-50%);
   width: 3px;
   height: 100%;
-  background: #2563eb;
+  background: #60a5fa;
   border-radius: 3px 0 0 3px;
 }
 
@@ -1945,10 +1945,10 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   font-size: 11px;
   font-weight: 700;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1958,20 +1958,20 @@
 }
 
 .st-step.act .st-num {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #1e3a5f;
 }
 
 .st-step-name {
   font-size: 18px;
   font-weight: 600;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.4;
 }
 
 .st-step.act .st-step-name {
-  color: #1e40af;
+  color: #ffffff;
 }
 
 .st-step-sub {
@@ -2789,7 +2789,7 @@
 
   .st-steps {
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     overflow-x: auto;
     padding-bottom: 0;
@@ -2797,7 +2797,7 @@
 
   .st-step {
     border-bottom: none;
-    border-right: 1px solid #f1f5f9;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     flex-shrink: 0;
     min-height: 56px;
     padding: 10px 12px;

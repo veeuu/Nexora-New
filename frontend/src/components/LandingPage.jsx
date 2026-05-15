@@ -66,7 +66,7 @@ const sdata = [
     ],
   },
   {
-    title: 'NTP®',
+    title: 'Next Tech Purchase®',
     badge: '530M+ Companies',
     desc: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals to time your outreach perfectly.',
     chips: [{ t: 'Predictive Scoring', c: 'a' }, { t: 'Investment Signals', c: 'b' }, { t: 'Pipeline Timing', c: 'c' }],
@@ -663,7 +663,7 @@ const LandingPage = () => {
               <span className="hero-title-accent">Predictable Revenue</span>
             </h1>
             <p className="hero-subtitle">
-              Most teams chase demand. Nexora, a GTM AI platform, makes revenue predictable,revealing what’s next, the right stakeholders to engage, and exactly when to act.
+              Nexora®, a GTM AI platform, makes revenue predictable,revealing what’s next, the right stakeholders to engage, and exactly when to act.
             </p>
             <div className="hero-cta">
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -698,7 +698,7 @@ const LandingPage = () => {
                 <span className="hero-avatar" style={{ background: '#7c3aed' }}>PT</span>
               </div>
               <p className="hero-social-text">
-                Trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens &amp; more
+                Data Trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens &amp; more
               </p>
             </div>
           </div>

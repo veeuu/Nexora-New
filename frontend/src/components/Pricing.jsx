@@ -33,7 +33,6 @@ const enterpriseCredits = [
 ];
 
 const freeFeatures = [
-  'Access to all 5 data modules',
   'Technographics',
   'Renewal Intelligence',
   'Intent Data',
@@ -110,7 +109,7 @@ export default function Pricing() {
         <h1 className="pricing-hero-title">
           Pay for what
           <br />
-          <span className="pricing-hero-accent">you actually use.</span>
+          <span className="pricing-hero-accent">actually matters.</span>
         </h1>
         <p className="pricing-hero-sub">
           No per-seat fees. No hidden costs. Start free and scale as your team grows.
