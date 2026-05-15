@@ -733,28 +733,13 @@ const LandingPage = () => {
       {/* Client Logos Carousel */}
       <ClientLogosCarousel />
 
-      {/* Stats Section — scroll-jacked */}
-      <StatsScrollSection stats={stats} />
-
-      {/* Features Section */}
+      {/* Features Section — Enterprise Intel */}
       <section id="features" className="features-section">
         <EnterpriseIntel />
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-glass-container">
-          <div className="cta-content">
-            <h2>Try Nexora <span className="cta-free-word">free</span>.<br /><span className="cta-sub">No credit card required.</span></h2>
-          </div>
-        </div>
-        <div className="cta-wave">
-          <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,100 C240,200 480,0 720,100 C960,200 1200,0 1440,100 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.45)" />
-            <path d="M0,130 C300,30 600,180 900,110 C1100,65 1300,160 1440,120 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.28)" />
-          </svg>
-        </div>
-      </section>
+      {/* Stats Section — scroll-jacked */}
+      <StatsScrollSection stats={stats} />
 
       {/* What Makes Us Different Section */}
       <section className="difference-section">
@@ -788,6 +773,21 @@ const LandingPage = () => {
               <div className="d1-card-num">03</div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="cta-glass-container">
+          <div className="cta-content">
+            <h2>Try Nexora <span className="cta-free-word">free</span>.<br /><span className="cta-sub">No credit card required.</span></h2>
+          </div>
+        </div>
+        <div className="cta-wave">
+          <svg viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,100 C240,200 480,0 720,100 C960,200 1200,0 1440,100 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.45)" />
+            <path d="M0,130 C300,30 600,180 900,110 C1100,65 1300,160 1440,120 L1440,200 L0,200 Z" fill="rgba(37,99,235,0.28)" />
+          </svg>
         </div>
       </section>
 
