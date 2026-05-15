@@ -26,6 +26,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.get('/googlea2809bb769c4ca09.html', (req, res) => {
+  res.sendFile(__dirname + '/googlea2809bb769c4ca09.html');
+});
+
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
 const buyingGroupRouter = require('./routes/buyingGroup');
