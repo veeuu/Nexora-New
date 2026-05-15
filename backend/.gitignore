@@ -33,6 +33,9 @@ org_charts_output_js/
 *.xlsx
 *.html
 
+# Explicitly include Google Search Console verification file
+!googlea2809bb769c4ca09.html
+
 # Temporary files
 *.tmp
 *.temp

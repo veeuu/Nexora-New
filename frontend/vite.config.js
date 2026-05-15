@@ -20,8 +20,17 @@ export default defineConfig({
       '127.0.0.1'
     ],
     proxy: {
-      // string shorthand: /api -> http://localhost:5000/api
       '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/sitemap.xml': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/googlea2809bb769c4ca09.html': {
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
