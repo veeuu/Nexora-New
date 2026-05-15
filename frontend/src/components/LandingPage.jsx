@@ -704,30 +704,56 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Sign In - top right corner */}
-        <button
-          onClick={() => navigate('/login')}
+        {/* Top-right nav buttons */}
+        <div
           style={{
             position: 'absolute',
             top: '20px',
             right: '32px',
-            background: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            padding: '9px 20px',
-            color: '#111827',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'background 0.2s',
             display: 'flex',
             alignItems: 'center',
+            gap: '0.5rem',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
         >
-          Log In
-        </button>
+          <button
+            onClick={() => navigate('/pricing')}
+            style={{
+              background: 'transparent',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              padding: '9px 20px',
+              color: '#111827',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            Pricing
+          </button>
+          <button
+            onClick={() => navigate('/login')}
+            style={{
+              background: 'white',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              padding: '9px 20px',
+              color: '#111827',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
+          >
+            Log In
+          </button>
+        </div>
       </section>
 
       {/* Client Logos Carousel */}

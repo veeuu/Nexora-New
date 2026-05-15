@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import LandingPage from './components/LandingPage';
+import Pricing from './components/Pricing';
 import trackPageView from './utils/pageTracker';
 import './styles.css';
 
@@ -121,6 +122,7 @@ function App() {
           path="/login" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
         />
+        <Route path="/pricing" element={<Pricing />} />
         <Route 
           path="/dashboard/*" 
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 
