@@ -258,48 +258,101 @@
   }
 
   .landing-page .hero-title {
-    font-size: 4.8rem !important;
+    font-size: 3.2rem !important;
+    letter-spacing: -1.5px !important;
   }
 
   .landing-page .hero-title-accent {
-    font-size: 2.4rem !important;
+    font-size: 2.2rem !important;
+  }
+
+  .landing-page .hero-visual {
+    order: -1 !important;
+  }
+
+  .landing-page .hero-image {
+    width: 100% !important;
+    max-height: 260px !important;
+    object-fit: contain !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .landing-page .hero-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .landing-page .hero-title {
+    font-size: 3.2rem !important;
+    letter-spacing: -1.5px !important;
+  }
+
+  .landing-page .hero-title-accent {
+    font-size: 2.2rem !important;
+  }
+
+  .landing-page .hero-visual {
+    order: -1 !important;
+  }
+
+  .landing-page .hero-image {
+    width: 100% !important;
+    max-height: 260px !important;
+    object-fit: contain !important;
   }
 }
 
 @media (max-width: 768px) {
   .landing-page .hero-section {
-    padding: 2.5rem 1.5rem !important;
+    padding: 2rem 1.2rem 2.5rem !important;
   }
 
   .landing-page .hero-title {
-    font-size: 4.8rem !important;
+    font-size: 2.4rem !important;
+    letter-spacing: -1px !important;
   }
 
   .landing-page .hero-title-accent {
-    font-size: 1.9rem !important;
+    font-size: 1.8rem !important;
+    letter-spacing: -0.5px !important;
   }
 
   .landing-page .hero-subtitle {
     font-size: 0.95rem !important;
+    margin-left: 0 !important;
+    margin-top: 0.75rem !important;
   }
 
   .landing-page .hero-cta {
     flex-direction: column !important;
+    gap: 0.75rem !important;
+    padding-top: 0.75rem !important;
   }
 
   .landing-page .email-input,
   .landing-page .btn-free-trial {
     width: 100% !important;
   }
+
+  .landing-page .hero-stats {
+    gap: 1.2rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  .landing-page .hero-image {
+    max-height: 200px !important;
+  }
 }
 
 @media (max-width: 480px) {
   .landing-page .hero-section {
-    padding: 2rem 1rem !important;
+    padding: 1.5rem 1rem 2rem !important;
   }
 
   .landing-page .hero-title {
-    font-size: 4.8rem !important;
+    font-size: 2rem !important;
+    letter-spacing: -0.5px !important;
   }
 
   .landing-page .hero-title-accent {
@@ -307,10 +360,14 @@
   }
 
   .landing-page .hero-subtitle {
-    font-size: 0.9rem !important;
+    font-size: 0.88rem !important;
   }
 
   .landing-page .hero-stats {
-    gap: 1.5rem !important;
+    gap: 1rem !important;
+  }
+
+  .landing-page .stat-text {
+    font-size: 0.8rem !important;
   }
 }

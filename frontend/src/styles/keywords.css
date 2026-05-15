@@ -3,8 +3,8 @@
   background-color: #ffffff;
   border-radius: 0;
   box-shadow: none;
-  margin-left: 60px;
-  margin-right: 20px;
+  margin-left: 0;
+  margin-right: 0;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
@@ -817,4 +817,37 @@
   background: #dbeafe;
   color: #1d4ed8;
   font-weight: 600;
+}
+
+/* ── Mobile Responsiveness (additional) ── */
+@media (max-width: 768px) {
+  .keywords-container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .keywords-filters {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .kw-filter-pill {
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+
+  .keywords-table th:nth-child(n+4),
+  .keywords-table td:nth-child(n+4) {
+    display: none;
+  }
+
+  .keywords-table th:nth-child(1),
+  .keywords-table td:nth-child(1),
+  .keywords-table th:nth-child(2),
+  .keywords-table td:nth-child(2),
+  .keywords-table th:nth-child(3),
+  .keywords-table td:nth-child(3) {
+    width: 33.33%;
+    min-width: 80px;
+  }
 }

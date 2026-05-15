@@ -164,13 +164,11 @@
 .header-actions {
   position: fixed !important;
   top: 0 !important;
+  left: 220px !important;
+  width: calc(100% - 220px) !important;
   background-color: #ffffff;
   z-index: 100;
-  width: 100%;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 0 1rem;
   border-bottom: 1px solid #e5e7eb;
   box-sizing: border-box;
   height: 60px;
@@ -1134,4 +1132,52 @@ tr:hover {
 .ntp-pagination-button-next-default {
   background-color: white;
   border-color: #d1d5db;
+}
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .ntp-filters-wrapper {
+    margin-top: 70px !important;
+  }
+
+  .ntp-filters-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ntp-filters-left {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .ntp-pagination-wrapper {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .ntp-pagination-controls {
+    flex-wrap: wrap;
+  }
+
+  .download-csv-button {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+/* ── Mobile: reset fixed header to full width below top nav ── */
+@media (max-width: 768px) {
+  .header-actions {
+    left: 0 !important;
+    width: 100% !important;
+    top: 60px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    top: 56px !important;
+  }
 }

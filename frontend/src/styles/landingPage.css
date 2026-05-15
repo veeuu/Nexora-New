@@ -2580,3 +2580,333 @@
 .st-propensity--med {
   color: #d97706;
 }
+
+
+/* ============================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS — LANDING PAGE
+   ============================================================ */
+
+/* ── Landing Header — mobile hamburger nav ── */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0.9rem 1.2rem;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+  }
+
+  .header-logo {
+    height: 28px;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+  .btn-login {
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  /* Hero */
+  .hero-section {
+    padding: 2rem 1.2rem 2.5rem;
+  }
+
+  .hero-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .hero-title {
+    font-size: 2.4rem !important;
+    letter-spacing: -1px !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem !important;
+    margin-left: 0 !important;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .email-input,
+  .btn-free-trial {
+    width: 100%;
+  }
+
+  .hero-stats {
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-visual {
+    order: -1;
+  }
+
+  .hero-image {
+    width: 100% !important;
+    max-height: 220px;
+    object-fit: contain;
+  }
+
+  /* Stats scroll section */
+  .stats-scroll-section {
+    height: 60vh;
+  }
+
+  .stats-slide-number {
+    font-size: clamp(52px, 16vw, 90px);
+  }
+
+  .stats-slide-sub {
+    font-size: 14px;
+  }
+
+  .stats-bg-label {
+    font-size: clamp(50px, 14vw, 90px);
+  }
+
+  /* Features */
+  .features-section {
+    padding: 2rem 1.2rem;
+  }
+
+  .features-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .features-accordion {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .accordion-right {
+    position: static;
+    margin-top: 0;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 1.5rem 1.2rem 2.5rem;
+  }
+
+  .cta-section h2 {
+    font-size: 2.4rem;
+  }
+
+  .cta-sub {
+    font-size: 1.1rem;
+  }
+
+  .cta-glass-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  /* Difference */
+  .difference-section {
+    padding: 2rem 1.2rem;
+  }
+
+  .difference-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .difference-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Certifications */
+  .certifications-section {
+    padding: 2rem 1.2rem;
+  }
+
+  .certifications-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .certifications-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cert-item {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 2rem 1.2rem;
+  }
+
+  .faq-accordion {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .accordion-left-faq {
+    position: static;
+  }
+
+  .faq-title {
+    font-size: 2rem;
+  }
+
+  /* Testimonials */
+  .testimonials-section {
+    padding: 2rem 0 2.5rem;
+  }
+
+  .testimonials-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .testimonial-card {
+    width: 300px;
+    padding: 20px 16px 16px;
+  }
+
+  /* Enterprise Intel */
+  .st-wrap {
+    width: 100%;
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .st-head h2 {
+    font-size: 28px;
+  }
+
+  .st-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .st-steps {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 0;
+  }
+
+  .st-step {
+    border-bottom: none;
+    border-right: 1px solid #f1f5f9;
+    flex-shrink: 0;
+    min-height: 56px;
+    padding: 10px 12px;
+  }
+
+  .st-step-name {
+    font-size: 13px;
+  }
+
+  .st-content {
+    padding: 20px 16px;
+  }
+
+  /* Why Nexora D1 */
+  .difference-section .d1 {
+    width: 100%;
+    padding: 28px 16px;
+    border-radius: 12px;
+  }
+
+  .d1-top {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .d1-h2 {
+    font-size: 22px;
+  }
+
+  .d1-desc {
+    font-size: 15px;
+  }
+
+  .d1-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Footer */
+  .landing-footer {
+    padding: 2rem 1.2rem 1.2rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-certifications-right {
+    justify-content: flex-start;
+  }
+
+  .footer-cert-logos {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .footer-cert-item {
+    width: 55px;
+    height: 55px;
+  }
+
+  .footer-right {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 2rem !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem !important;
+  }
+
+  .cta-section h2 {
+    font-size: 1.9rem;
+  }
+
+  .cta-sub {
+    font-size: 1rem;
+  }
+
+  .faq-title {
+    font-size: 1.7rem;
+  }
+
+  .st-head h2 {
+    font-size: 22px;
+  }
+
+  .stats-scroll-section {
+    height: 55vh;
+  }
+
+  .stats-slide-number {
+    font-size: clamp(44px, 14vw, 72px);
+  }
+
+  .footer-cert-item {
+    width: 48px;
+    height: 48px;
+  }
+}

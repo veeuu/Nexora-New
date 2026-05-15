@@ -514,24 +514,29 @@
   }
 
   .login-left {
-    border-right: none;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-bottom: 1px solid #f0f0f0;
-    min-height: 50vh;
+    display: none;
   }
 
   .login-right {
-    min-height: 50vh;
-  }
-
-  .hero-title {
-    font-size: 1.75rem;
+    flex: 1;
+    min-height: 100vh;
+    padding: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
   .login-left {
-    padding: 1.5rem;
+    display: none;
+  }
+
+  .login-right {
+    flex: 1;
+    min-height: 100vh;
+    padding: 1.5rem 1.2rem;
   }
 
   .login-form-wrapper {
@@ -541,14 +546,6 @@
   .login-logo {
     margin-bottom: 2rem;
   }
-
-  .hero-title {
-    font-size: 1.5rem;
-  }
-
-  .hero-illustration {
-    max-width: 250px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -557,8 +554,13 @@
   }
 
   .login-left {
-    padding: 1rem;
-    min-height: auto;
+    display: none;
+  }
+
+  .login-right {
+    flex: 1;
+    min-height: 100vh;
+    padding: 1.2rem 1rem;
   }
 
   .login-form-wrapper {
@@ -584,10 +586,6 @@
 
   .nexora-logo-img-small {
     height: 35px;
-  }
-
-  .hero-title {
-    font-size: 1.25rem;
   }
 
   .btn-social {
@@ -634,4 +632,27 @@
 
 .powered-by.signup-compact {
   margin-top: 0.75rem;
+}
+
+/* ── Mobile: center form nicely ── */
+@media (max-width: 768px) {
+  .login-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-form-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 0;
+  }
+
+  .login-logo-vertical {
+    align-items: flex-start;
+  }
+
+  .form-input {
+    font-size: 16px; /* prevents iOS zoom */
+  }
 }

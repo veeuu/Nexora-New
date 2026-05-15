@@ -14,7 +14,7 @@
 }
 
 .buying-group-container h1 {
-  font-size: clamp(2.0rem, 3vw, 2.0rem);
+  font-size: 1.4rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 20px;
@@ -887,4 +887,49 @@
 .side-panel-close-button:hover {
   background: #e0e0e0;
   color: #1a1a1a;
+}
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .buying-group-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .buying-group-filters {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    flex-wrap: nowrap;
+  }
+
+  .org-chart-container {
+    height: 380px;
+  }
+
+  .side-panel {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  .side-panel-header {
+    padding: 20px 16px;
+  }
+
+  .side-panel-content {
+    padding: 16px;
+  }
+
+  .company-details-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .zoom-controls {
+    flex-wrap: wrap;
+  }
 }

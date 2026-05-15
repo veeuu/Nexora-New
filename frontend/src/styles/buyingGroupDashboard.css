@@ -87,3 +87,26 @@
 }
 
 /* Company size bars — removed (now using Recharts BarChart) */
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .bgd-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .bgd-charts-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .bgd-kpi-value {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bgd-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

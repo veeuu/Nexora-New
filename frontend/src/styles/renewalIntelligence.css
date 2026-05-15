@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .header-actions h2 {
@@ -462,5 +462,39 @@ td {
   th, td {
     padding: 8px 12px;
     font-size: 12px;
+  }
+}
+
+/* ── Mobile Responsiveness (additional) ── */
+@media (max-width: 768px) {
+  .renewal-intelligence-container {
+    padding: 12px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .header-actions h2 {
+    font-size: 20px;
+  }
+
+  .actions-right {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .filter-controls-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .filter-controls-left {
+    width: 100%;
+    flex-wrap: wrap;
   }
 }

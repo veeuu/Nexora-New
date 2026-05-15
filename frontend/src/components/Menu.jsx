@@ -79,28 +79,49 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
             {item}
           </li>
         ))}
+        {/* Resources inline on mobile */}
+        {isMobile && (
+          <>
+            <li onClick={() => handleMenuItemClick('Product Catalogue')}
+              className={activeSection === 'Product Catalogue' ? 'active' : ''}
+              style={{ paddingLeft: '2.25rem', fontSize: '0.9rem', opacity: 0.85 }}>
+              Product Catalogue
+            </li>
+            <li onClick={() => handleMenuItemClick('Data Dictionary')}
+              className={activeSection === 'Data Dictionary' ? 'active' : ''}
+              style={{ paddingLeft: '2.25rem', fontSize: '0.9rem', opacity: 0.85 }}>
+              Data Dictionary
+            </li>
+            <li onClick={() => { onProfileClick && onProfileClick(); setIsOpen(false); }}
+              style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
+              👤 Profile
+            </li>
+          </>
+        )}
       </ul>
 
-      {/* Resources dropdown */}
-      <div className="menu-resources" ref={resourcesRef}>
-        <button
-          className={`menu-resources-btn${showResources ? ' open' : ''}`}
-          onClick={() => setShowResources(v => !v)}
-        >
-          <span>Resources</span>
-          <span className={`menu-resources-arrow${showResources ? ' up' : ''}`}>▾</span>
-        </button>
-        {showResources && (
-          <div className="menu-resources-dropdown">
-            <button className="menu-resources-item" onClick={() => { onMenuClick('Product Catalogue'); setShowResources(false); if (isMobile) setIsOpen(false); }}>
-              Product Catalogue
-            </button>
-            <button className="menu-resources-item" onClick={() => { onMenuClick('Data Dictionary'); setShowResources(false); if (isMobile) setIsOpen(false); }}>
-              Data Dictionary
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Resources dropdown — desktop only */}
+      {!isMobile && (
+        <div className="menu-resources" ref={resourcesRef}>
+          <button
+            className={`menu-resources-btn${showResources ? ' open' : ''}`}
+            onClick={() => setShowResources(v => !v)}
+          >
+            <span>Resources</span>
+            <span className={`menu-resources-arrow${showResources ? ' up' : ''}`}>▾</span>
+          </button>
+          {showResources && (
+            <div className="menu-resources-dropdown">
+              <button className="menu-resources-item" onClick={() => { onMenuClick('Product Catalogue'); setShowResources(false); }}>
+                Product Catalogue
+              </button>
+              <button className="menu-resources-item" onClick={() => { onMenuClick('Data Dictionary'); setShowResources(false); }}>
+                Data Dictionary
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">

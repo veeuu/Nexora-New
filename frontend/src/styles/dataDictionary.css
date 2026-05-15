@@ -1,7 +1,7 @@
 .data-dictionary-container {
   padding: 0;
   margin-top: 10px;
-  margin-left: 2.5rem;
+  margin-left: 0;
 }
 
 .data-dictionary-header {
@@ -417,5 +417,41 @@
   .data-items-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+}
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .data-dictionary-container {
+    margin-left: 0;
+    padding: 0 12px;
+  }
+
+  .data-dictionary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .data-dictionary-title {
+    font-size: 20px;
+  }
+
+  .data-dictionary-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-input-wrapper {
+    min-width: 100%;
+  }
+
+  .category-section {
+    padding-left: 8px;
+  }
+
+  .category-header {
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }

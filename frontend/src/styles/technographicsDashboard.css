@@ -199,3 +199,42 @@
   .tg-kpi-grid { grid-template-columns: 1fr 1fr; }
   .tg-header { flex-direction: column; gap: 12px; }
 }
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .tg-body {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .tg-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .tg-header-left h2 {
+    font-size: 20px;
+  }
+
+  .tg-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .tg-kpi-value {
+    font-size: 22px;
+  }
+
+  .tg-charts-row,
+  .tg-charts-row-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tg-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

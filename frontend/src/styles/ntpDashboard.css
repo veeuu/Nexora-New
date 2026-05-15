@@ -382,3 +382,42 @@
   .ntpd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .ntpd-row2, .ntpd-row3 { grid-template-columns: 1fr; }
 }
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .ntpd-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .ntpd-title {
+    font-size: 20px;
+  }
+
+  .ntpd-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ntpd-kpi-val {
+    font-size: 24px;
+  }
+
+  .ntpd-grid4,
+  .ntpd-row2,
+  .ntpd-row3 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ntpd-rank-name {
+    width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ntpd-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

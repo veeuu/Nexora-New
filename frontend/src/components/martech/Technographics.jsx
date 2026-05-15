@@ -4178,7 +4178,7 @@ const Technographics = () => {
           border-radius: 12px;
           padding: 0.4rem 0.5rem 0;
           margin-bottom: 0;
-          margin-left: 2.5rem;
+          margin-left: 0.0rem;
           margin-top: 0;
           width: calc(100% - 3rem);
           max-width: calc(100% - 3rem);

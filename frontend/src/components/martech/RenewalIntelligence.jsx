@@ -3007,7 +3007,7 @@ if (aQtr.year !== bQtr.year) {
                 .renewal-intelligence-container {
                     background: linear-gradient(180deg, #ffffff, #fafbff);
                     border-radius: 12px;
-                    padding: 1.25rem 1.5rem 1.5rem;
+                    padding: 1.25rem 0.2rem 1.5rem;
                     width: 100%;
                     height:750px;
                     max-width: 100%;

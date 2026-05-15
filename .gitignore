@@ -123,3 +123,6 @@ org_charts_output_js/
 # Package lock files (optional - uncomment if you want to ignore them)
 # package-lock.json
 # yarn.lock
+
+# Chrome Extension (excluded from commits)
+extension/

@@ -777,3 +777,11 @@
   background: #fef2f2;
   border-color: #f87171;
 }
+
+/* ── Mobile Responsiveness ── */
+@media (max-width: 768px) {
+  .profile-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+}
