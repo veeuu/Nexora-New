@@ -658,10 +658,6 @@ const LandingPage = () => {
       <section className="hero-section">
         <div className="hero-wrapper">
           <div className="hero-content">
-            <div className="hero-badge">
-              <span className="hero-badge-dot"></span>
-              POWERED BY PROPLUS DATA INTELLIGENCE
-            </div>
             <h1 className="hero-title">
               The Timing Layer for<br />
               <span className="hero-title-accent">Predictable Revenue</span>
@@ -705,9 +701,6 @@ const LandingPage = () => {
                 Trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens &amp; more
               </p>
             </div>
-          </div>
-          <div className="hero-visual">
-            <img src={heroSvg} alt="Nexora Dashboard" className="hero-image" />
           </div>
         </div>
 

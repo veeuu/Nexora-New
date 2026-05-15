@@ -1,8 +1,7 @@
 /* ============ LANDING PAGE HERO SECTION ============ */
-/* Dedicated hero styling for landing page - takes priority */
 
 .landing-page .hero-section {
-  padding: 5rem 3rem !important;
+  padding: 6rem 3rem 5rem !important;
   background: #ffffff !important;
   position: relative !important;
   overflow: hidden !important;
@@ -16,11 +15,11 @@
 }
 
 .landing-page .hero-wrapper {
-  max-width: 1300px !important;
+  max-width: 900px !important;
   margin: 0 auto !important;
-  display: grid !important;
-  grid-template-columns: 1.1fr 1fr !important;
-  gap: 3.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
   align-items: center !important;
   position: relative !important;
   z-index: 1 !important;
@@ -29,11 +28,12 @@
 .landing-page .hero-content {
   display: flex !important;
   flex-direction: column !important;
-  gap: 1.2rem !important;
-  text-align: left !important;
+  gap: 1.5rem !important;
+  text-align: center !important;
+  align-items: center !important;
+  width: 100% !important;
 }
 
-/* Badge pill */
 .landing-page .hero-badge {
   display: inline-flex !important;
   align-items: center !important;
@@ -41,7 +41,7 @@
   background: #ffffff !important;
   border: 1px solid #d1d5db !important;
   border-radius: 999px !important;
-  padding: 0.35rem 1rem !important;
+  padding: 0.4rem 1.1rem !important;
   font-size: 0.72rem !important;
   font-weight: 600 !important;
   letter-spacing: 0.08em !important;
@@ -58,10 +58,9 @@
   flex-shrink: 0 !important;
 }
 
-/* Title  Inter Black for the first line, Playfair italic for accent */
 .landing-page .hero-title {
-  font-size: 4.2rem !important;
-  font-weight: 700 !important;
+  font-size: 5.5rem !important;
+  font-weight: 800 !important;
   line-height: 1.0 !important;
   color: #111827 !important;
   letter-spacing: -3px !important;
@@ -69,50 +68,38 @@
   margin: 0 !important;
 }
 
-/* The dark italic accent line  smaller, tight, dark */
 .landing-page .hero-title-accent {
   color: #133580 !important;
   font-style: italic !important;
   font-family: 'Fraunces', 'Playfair Display', Georgia, serif !important;
   font-weight: 400 !important;
   display: block !important;
-  letter-spacing: -1px !important;
-  font-size: 3.2rem !important;
-  line-height: 0.95 !important;
-  margin-top: -0.1rem !important;
+  letter-spacing: -2px !important;
+  font-size: 4.8rem !important;
+  line-height: 1.0 !important;
+  margin-top: 0.1rem !important;
 }
 
-/* Remove old underline styles */
-.landing-page .hero-title-line {
-  display: block !important;
-}
-
-.landing-page .hero-title-line::after {
-  display: none !important;
-}
-
-.landing-page .hero-title-accent::after {
-  display: none !important;
-}
+.landing-page .hero-title-line { display: block !important; }
+.landing-page .hero-title-line::after,
+.landing-page .hero-title-accent::after { display: none !important; }
 
 .landing-page .hero-subtitle {
-  font-size: 1.05rem !important;
+  font-size: 1.2rem !important;
   color: #6b7280 !important;
   line-height: 1.7 !important;
-  max-width: 100% !important;
+  max-width: 680px !important;
   font-weight: 400 !important;
   font-family: inherit !important;
   padding-left: 0 !important;
-  margin-left: 20px !important;
-  margin-top: 1rem !important;
+  margin: 0 auto !important;
 }
 
-/* Social proof row */
 .landing-page .hero-social-proof {
   display: flex !important;
   align-items: center !important;
   gap: 0.75rem !important;
-  margin-top: 0.25rem !important;
+  justify-content: center !important;
 }
 
 .landing-page .hero-avatars {
@@ -121,26 +108,24 @@
 }
 
 .landing-page .hero-avatar {
-  width: 32px !important;
-  height: 32px !important;
+  width: 36px !important;
+  height: 36px !important;
   border-radius: 50% !important;
   border: 2px solid #fff !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 0.65rem !important;
+  font-size: 0.7rem !important;
   font-weight: 700 !important;
   color: #fff !important;
   margin-left: -8px !important;
   flex-shrink: 0 !important;
 }
 
-.landing-page .hero-avatars .hero-avatar:first-child {
-  margin-left: 0 !important;
-}
+.landing-page .hero-avatars .hero-avatar:first-child { margin-left: 0 !important; }
 
 .landing-page .hero-social-text {
-  font-size: 0.88rem !important;
+  font-size: 0.95rem !important;
   color: #6b7280 !important;
   margin: 0 !important;
 }
@@ -153,16 +138,19 @@
 .landing-page .hero-cta {
   display: flex !important;
   gap: 0.8rem !important;
-  margin-top: 0.5rem !important;
-  padding-top: 1.5rem !important;
+  margin-top: 0 !important;
+  padding-top: 0.5rem !important;
+  width: 100% !important;
+  max-width: 560px !important;
+  justify-content: center !important;
 }
 
 .landing-page .email-input {
   flex: 1 !important;
-  padding: 1rem 1.5rem !important;
+  padding: 1.1rem 1.5rem !important;
   border: 1px solid #e0e0e0 !important;
   border-radius: 999px !important;
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   transition: all 0.2s ease !important;
   background: #ffffff !important;
   color: #333333 !important;
@@ -174,17 +162,15 @@
   box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1) !important;
 }
 
-.landing-page .email-input::placeholder {
-  color: #999999 !important;
-}
+.landing-page .email-input::placeholder { color: #999999 !important; }
 
 .landing-page .btn-free-trial {
-  padding: 1rem 2rem !important;
+  padding: 1.1rem 2.2rem !important;
   background: #2563eb !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 999px !important;
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
@@ -197,177 +183,27 @@
   transform: translateY(-1px) !important;
 }
 
-.landing-page .btn-free-trial:active {
-  transform: translateY(0) !important;
-}
+.landing-page .btn-free-trial:active { transform: translateY(0) !important; }
 
-.landing-page .hero-stats {
-  display: flex !important;
-  gap: 2.5rem !important;
-  margin-top: 1.5rem !important;
-  flex-wrap: wrap !important;
-}
-
-.landing-page .stat-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.8rem !important;
-}
-
-.landing-page .stat-rating {
-  font-size: 1rem !important;
-}
-
-.landing-page .stat-badge {
-  font-size: 1.2rem !important;
-}
-
-.landing-page .stat-text {
-  font-size: 0.9rem !important;
-  color: #666666 !important;
-  font-weight: 500 !important;
-}
-
-.landing-page .hero-visual {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
-}
-
-.landing-page .hero-image {
-  width: 110% !important;
-  height: auto !important;
-  object-fit: contain !important;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-/* Responsive for Landing Page Hero */
+/* ── Responsive ── */
 @media (max-width: 1024px) {
-  .landing-page .hero-wrapper {
-    grid-template-columns: 1fr !important;
-    gap: 2rem !important;
-  }
-
-  .landing-page .hero-title {
-    font-size: 3.2rem !important;
-    letter-spacing: -1.5px !important;
-  }
-
-  .landing-page .hero-title-accent {
-    font-size: 2.2rem !important;
-  }
-
-  .landing-page .hero-visual {
-    order: -1 !important;
-  }
-
-  .landing-page .hero-image {
-    width: 100% !important;
-    max-height: 260px !important;
-    object-fit: contain !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  .landing-page .hero-wrapper {
-    grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
-  }
-
-  .landing-page .hero-title {
-    font-size: 3.2rem !important;
-    letter-spacing: -1.5px !important;
-  }
-
-  .landing-page .hero-title-accent {
-    font-size: 2.2rem !important;
-  }
-
-  .landing-page .hero-visual {
-    order: -1 !important;
-  }
-
-  .landing-page .hero-image {
-    width: 100% !important;
-    max-height: 260px !important;
-    object-fit: contain !important;
-  }
+  .landing-page .hero-title { font-size: 4.2rem !important; letter-spacing: -2px !important; }
+  .landing-page .hero-title-accent { font-size: 3.6rem !important; }
 }
 
 @media (max-width: 768px) {
-  .landing-page .hero-section {
-    padding: 2rem 1.2rem 2.5rem !important;
-  }
-
-  .landing-page .hero-title {
-    font-size: 2.4rem !important;
-    letter-spacing: -1px !important;
-  }
-
-  .landing-page .hero-title-accent {
-    font-size: 1.8rem !important;
-    letter-spacing: -0.5px !important;
-  }
-
-  .landing-page .hero-subtitle {
-    font-size: 0.95rem !important;
-    margin-left: 0 !important;
-    margin-top: 0.75rem !important;
-  }
-
-  .landing-page .hero-cta {
-    flex-direction: column !important;
-    gap: 0.75rem !important;
-    padding-top: 0.75rem !important;
-  }
-
+  .landing-page .hero-section { padding: 3.5rem 1.5rem 3rem !important; }
+  .landing-page .hero-title { font-size: 3rem !important; letter-spacing: -1.5px !important; }
+  .landing-page .hero-title-accent { font-size: 2.6rem !important; letter-spacing: -1px !important; }
+  .landing-page .hero-subtitle { font-size: 1.05rem !important; }
+  .landing-page .hero-cta { flex-direction: column !important; gap: 0.75rem !important; max-width: 100% !important; }
   .landing-page .email-input,
-  .landing-page .btn-free-trial {
-    width: 100% !important;
-  }
-
-  .landing-page .hero-stats {
-    gap: 1.2rem !important;
-    flex-wrap: wrap !important;
-  }
-
-  .landing-page .hero-image {
-    max-height: 200px !important;
-  }
+  .landing-page .btn-free-trial { width: 100% !important; }
 }
 
 @media (max-width: 480px) {
-  .landing-page .hero-section {
-    padding: 1.5rem 1rem 2rem !important;
-  }
-
-  .landing-page .hero-title {
-    font-size: 2rem !important;
-    letter-spacing: -0.5px !important;
-  }
-
-  .landing-page .hero-title-accent {
-    font-size: 1.5rem !important;
-  }
-
-  .landing-page .hero-subtitle {
-    font-size: 0.88rem !important;
-  }
-
-  .landing-page .hero-stats {
-    gap: 1rem !important;
-  }
-
-  .landing-page .stat-text {
-    font-size: 0.8rem !important;
-  }
+  .landing-page .hero-section { padding: 2.5rem 1rem 2.5rem !important; }
+  .landing-page .hero-title { font-size: 2.4rem !important; letter-spacing: -1px !important; }
+  .landing-page .hero-title-accent { font-size: 2rem !important; }
+  .landing-page .hero-subtitle { font-size: 0.95rem !important; }
 }
