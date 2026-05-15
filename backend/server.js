@@ -30,6 +30,11 @@ app.get('/googlea2809bb769c4ca09.html', (req, res) => {
   res.sendFile(__dirname + '/googlea2809bb769c4ca09.html');
 });
 
+app.get('/sitemap.xml', (req, res) => {
+  res.setHeader('Content-Type', 'application/xml');
+  res.sendFile(__dirname + '/sitemap.xml');
+});
+
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
 const buyingGroupRouter = require('./routes/buyingGroup');
