@@ -59,7 +59,7 @@ const sdata = [
   },
   {
     title: 'Buying Group',
-    link: null,
+    link: 'https://proplusdata.co/account-intelligence-insights',
     badge: '430M+ Companies',
     desc: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements.',
     chips: [{ t: 'Decision Makers', c: 'a' }, { t: 'Influencers', c: 'b' }, { t: 'Org Chart Mapping', c: 'c' }],
@@ -108,19 +108,7 @@ const EnterpriseIntel = () => {
             >
               <div className="st-num">{i + 1}</div>
               <div className="st-step-text">
-                <div className="st-step-name">
-                  {s.link ? (
-                    <a
-                      href={s.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {s.title}
-                    </a>
-                  ) : s.title}
-                </div>
+                <div className="st-step-name">{s.title}</div>
               </div>
             </div>
           ))}
@@ -136,7 +124,7 @@ const EnterpriseIntel = () => {
                     href={d.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px solid rgba(37,99,235,0.3)' }}
+                    style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px solid rgba(15,31,61,0.25)' }}
                   >
                     {d.title}
                   </a>
@@ -696,7 +684,7 @@ const LandingPage = () => {
               <span className="hero-title-accent">Predictable Revenue</span>
             </h1>
             <p className="hero-subtitle">
-              Nexora®, a GTM AI platform, makes revenue predictable,revealing what’s next, the right stakeholders to engage, and exactly when to act.
+              GTM AI platform, makes revenue predictable,revealing what’s next, the right stakeholders to engage, and exactly when to act.
             </p>
             <div className="hero-cta">
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -731,7 +719,7 @@ const LandingPage = () => {
                 <span className="hero-avatar" style={{ background: '#7c3aed' }}>PT</span>
               </div>
               <p className="hero-social-text">
-                Data Trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens &amp; more
+                Data trusted by <strong>2,400+</strong> revenue teams at AWS, Cisco, Siemens, Adobe &amp; more
               </p>
             </div>
           </div>
@@ -828,7 +816,7 @@ const LandingPage = () => {
             <div className="d1-card">
               <div className="d1-icon"><i className="ti ti-topology-star-3" aria-hidden="true" /></div>
               <h3>Unite your organization</h3>
-              <p>We align Sales, Marketing, and Product teams with one shared view of what comes next.</p>
+              <p>We align Revenue teams with one shared view of what comes next.</p>
               <div className="d1-card-num">03</div>
             </div>
           </div>
