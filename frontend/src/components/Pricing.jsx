@@ -1,5 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+function PricingFaqItem({ faq, idx }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="accordion-item-faq">
+      <button
+        className={`accordion-header-faq ${open ? 'active' : ''}`}
+        onClick={() => setOpen(!open)}
+      >
+        <span className="accordion-num-faq">0{idx + 1}</span>
+        <span className="accordion-title-faq">{faq.q}</span>
+        <span className="accordion-toggle-faq">{open ? '−' : '+'}</span>
+      </button>
+      {open && (
+        <div className="accordion-content-faq">
+          <p>{faq.a}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
 import proplusDataLogo from '../assets/unnamed (1).png';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
@@ -252,6 +273,59 @@ export default function Pricing() {
             >
               Contact Sales →
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="faq-section" style={{ background: '#f8fafc' }}>
+        <div className="faq-accordion">
+          <div className="accordion-left-faq">
+            <div className="faq-header">
+              <h2 className="faq-title">
+                Pricing<br />
+                <span className="faq-title-accent">Questions</span><br />
+                Answered
+              </h2>
+              <p className="faq-subtitle">Everything you need to know about plans, credits, and billing.</p>
+              <span className="faq-count">06 questions</span>
+            </div>
+          </div>
+          <div className="accordion-right-faq">
+            {[
+              {
+                id: 1,
+                q: 'Can I switch plans at any time?',
+                a: 'Yes. You can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle. No penalties, no lock-ins.',
+              },
+              {
+                id: 2,
+                q: 'What happens when I run out of credits?',
+                a: 'Your account pauses data lookups until the next billing cycle resets your credits. On Pro and Enterprise plans you can purchase Add-On Credits at any time to keep going without interruption.',
+              },
+              {
+                id: 3,
+                q: 'Do unused credits roll over?',
+                a: 'Credits roll over on Pro and Enterprise plans for up to one billing cycle. Free plan credits reset monthly and do not roll over.',
+              },
+              {
+                id: 4,
+                q: 'Is there a contract or minimum commitment?',
+                a: 'No contracts. Free and Pro plans are month-to-month. Enterprise plans can be structured as annual agreements with volume discounts — contact our sales team for details.',
+              },
+              {
+                id: 5,
+                q: 'Do you offer a free trial for Pro or Enterprise?',
+                a: 'The Free plan lets your entire team explore all five data modules with no credit card required. For a guided Pro or Enterprise trial, reach out to sales@proplusdata.co and we\'ll set you up.',
+              },
+              {
+                id: 6,
+                q: 'How is billing handled?',
+                a: 'Pro plans are billed monthly via credit card. Enterprise plans support invoice-based billing. All prices are in USD. You\'ll receive an email receipt after every charge.',
+              },
+            ].map((faq, idx) => (
+              <PricingFaqItem key={faq.id} faq={faq} idx={idx} />
+            ))}
           </div>
         </div>
       </section>
