@@ -516,6 +516,125 @@ const StatsScrollSection = ({ stats }) => {
   );
 };
 
+// ── Nexora Copilot animated demo ─────────────────────────────────────────────
+const ROWS = [
+  { label: 'Domain', value: 'xyztech.com', cls: '' },
+  { label: 'Technology', value: 'AWS', cls: 'copilot-intel-val--bold' },
+  { label: 'Category', value: 'Cloud', cls: 'copilot-intel-val--bold' },
+  { label: 'Purchase Prediction', value: 'High', cls: 'copilot-intel-val--high' },
+  { label: 'Probability', value: '72%', cls: 'copilot-intel-val--prob' },
+];
+
+const ANALYSIS = 'XYZ Technologies shows strong signals for cloud infrastructure expansion. Recent DevOps hiring and cloud migration case studies indicate active modernization. Multi-cloud strategy signals suggest AWS evaluation alongside existing platforms.';
+
+// step 0 = blank, 1 = user bubble, 2 = card header, 3-7 = rows, 8 = analysis, 9 = 2nd user, 10 = typing
+const TOTAL_STEPS = 11;
+const DELAYS = [0, 600, 1400, 2000, 2400, 2800, 3200, 3600, 4200, 5200, 6000];
+
+const CopilotDemo = () => {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const timers = DELAYS.map((delay, i) =>
+      setTimeout(() => setStep(i), delay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className="copilot-chat">
+      <div className="copilot-chat-header">
+        <div className="copilot-chat-dots">
+          <span style={{ background: '#ef4444' }} />
+          <span style={{ background: '#f59e0b' }} />
+          <span style={{ background: '#22c55e' }} />
+        </div>
+        <span className="copilot-chat-title">Nexora Copilot</span>
+        <span className="copilot-chat-badge">AI</span>
+      </div>
+
+      <div className="copilot-chat-body">
+        {/* Step 1 — user bubble */}
+        {step >= 1 && (
+          <div className="copilot-msg copilot-msg--user copilot-fade-in">
+            Looking at XYZ Technologies...
+          </div>
+        )}
+
+        {/* Step 2+ — AI card */}
+        {step >= 2 && (
+          <div className="copilot-msg copilot-msg--ai copilot-fade-in">
+            <div className="copilot-ai-label">
+              <span className="copilot-ai-dot" />
+              Nexora Co-pilot
+            </div>
+            <div className="copilot-intel-card">
+              <div className="copilot-intel-header">
+                <span className="copilot-intel-num">1</span>
+                <span className="copilot-intel-name">XYZ Technologies</span>
+              </div>
+              <div className="copilot-intel-divider" />
+              <div className="copilot-intel-rows">
+                {ROWS.map((row, i) =>
+                  step >= i + 3 ? (
+                    <div key={row.label} className="copilot-intel-row copilot-fade-in">
+                      <span className="copilot-intel-label">{row.label}</span>
+                      <span className={`copilot-intel-val ${row.cls}`}>{row.value}</span>
+                    </div>
+                  ) : (
+                    <div key={row.label} className="copilot-intel-row copilot-row-skeleton">
+                      <span className="copilot-skeleton-bar" style={{ width: '40%' }} />
+                      <span className="copilot-skeleton-bar" style={{ width: '25%' }} />
+                    </div>
+                  )
+                )}
+              </div>
+              {step >= 8 && (
+                <>
+                  <div className="copilot-intel-divider" />
+                  <div className="copilot-intel-analysis copilot-fade-in">
+                    <div className="copilot-intel-analysis-title">📊 Analysis</div>
+                    <p className="copilot-intel-analysis-body">{ANALYSIS}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Step 9 — second user bubble */}
+        {step >= 9 && (
+          <div className="copilot-msg copilot-msg--user copilot-fade-in" style={{ opacity: 0.7 }}>
+            Show renewal risk for XYZ Technologies
+          </div>
+        )}
+
+        {/* Step 10 — typing */}
+        {step >= 10 && (
+          <div className="copilot-msg copilot-msg--ai copilot-fade-in">
+            <div className="copilot-ai-label">
+              <span className="copilot-ai-dot" />
+              Nexora Co-pilot
+            </div>
+            <div className="copilot-typing-dots">
+              <span /><span /><span />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="copilot-chat-input">
+        <span className="copilot-input-placeholder">Search company name...</span>
+        <button className="copilot-send-btn" aria-label="Send">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const LandingPage = () => {
@@ -819,6 +938,40 @@ const LandingPage = () => {
               <p>We align Revenue teams with one shared view of what comes next.</p>
               <div className="d1-card-num">03</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Nexora Co-pilot Section */}
+      <section className="copilot-section">
+        <div className="copilot-inner">
+          {/* Left — text */}
+          <div className="copilot-text">
+            <div className="copilot-eyebrow">
+              <span className="copilot-eyebrow-dot" />
+              Introducing
+            </div>
+            <h2 className="copilot-title">
+              Meet your<br />
+              <span className="copilot-title-accent">GTM Co-pilot</span>
+            </h2>
+            <p className="copilot-desc">
+              Nexora Co-pilot is your always-on AI assistant built directly into the platform. Search any company and instantly get technographic signals, purchase predictions, probability scores, and a plain-English analysis — all in one place.
+            </p>
+            <ul className="copilot-bullets">
+              <li><span className="copilot-bullet-icon">⚡</span><span>Search any company, get instant account intelligence</span></li>
+              <li><span className="copilot-bullet-icon">🎯</span><span>Purchase prediction & probability score for every account</span></li>
+              <li><span className="copilot-bullet-icon">📊</span><span>AI-written analysis grounded in real technographic signals</span></li>
+              <li><span className="copilot-bullet-icon">🛡️</span><span>Verified B2B data — no hallucinations, no guesswork</span></li>
+            </ul>
+            <button className="copilot-cta" onClick={() => navigate('/login')}>
+              Try Co-pilot free →
+            </button>
+          </div>
+
+          {/* Right — animated demo */}
+          <div className="copilot-visual">
+            <CopilotDemo />
           </div>
         </div>
       </section>
