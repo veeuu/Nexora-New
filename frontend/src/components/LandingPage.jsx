@@ -624,7 +624,7 @@ const CopilotDemo = () => {
       </div>
 
       <div className="copilot-chat-input">
-        <span className="copilot-input-placeholder">Search company name...</span>
+        <span className="copilot-input-placeholder"></span>
         <button className="copilot-send-btn" aria-label="Send">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
@@ -956,7 +956,7 @@ const LandingPage = () => {
               <span className="copilot-title-accent">GTM Co-pilot</span>
             </h2>
             <p className="copilot-desc">
-              Nexora Co-pilot is your always-on AI assistant built directly into the platform. Type any company name and instantly get their technology stack, purchase prediction, probability score, and an AI-written analysis grounded in real B2B data.
+              Nexora Co-pilot is your always-on AI assistant built directly into the platform. Type any company name and instantly get their technology stack, purchase prediction, probability score.
             </p>
             <ul className="copilot-bullets">
               <li><span className="copilot-bullet-icon">🔍</span><span>Search any company by name — get domain, tech stack & category instantly</span></li>
@@ -965,7 +965,7 @@ const LandingPage = () => {
               <li><span className="copilot-bullet-icon">🛡️</span><span>Powered by verified technographic data no guesswork, no hallucinations</span></li>
             </ul>
             <button className="copilot-cta" onClick={() => navigate('/login')}>
-              Try Co-pilot free →
+              Try for free
             </button>
           </div>
 
