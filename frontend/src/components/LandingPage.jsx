@@ -956,13 +956,13 @@ const LandingPage = () => {
               <span className="copilot-title-accent">GTM Co-pilot</span>
             </h2>
             <p className="copilot-desc">
-              Nexora Co-pilot is your always-on AI assistant built directly into the platform. Search any company and instantly get technographic signals, purchase predictions, probability scores, and a plain-English analysis — all in one place.
+              Nexora Co-pilot is your always-on AI assistant built directly into the platform. Type any company name and instantly get their technology stack, purchase prediction, probability score, and an AI-written analysis grounded in real B2B data.
             </p>
             <ul className="copilot-bullets">
-              <li><span className="copilot-bullet-icon">⚡</span><span>Search any company, get instant account intelligence</span></li>
-              <li><span className="copilot-bullet-icon">🎯</span><span>Purchase prediction & probability score for every account</span></li>
-              <li><span className="copilot-bullet-icon">📊</span><span>AI-written analysis grounded in real technographic signals</span></li>
-              <li><span className="copilot-bullet-icon">🛡️</span><span>Verified B2B data — no hallucinations, no guesswork</span></li>
+              <li><span className="copilot-bullet-icon">🔍</span><span>Search any company by name — get domain, tech stack & category instantly</span></li>
+              <li><span className="copilot-bullet-icon">🎯</span><span>Purchase prediction (High / Medium / Low) with a probability score</span></li>
+              <li><span className="copilot-bullet-icon">📊</span><span>Plain-English AI analysis explaining why the signal is strong</span></li>
+              <li><span className="copilot-bullet-icon">🛡️</span><span>Powered by verified technographic data no guesswork, no hallucinations</span></li>
             </ul>
             <button className="copilot-cta" onClick={() => navigate('/login')}>
               Try Co-pilot free →
