@@ -23,6 +23,7 @@ import '../styles/landingPageHero.css';
 const sdata = [
   {
     title: 'Technographics',
+    link: 'https://proplusdata.co/technographics',
     badge: '590M+ Companies',
     desc: 'Shows you what technologies companies currently use and the maturity of their technology stack. Identify upgrade opportunities and ideal timing.',
     chips: [{ t: 'Tech Stack Detection', c: 'a' }, { t: 'Vendor Mapping', c: 'b' }, { t: 'Stack Maturity Score', c: 'c' }],
@@ -34,6 +35,7 @@ const sdata = [
   },
   {
     title: 'Renewal Intelligence',
+    link: 'https://proplusdata.co/renewal-intelligence',
     badge: '530M+ Companies',
     desc: 'Identify when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving before your competitors do.',
     chips: [{ t: 'Contract Timelines', c: 'a' }, { t: 'Churn Signals', c: 'b' }, { t: 'Vendor Switch Risk', c: 'c' }],
@@ -45,6 +47,7 @@ const sdata = [
   },
   {
     title: 'Intent',
+    link: 'https://proplusdata.co/intent-data',
     badge: '530M+ Companies',
     desc: "Captures behavioral signals indicating a company's interest in specific technologies, helping prioritize outreach and improve conversion efficiency.",
     chips: [{ t: 'Buying Signals', c: 'a' }, { t: 'Topic Surge', c: 'b' }, { t: 'Competitor Research', c: 'c' }],
@@ -56,6 +59,7 @@ const sdata = [
   },
   {
     title: 'Buying Group',
+    link: null,
     badge: '430M+ Companies',
     desc: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements.',
     chips: [{ t: 'Decision Makers', c: 'a' }, { t: 'Influencers', c: 'b' }, { t: 'Org Chart Mapping', c: 'c' }],
@@ -67,6 +71,7 @@ const sdata = [
   },
   {
     title: 'Next Tech Purchase®',
+    link: 'https://proplusdata.co/next-tech-purchase',
     badge: '530M+ Companies',
     desc: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals to time your outreach perfectly.',
     chips: [{ t: 'Predictive Scoring', c: 'a' }, { t: 'Investment Signals', c: 'b' }, { t: 'Pipeline Timing', c: 'c' }],
@@ -103,7 +108,19 @@ const EnterpriseIntel = () => {
             >
               <div className="st-num">{i + 1}</div>
               <div className="st-step-text">
-                <div className="st-step-name">{s.title}</div>
+                <div className="st-step-name">
+                  {s.link ? (
+                    <a
+                      href={s.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      {s.title}
+                    </a>
+                  ) : s.title}
+                </div>
               </div>
             </div>
           ))}
@@ -113,7 +130,18 @@ const EnterpriseIntel = () => {
         <div className="st-content">
           <div className="st-content-top">
             <div className="st-ct-header">
-              <div className="st-ct-title">{d.title}</div>
+              <div className="st-ct-title">
+                {d.link ? (
+                  <a
+                    href={d.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'inherit', textDecoration: 'none', borderBottom: '1px solid rgba(37,99,235,0.3)' }}
+                  >
+                    {d.title}
+                  </a>
+                ) : d.title}
+              </div>
             </div>
             <div className="st-ct-desc">{d.desc}</div>
             <div className="st-ct-chips">
@@ -557,30 +585,35 @@ const LandingPage = () => {
       id: 1,
       title: 'Technographics',
       description: 'Shows you what technologies companies currently use, and the maturity of their technology stack. ',
+      link: 'https://proplusdata.co/technographics',
       image: technoSvg
     },
     {
       id: 2,
       title: 'Renewal Intelligence',
       description: 'Identify when contracts are up for renewal, which customers might switch vendors, and who is at risk of leaving.',
+      link: 'https://proplusdata.co/renewal-intelligence',
       image: riSvg
     },
     {
       id: 3,
       title: 'Intent',
       description: 'Intent data captures behavioral signals that indicate a company\'s interest in specific technologies or solutions, helping prioritize outreach and improve conversion efficiency.',
+      link: 'https://proplusdata.co/intent-data',
       image: intentSvg
     },
     {
       id: 4,
       title: 'Buying Group',
       description: 'A structured group of executive Decision-Makers and high-impact Influencers within an organization who define technical and business requirements',
+      link: null,
       image: bgSvg
     },
     {
       id: 5,
       title: 'Next Tech Purchase® - NTP®',
       description: 'Identifies probable next technology investments using predictive modeling and account-level intelligence signals.',
+      link: 'https://proplusdata.co/next-tech-purchase',
       image: ntpSvg
     }
   ];
