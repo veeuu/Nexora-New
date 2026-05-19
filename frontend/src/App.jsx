@@ -122,7 +122,8 @@ function App() {
           path="/login" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
         />
-        <Route path="/pricing" element={<Pricing />} />
+        {/** Pricing page temporarily disabled from landing flow */}
+        {/* <Route path="/pricing" element={<Pricing />} /> */}
         <Route 
           path="/dashboard/*" 
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 

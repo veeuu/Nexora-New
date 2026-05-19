@@ -855,6 +855,8 @@ const LandingPage = () => {
             gap: '0.5rem',
           }}
         >
+          {/** Pricing button temporarily disabled from landing page */}
+          {/*
           <button
             onClick={() => navigate('/pricing')}
             style={{
@@ -873,6 +875,7 @@ const LandingPage = () => {
           >
             Pricing
           </button>
+          */}
           <button
             onClick={() => navigate('/login')}
             style={{
