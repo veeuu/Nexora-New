@@ -18,6 +18,7 @@ const Login = ({ onLogin }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [password, setPassword] = useState('');
+  const [loginName, setLoginName] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
@@ -27,6 +28,17 @@ const Login = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const deriveNameFromEmail = (emailAddress) => {
+    if (!emailAddress) return 'User';
+    const namePart = emailAddress.split('@')[0];
+    return namePart
+      .replace(/[._-]+/g, ' ')
+      .split(' ')
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ') || 'User';
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -48,13 +60,16 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userPlan', data.user?.plan || 'free_trial');
 
+        const userName = data.user?.fullName?.trim() || deriveNameFromEmail(email);
+        setLoginName(userName);
+
         if (data.requiresPasswordChange) {
           // First login - show change password screen
           setShowChangePassword(true);
           setPassword('');
           setError('');
         } else {
-          onLogin(email);
+          onLogin(email, userName);
         }
       } else {
         if (data.requiresVerification) {
@@ -92,7 +107,7 @@ const Login = ({ onLogin }) => {
 
       if (response.ok) {
         setSuccessMessage('Password changed! Redirecting...');
-        setTimeout(() => onLogin(email), 1000);
+        setTimeout(() => onLogin(email, loginName || deriveNameFromEmail(email)), 1000);
       } else {
         setError(data.message || 'Failed to change password');
       }

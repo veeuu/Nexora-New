@@ -8,6 +8,18 @@ import Pricing from './components/Pricing';
 import trackPageView from './utils/pageTracker';
 import './styles.css';
 
+const deriveDisplayName = (value) => {
+  if (!value) return '';
+  if (!value.includes('@')) return value;
+  const namePart = value.split('@')[0];
+  return namePart
+    .replace(/[._-]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 // Track route changes
 function RouteTracker() {
   const location = useLocation();
@@ -22,9 +34,8 @@ function App() {
     return localStorage.getItem('isAuthenticated') === 'true';
   });
   const [dashboardNav, setDashboardNav] = useState(null);
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem('username') || '';
-  });
+  const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem('displayName') || '');
   const [cursorHidden, setCursorHidden] = useState(() => {
     return localStorage.getItem('cursorHidden') === 'true';
   });
@@ -32,7 +43,8 @@ function App() {
   useEffect(() => {
     localStorage.setItem('isAuthenticated', isAuthenticated);
     localStorage.setItem('username', username);
-  }, [isAuthenticated, username]);
+    localStorage.setItem('displayName', displayName);
+  }, [isAuthenticated, username, displayName]);
 
   // Cursor hiding functionality - custom visible cursor for user, invisible to recordings
   useEffect(() => {
@@ -95,16 +107,19 @@ function App() {
     localStorage.setItem('cursorHidden', cursorHidden);
   }, [cursorHidden]);
 
-  const handleLogin = (user) => {
-    setUsername(user);
+  const handleLogin = (userEmail, userFullName) => {
+    setUsername(userEmail);
+    setDisplayName(userFullName || deriveDisplayName(userEmail));
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUsername('');
+    setDisplayName('');
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('username');
+    localStorage.removeItem('displayName');
     localStorage.removeItem('authToken');
     localStorage.removeItem('userPlan');
     window.location.href = 'https://nexora.proplusdata.co/';
@@ -126,7 +141,7 @@ function App() {
         {/* <Route path="/pricing" element={<Pricing />} /> */}
         <Route 
           path="/dashboard/*" 
-          element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Dashboard onLogout={handleLogout} onNavRef={setDashboardNav} username={username} displayName={displayName} /> : <Navigate to="/login" />} 
         />
       </Routes>
     </div>

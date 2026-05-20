@@ -78,7 +78,7 @@ const SvgCarousel = () => {
   );
 };
 
-const Home = () => {
+const Home = ({ displayName }) => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('summary');
@@ -157,7 +157,9 @@ const Home = () => {
         <div className="home-header">
           <div>
             <>
-              <h1 className="home-title">Welcome to Nexora®</h1>
+              <h1 className="home-title" style={{ color: '#6b7280' }}>
+                Welcome {displayName || localStorage.getItem('displayName') || 'Nexora'} !
+              </h1>
               <p className="home-subtitle"></p>
               <div className="home-quick-buttons">
                 <button className={`home-quick-btn home-quick-btn-technographics${activeView === 'technographics' ? ' active' : ''}`} onClick={() => handleViewClick('technographics')}>Technographics</button>

@@ -13,7 +13,7 @@ import ProductCatalogue from './martech/ProductCatalogue';
 import DataDictionary from './martech/DataDictionary';
 import Keywords from './martech/Keywords';
 
-const Dashboard = ({ onLogout, onNavRef, username }) => {
+const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('Insights');
@@ -91,7 +91,7 @@ useEffect(() => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case 'Insights':
-        return <Home />;
+        return <Home displayName={displayName} />;
       case 'NTP':
       case 'Next Tech Purchase®':
         return <MartechNTP />;
@@ -108,7 +108,7 @@ useEffect(() => {
       case 'Keywords Surge':
         return <Keywords />;
       default:
-        return <Home />;
+        return <Home displayName={displayName} />;
     }
   };
 
@@ -126,7 +126,7 @@ useEffect(() => {
           />
           <main className={activeSection === 'Home' ? 'home-content' : 'main-content'}>
             <Routes>
-              <Route path="/home" element={<Home key={homeResetTrigger} />} />
+              <Route path="/home" element={<Home key={homeResetTrigger} displayName={displayName} />} />
               <Route path="/technographics" element={<MartechTechnographics />} />
               <Route path="/renewal-intelligence" element={<RenewalIntelligence />} />
               <Route path="/intent" element={<Martechintent />} />
@@ -135,7 +135,7 @@ useEffect(() => {
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
               <Route path="/data-dictionary" element={<DataDictionary />} />
               <Route path="/keywords" element={<Keywords />} />
-              <Route path="/" element={<Home key={homeResetTrigger} />} />
+              <Route path="/" element={<Home key={homeResetTrigger} displayName={displayName} />} />
             </Routes>
           </main>
         </div>
