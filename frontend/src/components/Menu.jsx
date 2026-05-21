@@ -125,10 +125,10 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
       <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">
-          <span className="menu-credits-count">0 of 50</span>
+          <span className="menu-credits-count">10 of 50</span>
         </div>
         <div className="menu-credits-bar">
-          <div className="menu-credits-fill" style={{ width: '1%' }}></div>
+          <div className="menu-credits-fill" style={{ width: '10%' }}></div>
         </div>
       </div>
       <div className="menu-profile-section" ref={profileRef}>
