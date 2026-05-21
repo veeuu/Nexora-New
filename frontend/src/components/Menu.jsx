@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import nexoraLogo from '../assets/Nexora Logo (2)-cropped.svg';
+import nexoraLogo from '../assets/Nexora Powered By PPD [White]-cropped.svg';
 
 const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onProfileClick }) => {
   const [isOpen, setIsOpen] = useState(false);

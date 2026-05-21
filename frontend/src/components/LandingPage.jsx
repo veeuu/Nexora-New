@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
 import ClientLogosCarousel from './ClientLogosCarousel';
-import nexoraLogo2 from '../assets/Nexora Logo (2)-cropped.svg';
-import proplusDataLogo from '../assets/unnamed (1).png';
+import nexoraLogo2 from '../assets/Nexora Powered By PPD [White]-cropped.svg';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
 import ccpaLogo from '../landing/ccpa-1.png';
 import iso27001Logo from '../landing/ISO27001-2022.svg';
@@ -783,13 +782,21 @@ const LandingPage = () => {
       <header className="landing-header">
         <div className="header-container">
           <div className="logo-section">
-            <img src={nexoraLogo2} alt="Nexora" className="header-logo" />
+            <img src={nexoraLogo2} alt="Nexora" className="header-logo" style={{ height: '45px' }} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
-            <span style={{ fontSize: '0.85rem', color: '#a0a0a0', fontWeight: '500' }}>Powered by</span>
-            <a href="https://proplusdata.co/" target="_blank" rel="noopener noreferrer">
-              <img src={proplusDataLogo} alt="ProPlus Data" className="header-logo" style={{ height: '35px' }} />
-            </a>
+          <div className="header-nav-btns" style={{ marginLeft: 'auto' }}>
+            {/* <button
+              className="header-nav-btn"
+              onClick={() => navigate('/pricing')}
+            >
+              Pricing
+            </button> */}
+            <button
+              className="btn-login"
+              onClick={() => navigate('/login')}
+            >
+              Log In
+            </button>
           </div>
         </div>
       </header>
@@ -844,59 +851,7 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Top-right nav buttons */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          {/** Pricing button temporarily disabled from landing page */}
-          {/*
-          <button
-            onClick={() => navigate('/pricing')}
-            style={{
-              background: 'transparent',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              padding: '9px 20px',
-              color: '#111827',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#f3f4f6'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-          >
-            Pricing
-          </button>
-          */}
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              background: 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              padding: '9px 20px',
-              color: '#111827',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}
-          >
-            Log In
-          </button>
-        </div>
+        {/* Top-right nav buttons moved to header */}
       </section>
 
       {/* Client Logos Carousel */}
