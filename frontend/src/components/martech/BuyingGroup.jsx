@@ -530,7 +530,7 @@ const BuyingGroup = () => {
                     title="View Team Details"
                 >
                     <span className="more-info-button-span">
-                        More
+                        Contact Data
                         <FaInfoCircle size={14} />
                     </span>
                 </button>
