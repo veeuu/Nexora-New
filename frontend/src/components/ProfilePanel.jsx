@@ -20,7 +20,7 @@ const PLAN_LABELS = {
 
 const SECTION_COLORS = {
   Technographics: '#3b82f6',
-  Intent: '#8b5cf6',
+  'Intent Data': '#8b5cf6',
   'Renewal Intelligence': '#f59e0b',
   'Buying Group': '#10b981',
   'Next Tech Purchase®': '#ef4444',

@@ -886,7 +886,7 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
               </div>
 
               <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
-                Can't find what you're looking for in <span style={{ fontWeight: '600', color: '#334155' }}>{filterType}</span>? Enter the company name and our team will reach out.
+                Can't find what you're looking for in <span style={{ fontWeight: '600', color: '#334155' }}>{filterType}</span>? Enter the company domain and our team will reach out.
               </p>
 
               <div style={{ marginBottom: '20px' }}>
@@ -2186,7 +2186,7 @@ const Technographics = () => {
                           <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
                             <button
                               onClick={() => {
-                                setOnDemandModal({ filterType: 'Company Name', searchValue: companySearchTerm.trim() });
+                                setOnDemandModal({ filterType: 'Company Domain', searchValue: companySearchTerm.trim() });
                                 setActiveFilterMenu(null);
                                 setCompanySearchTerm('');
                               }}

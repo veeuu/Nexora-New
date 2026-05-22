@@ -59,12 +59,12 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
             <form onSubmit={handleSubmit}>
               <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Request on Demand</h3>
               <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '14px', lineHeight: '1.6' }}>Can't find the company you're looking for? Submit a request and we'll add it.</p>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Company Name</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Company Domain</label>
               <input
                 type="text"
                 value={requestedName}
                 onChange={(e) => setRequestedName(e.target.value)}
-                placeholder="Enter company name..."
+                placeholder="Enter company domain..."
                 required
                 style={{ width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: '20px', outline: 'none' }}
               />
@@ -446,7 +446,7 @@ const BuyingGroup = () => {
                                             <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
                                                 <button
                                                     onClick={() => {
-                                                        setOnDemandModal({ filterType: 'Company Name', searchValue: searchQuery.trim() });
+                                                        setOnDemandModal({ filterType: 'Company Domain', searchValue: searchQuery.trim() });
                                                         setIsCompanyDropdownOpen(false);
                                                         setSearchQuery('');
                                                     }}
