@@ -1,0 +1,233 @@
+.contact-us-page {
+  padding: 32px 28px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.contact-us-header {
+  margin-bottom: 32px;
+}
+
+.contact-us-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.contact-us-header p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.contact-us-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Form card */
+.contact-us-form-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.contact-us-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-us-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.contact-us-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.contact-required {
+  color: #ef4444;
+}
+
+.contact-us-field input,
+.contact-us-field select,
+.contact-us-field textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  transition: border-color 0.15s;
+  outline: none;
+  resize: vertical;
+}
+
+.contact-us-field input:focus,
+.contact-us-field select:focus,
+.contact-us-field textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.contact-char-count {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: right;
+  margin-top: 2px;
+}
+
+.contact-error {
+  font-size: 13px;
+  color: #dc2626;
+  margin: 0;
+  padding: 10px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
+.contact-submit-btn {
+  padding: 11px 24px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+
+.contact-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.contact-submit-btn:not(:disabled):hover {
+  opacity: 0.9;
+}
+
+/* Success state */
+.contact-us-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 12px;
+}
+
+.contact-us-success-icon {
+  width: 60px;
+  height: 60px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-us-success h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.contact-us-success p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.contact-us-new-btn {
+  margin-top: 8px;
+  padding: 9px 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.contact-us-new-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Info cards */
+.contact-us-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-info-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.contact-info-icon {
+  width: 36px;
+  height: 36px;
+  background: #eff6ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-info-label {
+  margin: 0 0 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-info-value {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+@media (max-width: 768px) {
+  .contact-us-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-us-page {
+    padding: 20px 16px;
+  }
+}

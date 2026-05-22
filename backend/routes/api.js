@@ -62,6 +62,22 @@ router.post('/on-demand-request', async (req, res) => {
   res.json({ success: true });
 });
 
+// --- CONTACT TICKET ROUTE
+router.post('/contact-ticket', async (req, res) => {
+  const { category, subject, message } = req.body;
+  const { email } = req.user;
+
+  console.log('\n========== CONTACT TICKET ==========');
+  console.log(`From:      ${email}`);
+  console.log(`Category:  ${category}`);
+  console.log(`Subject:   ${subject}`);
+  console.log(`Message:   ${message}`);
+  console.log(`Timestamp: ${new Date().toISOString()}`);
+  console.log('=====================================\n');
+
+  res.json({ success: true });
+});
+
 // --- NTP ROUTES
 
 let statsCache = null;

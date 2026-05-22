@@ -275,9 +275,16 @@ body {
 
 .menu-items {
   list-style: none;
-  overflow-y: visible;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.menu-items::-webkit-scrollbar {
+  display: none;
 }
 
 .menu-items li {
@@ -296,6 +303,41 @@ body {
   background-color: #1d42655a;
   border-left: 3px solid #fff;
   font-weight: 500;
+  color: #fff;
+}
+
+.menu-contact-us {
+  padding: 0 1rem 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.75rem;
+}
+
+.menu-contact-us-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.menu-contact-us-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.menu-contact-us-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
 }
 

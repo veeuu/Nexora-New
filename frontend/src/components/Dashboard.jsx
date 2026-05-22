@@ -12,6 +12,7 @@ import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
 import DataDictionary from './martech/DataDictionary';
 import Keywords from './martech/Keywords';
+import ContactUs from './ContactUs';
 
 const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const navigate = useNavigate();
@@ -30,7 +31,8 @@ const routeToSection = {
     '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue',
     '/dashboard/data-dictionary': 'Data Dictionary',
-    '/dashboard/keywords': 'Keywords Surge'
+    '/dashboard/keywords': 'Keywords Surge',
+    '/dashboard/contact-us': 'Contact Us'
   };
 
 useEffect(() => {
@@ -51,7 +53,8 @@ useEffect(() => {
       'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue',
       'Data Dictionary': '/dashboard/data-dictionary',
-      'Keywords Surge': '/dashboard/keywords'
+      'Keywords Surge': '/dashboard/keywords',
+      'Contact Us': '/dashboard/contact-us'
     };
 
     const route = sectionToRoute[section] || '/dashboard/home';
@@ -107,6 +110,8 @@ useEffect(() => {
         return <ProductCatalogue />;
       case 'Keywords Surge':
         return <Keywords />;
+      case 'Contact Us':
+        return <ContactUs username={username} />;
       default:
         return <Home displayName={displayName} />;
     }
@@ -135,6 +140,7 @@ useEffect(() => {
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
               <Route path="/data-dictionary" element={<DataDictionary />} />
               <Route path="/keywords" element={<Keywords />} />
+              <Route path="/contact-us" element={<ContactUs username={username} />} />
               <Route path="/" element={<Home key={homeResetTrigger} displayName={displayName} />} />
             </Routes>
           </main>
