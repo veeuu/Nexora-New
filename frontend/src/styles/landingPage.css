@@ -107,6 +107,58 @@
   color: #ffffff;
 }
 
+/* ProPlus Data logo in header */
+.header-proplus-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  margin-left: auto;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.header-proplus-link:hover {
+  opacity: 1;
+}
+
+.header-proplus-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.header-proplus-logo {
+  height: 44px;
+  object-fit: contain;
+}
+
+/* Login button floating in hero top-right */
+.hero-login-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  padding: 0.55rem 1.4rem;
+  background: transparent;
+  color: #1e293b;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.hero-login-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
 /* ============ HERO SECTION ============ */
 .hero-section {
   padding: 4rem 2rem;

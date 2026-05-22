@@ -4,6 +4,7 @@ import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
 import ClientLogosCarousel from './ClientLogosCarousel';
 import nexoraLogo2 from '../assets/Nexora Powered By PPD [White]-cropped.svg';
+import proplusLogo from '../assets/unnamed (1).png';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
 import ccpaLogo from '../landing/ccpa-1.png';
 import iso27001Logo from '../landing/ISO27001-2022.svg';
@@ -784,25 +785,25 @@ const LandingPage = () => {
           <div className="logo-section">
             <img src={nexoraLogo2} alt="Nexora" className="header-logo" style={{ height: '45px' }} />
           </div>
-          <div className="header-nav-btns" style={{ marginLeft: 'auto' }}>
-            {/* <button
-              className="header-nav-btn"
-              onClick={() => navigate('/pricing')}
-            >
-              Pricing
-            </button> */}
-            <button
-              className="btn-login"
-              onClick={() => navigate('/login')}
-            >
-              Log In
-            </button>
-          </div>
+          <a
+            href="https://proplusdata.co/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="header-proplus-link"
+          >
+            <img src={proplusLogo} alt="ProPlus Data" className="header-proplus-logo" />
+          </a>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section" style={{ position: 'relative' }}>
+        <button
+          className="hero-login-btn"
+          onClick={() => navigate('/login')}
+        >
+          Log In
+        </button>
         <div className="hero-wrapper">
           <div className="hero-content">
             <h1 className="hero-title">
