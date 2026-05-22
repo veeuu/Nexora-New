@@ -1,7 +1,16 @@
 /* Intent Component Styles */
 
 .intent-container {
+  background: #ffffff;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  margin-left: 0;
+  margin-right: 0;
   width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  min-height: 750px;
+  padding: 24px 28px !important;
 }
 
 .header-actions {
