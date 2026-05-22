@@ -965,3 +965,19 @@
   border-color: #3b82f6;
   color: #2563eb;
 }
+
+/* Export toast */
+.export-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #92400e;
+  animation: fadeIn 0.2s ease;
+}

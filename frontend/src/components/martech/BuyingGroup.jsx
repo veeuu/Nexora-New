@@ -100,6 +100,7 @@ const BuyingGroup = () => {
     const [revealedEmails, setRevealedEmails] = useState(new Set());
     const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(new Set());
     const [onDemandModal, setOnDemandModal] = useState(null);
+    const [exportToast, setExportToast] = useState(false);
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
@@ -673,6 +674,16 @@ const BuyingGroup = () => {
                             <div className="panel-divider" />
 
                             <div className="team-members-section">
+                                {exportToast && (
+                                    <div className="export-toast">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <line x1="12" y1="8" x2="12" y2="12" />
+                                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                                        </svg>
+                                        Reveal both email &amp; mobile DID for at least one contact first.
+                                    </div>
+                                )}
                                 <div className="team-members-section-header">
                                     <h3>
                                         Team Members {selectedCategories.size > 0 ? `(${Array.from(selectedCategories).join(', ')})` : ''} ({companyPersons.length})
@@ -680,10 +691,18 @@ const BuyingGroup = () => {
                                     {companyPersons.length > 0 && (
                                         <button
                                             className="contact-download-btn"
-                                            title="Download all contacts as CSV"
+                                            title="Export only fully revealed contacts (email + mobile DID)"
                                             onClick={() => {
+                                                const fullyRevealed = companyPersons.filter((_, i) =>
+                                                    isEmailRevealed(i) && isMobileDIDRevealed(i)
+                                                );
+                                                if (fullyRevealed.length === 0) {
+                                                    setExportToast(true);
+                                                    setTimeout(() => setExportToast(false), 3000);
+                                                    return;
+                                                }
                                                 const headers = ['Name', 'Designation', 'Email', 'Mobile DID', 'LinkedIn', 'Company'];
-                                                const rows = companyPersons.map(p => {
+                                                const rows = fullyRevealed.map(p => {
                                                     let url = p.linkedin || '';
                                                     url = url.replace(/^["']|["']$/g, '').trim();
                                                     if (url && !url.startsWith('http')) url = `https://linkedin.com/in/${url}`;
@@ -700,7 +719,7 @@ const BuyingGroup = () => {
                                                 URL.revokeObjectURL(url);
                                             }}
                                         >
-                                            Export
+                                            Export CSV
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                                 <polyline points="7 10 12 15 17 10" />
