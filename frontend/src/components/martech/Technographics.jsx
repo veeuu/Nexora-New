@@ -4176,7 +4176,7 @@ const Technographics = () => {
         .technographics-container {
           background: #ffffff;
           border-radius: 12px;
-          padding: 0.4rem 0.5rem 0;
+          padding: 0.4rem 0.9rem 0;
           margin-bottom: 0;
           margin-left: 0.0rem;
           margin-top: 0;
