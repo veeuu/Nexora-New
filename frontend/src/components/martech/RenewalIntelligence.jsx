@@ -2242,7 +2242,7 @@ if (aQtr.year !== bQtr.year) {
 
                 {}
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <button
+                  {/* <button
                     onClick={() => downloadCSV(filteredData)}
                     className="download-csv-button"
                   >
@@ -2254,7 +2254,7 @@ if (aQtr.year !== bQtr.year) {
                       <line x1="16" y1="13" x2="16" y2="17"></line>
                     </svg>
                     Download CSV
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
