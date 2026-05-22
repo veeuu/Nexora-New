@@ -17,13 +17,13 @@ import ContactUs from './ContactUs';
 const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeSection, setActiveSection] = useState('Insights');
+  const [activeSection, setActiveSection] = useState('Home');
   const [homeResetTrigger, setHomeResetTrigger] = useState(0);
   const [profilePanelOpen, setProfilePanelOpen] = useState(false);
 
 const routeToSection = {
-    '/dashboard': 'Insights',
-    '/dashboard/home': 'Insights',
+    '/dashboard': 'Home',
+    '/dashboard/home': 'Home',
     '/dashboard/technographics': 'Technographics',
     '/dashboard/renewal-intelligence': 'Renewal Intelligence',
     '/dashboard/intent': 'Intent',
@@ -37,7 +37,7 @@ const routeToSection = {
 
 useEffect(() => {
     const currentPath = location.pathname;
-    const section = routeToSection[currentPath] || 'Insights';
+    const section = routeToSection[currentPath] || 'Home';
     setActiveSection(section);
   }, [location.pathname]);
 
@@ -45,7 +45,7 @@ useEffect(() => {
     setActiveSection(section);
 
     const sectionToRoute = {
-      'Insights': '/dashboard/home',
+      'Home': '/dashboard/home',
       'Technographics': '/dashboard/technographics',
       'Renewal Intelligence': '/dashboard/renewal-intelligence',
       'Intent': '/dashboard/intent',
@@ -60,8 +60,8 @@ useEffect(() => {
     const route = sectionToRoute[section] || '/dashboard/home';
     navigate(route);
     
-    // Trigger reset for Home component when Insights is clicked
-    if (section === 'Insights') {
+    // Trigger reset for Home component when Home is clicked
+    if (section === 'Home') {
       setHomeResetTrigger(prev => prev + 1);
     }
   };
@@ -77,7 +77,7 @@ useEffect(() => {
       'Renewal Intelligence': 'Renewal Intelligence'
     };
 
-    const section = sectionMap[page.page] || 'Insights';
+    const section = sectionMap[page.page] || 'Home';
     handleMenuClick(section);
   };
 
@@ -88,12 +88,12 @@ useEffect(() => {
   }, [onNavRef]);
 
   const getMenuItems = () => {
-    return ['Insights', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords Surge'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords Surge'];
   };
 
   const renderActiveSection = () => {
     switch (activeSection) {
-      case 'Insights':
+      case 'Home':
         return <Home displayName={displayName} />;
       case 'NTP':
       case 'Next Tech Purchase®':
@@ -157,3 +157,4 @@ useEffect(() => {
 };
 
 export default Dashboard;
+
