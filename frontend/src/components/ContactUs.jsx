@@ -32,6 +32,19 @@ const ContactUs = ({ username }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, email: username }),
       });
+      // Save to localStorage for profile panel history
+      try {
+        const existing = JSON.parse(localStorage.getItem('ticketHistory') || '[]');
+        const entry = {
+          id: Date.now(),
+          category: form.category,
+          subject: form.subject,
+          message: form.message,
+          status: 'Open',
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        };
+        localStorage.setItem('ticketHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+      } catch (_) {}
       setSubmitted(true);
     } catch {
       setError('Something went wrong. Please try again.');

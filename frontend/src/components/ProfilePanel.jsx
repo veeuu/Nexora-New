@@ -33,6 +33,7 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
   const [memberSince, setMemberSince] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [queryHistory, setQueryHistory] = useState([]);
+  const [ticketHistory, setTicketHistory] = useState([]);
 
   useEffect(() => {
     const plan = localStorage.getItem('userPlan') || 'free_trial';
@@ -55,6 +56,14 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
       setQueryHistory(history);
     } catch (_) {
       setQueryHistory([]);
+    }
+
+    // Load ticket history from localStorage
+    try {
+      const tickets = JSON.parse(localStorage.getItem('ticketHistory') || '[]');
+      setTicketHistory(tickets);
+    } catch (_) {
+      setTicketHistory([]);
     }
   }, [isOpen]);
 
@@ -95,13 +104,13 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
 
         {/* Tabs */}
         <div className="profile-tabs">
-          {['overview', 'credits', 'history'].map((tab) => (
+          {['overview', 'credits', 'history', 'tickets'].map((tab) => (
             <button
               key={tab}
               className={`profile-tab ${activeTab === tab ? 'profile-tab--active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === 'overview' ? 'Overview' : tab === 'credits' ? 'Credits' : 'Query History'}
+              {tab === 'overview' ? 'Overview' : tab === 'credits' ? 'Credits' : tab === 'history' ? 'Query History' : 'Tickets'}
             </button>
           ))}
         </div>
@@ -239,6 +248,51 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
                       </div>
                       <p className="query-text">{q.query}</p>
                       <p className="query-date">{q.date}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+
+          {/* ── TICKETS TAB ── */}
+          {activeTab === 'tickets' && (
+            <>
+              <div className="history-tab-header">
+                <p className="profile-panel-section-label" style={{ margin: 0 }}>Support Tickets</p>
+                {ticketHistory.length > 0 && (
+                  <button
+                    className="history-clear-btn"
+                    onClick={() => {
+                      localStorage.removeItem('ticketHistory');
+                      setTicketHistory([]);
+                    }}
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+              {ticketHistory.length === 0 ? (
+                <div className="empty-state-box">
+                  <span className="empty-state-icon">🎫</span>
+                  <p className="empty-state-text">No tickets submitted yet.</p>
+                  <p className="empty-state-hint">
+                    Use the "Contact Us" page to raise a support ticket. It will appear here.
+                  </p>
+                </div>
+              ) : (
+                <ul className="query-history-list">
+                  {ticketHistory.map((t) => (
+                    <li key={t.id} className="query-history-item">
+                      <div className="query-history-top">
+                        <span className="query-filter-tag">{t.category}</span>
+                        <span className={`query-status-badge ${t.status === 'Resolved' ? 'status-completed' : 'status-pending'}`}>
+                          {t.status}
+                        </span>
+                      </div>
+                      <p className="query-text" style={{ fontWeight: '600' }}>{t.subject}</p>
+                      <p className="query-text" style={{ color: '#64748b', fontSize: '12px', marginTop: '2px' }}>{t.message.length > 100 ? t.message.slice(0, 100) + '…' : t.message}</p>
+                      <p className="query-date">{t.date}</p>
                     </li>
                   ))}
                 </ul>
