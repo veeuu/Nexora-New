@@ -673,9 +673,42 @@ const BuyingGroup = () => {
                             <div className="panel-divider" />
 
                             <div className="team-members-section">
-                                <h3>
-                                    Team Members {selectedCategories.size > 0 ? `(${Array.from(selectedCategories).join(', ')})` : ''} ({companyPersons.length})
-                                </h3>
+                                <div className="team-members-section-header">
+                                    <h3>
+                                        Team Members {selectedCategories.size > 0 ? `(${Array.from(selectedCategories).join(', ')})` : ''} ({companyPersons.length})
+                                    </h3>
+                                    {companyPersons.length > 0 && (
+                                        <button
+                                            className="contact-download-btn"
+                                            title="Download all contacts as CSV"
+                                            onClick={() => {
+                                                const headers = ['Name', 'Designation', 'Email', 'Mobile DID', 'LinkedIn', 'Company'];
+                                                const rows = companyPersons.map(p => {
+                                                    let url = p.linkedin || '';
+                                                    url = url.replace(/^["']|["']$/g, '').trim();
+                                                    if (url && !url.startsWith('http')) url = `https://linkedin.com/in/${url}`;
+                                                    return [p.name || '', p.fullRole || p.designation || '', p.email || '', p.mobileDID || '', url, selectedCompany || '']
+                                                        .map(v => `"${String(v).replace(/"/g, '""')}"`);
+                                                });
+                                                const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                                                const blob = new Blob([csv], { type: 'text/csv' });
+                                                const url = URL.createObjectURL(blob);
+                                                const a = document.createElement('a');
+                                                a.href = url;
+                                                a.download = `${(selectedCompany || 'contacts').replace(/\s+/g, '_')}_contacts.csv`;
+                                                a.click();
+                                                URL.revokeObjectURL(url);
+                                            }}
+                                        >
+                                            Export
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                <polyline points="7 10 12 15 17 10" />
+                                                <line x1="12" y1="15" x2="12" y2="3" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
 
                                 <div className="team-members-list">
                                     {companyPersons.map((person, index) => {
@@ -706,7 +739,7 @@ const BuyingGroup = () => {
                                                             className="linkedin-button"
                                                             title="Visit LinkedIn Profile"
                                                         >
-                                                            <FaLinkedin size={18} color="white" />
+                                                            <FaLinkedin size={14} color="white" />
                                                         </a>
                                                     )}
                                                 </div>
