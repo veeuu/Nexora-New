@@ -1208,3 +1208,29 @@ tr:hover {
     top: 56px !important;
   }
 }
+
+/* Reveal Button */
+.reveal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reveal-button-locked {
+  background-color: transparent;
+  border: none;
+}
+
+.reveal-button-locked:hover {
+  background-color: #f3f4f6;
+}
+
+.reveal-button-unlocked {
+  background-color: transparent;
+  border: none;
+  cursor: default;
+}

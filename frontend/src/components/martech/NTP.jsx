@@ -1237,7 +1237,59 @@ const NTP = () => {
                   }}
                 />
               </th>
-              <th style={{ textAlign: 'center', width: '80px' }}>Unlock</th>
+              <th style={{ textAlign: 'center', width: '120px' }}>
+                <button
+                  onClick={() => {
+                    if (selectedRows.size === 0) return;
+                    // Build the same allCompanies array used in the table body
+                    const companiesMapBulk = new Map();
+                    filteredData.forEach(row => {
+                      if (!companiesMapBulk.has(row.companyName)) {
+                        companiesMapBulk.set(row.companyName, { companyName: row.companyName });
+                      }
+                    });
+                    const allCompaniesBulk = Array.from(companiesMapBulk.values()).sort((a, b) => {
+                      const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
+                      const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+                      if (aRevealed && !bRevealed) return -1;
+                      if (!aRevealed && bRevealed) return 1;
+                      return 0;
+                    });
+                    setRevealedRows(prev => {
+                      const newSet = new Set(prev);
+                      selectedRows.forEach(rowIndex => {
+                        const company = allCompaniesBulk[rowIndex];
+                        if (company) {
+                          const rowKey = `${rowIndex}-${company.companyName}`;
+                          if (!newSet.has(rowKey)) {
+                            deductCredit('ntp', 1);
+                            markRevealed('ntp', rowKey);
+                          }
+                          newSet.add(rowKey);
+                        }
+                      });
+                      return newSet;
+                    });
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    backgroundColor: selectedRows.size > 0 ? '#3b82f6' : '#d1d5db',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: selectedRows.size > 0 ? 'pointer' : 'not-allowed',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    transition: 'all 0.2s',
+                    opacity: selectedRows.size > 0 ? 1 : 0.6
+                  }}
+                  onMouseEnter={(e) => { if (selectedRows.size > 0) e.currentTarget.style.backgroundColor = '#1d4ed8'; }}
+                  onMouseLeave={(e) => { if (selectedRows.size > 0) e.currentTarget.style.backgroundColor = '#3b82f6'; }}
+                  title={selectedRows.size > 0 ? `Reveal ${selectedRows.size} selected companies` : 'Select companies to reveal'}
+                >
+                  Unlock
+                </button>
+              </th>
               <th>Company Name</th>
               {/* <th>Category</th> */}
               <th>Technology</th>
@@ -1320,13 +1372,9 @@ const NTP = () => {
                               }
                               setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
                             }}
-                            style={{
-                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                              gap: '6px', padding: '8px 10px',
-                              backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
-                              border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
-                              borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s'
-                            }}
+                            className={`reveal-button ${isRevealed ? 'reveal-button-unlocked' : 'reveal-button-locked'}`}
+                            onMouseEnter={(e) => { if (!isRevealed) e.currentTarget.style.backgroundColor = '#f3f4f6'; }}
+                            onMouseLeave={(e) => { if (!isRevealed) e.currentTarget.style.backgroundColor = 'transparent'; }}
                             title={isRevealed ? 'Company revealed' : 'Click to reveal company'}
                           >
                             {isRevealed
