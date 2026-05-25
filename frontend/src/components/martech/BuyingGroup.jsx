@@ -1,7 +1,8 @@
 import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef } from 'react';
-import { FaLinkedin, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
+import { FaLinkedin, FaTimes, FaInfoCircle, FaLock, FaUnlock } from 'react-icons/fa';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
+import { deductCredit } from '../../utils/credits';
 import '../../styles/buyingGroup.css';
 
 // ── On-Demand Request Modal ──────────────────────────────────────────────────
@@ -101,6 +102,7 @@ const BuyingGroup = () => {
     const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(new Set());
     const [onDemandModal, setOnDemandModal] = useState(null);
     const [exportToast, setExportToast] = useState(false);
+    const [orgChartRevealed, setOrgChartRevealed] = useState(new Set());
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
@@ -537,7 +539,7 @@ const BuyingGroup = () => {
                 </button>
             </div>
 
-            <div className="org-chart-container">
+            <div className="org-chart-container" style={{ position: 'relative' }}>
                 {loading && (
                     <div className="org-chart-loading">
                         <p>Generating org chart...</p>
@@ -551,12 +553,48 @@ const BuyingGroup = () => {
                 )}
 
                 {!loading && !error && orgChartUrl && (
-                    <iframe
-                        ref={iframeRef}
-                        src={orgChartUrl}
-                        className="org-chart-iframe"
-                        title={`Org Chart for ${selectedCompany}`}
-                    />
+                    <>
+                        <iframe
+                            ref={iframeRef}
+                            src={orgChartUrl}
+                            className="org-chart-iframe"
+                            style={!orgChartRevealed.has(selectedCompany) ? { filter: 'blur(8px)', pointerEvents: 'none', userSelect: 'none' } : {}}
+                            title={`Org Chart for ${selectedCompany}`}
+                        />
+                        {!orgChartRevealed.has(selectedCompany) && (
+                            <div style={{
+                                position: 'absolute', inset: 0,
+                                display: 'flex', flexDirection: 'column',
+                                alignItems: 'center', justifyContent: 'center',
+                                gap: '12px', zIndex: 10
+                            }}>
+                                <div style={{
+                                    background: 'rgba(255,255,255,0.92)',
+                                    borderRadius: '12px', padding: '24px 32px',
+                                    textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+                                    border: '1px solid #e2e8f0'
+                                }}>
+                                    <FaLock size={24} style={{ color: '#64748b', marginBottom: '10px' }} />
+                                    <p style={{ margin: '0 0 4px', fontWeight: '700', fontSize: '15px', color: '#0f172a' }}>Org Chart Locked</p>
+                                    <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#64748b' }}>Unlock to view the org chart for <strong>{selectedCompany}</strong></p>
+                                    <button
+                                        onClick={() => {
+                                            deductCredit('buyingGroup', 1);
+                                            setOrgChartRevealed(prev => { const s = new Set(prev); s.add(selectedCompany); return s; });
+                                        }}
+                                        style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                            padding: '10px 22px', background: '#2563eb', color: 'white',
+                                            border: 'none', borderRadius: '8px', fontSize: '14px',
+                                            fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit'
+                                        }}
+                                    >
+                                        <FaUnlock size={14} /> Unlock Org Chart
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {!loading && !error && !orgChartUrl && (
