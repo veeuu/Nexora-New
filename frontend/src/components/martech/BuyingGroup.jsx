@@ -305,11 +305,17 @@ const BuyingGroup = () => {
 
     const toggleEmailReveal = (personIndex) => {
         const key = `${selectedCompany}-${personIndex}`;
+        if (!revealedEmails.has(key)) {
+            deductCredit('buyingGroup', 1);
+        }
         setRevealedEmails(prev => new Set(prev).add(key));
     };
 
     const toggleMobileDIDReveal = (personIndex) => {
         const key = `${selectedCompany}-${personIndex}`;
+        if (!revealedMobileDIDs.has(key)) {
+            deductCredit('buyingGroup', 1);
+        }
         setRevealedMobileDIDs(prev => new Set(prev).add(key));
     };
 
