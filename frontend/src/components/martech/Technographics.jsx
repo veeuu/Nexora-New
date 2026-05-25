@@ -1,6 +1,7 @@
 ﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { deductCredit } from '../../utils/credits';
+import { isRevealed as isRevealedPersisted, markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -988,7 +989,10 @@ const Technographics = () => {
   const [ntpDataByCompany, setNtpDataByCompany] = useState({});
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1); 
-  const [revealedRows, setRevealedRows] = useState(new Set()); 
+  const [revealedRows, setRevealedRows] = useState(() => {
+    const data = getRevealedLocal();
+    return new Set(Array.isArray(data.technographics) ? data.technographics : []);
+  });
   const [measurements, setMeasurements] = useState({});
   const [pageCache, setPageCache] = useState({}); 
   const [totalPages, setTotalPages] = useState(0);
@@ -1326,6 +1330,22 @@ const Technographics = () => {
   // Removed prefetchAdjacentPages - it caused data overwriting when prefetch
   // called setTableData and replaced the currently displayed page's data
 
+  // Sync revealed rows when server data arrives
+  useEffect(() => {
+    const onUpdate = () => {
+      const data = getRevealedLocal();
+      setRevealedRows(new Set(Array.isArray(data.technographics) ? data.technographics : []));
+    };
+    window.addEventListener('revealedUpdated', onUpdate);
+    // Also fetch fresh from server on mount
+    syncRevealedFromServer().then(data => {
+      if (data && Array.isArray(data.technographics)) {
+        setRevealedRows(new Set(data.technographics));
+      }
+    });
+    return () => window.removeEventListener('revealedUpdated', onUpdate);
+  }, []);
+
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -1658,9 +1678,14 @@ const Technographics = () => {
   }, {});
 
   const groupedDataArray = Object.values(groupedData).sort((a, b) => {
+    // Revealed rows always first
+    const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
+    const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+    if (aRevealed && !bRevealed) return -1;
+    if (!aRevealed && bRevealed) return 1;
+
     // Helper function to check if a row has complete data
     const isRowComplete = (row) => {
-      // Check if all key fields have values (not empty, not 'N/A', not null/undefined)
       const hasCompanyName = row.companyName && String(row.companyName).trim() !== '';
       const hasIndustry = row.industry && String(row.industry).trim() !== '' && String(row.industry).toLowerCase() !== 'n/a';
       const hasRegion = row.region && String(row.region).trim() !== '' && String(row.region).toLowerCase() !== 'n/a';
@@ -1669,17 +1694,13 @@ const Technographics = () => {
       const hasTechnology = (row.technologies && row.technologies.length > 0) || (row.technology && String(row.technology).trim() !== '');
       const hasPreviousDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.previousDetectedDate && String(td.previousDetectedDate).trim() !== '');
       const hasLatestDate = row.technologyDates && row.technologyDates.length > 0 && row.technologyDates.some(td => td.latestDetectedDate && String(td.latestDetectedDate).trim() !== '');
-
       return hasCompanyName && hasIndustry && hasRegion && hasEmployeeSize && hasRevenue && hasTechnology && hasPreviousDate && hasLatestDate;
     };
 
     const aComplete = isRowComplete(a);
     const bComplete = isRowComplete(b);
-
-    // Complete rows first, incomplete rows last
     if (aComplete && !bComplete) return -1;
     if (!aComplete && bComplete) return 1;
-    
     return 0;
   });
 
@@ -3348,6 +3369,7 @@ const Technographics = () => {
                           const rowKey = `${actualIndex}-${rowData.companyName}`;
                           if (!newSet.has(rowKey)) {
                             deductCredit('technographics', 1);
+                            markRevealed('technographics', rowKey);
                           }
                           newSet.add(rowKey);
                         }
@@ -3497,6 +3519,7 @@ const Technographics = () => {
                             const rowKey = `${actualIndex}-${row.companyName}`;
                             if (!revealedRows.has(rowKey)) {
                               deductCredit('technographics', 1);
+                              markRevealed('technographics', rowKey);
                             }
                             setRevealedRows(prev => {
                               const newSet = new Set(prev);

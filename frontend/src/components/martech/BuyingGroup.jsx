@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FaLinkedin, FaTimes, FaInfoCircle, FaLock, FaUnlock } from 'react-icons/fa';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { deductCredit } from '../../utils/credits';
+import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import '../../styles/buyingGroup.css';
 
 // ── On-Demand Request Modal ──────────────────────────────────────────────────
@@ -98,15 +99,42 @@ const BuyingGroup = () => {
     const [orgChartUrl, setOrgChartUrl] = useState('');
     const [zoomLevel, setZoomLevel] = useState(80);
     const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
-    const [revealedEmails, setRevealedEmails] = useState(new Set());
-    const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(new Set());
+    const [revealedEmails, setRevealedEmails] = useState(() => {
+        const data = getRevealedLocal();
+        return new Set(Array.isArray(data.buyingGroupEmails) ? data.buyingGroupEmails : []);
+    });
+    const [revealedMobileDIDs, setRevealedMobileDIDs] = useState(() => {
+        const data = getRevealedLocal();
+        return new Set(Array.isArray(data.buyingGroupMobileDIDs) ? data.buyingGroupMobileDIDs : []);
+    });
+    const [orgChartRevealed, setOrgChartRevealed] = useState(() => {
+        const data = getRevealedLocal();
+        return new Set(Array.isArray(data.buyingGroupOrgCharts) ? data.buyingGroupOrgCharts : []);
+    });
     const [onDemandModal, setOnDemandModal] = useState(null);
     const [exportToast, setExportToast] = useState(false);
-    const [orgChartRevealed, setOrgChartRevealed] = useState(new Set());
     const iframeRef = useRef(null);
     const dropdownRef = useRef(null);
 
     // Cleanup blob URLs on unmount
+    useEffect(() => {
+        const onUpdate = () => {
+            const data = getRevealedLocal();
+            setRevealedEmails(new Set(Array.isArray(data.buyingGroupEmails) ? data.buyingGroupEmails : []));
+            setRevealedMobileDIDs(new Set(Array.isArray(data.buyingGroupMobileDIDs) ? data.buyingGroupMobileDIDs : []));
+            setOrgChartRevealed(new Set(Array.isArray(data.buyingGroupOrgCharts) ? data.buyingGroupOrgCharts : []));
+        };
+        window.addEventListener('revealedUpdated', onUpdate);
+        syncRevealedFromServer().then(data => {
+            if (data) {
+                if (Array.isArray(data.buyingGroupEmails)) setRevealedEmails(new Set(data.buyingGroupEmails));
+                if (Array.isArray(data.buyingGroupMobileDIDs)) setRevealedMobileDIDs(new Set(data.buyingGroupMobileDIDs));
+                if (Array.isArray(data.buyingGroupOrgCharts)) setOrgChartRevealed(new Set(data.buyingGroupOrgCharts));
+            }
+        });
+        return () => window.removeEventListener('revealedUpdated', onUpdate);
+    }, []);
+
     useEffect(() => {
         return () => {
             if (orgChartUrl && orgChartUrl.startsWith('blob:')) {
@@ -307,6 +335,7 @@ const BuyingGroup = () => {
         const key = `${selectedCompany}-${personIndex}`;
         if (!revealedEmails.has(key)) {
             deductCredit('buyingGroup', 1);
+            markRevealed('buyingGroupEmails', key);
         }
         setRevealedEmails(prev => new Set(prev).add(key));
     };
@@ -315,6 +344,7 @@ const BuyingGroup = () => {
         const key = `${selectedCompany}-${personIndex}`;
         if (!revealedMobileDIDs.has(key)) {
             deductCredit('buyingGroup', 1);
+            markRevealed('buyingGroupMobileDIDs', key);
         }
         setRevealedMobileDIDs(prev => new Set(prev).add(key));
     };
@@ -586,6 +616,7 @@ const BuyingGroup = () => {
                                     <button
                                         onClick={() => {
                                             deductCredit('buyingGroup', 1);
+                                            markRevealed('buyingGroupOrgCharts', selectedCompany);
                                             setOrgChartRevealed(prev => { const s = new Set(prev); s.add(selectedCompany); return s; });
                                         }}
                                         style={{

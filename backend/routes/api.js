@@ -65,6 +65,37 @@ router.post('/on-demand-request', async (req, res) => {
 
 // --- CREDITS ROUTES
 
+// GET /api/revealed — fetch all revealed row keys for the user
+router.get('/revealed', async (req, res) => {
+  try {
+    const user = await PgUser.findOne({ where: { email: req.user.email } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user.revealedRows || {});
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch revealed rows' });
+  }
+});
+
+// POST /api/revealed — add a row key to a section's revealed list
+router.post('/revealed', async (req, res) => {
+  const { section, key } = req.body;
+  if (!section || !key) return res.status(400).json({ error: 'section and key required' });
+  try {
+    const user = await PgUser.findOne({ where: { email: req.user.email } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const current = { ...(user.revealedRows || {}) };
+    if (!Array.isArray(current[section])) current[section] = [];
+    if (!current[section].includes(key)) {
+      current[section] = [...current[section], key];
+      await user.update({ revealedRows: current });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to save revealed row' });
+  }
+});
+
 // GET /api/credits — fetch current user's credit state from DB
 router.get('/credits', async (req, res) => {
   try {

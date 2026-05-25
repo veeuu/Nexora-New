@@ -1,6 +1,7 @@
 ﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { deductCredit } from '../../utils/credits';
+import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -379,7 +380,10 @@ const NTP = () => {
   const propensityScrollRef = useRef(null);
   const analysisScrollRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [revealedRows, setRevealedRows] = useState(new Set());
+  const [revealedRows, setRevealedRows] = useState(() => {
+    const data = getRevealedLocal();
+    return new Set(Array.isArray(data.ntp) ? data.ntp : []);
+  });
   const [copiedCompany, setCopiedCompany] = useState(null);
   const [chatbotOpen, setChatbotOpen] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -406,6 +410,20 @@ const NTP = () => {
   };
 
   // Track when chatbot is closed for the first time
+  useEffect(() => {
+    const onUpdate = () => {
+      const data = getRevealedLocal();
+      setRevealedRows(new Set(Array.isArray(data.ntp) ? data.ntp : []));
+    };
+    window.addEventListener('revealedUpdated', onUpdate);
+    syncRevealedFromServer().then(data => {
+      if (data && Array.isArray(data.ntp)) {
+        setRevealedRows(new Set(data.ntp));
+      }
+    });
+    return () => window.removeEventListener('revealedUpdated', onUpdate);
+  }, []);
+
   useEffect(() => {
     if (!chatbotOpen && isFirstLoad) {
       setIsFirstLoad(false);
@@ -1250,7 +1268,13 @@ const NTP = () => {
                 });
               });
 
-              const allCompanies = Array.from(companiesMap.values());
+              const allCompanies = Array.from(companiesMap.values()).sort((a, b) => {
+                const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
+                const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+                if (aRevealed && !bRevealed) return -1;
+                if (!aRevealed && bRevealed) return 1;
+                return 0;
+              });
 
               return allCompanies.map((company, companyIndex) => {
                 const actualIndex = companyIndex;
@@ -1290,7 +1314,10 @@ const NTP = () => {
                         <td rowSpan={companyRowSpan} style={{ textAlign: 'center', width: '80px' }}>
                           <button
                             onClick={() => {
-                              if (!isRevealed) deductCredit('ntp', 1);
+                              if (!isRevealed) {
+                                deductCredit('ntp', 1);
+                                markRevealed('ntp', rowKey);
+                              }
                               setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
                             }}
                             style={{

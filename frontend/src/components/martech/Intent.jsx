@@ -1,6 +1,7 @@
 import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { deductCredit } from '../../utils/credits';
+import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import IntentPieChart from './IntentPieChart';
@@ -318,12 +319,29 @@ const Intent = () => {
   const [activeFilterMenu, setActiveFilterMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [revealedRows, setRevealedRows] = useState(new Set());
+  const [revealedRows, setRevealedRows] = useState(() => {
+    const data = getRevealedLocal();
+    return new Set(Array.isArray(data.intent) ? data.intent : []);
+  });
   const [companySearchTerm, setCompanySearchTerm] = useState('');
   const [onDemandModal, setOnDemandModal] = useState(null);
   const rowsPerPage = 10;
   const filterRef = useRef(null);
   const [companyDetailsMap, setCompanyDetailsMap] = useState({});
+
+  useEffect(() => {
+    const onUpdate = () => {
+      const data = getRevealedLocal();
+      setRevealedRows(new Set(Array.isArray(data.intent) ? data.intent : []));
+    };
+    window.addEventListener('revealedUpdated', onUpdate);
+    syncRevealedFromServer().then(data => {
+      if (data && Array.isArray(data.intent)) {
+        setRevealedRows(new Set(data.intent));
+      }
+    });
+    return () => window.removeEventListener('revealedUpdated', onUpdate);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -446,18 +464,20 @@ const getAccountCountByIntentStatus = (intentStatus) => {
       return searchMatches;
     })
     .sort((a, b) => {
-      // First priority: Sort by Intent Status (High > Medium > Low)
+      // Revealed rows always first — match by company name
+      const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
+      const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+      if (aRevealed && !bRevealed) return -1;
+      if (!aRevealed && bRevealed) return 1;
+
+      // Sort by Intent Status (High > Medium > Low)
       const intentStatusOrder = { 'high': 0, 'medium': 1, 'low': 2 };
       const aStatus = String(a.intentStatus || '').toLowerCase();
       const bStatus = String(b.intentStatus || '').toLowerCase();
       const aOrder = intentStatusOrder[aStatus] !== undefined ? intentStatusOrder[aStatus] : 3;
       const bOrder = intentStatusOrder[bStatus] !== undefined ? intentStatusOrder[bStatus] : 3;
-      
-      if (aOrder !== bOrder) {
-        return aOrder - bOrder;
-      }
+      if (aOrder !== bOrder) return aOrder - bOrder;
 
-      // Secondary priority: Search term matches
       const aMatches = rowMatchesSearch(a, searchTerm);
       const bMatches = rowMatchesSearch(b, searchTerm);
       if (aMatches && !bMatches) return -1;
@@ -882,7 +902,10 @@ useEffect(() => {
                         const rowData = filteredData[rowIndex];
                         if (rowData) {
                           const rowKey = `${rowIndex}-${rowData.companyName}`;
-                          if (!newSet.has(rowKey)) deductCredit('intent', 1);
+                          if (!newSet.has(rowKey)) {
+                            deductCredit('intent', 1);
+                            markRevealed('intent', rowKey);
+                          }
                           newSet.add(rowKey);
                         }
                       });
@@ -954,7 +977,10 @@ useEffect(() => {
                     <td style={{ textAlign: 'center', width: '80px' }}>
                       <button
                         onClick={() => {
-                          if (!isRevealed) deductCredit('intent', 1);
+                          if (!isRevealed) {
+                            deductCredit('intent', 1);
+                            markRevealed('intent', rowKey);
+                          }
                           setRevealedRows(prev => {
                             const newSet = new Set(prev);
                             newSet.add(rowKey);

@@ -51,6 +51,11 @@ const PgUser = sequelize.define('User', {
     type: DataTypes.JSONB,
     defaultValue: { technographics: 0, renewal: 0, intent: 0, ntp: 0, buyingGroup: 0 },
     allowNull: false
+  },
+  revealedRows: {
+    type: DataTypes.JSONB,
+    defaultValue: { technographics: [], renewal: [], intent: [], ntp: [], buyingGroup: [], buyingGroupEmails: [], buyingGroupMobileDIDs: [], buyingGroupOrgCharts: [] },
+    allowNull: false
   }
 }, {
   tableName: 'users',

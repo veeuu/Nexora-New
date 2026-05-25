@@ -1,6 +1,7 @@
 import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { deductCredit } from '../../utils/credits';
+import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -457,7 +458,10 @@ const RenewalIntelligence = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilterMenu, setActiveFilterMenu] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [revealedRows, setRevealedRows] = useState(new Set());
+    const [revealedRows, setRevealedRows] = useState(() => {
+        const data = getRevealedLocal();
+        return new Set(Array.isArray(data.renewal) ? data.renewal : []);
+    });
     const [selectedRows, setSelectedRows] = useState(new Set());
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
@@ -650,6 +654,20 @@ const iconName = getProductIcon(productName);
             />
         );
     };
+
+useEffect(() => {
+    const onUpdate = () => {
+        const data = getRevealedLocal();
+        setRevealedRows(new Set(Array.isArray(data.renewal) ? data.renewal : []));
+    };
+    window.addEventListener('revealedUpdated', onUpdate);
+    syncRevealedFromServer().then(data => {
+        if (data && Array.isArray(data.renewal)) {
+            setRevealedRows(new Set(data.renewal));
+        }
+    });
+    return () => window.removeEventListener('revealedUpdated', onUpdate);
+}, []);
 
 useEffect(() => {
         const fetchMetadataAndDetails = async () => {
@@ -1007,17 +1025,17 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         
         return companyMatch && categoryMatch && productMatch && qtrMatch && renewalProximityMatch;
     }).sort((a, b) => {
+        // Revealed rows first
+        const aKey = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
+        const bKey = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+        if (aKey && !bKey) return -1;
+        if (!aKey && bKey) return 1;
+
         const proximityA = getProximityValue(a.qtr);
         const proximityB = getProximityValue(b.qtr);
         const statusA = getRenewalStatus(proximityA);
         const statusB = getRenewalStatus(proximityB);
-        
-        // Sort by status first (Approaching first, then Midterm, then Long-term)
-        if (statusA !== statusB) {
-            return statusA - statusB;
-        }
-        
-        // If same status, sort by proximity (descending - higher proximity first)
+        if (statusA !== statusB) return statusA - statusB;
         return proximityB - proximityA;
     });
 
@@ -2310,6 +2328,7 @@ if (aQtr.year !== bQtr.year) {
                                                     const rowKey = `${rowIndex}-${rowData.companyName}`;
                                                     if (!newSet.has(rowKey)) {
                                                       deductCredit('renewal', 1);
+                                                      markRevealed('renewal', rowKey);
                                                     }
                                                     newSet.add(rowKey);
                                                   }
@@ -2388,7 +2407,7 @@ if (aQtr.year !== bQtr.year) {
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
                                                                 onClick={() => {
-                                                                    if (!isRevealed) deductCredit('renewal', 1);
+                                                                    if (!isRevealed) { deductCredit('renewal', 1); markRevealed('renewal', rowKey); }
                                                                     setRevealedRows(prev => {
                                                                         const newSet = new Set(prev);
                                                                         newSet.add(rowKey);
@@ -2570,7 +2589,7 @@ if (aQtr.year !== bQtr.year) {
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
                                                                 onClick={() => {
-                                                                    if (!isRevealed) deductCredit('renewal', 1);
+                                                                    if (!isRevealed) { deductCredit('renewal', 1); markRevealed('renewal', rowKey); }
                                                                     setRevealedRows(prev => {
                                                                         const newSet = new Set(prev);
                                                                         newSet.add(rowKey);
@@ -3130,3 +3149,4 @@ td:nth-child(2), th:nth-child(2) {
 };
 
 export default RenewalIntelligence;
+

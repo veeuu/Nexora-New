@@ -14,6 +14,7 @@ import DataDictionary from './martech/DataDictionary';
 import Keywords from './martech/Keywords';
 import ContactUs from './ContactUs';
 import { syncCreditsFromServer } from '../utils/credits';
+import { syncRevealedFromServer } from '../utils/revealed';
 
 const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const navigate = useNavigate();
@@ -91,6 +92,7 @@ useEffect(() => {
   // Sync credits from server on mount
   useEffect(() => {
     syncCreditsFromServer();
+    syncRevealedFromServer();
   }, []);
 
   const getMenuItems = () => {
