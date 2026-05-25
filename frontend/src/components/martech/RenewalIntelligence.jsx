@@ -1,5 +1,6 @@
 import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { deductCredit } from '../../utils/credits';
 import * as SiIcons from 'react-icons/si';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -2307,6 +2308,9 @@ if (aQtr.year !== bQtr.year) {
                                                   const rowData = filteredData[rowIndex];
                                                   if (rowData) {
                                                     const rowKey = `${rowIndex}-${rowData.companyName}`;
+                                                    if (!newSet.has(rowKey)) {
+                                                      deductCredit('renewal', 1);
+                                                    }
                                                     newSet.add(rowKey);
                                                   }
                                                 });
@@ -2384,6 +2388,7 @@ if (aQtr.year !== bQtr.year) {
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
                                                                 onClick={() => {
+                                                                    if (!isRevealed) deductCredit('renewal', 1);
                                                                     setRevealedRows(prev => {
                                                                         const newSet = new Set(prev);
                                                                         newSet.add(rowKey);
@@ -2565,6 +2570,7 @@ if (aQtr.year !== bQtr.year) {
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
                                                                 onClick={() => {
+                                                                    if (!isRevealed) deductCredit('renewal', 1);
                                                                     setRevealedRows(prev => {
                                                                         const newSet = new Set(prev);
                                                                         newSet.add(rowKey);
