@@ -1,5 +1,6 @@
 ﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { deductCredit } from '../../utils/credits';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
@@ -3345,6 +3346,9 @@ const Technographics = () => {
                         const rowData = groupedDataArray[actualIndex];
                         if (rowData) {
                           const rowKey = `${actualIndex}-${rowData.companyName}`;
+                          if (!newSet.has(rowKey)) {
+                            deductCredit('technographics', 1);
+                          }
                           newSet.add(rowKey);
                         }
                       });
@@ -3491,6 +3495,9 @@ const Technographics = () => {
                         <button
                           onClick={() => {
                             const rowKey = `${actualIndex}-${row.companyName}`;
+                            if (!revealedRows.has(rowKey)) {
+                              deductCredit('technographics', 1);
+                            }
                             setRevealedRows(prev => {
                               const newSet = new Set(prev);
                               newSet.add(rowKey);
@@ -4176,7 +4183,7 @@ const Technographics = () => {
         .technographics-container {
           background: #ffffff;
           border-radius: 12px;
-          padding: 0.4rem 0.9rem 0;
+          padding: 0.4rem 0.9rem 0 1.75rem;
           margin-bottom: 0;
           margin-left: 0.0rem;
           margin-top: 0;
