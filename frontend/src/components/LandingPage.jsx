@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import validateBusinessEmail from '../utils/emailValidator';
 import AnimatedCounter from './AnimatedCounter';
 import ClientLogosCarousel from './ClientLogosCarousel';
-import nexoraLogo2 from '../assets/Nexora Powered By PPD [White]-cropped.svg';
+import nexoraLogo2 from '../assets/Nexora Logo 25 May Opt 01.svg';
 import proplusLogo from '../assets/unnamed (1).png';
 import gdprLogo from '../landing/gdpr-ready-logo 2.svg';
 import ccpaLogo from '../landing/ccpa-1.png';

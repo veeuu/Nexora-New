@@ -158,7 +158,7 @@ const Home = ({ displayName }) => {
           <div>
             <>
               <h1 className="home-title" style={{ color: '#6b7280' }}>
-                Welcome {displayName || localStorage.getItem('displayName') || 'Nexora'} !
+                Welcome, {(displayName || localStorage.getItem('displayName') || 'Nexora').split(' ')[0]} !
               </h1>
               <p className="home-subtitle"></p>
               <div className="home-quick-buttons">
