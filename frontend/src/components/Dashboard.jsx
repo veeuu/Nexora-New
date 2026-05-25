@@ -13,6 +13,7 @@ import ProductCatalogue from './martech/ProductCatalogue';
 import DataDictionary from './martech/DataDictionary';
 import Keywords from './martech/Keywords';
 import ContactUs from './ContactUs';
+import { syncCreditsFromServer } from '../utils/credits';
 
 const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const navigate = useNavigate();
@@ -86,6 +87,11 @@ useEffect(() => {
       onNavRef(handleChatbotNavigation);
     }
   }, [onNavRef]);
+
+  // Sync credits from server on mount
+  useEffect(() => {
+    syncCreditsFromServer();
+  }, []);
 
   const getMenuItems = () => {
     return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords Surge'];

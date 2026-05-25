@@ -41,6 +41,16 @@ const PgUser = sequelize.define('User', {
   otpExpiry: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  creditsUsed: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false
+  },
+  creditsBySection: {
+    type: DataTypes.JSONB,
+    defaultValue: { technographics: 0, renewal: 0, intent: 0, ntp: 0, buyingGroup: 0 },
+    allowNull: false
   }
 }, {
   tableName: 'users',

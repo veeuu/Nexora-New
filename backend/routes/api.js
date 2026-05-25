@@ -10,6 +10,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const Company = require('../models/Company');
 const BuyingGroup = require('../models/BuyingGroup');
+const PgUser = require('../models/PgUser');
 const { generateOrgChartFromDoc, generateOrgChartForCompany, getCompaniesFromCSV } = require('../org_chart');
 const { uploadOrgChartToS3, getSignedOrgChartUrl, orgChartExistsInS3, ORG_CHART_FOLDER } = require('../config/s3');
 
@@ -60,6 +61,51 @@ router.post('/on-demand-request', async (req, res) => {
   console.log(`Timestamp:      ${new Date().toISOString()}`);
   console.log('============================================\n');
   res.json({ success: true });
+});
+
+// --- CREDITS ROUTES
+
+// GET /api/credits — fetch current user's credit state from DB
+router.get('/credits', async (req, res) => {
+  try {
+    const user = await PgUser.findOne({ where: { email: req.user.email } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({
+      used: user.creditsUsed || 0,
+      bySection: user.creditsBySection || { technographics: 0, renewal: 0, intent: 0, ntp: 0, buyingGroup: 0 }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch credits' });
+  }
+});
+
+// POST /api/credits/deduct — deduct credits for a section
+router.post('/credits/deduct', async (req, res) => {
+  const { section, amount = 1 } = req.body;
+  const TOTAL = 500;
+  const SECTION_LIMIT = 100;
+
+  try {
+    const user = await PgUser.findOne({ where: { email: req.user.email } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const currentUsed = user.creditsUsed || 0;
+    const bySection = { ...(user.creditsBySection || {}) };
+    const sectionUsed = bySection[section] || 0;
+
+    if (currentUsed >= TOTAL) return res.status(403).json({ error: 'Total credits exhausted' });
+    if (sectionUsed >= SECTION_LIMIT) return res.status(403).json({ error: `Credits exhausted for ${section}` });
+
+    bySection[section] = sectionUsed + amount;
+    await user.update({
+      creditsUsed: currentUsed + amount,
+      creditsBySection: bySection
+    });
+
+    res.json({ success: true, used: currentUsed + amount, bySection });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to deduct credits' });
+  }
 });
 
 // --- CONTACT TICKET ROUTE
