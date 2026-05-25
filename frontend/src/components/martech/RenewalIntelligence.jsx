@@ -1,4 +1,4 @@
-import apiFetch from '../../utils/apiFetch';
+﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { deductCredit } from '../../utils/credits';
 import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
@@ -289,7 +289,7 @@ const RenewalMeter = ({ renewalDate }) => {
 
   const getStatusLabel = (proximity) => {
     if (proximity >= 86) return '<1 year';
-    if (proximity >= 46) return '1�2 years';
+    if (proximity >= 46) return '1–2 years';
     return '2+ years';
   };
 
@@ -881,7 +881,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['<1 year', '1�2 years', '2+ years'];
+        return ['<1 year', '1–2 years', '2+ years'];
     };
 
     const getUniqueCategories = () => {
@@ -1021,7 +1021,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['<1 year', '1�2 years', '2+ years'];
+            const statusLabels = ['<1 year', '1–2 years', '2+ years'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -3151,4 +3151,5 @@ td:nth-child(2), th:nth-child(2) {
 };
 
 export default RenewalIntelligence;
+
 
