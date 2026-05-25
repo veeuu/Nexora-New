@@ -59,23 +59,14 @@ export const deductCredit = async (section, amount = 1) => {
   state.bySection[section] = sectionUsed + amount;
   saveCredits(state);
 
-  // Persist to backend (fire and forget — local state already updated)
+  // Persist to backend — do NOT reconcile back to avoid race conditions
+  // overwriting the optimistic local state mid-session
   try {
-    const res = await apiFetch('/api/credits/deduct', {
+    await apiFetch('/api/credits/deduct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ section, amount }),
     });
-    if (res.ok) {
-      const data = await res.json();
-      // Reconcile with server response
-      const synced = {
-        total: TOTAL_CREDITS,
-        used: data.used,
-        bySection: data.bySection,
-      };
-      saveCredits(synced);
-    }
   } catch (_) {}
 
   return true;

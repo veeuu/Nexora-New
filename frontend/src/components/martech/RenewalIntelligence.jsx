@@ -2322,18 +2322,24 @@ if (aQtr.year !== bQtr.year) {
                                                 alert('Please select at least one company to reveal');
                                                 return;
                                               }
+                                              const currentRevealed = new Set(revealedRows);
+                                              const toReveal = [];
+                                              selectedRows.forEach(rowIndex => {
+                                                const rowData = filteredData[rowIndex];
+                                                if (rowData) {
+                                                  const rowKey = `${rowIndex}-${rowData.companyName}`;
+                                                  if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
+                                                }
+                                              });
+                                              if (toReveal.length > 0) {
+                                                deductCredit('renewal', toReveal.length);
+                                                toReveal.forEach(rowKey => markRevealed('renewal', rowKey));
+                                              }
                                               setRevealedRows(prev => {
                                                 const newSet = new Set(prev);
                                                 selectedRows.forEach(rowIndex => {
                                                   const rowData = filteredData[rowIndex];
-                                                  if (rowData) {
-                                                    const rowKey = `${rowIndex}-${rowData.companyName}`;
-                                                    if (!newSet.has(rowKey)) {
-                                                      deductCredit('renewal', 1);
-                                                      markRevealed('renewal', rowKey);
-                                                    }
-                                                    newSet.add(rowKey);
-                                                  }
+                                                  if (rowData) newSet.add(`${rowIndex}-${rowData.companyName}`);
                                                 });
                                                 return newSet;
                                               });

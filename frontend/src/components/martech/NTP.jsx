@@ -1237,11 +1237,10 @@ const NTP = () => {
                   }}
                 />
               </th>
-              <th style={{ textAlign: 'center', width: '120px' }}>
+              <th style={{ textAlign: 'center', width: '140px' }}>
                 <button
                   onClick={() => {
                     if (selectedRows.size === 0) return;
-                    // Build the same allCompanies array used in the table body
                     const companiesMapBulk = new Map();
                     filteredData.forEach(row => {
                       if (!companiesMapBulk.has(row.companyName)) {
@@ -1255,18 +1254,24 @@ const NTP = () => {
                       if (!aRevealed && bRevealed) return 1;
                       return 0;
                     });
+                    const currentRevealed = new Set(revealedRows);
+                    const toReveal = [];
+                    selectedRows.forEach(rowIndex => {
+                      const company = allCompaniesBulk[rowIndex];
+                      if (company) {
+                        const rowKey = `${rowIndex}-${company.companyName}`;
+                        if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
+                      }
+                    });
+                    if (toReveal.length > 0) {
+                      deductCredit('ntp', toReveal.length);
+                      toReveal.forEach(rowKey => markRevealed('ntp', rowKey));
+                    }
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
                       selectedRows.forEach(rowIndex => {
                         const company = allCompaniesBulk[rowIndex];
-                        if (company) {
-                          const rowKey = `${rowIndex}-${company.companyName}`;
-                          if (!newSet.has(rowKey)) {
-                            deductCredit('ntp', 1);
-                            markRevealed('ntp', rowKey);
-                          }
-                          newSet.add(rowKey);
-                        }
+                        if (company) newSet.add(`${rowIndex}-${company.companyName}`);
                       });
                       return newSet;
                     });
@@ -1290,7 +1295,7 @@ const NTP = () => {
                   Unlock
                 </button>
               </th>
-              <th>Company Name</th>
+              <th style={{ textAlign: 'center' }}>Company Name</th>
               {/* <th>Category</th> */}
               <th>Technology</th>
               <th>Purchase Prediction</th>
@@ -1385,7 +1390,7 @@ const NTP = () => {
                       )}
 
                       {isFirstTechRow && (
-                        <td rowSpan={companyRowSpan}>
+                        <td rowSpan={companyRowSpan} style={{ textAlign: 'center' }}>
                           <div className="ntp-company-cell">
                             <div className="ntp-company-name" style={!isRevealed ? { filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' } : {}}>
                               {company.companyName}

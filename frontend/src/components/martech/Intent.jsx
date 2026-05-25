@@ -895,19 +895,25 @@ useEffect(() => {
                       alert('Please select at least one company to reveal');
                       return;
                     }
+                    // Calculate new reveals outside state updater to avoid StrictMode double-invoke
+                    const currentRevealed = new Set(revealedRows);
+                    const toReveal = [];
+                    selectedRows.forEach(rowIndex => {
+                      const rowData = filteredData[rowIndex];
+                      if (rowData) {
+                        const rowKey = `${rowIndex}-${rowData.companyName}`;
+                        if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
+                      }
+                    });
+                    if (toReveal.length > 0) {
+                      deductCredit('intent', toReveal.length);
+                      toReveal.forEach(rowKey => markRevealed('intent', rowKey));
+                    }
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
-                      
                       selectedRows.forEach(rowIndex => {
                         const rowData = filteredData[rowIndex];
-                        if (rowData) {
-                          const rowKey = `${rowIndex}-${rowData.companyName}`;
-                          if (!newSet.has(rowKey)) {
-                            deductCredit('intent', 1);
-                            markRevealed('intent', rowKey);
-                          }
-                          newSet.add(rowKey);
-                        }
+                        if (rowData) newSet.add(`${rowIndex}-${rowData.companyName}`);
                       });
                       return newSet;
                     });

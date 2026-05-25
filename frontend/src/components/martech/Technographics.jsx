@@ -835,7 +835,7 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94a3b8'; }}
-          >×</button>
+          >ï¿½</button>
 
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
@@ -3360,19 +3360,24 @@ const Technographics = () => {
                       alert('Please select at least one company to reveal');
                       return;
                     }
+                    const currentRevealed = new Set(revealedRows);
+                    const toReveal = [];
+                    selectedRows.forEach(actualIndex => {
+                      const rowData = groupedDataArray[actualIndex];
+                      if (rowData) {
+                        const rowKey = `${actualIndex}-${rowData.companyName}`;
+                        if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
+                      }
+                    });
+                    if (toReveal.length > 0) {
+                      deductCredit('technographics', toReveal.length);
+                      toReveal.forEach(rowKey => markRevealed('technographics', rowKey));
+                    }
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
-                      
                       selectedRows.forEach(actualIndex => {
                         const rowData = groupedDataArray[actualIndex];
-                        if (rowData) {
-                          const rowKey = `${actualIndex}-${rowData.companyName}`;
-                          if (!newSet.has(rowKey)) {
-                            deductCredit('technographics', 1);
-                            markRevealed('technographics', rowKey);
-                          }
-                          newSet.add(rowKey);
-                        }
+                        if (rowData) newSet.add(`${actualIndex}-${rowData.companyName}`);
                       });
                       return newSet;
                     });
