@@ -1,5 +1,6 @@
 import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { deductCredit } from '../../utils/credits';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import IntentPieChart from './IntentPieChart';
@@ -881,6 +882,7 @@ useEffect(() => {
                         const rowData = filteredData[rowIndex];
                         if (rowData) {
                           const rowKey = `${rowIndex}-${rowData.companyName}`;
+                          if (!newSet.has(rowKey)) deductCredit('intent', 1);
                           newSet.add(rowKey);
                         }
                       });
@@ -952,6 +954,7 @@ useEffect(() => {
                     <td style={{ textAlign: 'center', width: '80px' }}>
                       <button
                         onClick={() => {
+                          if (!isRevealed) deductCredit('intent', 1);
                           setRevealedRows(prev => {
                             const newSet = new Set(prev);
                             newSet.add(rowKey);
