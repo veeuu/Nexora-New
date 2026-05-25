@@ -846,7 +846,9 @@ useEffect(() => {
             setTotalRecords(total);
             setTotalPages(pages);
             setSelectedRows(new Set());
-            setRevealedRows(new Set());
+            // Restore revealed rows from localStorage instead of resetting
+            const revealedData = getRevealedLocal();
+            setRevealedRows(new Set(Array.isArray(revealedData.renewal) ? revealedData.renewal : []));
 
             return data;
         } catch (error) {

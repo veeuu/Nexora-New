@@ -1,4 +1,4 @@
-﻿import apiFetch from '../../utils/apiFetch';
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { deductCredit } from '../../utils/credits';
 import { isRevealed as isRevealedPersisted, markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
@@ -769,7 +769,7 @@ const Speedometer = ({ value }) => {
   );
 };
 
-// ── On-Demand Request Modal ──────────────────────────────────────────────────
+// -- On-Demand Request Modal --------------------------------------------------
 const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
   const [requestedName, setRequestedName] = useState(searchValue);
   const [submitted, setSubmitted] = useState(false);
@@ -835,7 +835,7 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94a3b8'; }}
-          >×</button>
+          >�</button>
 
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
@@ -1404,7 +1404,7 @@ const Technographics = () => {
     setPageCache({});
     setCurrentPage(1);
     setSelectedRows(new Set());
-    setRevealedRows(new Set());
+    setRevealedRows(new Set(Array.isArray(getRevealedLocal().technographics) ? getRevealedLocal().technographics : []));
     setTableData([]);
     setLoading(true);
     fetchPage(1).finally(() => setLoading(false));
@@ -1422,12 +1422,12 @@ const Technographics = () => {
       setTotalRecords(cached.total || 0);
       setTotalPages(cached.pages || 0);
       setSelectedRows(new Set());
-      setRevealedRows(new Set());
+      setRevealedRows(new Set(Array.isArray(getRevealedLocal().technographics) ? getRevealedLocal().technographics : []));
       return;
     }
     // Not cached - keep old data visible while fetching (like NTP does)
     setSelectedRows(new Set());
-    setRevealedRows(new Set());
+    setRevealedRows(new Set(Array.isArray(getRevealedLocal().technographics) ? getRevealedLocal().technographics : []));
     setLoading(true);
     fetchPage(currentPage).finally(() => setLoading(false));
   }, [currentPage]);
@@ -4230,11 +4230,11 @@ const Technographics = () => {
         .table-container {
           height: 600px !important;
           max-height: 600px !important;
-          overflow-x: hidden;
+          overflow-x: auto;
           overflow-y: scroll;
           position: relative;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+          scrollbar-width: thin;
+          -ms-overflow-style: auto;
         }
 
         .table-container::-webkit-scrollbar {
@@ -4284,12 +4284,17 @@ const Technographics = () => {
         
         table {
           width: 100%;
+          min-width: 1400px;
           border-collapse: collapse;
           table-layout: fixed;
               overflow: auto;              /* keep scrolling enabled */
           scrollbar-width: none;       /* Firefox */
           -ms-overflow-style: none;    /* IE and Edge */
 
+        }
+
+        .table-container table {
+          min-width: 1400px !important;
         }
         
         th, td {
@@ -4321,8 +4326,8 @@ const Technographics = () => {
         th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
         th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
         th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
-        th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
-        th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
+        th:nth-child(10), td:nth-child(10) { width: 160px !important; white-space: nowrap; } /* Previous Detected Date */
+        th:nth-child(11), td:nth-child(11) { width: 160px !important; white-space: nowrap; } /* Latest Detected Date */
         
         /* Technology column padding for desktop */
         @media (min-width: 1024px) {
@@ -4335,8 +4340,8 @@ const Technographics = () => {
           th:nth-child(7), td:nth-child(7) { width: 110px !important; } /* Revenue */
           th:nth-child(8), td:nth-child(8) { width: 140px !important; } /* Technology */
           th:nth-child(9), td:nth-child(9) { width: 140px !important; } /* Category */
-          th:nth-child(10), td:nth-child(10) { width: 140px !important; } /* Previous Detected Date */
-          th:nth-child(11), td:nth-child(11) { width: 140px !important; } /* Latest Detected Date */
+          th:nth-child(10), td:nth-child(10) { width: 160px !important; white-space: nowrap; } /* Previous Detected Date */
+          th:nth-child(11), td:nth-child(11) { width: 160px !important; white-space: nowrap; } /* Latest Detected Date */
           
           td:nth-child(7) {
             padding-left: 8px !important;
@@ -4382,3 +4387,4 @@ const Technographics = () => {
 };
 
 export default Technographics;
+
