@@ -1,13 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import nexoraLogo from '../assets/Nexora Powered By PPD [White]-cropped.svg';
+import { getCredits, TOTAL_CREDITS } from '../utils/credits';
 
 const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onProfileClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showResources, setShowResources] = useState(false);
+  const [credits, setCredits] = useState(getCredits);
   const profileRef = useRef(null);
   const resourcesRef = useRef(null);
+
+  useEffect(() => {
+    const onUpdate = () => setCredits(getCredits());
+    window.addEventListener('creditsUpdated', onUpdate);
+    return () => window.removeEventListener('creditsUpdated', onUpdate);
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -138,10 +146,10 @@ const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onPro
       <div className="menu-credits-section">
         <div className="menu-credits-label">Free Credits</div>
         <div className="menu-credits-info">
-          <span className="menu-credits-count">10 of 50</span>
+          <span className="menu-credits-count">{credits.used} of {TOTAL_CREDITS}</span>
         </div>
         <div className="menu-credits-bar">
-          <div className="menu-credits-fill" style={{ width: '10%' }}></div>
+          <div className="menu-credits-fill" style={{ width: `${Math.min((credits.used / TOTAL_CREDITS) * 100, 100)}%` }}></div>
         </div>
       </div>
       <div className="menu-profile-section" ref={profileRef}>

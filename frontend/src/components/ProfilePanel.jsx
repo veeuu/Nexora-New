@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../styles/profile.css';
+import { getCredits, TOTAL_CREDITS, SECTION_LIMIT } from '../utils/credits';
 
 const FEATURES = [
   { label: 'Technographics' },
@@ -34,6 +35,7 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [queryHistory, setQueryHistory] = useState([]);
   const [ticketHistory, setTicketHistory] = useState([]);
+  const [credits, setCredits] = useState(getCredits);
 
   useEffect(() => {
     const plan = localStorage.getItem('userPlan') || 'free_trial';
@@ -67,6 +69,12 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const onUpdate = () => setCredits(getCredits());
+    window.addEventListener('creditsUpdated', onUpdate);
+    return () => window.removeEventListener('creditsUpdated', onUpdate);
+  }, []);
+
   const getInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
@@ -74,8 +82,8 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
 
   const planLabel = PLAN_LABELS[userPlan] || 'Free Trial';
   const isPaid = userPlan === 'paid' || userPlan === 'pro' || userPlan === 'enterprise';
-  const creditsUsed = 10;
-  const creditsTotal = 50;
+  const creditsUsed = credits.used;
+  const creditsTotal = TOTAL_CREDITS;
   const creditPct = Math.round((creditsUsed / creditsTotal) * 100);
 
   return (
@@ -179,6 +187,33 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
                 </div>
                 <p className="credits-reset-note">Resets on June 1, 2026</p>
               </div>
+
+              {/* Per-section breakdown */}
+              <div className="profile-panel-divider" />
+              <p className="profile-panel-section-label">Credits by Section</p>
+              <ul className="profile-features-list">
+                {[
+                  { label: 'Technographics', key: 'technographics', color: '#3b82f6' },
+                  { label: 'Renewal Intelligence', key: 'renewal', color: '#f59e0b' },
+                  { label: 'Intent', key: 'intent', color: '#8b5cf6' },
+                  { label: 'Next Tech Purchase®', key: 'ntp', color: '#ef4444' },
+                  { label: 'Buying Group', key: 'buyingGroup', color: '#10b981' },
+                ].map(({ label, key, color }) => {
+                  const used = credits.bySection[key] ?? 0;
+                  const pct = Math.min((used / SECTION_LIMIT) * 100, 100);
+                  return (
+                    <li key={key} className="profile-feature-item" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="feature-label">{label}</span>
+                        <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '600' }}>{used} / {SECTION_LIMIT}</span>
+                      </div>
+                      <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: '2px', transition: 'width 0.3s' }} />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
 
               {/* Upgrade section */}
               <div className="profile-panel-divider" />
