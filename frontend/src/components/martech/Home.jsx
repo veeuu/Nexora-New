@@ -222,10 +222,10 @@ const Home = ({ displayName }) => {
           </>
       </div>
 
-      <div className="home-powered-by">
+      {/* <div className="home-powered-by">
         <span>Powered by</span>
         <img src={proplusDataLogo} alt="ProPlus Data" style={{ height: '20px', marginLeft: '6px', objectFit: 'contain' }} />
-      </div>
+      </div> */}
     </>
   );
 };

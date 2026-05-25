@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import nexoraLogo from '../assets/Nexora Powered By PPD [White]-cropped.svg';
+import nexoraLogo from '../assets/Nexora Logo 25 May Opt 01.svg';
 import { getCredits, TOTAL_CREDITS } from '../utils/credits';
 
 const Menu = ({ activeSection, onMenuClick, menuItems, username, onLogout, onProfileClick }) => {
