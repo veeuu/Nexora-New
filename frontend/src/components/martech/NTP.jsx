@@ -1,5 +1,6 @@
 ﻿import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { deductCredit } from '../../utils/credits';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
 import { getLogoPath, getTechIcon } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
@@ -742,6 +743,11 @@ const NTP = () => {
           onClose={() => setOnDemandModal(null)}
         />
       )}
+      <div className={`header-actions${chatbotOpen && isFirstLoad ? ' ntp-blur-active' : ''}`}>
+        <h2>Next Tech Purchase - NTP® </h2>
+        <div className="actions-right">
+        </div>
+      </div>
       <div className={`ntp-container ${chatbotOpen && isFirstLoad ? 'ntp-blur-active' : ''}`}>
       {}
       {error && (
@@ -758,12 +764,6 @@ const NTP = () => {
           </button>
         </div>
       )}
-      
-      <div className="header-actions">
-        <h2>Next Tech Purchase - NTP® </h2>
-        <div className="actions-right">
-        </div>
-      </div>
       
       <div className="ntp-filters-wrapper" ref={filterRef}>
         <div className="ntp-filters-container">
@@ -1219,6 +1219,7 @@ const NTP = () => {
                   }}
                 />
               </th>
+              <th style={{ textAlign: 'center', width: '80px' }}>Unlock</th>
               <th>Company Name</th>
               {/* <th>Category</th> */}
               <th>Technology</th>
@@ -1259,6 +1260,9 @@ const NTP = () => {
                 const tech = company.technologies[0] || {};
                 const isFirstTechRow = true;
 
+                  const rowKey = `${actualIndex}-${company.companyName}`;
+                  const isRevealed = revealedRows.has(rowKey);
+
                   return [(
                     <tr key={`${companyIndex}-0`} className="company-separator">
                       {}
@@ -1283,9 +1287,32 @@ const NTP = () => {
                       )}
 
                       {isFirstTechRow && (
+                        <td rowSpan={companyRowSpan} style={{ textAlign: 'center', width: '80px' }}>
+                          <button
+                            onClick={() => {
+                              if (!isRevealed) deductCredit('ntp', 1);
+                              setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
+                            }}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                              gap: '6px', padding: '8px 10px',
+                              backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
+                              border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
+                              borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                            title={isRevealed ? 'Company revealed' : 'Click to reveal company'}
+                          >
+                            {isRevealed
+                              ? <FaUnlock size={16} style={{ color: '#9ca3af' }} />
+                              : <FaLock size={16} style={{ color: '#1f2937' }} />}
+                          </button>
+                        </td>
+                      )}
+
+                      {isFirstTechRow && (
                         <td rowSpan={companyRowSpan}>
                           <div className="ntp-company-cell">
-                            <div className="ntp-company-name">
+                            <div className="ntp-company-name" style={!isRevealed ? { filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' } : {}}>
                               {company.companyName}
                               <button
                                 onClick={() => handleCopyCompanyName(company.companyName)}
@@ -1298,7 +1325,7 @@ const NTP = () => {
                                 <span className="ntp-copy-feedback">Copied!</span>
                               )}
                             </div>
-                            <div className="ntp-company-links">
+                            <div className="ntp-company-links" style={!isRevealed ? { filter: 'blur(6px)', userSelect: 'none', pointerEvents: 'none' } : {}}>
                               {company.domain && (
                                 <a
                                     href={`https://${company.domain}`}
