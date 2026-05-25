@@ -316,6 +316,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 0.6rem 1rem;
   background: rgba(255, 255, 255, 0.08);
@@ -327,7 +328,7 @@ body {
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
-  text-align: left;
+  text-align: center;
 }
 
 .menu-contact-us-btn:hover {

@@ -194,10 +194,10 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
               <ul className="profile-features-list">
                 {[
                   { label: 'Technographics', key: 'technographics', color: '#3b82f6' },
-                  { label: 'Renewal Intelligence', key: 'renewal', color: '#f59e0b' },
-                  { label: 'Intent', key: 'intent', color: '#8b5cf6' },
-                  { label: 'Next Tech Purchase®', key: 'ntp', color: '#ef4444' },
-                  { label: 'Buying Group', key: 'buyingGroup', color: '#10b981' },
+                  { label: 'Renewal Intelligence', key: 'renewal', color: '#3b82f6' },
+                  { label: 'Intent', key: 'intent', color: '#3b82f6' },
+                  { label: 'Next Tech Purchase®', key: 'ntp', color: '#3b82f6' },
+                  { label: 'Buying Group', key: 'buyingGroup', color: '#3b82f6' },
                 ].map(({ label, key, color }) => {
                   const used = credits.bySection[key] ?? 0;
                   const pct = Math.min((used / SECTION_LIMIT) * 100, 100);
