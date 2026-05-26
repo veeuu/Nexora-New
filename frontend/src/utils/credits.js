@@ -1,10 +1,10 @@
 // Credit store — localStorage as cache, PostgreSQL as source of truth
-// Total: 500 credits, 100 per section
+// Total: 250 credits, 50 per section
 
 import apiFetch from './apiFetch';
 
-export const TOTAL_CREDITS = 500;
-export const SECTION_LIMIT = 100;
+export const TOTAL_CREDITS = 250;
+export const SECTION_LIMIT = 50;
 
 const DEFAULT_STATE = {
   total: TOTAL_CREDITS,

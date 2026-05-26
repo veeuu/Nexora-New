@@ -756,7 +756,7 @@ const BuyingGroup = () => {
                                             <line x1="12" y1="8" x2="12" y2="12" />
                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                         </svg>
-                                        Reveal both email &amp; mobile DID for at least one contact first.
+                                        Reveal both email &amp; Phone Number for at least one contact first.
                                     </div>
                                 )}
                                 <div className="team-members-section-header">
@@ -766,7 +766,7 @@ const BuyingGroup = () => {
                                     {companyPersons.length > 0 && (
                                         <button
                                             className="contact-download-btn"
-                                            title="Export only fully revealed contacts (email + mobile DID)"
+                                            title="Export only fully revealed contacts (email + Phone Number)"
                                             onClick={() => {
                                                 const fullyRevealed = companyPersons.filter((_, i) =>
                                                     isEmailRevealed(i) && isMobileDIDRevealed(i)
@@ -776,7 +776,7 @@ const BuyingGroup = () => {
                                                     setTimeout(() => setExportToast(false), 3000);
                                                     return;
                                                 }
-                                                const headers = ['Name', 'Designation', 'Email', 'Mobile DID', 'LinkedIn', 'Company'];
+                                                const headers = ['Name', 'Designation', 'Email', 'Phone Number', 'LinkedIn', 'Company'];
                                                 const rows = fullyRevealed.map(p => {
                                                     let url = p.linkedin || '';
                                                     url = url.replace(/^["']|["']$/g, '').trim();
@@ -856,11 +856,11 @@ const BuyingGroup = () => {
                                                 {person.mobileDID && person.mobileDID !== '-' && (
                                                     <div className="team-member-detail">
                                                         <div className="team-member-detail-header">
-                                                            <p className="team-member-detail-label">Mobile DID</p>
+                                                            <p className="team-member-detail-label">Phone Number</p>
                                                             <button
                                                                 onClick={() => toggleMobileDIDReveal(index)}
                                                                 className="reveal-button"
-                                                                title={mobileDIDRevealed ? "Mobile DID revealed" : "Click to reveal mobile DID"}
+                                                                title={mobileDIDRevealed ? "Phone Number revealed" : "Click to reveal Phone Number"}
                                                                 disabled={mobileDIDRevealed}
                                                             >
                                                                 <FaLock size={12} />
@@ -873,7 +873,7 @@ const BuyingGroup = () => {
                                                 )}
                                                 {(!person.mobileDID || person.mobileDID === '-') && (
                                                     <div className="team-member-detail">
-                                                        <p className="team-member-detail-label">Mobile DID</p>
+                                                        <p className="team-member-detail-label">Phone Number</p>
                                                         <p className="team-member-detail-value">
                                                             -
                                                         </p>
