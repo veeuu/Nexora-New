@@ -95,6 +95,7 @@ const BuyingGroup = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPanel, setShowPanel] = useState(false);
+    const [showOrgLockPopup, setShowOrgLockPopup] = useState(false);
     const [personDetailsData, setPersonDetailsData] = useState({});
     const [orgChartUrl, setOrgChartUrl] = useState('');
     const [zoomLevel, setZoomLevel] = useState(80);
@@ -312,6 +313,10 @@ const BuyingGroup = () => {
     }, [isCompanyDropdownOpen]);
 
     const handleImageClick = () => {
+        if (!orgChartRevealed.has(selectedCompany)) {
+            setShowOrgLockPopup(true);
+            return;
+        }
         setShowPanel(true);
     };
 
@@ -892,6 +897,48 @@ const BuyingGroup = () => {
                 </>
             )}
         </div>
+
+        {/* Org Chart Lock Popup */}
+        {showOrgLockPopup && (
+            <div
+                style={{
+                    position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)',
+                    zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(2px)'
+                }}
+                onClick={() => setShowOrgLockPopup(false)}
+            >
+                <div
+                    style={{
+                        background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '400px',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden'
+                    }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <div style={{ height: '4px', background: 'linear-gradient(90deg, #1a1f2e, #0891b2)' }} />
+                    <div style={{ padding: '28px 28px 24px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', margin: '0 0 10px' }}>
+                            Org Chart Not Revealed
+                        </h3>
+                        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 0 22px' }}>
+                            To access Contact Data for <strong>{selectedCompany}</strong>, you must first reveal the org chart. Click the unlock button on the org chart to proceed.
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={() => setShowOrgLockPopup(false)}
+                                style={{
+                                    padding: '9px 22px', background: '#1a1f2e', color: '#fff',
+                                    border: 'none', borderRadius: '8px', fontSize: '14px',
+                                    fontWeight: '600', cursor: 'pointer'
+                                }}
+                            >
+                                Got it
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
         </>
     );
 };
