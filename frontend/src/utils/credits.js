@@ -21,7 +21,11 @@ const DEFAULT_STATE = {
 export const getCredits = () => {
   try {
     const stored = localStorage.getItem('nexoraCredits');
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Always enforce current TOTAL_CREDITS in case it changed
+      return { ...parsed, total: TOTAL_CREDITS };
+    }
   } catch (_) {}
   return { ...DEFAULT_STATE, bySection: { ...DEFAULT_STATE.bySection } };
 };

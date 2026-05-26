@@ -113,8 +113,8 @@ router.get('/credits', async (req, res) => {
 // POST /api/credits/deduct — deduct credits for a section
 router.post('/credits/deduct', async (req, res) => {
   const { section, amount = 1 } = req.body;
-  const TOTAL = 500;
-  const SECTION_LIMIT = 100;
+  const TOTAL = 250;
+  const SECTION_LIMIT = 50;
 
   try {
     const user = await PgUser.findOne({ where: { email: req.user.email } });
