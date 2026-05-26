@@ -185,7 +185,7 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
                   </div>
                   <span className="credits-bar-pct">{creditPct}%</span>
                 </div>
-                <p className="credits-reset-note">Resets on June 1, 2026</p>
+                {/* <p className="credits-reset-note">Resets on June 1, 2026</p> */}
               </div>
 
               {/* Per-section breakdown */}
