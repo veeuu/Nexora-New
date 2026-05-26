@@ -1,4 +1,4 @@
-﻿import apiFetch from '../../utils/apiFetch';
+import apiFetch from '../../utils/apiFetch';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { deductCredit } from '../../utils/credits';
 import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
@@ -8,7 +8,7 @@ import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
 import RenewalDashboard from './RenewalDashboard';
 
-// ── On-Demand Request Modal ──────────────────────────────────────────────────
+// -- On-Demand Request Modal --------------------------------------------------
 const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
   const [requestedName, setRequestedName] = useState(searchValue);
   const [submitted, setSubmitted] = useState(false);
@@ -70,7 +70,7 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94a3b8'; }}
-          >×</button>
+          >�</button>
 
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
@@ -195,7 +195,7 @@ const CustomDropdown = ({ value, onChange, options }) => {
         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
       >
         <span>{value || 'All'}</span>
-        <span style={{ fontSize: '12px' }}>▾</span>
+        <span style={{ fontSize: '12px' }}>?</span>
       </button>
 
       {isOpen && (
@@ -289,7 +289,7 @@ const RenewalMeter = ({ renewalDate }) => {
 
   const getStatusLabel = (proximity) => {
     if (proximity >= 86) return '<1 year';
-    if (proximity >= 46) return '1–2 years';
+    if (proximity >= 46) return '1�2 years';
     return '2+ years';
   };
 
@@ -372,7 +372,7 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
           {value && renderIcon(value)}
           {value || 'All'}
         </span>
-        <span style={{ fontSize: '12px' }}>▾</span>
+        <span style={{ fontSize: '12px' }}>?</span>
       </button>
 
       {isOpen && (
@@ -881,7 +881,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['<1 year', '1–2 years', '2+ years'];
+        return ['<1 year', '1�2 years', '2+ years'];
     };
 
     const getUniqueCategories = () => {
@@ -1021,7 +1021,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['<1 year', '1–2 years', '2+ years'];
+            const statusLabels = ['<1 year', '1�2 years', '2+ years'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -1450,7 +1450,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ×
+                        �
                       </button>
                     </div>
                     <div style={{
@@ -1626,7 +1626,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ×
+                        �
                       </button>
                     </div>
                     <div style={{
@@ -1755,7 +1755,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ×
+                        �
                       </button>
                     </div>
                     <div style={{
@@ -1885,7 +1885,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ×
+                        �
                       </button>
                     </div>
                     <div style={{
@@ -2015,7 +2015,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        ×
+                        �
                       </button>
                     </div>
                     <div style={{
@@ -2138,7 +2138,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ×
+                      �
                     </button>
                   </div>
                 )}
@@ -2177,7 +2177,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ×
+                      �
                     </button>
                   </div>
                 )}
@@ -2216,7 +2216,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ×
+                      �
                     </button>
                   </div>
                 )}
@@ -2255,7 +2255,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      ×
+                      �
                     </button>
                   </div>
                 )}
@@ -2317,7 +2317,7 @@ if (aQtr.year !== bQtr.year) {
                                         </th>
                                         <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
                                           <button
-                                            onClick={() => {
+                                            onClick={async () => {
                                               if (selectedRows.size === 0) {
                                                 alert('Please select at least one company to reveal');
                                                 return;
@@ -2331,18 +2331,26 @@ if (aQtr.year !== bQtr.year) {
                                                   if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
                                                 }
                                               });
-                                              if (toReveal.length > 0) {
-                                                deductCredit('renewal', toReveal.length);
-                                                toReveal.forEach(rowKey => markRevealed('renewal', rowKey));
-                                              }
+                                              if (toReveal.length === 0) return;
+
+                                              const actualAmount = await deductCredit('renewal', toReveal.length);
+                                              if (!actualAmount) return;
+
+                                              const canReveal = toReveal.slice(0, actualAmount);
+                                              const blocked = toReveal.length - canReveal.length;
+
+                                              canReveal.forEach(rowKey => markRevealed('renewal', rowKey));
                                               setRevealedRows(prev => {
                                                 const newSet = new Set(prev);
-                                                selectedRows.forEach(rowIndex => {
-                                                  const rowData = filteredData[rowIndex];
-                                                  if (rowData) newSet.add(`${rowIndex}-${rowData.companyName}`);
-                                                });
+                                                canReveal.forEach(rowKey => newSet.add(rowKey));
                                                 return newSet;
                                               });
+
+                                              if (blocked > 0) {
+                                                window.dispatchEvent(new CustomEvent('creditExhausted', {
+                                                  detail: { section: 'renewal', label: 'Renewal Intelligence', partial: true, revealed: canReveal.length, blocked }
+                                                }));
+                                              }
                                             }}
                                             style={{
                                               padding: '8px 12px',
@@ -2414,13 +2422,13 @@ if (aQtr.year !== bQtr.year) {
                                                         </td>
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
-                                                                onClick={() => {
-                                                                    if (!isRevealed) { deductCredit('renewal', 1); markRevealed('renewal', rowKey); }
-                                                                    setRevealedRows(prev => {
-                                                                        const newSet = new Set(prev);
-                                                                        newSet.add(rowKey);
-                                                                        return newSet;
-                                                                    });
+                                                                onClick={async () => {
+                                                                    if (!isRevealed) {
+                                                                        const ok = await deductCredit('renewal', 1);
+                                                                        if (!ok) return;
+                                                                        markRevealed('renewal', rowKey);
+                                                                        setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
+                                                                    }
                                                                 }}
                                                                 style={{
                                                                     display: 'inline-flex',
@@ -2596,13 +2604,13 @@ if (aQtr.year !== bQtr.year) {
                                                         </td>
                                                         <td style={{ textAlign: 'center', padding: '12px 8px' }}>
                                                             <button
-                                                                onClick={() => {
-                                                                    if (!isRevealed) { deductCredit('renewal', 1); markRevealed('renewal', rowKey); }
-                                                                    setRevealedRows(prev => {
-                                                                        const newSet = new Set(prev);
-                                                                        newSet.add(rowKey);
-                                                                        return newSet;
-                                                                    });
+                                                                onClick={async () => {
+                                                                    if (!isRevealed) {
+                                                                        const ok = await deductCredit('renewal', 1);
+                                                                        if (!ok) return;
+                                                                        markRevealed('renewal', rowKey);
+                                                                        setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
+                                                                    }
                                                                 }}
                                                                 style={{
                                                                     display: 'inline-flex',

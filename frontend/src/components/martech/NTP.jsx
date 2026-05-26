@@ -1239,7 +1239,7 @@ const NTP = () => {
               </th>
               <th style={{ textAlign: 'center', width: '140px' }}>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (selectedRows.size === 0) return;
                     const companiesMapBulk = new Map();
                     filteredData.forEach(row => {
@@ -1263,18 +1263,26 @@ const NTP = () => {
                         if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
                       }
                     });
-                    if (toReveal.length > 0) {
-                      deductCredit('ntp', toReveal.length);
-                      toReveal.forEach(rowKey => markRevealed('ntp', rowKey));
-                    }
+                    if (toReveal.length === 0) return;
+
+                    const actualAmount = await deductCredit('ntp', toReveal.length);
+                    if (!actualAmount) return;
+
+                    const canReveal = toReveal.slice(0, actualAmount);
+                    const blocked = toReveal.length - canReveal.length;
+
+                    canReveal.forEach(rowKey => markRevealed('ntp', rowKey));
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
-                      selectedRows.forEach(rowIndex => {
-                        const company = allCompaniesBulk[rowIndex];
-                        if (company) newSet.add(`${rowIndex}-${company.companyName}`);
-                      });
+                      canReveal.forEach(rowKey => newSet.add(rowKey));
                       return newSet;
                     });
+
+                    if (blocked > 0) {
+                      window.dispatchEvent(new CustomEvent('creditExhausted', {
+                        detail: { section: 'ntp', label: 'Next Tech Purchase®', partial: true, revealed: canReveal.length, blocked }
+                      }));
+                    }
                   }}
                   style={{
                     padding: '8px 12px',
@@ -1370,12 +1378,13 @@ const NTP = () => {
                       {isFirstTechRow && (
                         <td rowSpan={companyRowSpan} style={{ textAlign: 'center', width: '80px' }}>
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               if (!isRevealed) {
-                                deductCredit('ntp', 1);
+                                const ok = await deductCredit('ntp', 1);
+                                if (!ok) return;
                                 markRevealed('ntp', rowKey);
+                                setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
                               }
-                              setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
                             }}
                             className={`reveal-button ${isRevealed ? 'reveal-button-unlocked' : 'reveal-button-locked'}`}
                             onMouseEnter={(e) => { if (!isRevealed) e.currentTarget.style.backgroundColor = '#f3f4f6'; }}

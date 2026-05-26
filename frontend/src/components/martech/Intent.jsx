@@ -890,12 +890,11 @@ useEffect(() => {
               </th>
               <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (selectedRows.size === 0) {
                       alert('Please select at least one company to reveal');
                       return;
                     }
-                    // Calculate new reveals outside state updater to avoid StrictMode double-invoke
                     const currentRevealed = new Set(revealedRows);
                     const toReveal = [];
                     selectedRows.forEach(rowIndex => {
@@ -905,18 +904,26 @@ useEffect(() => {
                         if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
                       }
                     });
-                    if (toReveal.length > 0) {
-                      deductCredit('intent', toReveal.length);
-                      toReveal.forEach(rowKey => markRevealed('intent', rowKey));
-                    }
+                    if (toReveal.length === 0) return;
+
+                    const actualAmount = await deductCredit('intent', toReveal.length);
+                    if (!actualAmount) return;
+
+                    const canReveal = toReveal.slice(0, actualAmount);
+                    const blocked = toReveal.length - canReveal.length;
+
+                    canReveal.forEach(rowKey => markRevealed('intent', rowKey));
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
-                      selectedRows.forEach(rowIndex => {
-                        const rowData = filteredData[rowIndex];
-                        if (rowData) newSet.add(`${rowIndex}-${rowData.companyName}`);
-                      });
+                      canReveal.forEach(rowKey => newSet.add(rowKey));
                       return newSet;
                     });
+
+                    if (blocked > 0) {
+                      window.dispatchEvent(new CustomEvent('creditExhausted', {
+                        detail: { section: 'intent', label: 'Intent', partial: true, revealed: canReveal.length, blocked }
+                      }));
+                    }
                   }}
                   style={{
                     padding: '8px 12px',
@@ -982,16 +989,13 @@ useEffect(() => {
                     </td>
                     <td style={{ textAlign: 'center', width: '80px' }}>
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           if (!isRevealed) {
-                            deductCredit('intent', 1);
+                            const ok = await deductCredit('intent', 1);
+                            if (!ok) return;
                             markRevealed('intent', rowKey);
+                            setRevealedRows(prev => { const s = new Set(prev); s.add(rowKey); return s; });
                           }
-                          setRevealedRows(prev => {
-                            const newSet = new Set(prev);
-                            newSet.add(rowKey);
-                            return newSet;
-                          });
                         }}
                         className={`reveal-button ${isRevealed ? 'reveal-button-unlocked' : 'reveal-button-locked'}`}
                         onMouseEnter={(e) => {

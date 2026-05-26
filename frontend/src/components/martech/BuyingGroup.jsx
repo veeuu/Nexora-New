@@ -331,22 +331,24 @@ const BuyingGroup = () => {
         setZoomLevel(100);
     };
 
-    const toggleEmailReveal = (personIndex) => {
+    const toggleEmailReveal = async (personIndex) => {
         const key = `${selectedCompany}-${personIndex}`;
         if (!revealedEmails.has(key)) {
-            deductCredit('buyingGroup', 1);
+            const ok = await deductCredit('buyingGroup', 1);
+            if (!ok) return;
             markRevealed('buyingGroupEmails', key);
+            setRevealedEmails(prev => new Set(prev).add(key));
         }
-        setRevealedEmails(prev => new Set(prev).add(key));
     };
 
-    const toggleMobileDIDReveal = (personIndex) => {
+    const toggleMobileDIDReveal = async (personIndex) => {
         const key = `${selectedCompany}-${personIndex}`;
         if (!revealedMobileDIDs.has(key)) {
-            deductCredit('buyingGroup', 1);
+            const ok = await deductCredit('buyingGroup', 1);
+            if (!ok) return;
             markRevealed('buyingGroupMobileDIDs', key);
+            setRevealedMobileDIDs(prev => new Set(prev).add(key));
         }
-        setRevealedMobileDIDs(prev => new Set(prev).add(key));
     };
 
     const isEmailRevealed = (personIndex) => {
@@ -614,8 +616,9 @@ const BuyingGroup = () => {
                                     <p style={{ margin: '0 0 4px', fontWeight: '700', fontSize: '15px', color: '#0f172a' }}>Org Chart Locked</p>
                                     <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#64748b' }}>Unlock to view the org chart for <strong>{selectedCompany}</strong></p>
                                     <button
-                                        onClick={() => {
-                                            deductCredit('buyingGroup', 1);
+                                        onClick={async () => {
+                                            const ok = await deductCredit('buyingGroup', 1);
+                                            if (!ok) return;
                                             markRevealed('buyingGroupOrgCharts', selectedCompany);
                                             setOrgChartRevealed(prev => { const s = new Set(prev); s.add(selectedCompany); return s; });
                                         }}
