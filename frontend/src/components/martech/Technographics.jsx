@@ -1117,7 +1117,7 @@ const Technographics = () => {
 
       const revealedCompanyNames = new Set();
       groupedDataArray.forEach((row, index) => {
-        const rowKey = `${index}-${row.companyName}`;
+        const rowKey = `reveal-${row.companyName}`;
         if (revealedRows.has(rowKey)) {
           revealedCompanyNames.add(row.companyName);
         }
@@ -1679,8 +1679,8 @@ const Technographics = () => {
 
   const groupedDataArray = Object.values(groupedData).sort((a, b) => {
     // Revealed rows always first
-    const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
-    const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
+    const aRevealed = revealedRows.has(`reveal-${a.companyName}`);
+    const bRevealed = revealedRows.has(`reveal-${b.companyName}`);
     if (aRevealed && !bRevealed) return -1;
     if (!aRevealed && bRevealed) return 1;
 
@@ -3335,11 +3335,11 @@ const Technographics = () => {
               <th style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }}>
                 <input
                   type="checkbox"
-                  checked={groupedDataArray.length > 0 && groupedDataArray.every((_, idx) => selectedRows.has(idx))}
+                  checked={groupedDataArray.length > 0 && groupedDataArray.every(row => selectedRows.has(row.companyName))}
                   onChange={(e) => {
                     if (e.target.checked) {
                       const newSelected = new Set();
-                      groupedDataArray.forEach((_, idx) => newSelected.add(idx));
+                      groupedDataArray.forEach(row => newSelected.add(row.companyName));
                       setSelectedRows(newSelected);
                     } else {
                       setSelectedRows(new Set());
@@ -3355,32 +3355,39 @@ const Technographics = () => {
               </th>
               <th style={{ textAlign: 'center', padding: '12px 8px', width: '120px' }}>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (selectedRows.size === 0) {
                       alert('Please select at least one company to reveal');
                       return;
                     }
                     const currentRevealed = new Set(revealedRows);
                     const toReveal = [];
-                    selectedRows.forEach(actualIndex => {
-                      const rowData = groupedDataArray[actualIndex];
-                      if (rowData) {
-                        const rowKey = `${actualIndex}-${rowData.companyName}`;
-                        if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
-                      }
+                    selectedRows.forEach(companyName => {
+                      const rowKey = `reveal-${companyName}`;
+                      if (!currentRevealed.has(rowKey)) toReveal.push(rowKey);
                     });
-                    if (toReveal.length > 0) {
-                      deductCredit('technographics', toReveal.length);
-                      toReveal.forEach(rowKey => markRevealed('technographics', rowKey));
-                    }
+                    if (toReveal.length === 0) return;
+
+                    // deductCredit internally caps to available — returns actualAmount deducted or false
+                    const actualAmount = await deductCredit('technographics', toReveal.length);
+                    if (!actualAmount) return; // fully exhausted, popup already shown
+
+                    const canReveal = toReveal.slice(0, actualAmount);
+                    const blocked = toReveal.length - canReveal.length;
+
+                    canReveal.forEach(rowKey => markRevealed('technographics', rowKey));
                     setRevealedRows(prev => {
                       const newSet = new Set(prev);
-                      selectedRows.forEach(actualIndex => {
-                        const rowData = groupedDataArray[actualIndex];
-                        if (rowData) newSet.add(`${actualIndex}-${rowData.companyName}`);
-                      });
+                      canReveal.forEach(rowKey => newSet.add(rowKey));
                       return newSet;
                     });
+
+                    // Show popup if some were blocked by credit limit
+                    if (blocked > 0) {
+                      window.dispatchEvent(new CustomEvent('creditExhausted', {
+                        detail: { section: 'technographics', label: 'Technographics', partial: true, revealed: canReveal.length, blocked }
+                      }));
+                    }
                   }}
                   style={{
                     padding: '8px 12px',
@@ -3431,7 +3438,7 @@ const Technographics = () => {
                 return paginatedData.map((row, index) => {
                     const actualIndex = index;  // always 0-based since backend paginates
                     const isHighlighted = rowMatchesSearch(row);
-                    const rowKey = `${actualIndex}-${row.companyName}`;
+                    const rowKey = `reveal-${row.companyName}`;  // stable key — company name only
 
                     if (!scrollRefsMap.current.has(rowKey)) {
                       scrollRefsMap.current.set(rowKey, {
@@ -3465,7 +3472,7 @@ const Technographics = () => {
                       x: rect.right - 20,
                       y: rect.bottom + 20,
                       isCompanyName: true,
-                      isBlurred: !revealedRows.has(`${actualIndex}-${row.companyName}`)
+                      isBlurred: !revealedRows.has(`reveal-${row.companyName}`)
                     });
                   };
 
@@ -3499,14 +3506,14 @@ const Technographics = () => {
                       <td style={{ width: '40px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          checked={selectedRows.has(actualIndex)}
+                          checked={selectedRows.has(row.companyName)}
                           onChange={(e) => {
                             e.stopPropagation();
                             const newSelected = new Set(selectedRows);
                             if (e.target.checked) {
-                              newSelected.add(actualIndex);
+                              newSelected.add(row.companyName);
                             } else {
-                              newSelected.delete(actualIndex);
+                              newSelected.delete(row.companyName);
                             }
                             setSelectedRows(newSelected);
                           }}
@@ -3520,17 +3527,18 @@ const Technographics = () => {
                       </td>
                       <td style={{ width: '80px', textAlign: 'center', padding: '12px 8px' }} onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={() => {
-                            const rowKey = `${actualIndex}-${row.companyName}`;
+                          onClick={async () => {
+                            const rowKey = `reveal-${row.companyName}`;
                             if (!revealedRows.has(rowKey)) {
-                              deductCredit('technographics', 1);
+                              const ok = await deductCredit('technographics', 1);
+                              if (!ok) return; // credit exhausted — popup already shown, don't reveal
                               markRevealed('technographics', rowKey);
+                              setRevealedRows(prev => {
+                                const newSet = new Set(prev);
+                                newSet.add(rowKey);
+                                return newSet;
+                              });
                             }
-                            setRevealedRows(prev => {
-                              const newSet = new Set(prev);
-                              newSet.add(rowKey);
-                              return newSet;
-                            });
                           }}
                           style={{
                             display: 'inline-flex',
@@ -3538,27 +3546,27 @@ const Technographics = () => {
                             justifyContent: 'center',
                             gap: '6px',
                             padding: '8px 10px',
-                            backgroundColor: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '#f3f4f6' : '#f0fdf4',
-                            border: revealedRows.has(`${actualIndex}-${row.companyName}`) ? '1px solid #d1d5db' : '1px solid #bbf7d0',
+                            backgroundColor: revealedRows.has(`reveal-${row.companyName}`) ? '#f3f4f6' : '#f0fdf4',
+                            border: revealedRows.has(`reveal-${row.companyName}`) ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             transition: 'all 0.2s'
                           }}
                           onMouseEnter={(e) => {
-                            if (!revealedRows.has(`${actualIndex}-${row.companyName}`)) {
+                            if (!revealedRows.has(`reveal-${row.companyName}`)) {
                               e.currentTarget.style.backgroundColor = '#a7f3d0';
                               e.currentTarget.style.borderColor = '#6ee7b7';
                             }
                           }}
                           onMouseLeave={(e) => {
-                            if (!revealedRows.has(`${actualIndex}-${row.companyName}`)) {
+                            if (!revealedRows.has(`reveal-${row.companyName}`)) {
                               e.currentTarget.style.backgroundColor = '#d1fae5';
                               e.currentTarget.style.borderColor = '#a7f3d0';
                             }
                           }}
-                          title={revealedRows.has(`${actualIndex}-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
+                          title={revealedRows.has(`reveal-${row.companyName}`) ? 'Company details revealed' : 'Reveal company details'}
                         >
-                          {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
+                          {revealedRows.has(`reveal-${row.companyName}`) ? (
                             <FaUnlock size={16} style={{ color: '#9ca3af' }} title="Company details revealed" />
                           ) : (
                             <FaLock size={16} style={{ color: '#1f2937' }} title="Click to reveal company details" />
@@ -3567,7 +3575,7 @@ const Technographics = () => {
                       </td>
                       <td style={{ overflow: 'visible', whiteSpace: 'normal' }} onMouseEnter={(e) => handleCompanyNameMouseEnter(e, row.companyName)} onMouseLeave={handleMouseLeave}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          {revealedRows.has(`${actualIndex}-${row.companyName}`) ? (
+                          {revealedRows.has(`reveal-${row.companyName}`) ? (
                             <>
                               <div 
                                 style={{ fontWeight: '600', color: '#1f2937', cursor: 'pointer' }}

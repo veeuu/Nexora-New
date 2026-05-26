@@ -16,14 +16,35 @@ const saveRevealedLocal = (data) => {
   window.dispatchEvent(new Event('revealedUpdated'));
 };
 
-// Fetch from server and sync to localStorage — returns the data
+// Fetch from server and sync to localStorage
+// - If server has data: merge (union) to protect optimistic reveals not yet persisted
+// - If server returns empty {}: server is authoritative — clear local (e.g. after admin reset)
 export const syncRevealedFromServer = async () => {
   try {
     const res = await apiFetch('/api/revealed');
     if (!res.ok) return null;
-    const data = await res.json();
-    saveRevealedLocal(data);
-    return data;
+    const serverData = await res.json();
+
+    // Check if server has any revealed keys at all
+    const serverHasData = Object.values(serverData).some(v => Array.isArray(v) && v.length > 0);
+
+    if (!serverHasData) {
+      // Server is empty — treat as authoritative reset, clear local too
+      saveRevealedLocal({});
+      return {};
+    }
+
+    // Server has data — merge with local to protect optimistic reveals
+    const localData = getRevealedLocal();
+    const merged = {};
+    const allSections = new Set([...Object.keys(serverData), ...Object.keys(localData)]);
+    allSections.forEach(section => {
+      const serverKeys = Array.isArray(serverData[section]) ? serverData[section] : [];
+      const localKeys = Array.isArray(localData[section]) ? localData[section] : [];
+      merged[section] = [...new Set([...serverKeys, ...localKeys])];
+    });
+    saveRevealedLocal(merged);
+    return merged;
   } catch (_) {
     return null;
   }

@@ -22,6 +22,14 @@ const Dashboard = ({ onLogout, onNavRef, username, displayName }) => {
   const [activeSection, setActiveSection] = useState('Home');
   const [homeResetTrigger, setHomeResetTrigger] = useState(0);
   const [profilePanelOpen, setProfilePanelOpen] = useState(false);
+  const [creditPopup, setCreditPopup] = useState(null); // { section, label } or { section: 'total' }
+
+  // Listen for credit exhausted events from deductCredit
+  useEffect(() => {
+    const handler = (e) => setCreditPopup(e.detail);
+    window.addEventListener('creditExhausted', handler);
+    return () => window.removeEventListener('creditExhausted', handler);
+  }, []);
 
 const routeToSection = {
     '/dashboard': 'Home',
@@ -159,6 +167,68 @@ useEffect(() => {
           username={username}
           onLogout={onLogout}
         />
+
+        {/* Credit Exhausted Popup */}
+        {creditPopup && (
+          <div style={{
+            position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)',
+            zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(2px)'
+          }} onClick={() => setCreditPopup(null)}>
+            <div style={{
+              background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '420px',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.18)', overflow: 'hidden',
+              position: 'relative'
+            }} onClick={e => e.stopPropagation()}>
+              <div style={{ height: '4px', background: 'linear-gradient(90deg, #ef4444, #f97316)' }} />
+              <div style={{ padding: '32px 28px 28px' }}>
+                <div style={{
+                  width: '52px', height: '52px', borderRadius: '50%',
+                  background: '#fef2f2', border: '2px solid #fecaca',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 18px', fontSize: '22px'
+                }}>🔒</div>
+                <h3 style={{ textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#0f172a', margin: '0 0 10px' }}>
+                  {creditPopup.section === 'total' ? 'All Credits Exhausted' : creditPopup.partial ? 'Partial Reveal — Credits Exhausted' : 'Section Credits Exhausted'}
+                </h3>
+                <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 0 24px' }}>
+                  {creditPopup.section === 'total'
+                    ? 'You have used all 250 credits. Upgrade your plan to continue revealing data.'
+                    : creditPopup.partial
+                      ? <>{creditPopup.revealed > 0 ? <><strong>{creditPopup.revealed}</strong> {creditPopup.revealed === 1 ? 'company was' : 'companies were'} revealed. </> : ''}The remaining <strong>{creditPopup.blocked}</strong> could not be revealed you've hit the 50-credit limit for <strong>{creditPopup.label}</strong>. Upgrade to unlock more.</>
+                      : <>You have used all <strong>50 credits</strong> for <strong>{creditPopup.label}</strong>. Upgrade your plan to unlock more.</>
+                  }
+                </p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={() => setCreditPopup(null)}
+                    style={{
+                      flex: 1, padding: '10px', background: '#f8fafc', color: '#475569',
+                      border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px',
+                      fontWeight: '500', cursor: 'pointer'
+                    }}
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCreditPopup(null);
+                      window.location.href = 'mailto:sales@proplusdata.co?subject=Upgrade%20Plan%20Request';
+                    }}
+                    style={{
+                      flex: 1, padding: '10px',
+                      background: 'linear-gradient(135deg, #ef4444, #f97316)',
+                      color: '#fff', border: 'none', borderRadius: '8px',
+                      fontSize: '14px', fontWeight: '600', cursor: 'pointer'
+                    }}
+                  >
+                    Upgrade Plan
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </IndustryProvider>
   );

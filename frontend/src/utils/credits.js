@@ -6,6 +6,14 @@ import apiFetch from './apiFetch';
 export const TOTAL_CREDITS = 250;
 export const SECTION_LIMIT = 50;
 
+const SECTION_LABELS = {
+  technographics: 'Technographics',
+  renewal: 'Renewal Intelligence',
+  intent: 'Intent',
+  ntp: 'Next Tech Purchase®',
+  buyingGroup: 'Buying Group',
+};
+
 const DEFAULT_STATE = {
   total: TOTAL_CREDITS,
   used: 0,
@@ -23,7 +31,6 @@ export const getCredits = () => {
     const stored = localStorage.getItem('nexoraCredits');
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Always enforce current TOTAL_CREDITS in case it changed
       return { ...parsed, total: TOTAL_CREDITS };
     }
   } catch (_) {}
@@ -35,7 +42,17 @@ const saveCredits = (state) => {
   window.dispatchEvent(new Event('creditsUpdated'));
 };
 
-// Fetch from backend and sync to localStorage
+// Fire a custom event that the UI listens to for showing a styled popup
+const showCreditExhaustedPopup = (section) => {
+  const label = SECTION_LABELS[section] || section;
+  window.dispatchEvent(
+    new CustomEvent('creditExhausted', {
+      detail: { section, label },
+    })
+  );
+};
+
+// Fetch from backend and always trust server as source of truth
 export const syncCreditsFromServer = async () => {
   try {
     const res = await apiFetch('/api/credits');
@@ -52,28 +69,38 @@ export const syncCreditsFromServer = async () => {
 
 // Deduct locally + persist to backend
 export const deductCredit = async (section, amount = 1) => {
-  // Optimistic local update first
   const state = getCredits();
   const sectionUsed = state.bySection[section] ?? 0;
+  const sectionRemaining = SECTION_LIMIT - sectionUsed;
+  const totalRemaining = state.total - state.used;
 
-  if (state.used >= state.total) return false;
-  if (sectionUsed >= SECTION_LIMIT) return false;
+  if (totalRemaining <= 0) {
+    showCreditExhaustedPopup('total');
+    return false;
+  }
+  if (sectionRemaining <= 0) {
+    showCreditExhaustedPopup(section);
+    return false;
+  }
 
-  state.used += amount;
-  state.bySection[section] = sectionUsed + amount;
+  // Cap amount to what's actually available (never exceed either limit)
+  const actualAmount = Math.min(amount, sectionRemaining, totalRemaining);
+
+  // Optimistic local update
+  state.used += actualAmount;
+  state.bySection[section] = sectionUsed + actualAmount;
   saveCredits(state);
 
-  // Persist to backend — do NOT reconcile back to avoid race conditions
-  // overwriting the optimistic local state mid-session
+  // Persist to backend
   try {
     await apiFetch('/api/credits/deduct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ section, amount }),
+      body: JSON.stringify({ section, amount: actualAmount }),
     });
   } catch (_) {}
 
-  return true;
+  return actualAmount; // return how many were actually deducted
 };
 
 export const getRemainingTotal = () => {
@@ -84,4 +111,12 @@ export const getRemainingTotal = () => {
 export const getRemainingForSection = (section) => {
   const s = getCredits();
   return SECTION_LIMIT - (s.bySection[section] ?? 0);
+};
+
+// How many credits can actually be spent right now for a section (min of both limits)
+export const getAvailableForSection = (section) => {
+  const s = getCredits();
+  const totalRemaining = s.total - s.used;
+  const sectionRemaining = SECTION_LIMIT - (s.bySection[section] ?? 0);
+  return Math.max(0, Math.min(totalRemaining, sectionRemaining));
 };
