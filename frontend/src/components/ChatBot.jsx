@@ -1,11 +1,21 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { FaTimes, FaMinus } from 'react-icons/fa';
 import copilotImage from '../assets/ChatGPT_Image_Mar_25__2026__10_39_07_AM-removebg-preview (1).png';
 import apiFetch from '../utils/apiFetch';
 import '../styles/chatbot.css';
 // import chatbotVideo from '../video/Video_Generation_For_Chatbot (online-video-cutter,com)-Picsart-BackgroundRemover.mp4';
 
-const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
+const ChatBot = ({ isAuthenticated, ntpData, tableData, revealedRows, isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
+  // Extract revealed company names from revealedRows Set (keys are "index-companyName")
+  const revealedCompanyNames = useMemo(() => {
+    if (!revealedRows || revealedRows.size === 0) return new Set();
+    const names = new Set();
+    revealedRows.forEach(key => {
+      const dashIdx = key.indexOf('-');
+      if (dashIdx !== -1) names.add(key.slice(dashIdx + 1).toLowerCase());
+    });
+    return names;
+  }, [revealedRows]);
   const [isOpenLocal, setIsOpenLocal] = useState(false);
   
   // Use external state if provided (from NTP), otherwise use local state
@@ -184,18 +194,19 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     
     const data = ntpData || tableData;
 
-    // Try local data first
+    // Try local data first — only revealed companies
     const localRows = (data || []).filter(row =>
       String(row.companyName || '').toLowerCase() === (selectedCompany || '').toLowerCase() &&
       row.category !== 'Not Detected' &&
       row.purchasePrediction !== 'Not Detected' &&
-      row.purchasePrediction !== 'NOT detected'
+      row.purchasePrediction !== 'NOT detected' &&
+      revealedCompanyNames.has(String(row.companyName || '').toLowerCase())
     );
 
     let rows = localRows;
 
-    // If not in local data, fetch from API
-    if (rows.length === 0 && selectedCompany) {
+    // If not in local data, fetch from API — only if revealed
+    if (rows.length === 0 && selectedCompany && revealedCompanyNames.has(selectedCompany.toLowerCase())) {
       try {
         const params = new URLSearchParams();
         params.append('companyName', selectedCompany);
@@ -286,7 +297,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
             type: 'bot',
             text: 'I\'m ready. Drop the company name below, and I\'ll pull their predictive data and analysis',
             hasSubtext: true,
-            subtext: '💡 Tip: Minimize me to view the company table!'
+            subtext: '💡 Tip: Only companies you\'ve unlocked in the NTP table are searchable here.'
           }
         ];
       });
@@ -299,18 +310,19 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     
     const data = ntpData || tableData;
 
-    // Try local data first
+    // Try local data first — only revealed companies
     const localRows = (data || []).filter(row =>
       String(row.companyName || '').toLowerCase() === companyName.toLowerCase() &&
       row.category !== 'Not Detected' &&
       row.purchasePrediction !== 'Not Detected' &&
-      row.purchasePrediction !== 'NOT detected'
+      row.purchasePrediction !== 'NOT detected' &&
+      revealedCompanyNames.has(String(row.companyName || '').toLowerCase())
     );
 
     let rows = localRows;
 
-    // If not in local data, fetch from API
-    if (rows.length === 0) {
+    // If not in local data, fetch from API — only if revealed
+    if (rows.length === 0 && revealedCompanyNames.has(companyName.toLowerCase())) {
       try {
         const params = new URLSearchParams();
         params.append('companyName', companyName);
@@ -377,9 +389,17 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
     try {
       let data = ntpData || tableData;
       
+      // Only proceed if this company is revealed
+      const companyLower = (selectedCompany || '').toLowerCase();
+      if (!revealedCompanyNames.has(companyLower)) {
+        setMessages(prev => [...prev, { type: 'bot', text: `"${selectedCompany}" hasn't been revealed yet. Please unlock it in the NTP table first.` }]);
+        setLoading(false);
+        return;
+      }
+
       // Always try to get fresh data for this specific company from API
       const companyRows = (data || []).filter(row =>
-        String(row.companyName || '').toLowerCase() === (selectedCompany || '').toLowerCase()
+        String(row.companyName || '').toLowerCase() === companyLower
       );
       
       if (companyRows.length === 0) {
@@ -648,12 +668,13 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         setMessages(prev => [...prev, { type: 'bot', text: `Got it, ${companyName} selected. What would you like to explore?`, showCategories: true, categories: companyCategories }]);
       };
 
-      // First try local data
+      // First try local data — only revealed companies
       const localRows = (data || []).filter(row =>
         String(row.companyName || '').toLowerCase() === userMessage.toLowerCase() &&
         row.category !== 'Not Detected' &&
         row.purchasePrediction !== 'Not Detected' &&
-        row.purchasePrediction !== 'NOT detected'
+        row.purchasePrediction !== 'NOT detected' &&
+        revealedCompanyNames.has(String(row.companyName || '').toLowerCase())
       );
 
       if (localRows.length > 0) {
@@ -661,23 +682,22 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
         return;
       }
 
-      // Not in local data  use summary to get all company names for partial match
+      // Not in local data — use revealed company names for partial match
       setMessages(prev => [...prev, { type: 'bot', text: `Searching for "${userMessage}"...` }]);
       const userMessageLower = userMessage.toLowerCase();
 
-      // Fetch all company names from summary endpoint
-      const summaryResp = await apiFetch('/api/ntp/summary');
-      let allCompanyNames = [];
-      if (summaryResp.ok) {
-        const summaryJson = await summaryResp.json();
-        allCompanyNames = summaryJson.companies || [];
-      }
+      // Only search within revealed companies
+      const allCompanyNames = Array.from(revealedCompanyNames);
 
       // Exact match (case-insensitive)
-      const exactMatch = allCompanyNames.find(n => n.toLowerCase() === userMessageLower);
+      const exactMatch = allCompanyNames.find(n => n === userMessageLower);
       if (exactMatch) {
+        // Find the original casing from tableData
+        const originalName = (ntpData || tableData || []).find(
+          r => String(r.companyName || '').toLowerCase() === exactMatch
+        )?.companyName || exactMatch;
         const exactParams = new URLSearchParams();
-        exactParams.append('companyName', exactMatch);
+        exactParams.append('companyName', originalName);
         exactParams.append('page', '1');
         exactParams.append('limit', '100');
         const exactResp = await apiFetch(`/api/ntp?${exactParams.toString()}`);
@@ -686,14 +706,19 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
           const exactRows = exactJson.data || [];
           if (exactRows.length > 0) {
             setMessages(prev => prev.filter(m => m.text !== `Searching for "${userMessage}"...`));
-            processMatchedRows(exactRows, exactMatch);
+            processMatchedRows(exactRows, originalName);
             return;
           }
         }
       }
 
-      // Partial match from full company list
-      const suggestions = allCompanyNames
+      // Partial match from revealed companies only
+      const revealedOriginalNames = [...new Set(
+        (ntpData || tableData || [])
+          .filter(r => revealedCompanyNames.has(String(r.companyName || '').toLowerCase()))
+          .map(r => r.companyName)
+      )];
+      const suggestions = revealedOriginalNames
         .filter(n => n.toLowerCase().includes(userMessageLower))
         .slice(0, 5);
 
@@ -701,7 +726,7 @@ const ChatBot = ({ isAuthenticated, ntpData, tableData, isOpen: externalIsOpen, 
       if (suggestions.length > 0) {
         setMessages(prev => [...prev, { type: 'bot', text: `I couldn't find an exact match for "${userMessage}". Did you mean one of these?`, showSuggestedCompanies: true, suggestedCompanies: suggestions }]);
       } else {
-        setMessages(prev => [...prev, { type: 'bot', text: `Sorry, I couldn't find any company matching "${userMessage}". Please try another company name.` }]);
+        setMessages(prev => [...prev, { type: 'bot', text: `Sorry, I couldn't find "${userMessage}" among your revealed companies. Please unlock it in the NTP table first.` }]);
       }
     } catch (error) {
       setMessages(prev => [...prev, { type: 'bot', text: 'Sorry, I encountered an error. Please try again.' }]);
