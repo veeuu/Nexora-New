@@ -174,7 +174,7 @@ const UrgencyFunnelChart = ({ data }) => {
   return (
     <div className="renewal-chart-container">
       <div className="renewal-chart-header">
-        <h3>Priority Funnel</h3>
+        <h3>Renewal Timeline</h3>
         <p></p>
         <div className="renewal-active-indicator">● Active</div>
       </div>
@@ -475,9 +475,6 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
             </div>
             <div className="renewal-chart-half-width">
               {urgencyData.length > 0 && <UrgencyFunnelChart data={urgencyData} />}
-            </div>
-            <div className="renewal-chart-full-width">
-              {timelineData.length > 0 && <RenewalTimelineChart data={timelineData} mode={timelineMode} />}
             </div>
             <div className="renewal-chart-full-width">
               <RenewalTracker data={trackerData} trackerListRef={trackerListRef} loading={loading} />
