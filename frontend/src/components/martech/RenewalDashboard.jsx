@@ -327,7 +327,7 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
     const kpis = [
       { title: 'Total Renewals Tracked', value: '530M+',  accentColor: '#3b82f6' },
       { title: 'Due This Quarter (Q2)', value: '134M+',  accentColor: '#f59e0b' },
-      { title: 'High-Priority Renewals', value: '53M+',   accentColor: '#ef4444' }
+      { title: 'High-Priority Renewals - < 1 Month', value: '53M+',   accentColor: '#ef4444' }
     ];
     setKpiData(kpis);
 
@@ -475,9 +475,6 @@ const RenewalDashboard = ({ onClose, inline = false }) => {
             </div>
             <div className="renewal-chart-half-width">
               {urgencyData.length > 0 && <UrgencyFunnelChart data={urgencyData} />}
-            </div>
-            <div className="renewal-chart-full-width">
-              <RenewalTracker data={trackerData} trackerListRef={trackerListRef} loading={loading} />
             </div>
           </div>
         </div>

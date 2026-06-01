@@ -204,21 +204,19 @@ const Home = ({ displayName }) => {
                 <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
                 <button className={`home-quick-btn home-quick-btn-buyinggroup${activeView === 'buyinggroup' ? ' active' : ''}`} onClick={() => handleViewClick('buyinggroup')}>Buying Group</button>
                 <button className={`home-quick-btn home-quick-btn-ntp${activeView === 'ntp' ? ' active' : ''}`} onClick={() => handleViewClick('ntp')}>NTP®</button>
-                <div style={{ marginLeft: 'auto' }}>
-                  <div style={{ position: 'relative', display: 'inline-block' }} className="home-ondemand-wrapper">
-                    <button
-                      className="home-quick-btn home-ondemand-btn"
-                      onClick={() => setShowOnDemand(true)}
-                    >
-                      + Request on Demand
-                    </button>
-                    <div className="home-ondemand-tooltip">
-                      Can't find a company ? Submit a request and our team will get back to you within 48 hours.
-                    </div>
-                  </div>
-                </div>
               </div>
             </>
+          </div>
+          <div className="home-ondemand-wrapper" style={{ flexShrink: 0, alignSelf: 'flex-end', marginBottom: '0' }}>
+            <button
+              className="home-quick-btn home-ondemand-btn"
+              onClick={() => setShowOnDemand(true)}
+            >
+              Request on Demand
+            </button>
+            <div className="home-ondemand-tooltip">
+              Submit an on-demand request and our team will get back to you within 48 hours.
+            </div>
           </div>
         </div>
 
