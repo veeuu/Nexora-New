@@ -212,10 +212,15 @@ const Home = ({ displayName }) => {
               className="home-quick-btn home-ondemand-btn"
               onClick={() => setShowOnDemand(true)}
             >
-              Request on Demand
+              <span className="home-ondemand-particle home-ondemand-p1">✦</span>
+              <span className="home-ondemand-particle home-ondemand-p2">·</span>
+              <span className="home-ondemand-particle home-ondemand-p3">✦</span>
+              <span className="home-ondemand-particle home-ondemand-p4">·</span>
+              <span className="home-ondemand-particle home-ondemand-p5">✦</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>+ Request on Demand</span>
             </button>
             <div className="home-ondemand-tooltip">
-              Submit an on-demand request and our team will get back to you within 48 hours.
+              Need specific company data? Submit an on-demand request and our team will get back to you within 48 hours.
             </div>
           </div>
         </div>
