@@ -124,25 +124,6 @@ const BuyingGroupDashboard = ({ inline = false }) => {
         </div>
       </div>
 
-      {/* Row 2: Industry breakdown */}
-      <div className="bgd-card bgd-card-full">
-        <div className="bgd-card-header">
-          <span className="bgd-card-title">Industry Breakdown</span>
-          <span className="bgd-badge">Top 6</span>
-        </div>
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={INDUSTRY_DATA} layout="vertical" margin={{ top: 4, right: 40, left: 10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
-            <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={formatM} />
-            <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} width={110} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatM(v), 'Companies']} />
-            <Bar dataKey="value" radius={[0, 5, 5, 0]} maxBarSize={18}>
-              {INDUSTRY_DATA.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
     </div>
   );
 };
