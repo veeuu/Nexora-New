@@ -217,7 +217,7 @@ const Home = ({ displayName }) => {
               <span className="home-ondemand-particle home-ondemand-p3">✦</span>
               <span className="home-ondemand-particle home-ondemand-p4">·</span>
               <span className="home-ondemand-particle home-ondemand-p5">✦</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>+ Request on Demand</span>
+              <span style={{ position: 'relative', zIndex: 1 }}>On Demand</span>
             </button>
             <div className="home-ondemand-tooltip">
               Need specific company data? Submit an on-demand request and our team will get back to you within 48 hours.
