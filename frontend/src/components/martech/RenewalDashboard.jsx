@@ -137,7 +137,7 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
   return (
     <div className="renewal-chart-container" ref={containerRef} style={{ position: 'relative' }}>
       <div className="renewal-chart-header">
-        <h3>Product Breakdown</h3>
+        <h3>Category Breakdown</h3>
       </div>
 
       {/* Floating tooltip */}
