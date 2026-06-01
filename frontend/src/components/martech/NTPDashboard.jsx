@@ -113,7 +113,6 @@ export default function NTPDashboard() {
           { label: 'Total Companies',    val: '530M+', sub: 'companies tracked',  cls: '' },
           { label: 'Avg Propensity', val: `${avgPropensity}%`, sub: 'across all signals', cls: '' },
           { label: 'High Priority',  val: '106M+', sub: 'immediate outreach', cls: 'ntpd-green' },
-          { label: 'Top Category',   val: 'Cloud', sub: '212M companies',     cls: 'ntpd-blue' },
         ].map((k, i) => (
           <div key={k.label} className="ntpd-kpi ntpd-kpi-anim" style={{ animationDelay: `${i * 80}ms` }}>
             <div className="ntpd-kpi-label">{k.label}</div>
@@ -124,42 +123,6 @@ export default function NTPDashboard() {
 
       {/* 2×2 chart grid */}
       <div className="ntpd-grid4">
-
-        {/* Chart 1: Category breakdown */}
-        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '100ms' }}>
-          <div className="ntpd-card-title">Category breakdown</div>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={catPieData} cx="50%" cy="50%"
-                innerRadius={55} outerRadius={hoveredCat !== null ? 85 : 78}
-                dataKey="value" paddingAngle={3}
-                isAnimationActive animationBegin={200} animationDuration={900}
-                onMouseEnter={(_, i) => setHoveredCat(i)}
-                onMouseLeave={() => setHoveredCat(null)}
-                style={{ cursor: 'pointer' }}
-              >
-                {catPieData.map((entry, i) => (
-                  <Cell key={entry.name} fill={catPieColors[i]}
-                    opacity={hoveredCat === null || hoveredCat === i ? 1 : 0.4}
-                    style={{ transition: 'opacity 0.2s' }} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomPieTooltip />} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="ntpd-legend">
-            {catPieData.map((entry, i) => {
-              const total = catPieData.reduce((s, d) => s + d.value, 0);
-              const pct = ((entry.value / total) * 100).toFixed(1);
-              return (
-                <span key={entry.name} className="ntpd-leg-item">
-                  <span className="ntpd-leg-dot" style={{ background: catPieColors[i] }} />
-                  {entry.name} ({pct}%)
-                </span>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Chart 2: Signal strength radar */}
         <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '160ms' }}>
@@ -175,29 +138,6 @@ export default function NTPDashboard() {
               <Tooltip />
             </RadarChart>
           </ResponsiveContainer>
-        </div>
-
-        {/* Chart 3: Company propensity ranking */}
-        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '220ms' }}>
-          <div className="ntpd-card-title">Company propensity ranking</div>
-          <div className="ntpd-rank-list">
-            {ranked.map((l, i) => {
-              const pct = Math.round(l.avg);
-              const badge = rankBadge(i, ranked.length);
-              return (
-                <div key={l.name} className="ntpd-rank-row ntpd-rank-anim" style={{ animationDelay: `${300 + i * 80}ms` }}>
-                  <span className="ntpd-rank-num">{i + 1}</span>
-                  <span className="ntpd-rank-name" title={l.name}>{shortName(l.name)}</span>
-                  <div className="ntpd-rank-bar-bg">
-                    <div className="ntpd-rank-bar-fill" data-w={`${pct}%`}
-                      style={{ width: 0, background: barColor(l.avg) }} />
-                  </div>
-                  <span className="ntpd-rank-pct">{l.avg.toFixed(1)}%</span>
-                  <span className={`ntpd-rank-badge ${predBadgeClass[badge]}`}>{badge}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
         {/* Chart 4: Purchase prediction split */}
