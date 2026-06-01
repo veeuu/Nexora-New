@@ -126,7 +126,7 @@ const TechnographicsDashboard = ({ inline = false }) => {
                   <Pie data={INDUSTRY_DATA} cx="50%" cy="45%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value" animationDuration={400}>
                     {INDUSTRY_DATA.map((_, i) => <Cell key={i} fill={INDUSTRY_COLORS[i]} />)}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatM(v), 'Companies']} />
                   <Legend iconSize={10} wrapperStyle={{ fontSize: 11, color: '#64748b' }} />
                 </PieChart>
               </ResponsiveContainer>

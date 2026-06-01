@@ -102,6 +102,9 @@ const RenewalTimelineChart = ({ data, mode = 'quarter' }) => {
 
 // Product Breakdown Donut Chart
 const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
+  const [hovered, setHovered] = React.useState(null);
+  const [tooltip, setTooltip] = React.useState({ x: 0, y: 0 });
+  const containerRef = React.useRef(null);
   const total = data.reduce((sum, item) => sum + item.value, 0);
   let currentAngle = -90;
 
@@ -115,43 +118,85 @@ const ProductBreakdownChart = ({ data, isDarkMode = true }) => {
     const endRad = (endAngle * Math.PI) / 180;
     const largeArc = sliceAngle > 180 ? 1 : 0;
 
-    const x1 = 100 + 80 * Math.cos(startRad);
-    const y1 = 100 + 80 * Math.sin(startRad);
-    const x2 = 100 + 80 * Math.cos(endRad);
-    const y2 = 100 + 80 * Math.sin(endRad);
+    const r = hovered === idx ? 85 : 80;
+    const x1 = 100 + r * Math.cos(startRad);
+    const y1 = 100 + r * Math.sin(startRad);
+    const x2 = 100 + r * Math.cos(endRad);
+    const y2 = 100 + r * Math.sin(endRad);
 
-    const path = `M 100 100 L ${x1} ${y1} A 80 80 0 ${largeArc} 1 ${x2} ${y2} Z`;
-
-    return { path, color: item.color, percentage: ((item.value / total) * 100).toFixed(1) };
+    const path = `M 100 100 L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+    return { path, color: item.color, percentage: ((item.value / total) * 100).toFixed(1), name: item.name, value: item.value };
   });
 
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setTooltip({ x: e.clientX - rect.left + 12, y: e.clientY - rect.top - 10 });
+  };
+
   return (
-    <div className="renewal-chart-container">
+    <div className="renewal-chart-container" ref={containerRef} style={{ position: 'relative' }}>
       <div className="renewal-chart-header">
         <h3>Product Breakdown</h3>
-        {/* <p>Share of renewals by product</p> */}
       </div>
-      <div className="renewal-donut-chart-wrapper">
-        <svg viewBox="0 0 200 200" className="renewal-donut-chart">
+
+      {/* Floating tooltip */}
+      {hovered !== null && (
+        <div style={{
+          position: 'absolute',
+          left: tooltip.x,
+          top: tooltip.y,
+          background: '#fff',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          pointerEvents: 'none',
+          zIndex: 100,
+          minWidth: '140px'
+        }}>
+          <div style={{ fontWeight: '600', fontSize: '13px', color: '#0f172a', marginBottom: '4px' }}>
+            {slices[hovered].name}
+          </div>
+          <div style={{ fontSize: '13px', color: '#475569' }}>
+            Companies : <strong>{formatM(slices[hovered].value)}</strong>
+          </div>
+          <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+            {slices[hovered].percentage}% of total
+          </div>
+        </div>
+      )}
+
+      <div className="renewal-donut-chart-wrapper" onMouseMove={handleMouseMove}>
+        <svg viewBox="0 0 200 200" className="renewal-donut-chart" style={{ cursor: 'pointer' }}>
           {slices.map((slice, idx) => (
             <path
               key={idx}
               d={slice.path}
               fill={slice.color}
-              style={{ animation: `renewal-fadeIn 0.6s ease-out ${idx * 0.1}s both` }}
+              opacity={hovered === null || hovered === idx ? 1 : 0.4}
+              style={{ animation: `renewal-fadeIn 0.6s ease-out ${idx * 0.1}s both`, transition: 'opacity 0.2s' }}
+              onMouseEnter={() => setHovered(idx)}
+              onMouseLeave={() => setHovered(null)}
             />
           ))}
           <circle cx="100" cy="100" r="50" fill={isDarkMode ? "#0f172a" : "#ffffff"} />
-          <text x="100" y="100" textAnchor="middle" dy="0.3em" className="renewal-donut-center-text">
+          <text x="100" y="97" textAnchor="middle" dy="0.3em" className="renewal-donut-center-text">
             {formatM(total)}
           </text>
-          <text x="100" y="115" textAnchor="middle" className="renewal-donut-center-label">
+          <text x="100" y="113" textAnchor="middle" className="renewal-donut-center-label">
             renewals
           </text>
         </svg>
         <div className="renewal-donut-legend">
           {data.map((item, idx) => (
-            <div key={idx} className="renewal-legend-item-donut">
+            <div
+              key={idx}
+              className="renewal-legend-item-donut"
+              style={{ opacity: hovered === null || hovered === idx ? 1 : 0.4, transition: 'opacity 0.2s', cursor: 'pointer' }}
+              onMouseEnter={() => setHovered(idx)}
+              onMouseLeave={() => setHovered(null)}
+            >
               <div className="renewal-legend-color" style={{ backgroundColor: item.color }}></div>
               <div className="renewal-legend-text">
                 <span className="renewal-legend-product">{item.name}</span>
