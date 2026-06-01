@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import apiFetch from '../../utils/apiFetch';
 import AnimatedStatCard from '../AnimatedStatCard';
 import IntentPieChart from './IntentPieChart';
 import RenewalDashboard from './RenewalDashboard';
@@ -84,9 +85,45 @@ const Home = ({ displayName }) => {
   const [activeView, setActiveView] = useState('summary');
   const [intentData, setIntentData] = useState([]);
   const [intentLoading, setIntentLoading] = useState(false);
+  const [showOnDemand, setShowOnDemand] = useState(false);
+  const [onDemandQuery, setOnDemandQuery] = useState('');
+  const [onDemandSubmitting, setOnDemandSubmitting] = useState(false);
+  const [onDemandSubmitted, setOnDemandSubmitted] = useState(false);
   const dropdownRef = useRef(null);
 
   console.log('[Home] render, activeView=', activeView);
+
+  const handleOnDemandSubmit = async (e) => {
+    e.preventDefault();
+    setOnDemandSubmitting(true);
+    try {
+      await apiFetch('/api/on-demand-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestedName: onDemandQuery, filterType: 'General', searchValue: onDemandQuery, sourcePage: 'Home' })
+      });
+    } catch (_) {}
+    try {
+      const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+      const entry = {
+        id: Date.now(),
+        query: onDemandQuery,
+        filterType: 'General',
+        section: 'Home',
+        status: 'Pending',
+        date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      };
+      localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+    } catch (_) {}
+    setOnDemandSubmitting(false);
+    setOnDemandSubmitted(true);
+  };
+
+  const handleOnDemandClose = () => {
+    setShowOnDemand(false);
+    setOnDemandQuery('');
+    setOnDemandSubmitted(false);
+  };
 
   const fetchIntentData = () => {
     setIntentLoading(true);
@@ -167,6 +204,19 @@ const Home = ({ displayName }) => {
                 <button className={`home-quick-btn home-quick-btn-intent${activeView === 'intent' ? ' active' : ''}`} onClick={() => handleViewClick('intent')}>Intent</button>
                 <button className={`home-quick-btn home-quick-btn-buyinggroup${activeView === 'buyinggroup' ? ' active' : ''}`} onClick={() => handleViewClick('buyinggroup')}>Buying Group</button>
                 <button className={`home-quick-btn home-quick-btn-ntp${activeView === 'ntp' ? ' active' : ''}`} onClick={() => handleViewClick('ntp')}>NTP®</button>
+                <div style={{ marginLeft: 'auto' }}>
+                  <div style={{ position: 'relative', display: 'inline-block' }} className="home-ondemand-wrapper">
+                    <button
+                      className="home-quick-btn home-ondemand-btn"
+                      onClick={() => setShowOnDemand(true)}
+                    >
+                      + Request on Demand
+                    </button>
+                    <div className="home-ondemand-tooltip">
+                      Can't find a company ? Submit a request and our team will get back to you within 48 hours.
+                    </div>
+                  </div>
+                </div>
               </div>
             </>
           </div>
@@ -226,6 +276,65 @@ const Home = ({ displayName }) => {
         <span>Powered by</span>
         <img src={proplusDataLogo} alt="ProPlus Data" style={{ height: '20px', marginLeft: '6px', objectFit: 'contain' }} />
       </div> */}
+
+      {/* On Demand Modal */}
+      {showOnDemand && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(2px)' }}
+          onClick={handleOnDemandClose}
+        >
+          <div
+            style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '460px', boxShadow: '0 24px 64px rgba(0,0,0,0.18)', overflow: 'hidden' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ height: '4px', background: 'linear-gradient(90deg, #3b82f6, #0891b2)' }} />
+            <div style={{ padding: '32px 28px 28px' }}>
+              {onDemandSubmitted ? (
+                <div style={{ textAlign: 'center', padding: '8px 0' }}>
+                  <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                  <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px' }}>Request Submitted</h3>
+                  <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 24px', lineHeight: '1.6' }}>We'll get back to you within <strong>48 hours</strong>.</p>
+                  <button onClick={handleOnDemandClose} style={{ padding: '9px 28px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Close</button>
+                </div>
+              ) : (
+                <form onSubmit={handleOnDemandSubmit}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#3b82f6"/></svg>
+                    </div>
+                    <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#0f172a' }}>Request Data on Demand</h3>
+                  </div>
+                  <p style={{ margin: '0 0 22px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
+                    Enter the company name or domain and our team will reach out within 48 hours.
+                  </p>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Company Name or Domain</label>
+                    <input
+                      type="text"
+                      required
+                      autoFocus
+                      placeholder="e.g. acmecorp.com"
+                      value={onDemandQuery}
+                      onChange={e => setOnDemandQuery(e.target.value)}
+                      style={{ width: '100%', padding: '10px 14px', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none', color: '#0f172a', transition: 'border-color 0.15s' }}
+                      onFocus={e => e.target.style.borderColor = '#3b82f6'}
+                      onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button type="button" onClick={handleOnDemandClose} style={{ flex: 1, padding: '10px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Cancel</button>
+                    <button type="submit" disabled={onDemandSubmitting} style={{ flex: 1, padding: '10px', background: onDemandSubmitting ? '#93c5fd' : 'linear-gradient(135deg, #3b82f6, #0891b2)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: onDemandSubmitting ? 'not-allowed' : 'pointer' }}>
+                      {onDemandSubmitting ? 'Submitting...' : 'Submit Request'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
