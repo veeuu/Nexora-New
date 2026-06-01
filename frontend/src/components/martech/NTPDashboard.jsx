@@ -124,24 +124,8 @@ export default function NTPDashboard() {
       {/* 2×2 chart grid */}
       <div className="ntpd-grid4">
 
-        {/* Chart 2: Signal strength radar */}
-        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '160ms' }}>
-          <div className="ntpd-card-title">Signal strength radar</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <RadarChart data={radarData}>
-              <PolarGrid stroke="#e5e7eb" />
-              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#666' }} />
-              <Radar name="High"   dataKey="High"   stroke="#1a56b0" fill="#1a56b0" fillOpacity={0.18} dot={{ r: 4, fill: '#1a56b0' }} isAnimationActive animationBegin={500} animationDuration={1000} />
-              <Radar name="Medium" dataKey="Medium" stroke="#EF9F27" fill="#EF9F27" fillOpacity={0.14} dot={{ r: 4, fill: '#EF9F27' }} isAnimationActive animationBegin={650} animationDuration={1000} />
-              <Radar name="Low"    dataKey="Low"    stroke="#E24B4A" fill="#E24B4A" fillOpacity={0.10} dot={{ r: 4, fill: '#E24B4A' }} isAnimationActive animationBegin={800} animationDuration={1000} />
-              <Legend iconSize={10} wrapperStyle={{ fontSize: 10 }} />
-              <Tooltip />
-            </RadarChart>
-          </ResponsiveContainer>
-        </div>
-
         {/* Chart 4: Purchase prediction split */}
-        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '280ms' }}>
+        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '160ms' }}>
           <div className="ntpd-card-title">Purchase prediction split</div>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
@@ -174,6 +158,22 @@ export default function NTPDashboard() {
               );
             })}
           </div>
+        </div>
+
+        {/* Chart 2: Signal strength radar */}
+        <div className="ntpd-card ntpd-card-anim" style={{ animationDelay: '280ms' }}>
+          <div className="ntpd-card-title">Signal strength radar</div>
+          <ResponsiveContainer width="100%" height={240}>
+            <RadarChart data={radarData}>
+              <PolarGrid stroke="#e5e7eb" />
+              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#666' }} />
+              <Radar name="High"   dataKey="High"   stroke="#1a56b0" fill="#1a56b0" fillOpacity={0.18} dot={{ r: 4, fill: '#1a56b0' }} isAnimationActive animationBegin={500} animationDuration={1000} />
+              <Radar name="Medium" dataKey="Medium" stroke="#EF9F27" fill="#EF9F27" fillOpacity={0.14} dot={{ r: 4, fill: '#EF9F27' }} isAnimationActive animationBegin={650} animationDuration={1000} />
+              <Radar name="Low"    dataKey="Low"    stroke="#E24B4A" fill="#E24B4A" fillOpacity={0.10} dot={{ r: 4, fill: '#E24B4A' }} isAnimationActive animationBegin={800} animationDuration={1000} />
+              <Legend iconSize={10} wrapperStyle={{ fontSize: 10 }} />
+              <Tooltip />
+            </RadarChart>
+          </ResponsiveContainer>
         </div>
 
       </div>
