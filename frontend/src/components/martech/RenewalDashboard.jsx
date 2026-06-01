@@ -215,14 +215,47 @@ const formatM = (v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000
 
 const UrgencyFunnelChart = ({ data }) => {
   const maxValue = Math.max(...data.map(d => d.value));
+  const [tooltip, setTooltip] = React.useState(null); // { x, y, item }
+  const containerRef = React.useRef(null);
+
+  const handleMouseMove = (e, item) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setTooltip({ x: e.clientX - rect.left + 14, y: e.clientY - rect.top - 10, item });
+  };
 
   return (
-    <div className="renewal-chart-container">
+    <div className="renewal-chart-container" ref={containerRef} style={{ position: 'relative' }}>
       <div className="renewal-chart-header">
         <h3>Renewal Timeline</h3>
         <p></p>
         <div className="renewal-active-indicator">● Active</div>
       </div>
+
+      {/* Floating tooltip */}
+      {tooltip && (
+        <div style={{
+          position: 'absolute',
+          left: tooltip.x,
+          top: tooltip.y,
+          background: '#fff',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          pointerEvents: 'none',
+          zIndex: 100,
+          minWidth: '150px'
+        }}>
+          <div style={{ fontWeight: '600', fontSize: '13px', color: '#0f172a', marginBottom: '4px' }}>
+            {tooltip.item.label}
+          </div>
+          <div style={{ fontSize: '13px', color: '#2563eb' }}>
+            {formatM(tooltip.item.value)} companies
+          </div>
+        </div>
+      )}
+
       <div className="renewal-funnel-chart">
         {data.map((item, idx) => (
           <div key={idx} className="renewal-funnel-item">
@@ -233,11 +266,12 @@ const UrgencyFunnelChart = ({ data }) => {
                 style={{
                   width: `${(item.value / maxValue) * 100}%`,
                   backgroundColor: item.color,
-                  animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`
+                  animation: `renewal-slideInLeft 0.6s ease-out ${idx * 0.1}s both`,
+                  cursor: 'pointer'
                 }}
-              >
-                <span className="renewal-funnel-value">{formatM(item.value)}</span>
-              </div>
+                onMouseMove={(e) => handleMouseMove(e, item)}
+                onMouseLeave={() => setTooltip(null)}
+              />
             </div>
           </div>
         ))}
