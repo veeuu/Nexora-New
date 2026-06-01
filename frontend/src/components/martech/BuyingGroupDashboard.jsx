@@ -46,7 +46,6 @@ const INDUSTRY_DATA = [
 const KPI_CARDS = [
   { label: 'Total Contacts',    value: '430M+', accent: '#1e40af' },
   { label: 'Companies Covered', value: '215M+', accent: '#2563eb' },
-  { label: 'Top Category',      value: 'Cloud', accent: '#60a5fa' },
 ];
 
 // ── Sub-components ───────────────────────────────────────────────────────────
