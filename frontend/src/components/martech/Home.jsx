@@ -285,7 +285,7 @@ const Home = ({ displayName }) => {
               <span style={{ position: 'relative', zIndex: 1 }}>On Demand</span>
             </button>
             <div className="home-ondemand-tooltip">
-              <strong>Your Demand, Our Priority!</strong><br />Request any company data and hear back within 48 hours.
+              Request any company data and hear back within 48 hours.
             </div>
           </div>
         </div>
