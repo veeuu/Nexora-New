@@ -348,9 +348,7 @@ const Home = ({ displayName }) => {
                   </div>
                   <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px' }}>Request Submitted</h3>
                   <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 24px', lineHeight: '1.6' }}>
-                    {csvSubmittedCount > 0
-                      ? <><strong>{csvSubmittedCount}</strong> {csvSubmittedCount === 1 ? 'company' : 'companies'} submitted. We'll get back to you within <strong>48 hours</strong>.</>
-                      : <>We'll get back to you within <strong>48 hours</strong>.</>}
+                    We'll get back to you within <strong>48 hours</strong>.
                   </p>
                   <button onClick={handleOnDemandClose} style={{ padding: '9px 28px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Close</button>
                 </div>
