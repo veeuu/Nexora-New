@@ -101,67 +101,83 @@ const Home = ({ displayName }) => {
     e.preventDefault();
     setOnDemandSubmitting(true);
 
-    if (onDemandMode === 'single') {
-      try {
-        await apiFetch('/api/on-demand-request', {
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      if (onDemandMode === 'single') {
+        // Submit single company/domain to MongoDB
+        const response = await apiFetch('/api/on-demand/submit-company', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestedName: onDemandQuery, filterType: 'General', searchValue: onDemandQuery, sourcePage: 'Home' })
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            domain: onDemandQuery,
+            companyName: '',
+            notes: 'Submitted from Home page'
+          })
         });
-      } catch (_) {}
-      try {
-        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
-        const entry = {
-          id: Date.now(),
-          query: onDemandQuery,
-          filterType: 'General',
-          section: 'Home',
-          status: 'Pending',
-          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        };
-        localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
-      } catch (_) {}
-    } else {
-      // CSV mode — parse and submit each row
-      try {
-        const text = await csvFile.text();
-        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-        // Skip header if first line looks like a header
-        const startIdx = /^(company|domain|name)/i.test(lines[0]) ? 1 : 0;
-        const domains = lines.slice(startIdx).map(l => l.split(',')[0].trim()).filter(Boolean);
+        
+        if (response && response.success) {
+          // Also save to localStorage for Query History
+          try {
+            const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+            const entry = {
+              id: Date.now(),
+              query: onDemandQuery,
+              filterType: 'General',
+              section: 'Home',
+              status: 'Pending',
+              date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            };
+            localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+          } catch (_) {}
+        }
+      } else {
+        // CSV mode — upload file to S3
+        const formData = new FormData();
+        formData.append('csvFile', csvFile);
+        
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/on-demand/upload-csv`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
 
-        if (domains.length === 0) {
-          setCsvError('No valid entries found in the CSV.');
+        const result = await response.json();
+        
+        if (result && result.success) {
+          // Save CSV filename to localStorage for Query History
+          try {
+            const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+            const entry = {
+              id: Date.now(),
+              query: `CSV: ${csvFile.name} (${result.data.rowCount || 0} rows)`,
+              filterType: 'CSV Upload',
+              section: 'Home',
+              status: 'Pending',
+              date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            };
+            localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+            setCsvSubmittedCount(result.data.rowCount || 1);
+          } catch (_) {}
+        } else {
+          setCsvError(result?.error || 'Failed to upload CSV file');
           setOnDemandSubmitting(false);
           return;
         }
-
-        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
-        const newEntries = [];
-        const now = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-        for (const domain of domains.slice(0, 100)) {
-          try {
-            await apiFetch('/api/on-demand-request', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ requestedName: domain, filterType: 'General', searchValue: domain, sourcePage: 'Home' })
-            });
-          } catch (_) {}
-          newEntries.push({ id: Date.now() + Math.random(), query: domain, filterType: 'General', section: 'Home', status: 'Pending', date: now });
-        }
-
-        localStorage.setItem('onDemandHistory', JSON.stringify([...newEntries, ...existing].slice(0, 50)));
-        setCsvSubmittedCount(newEntries.length);
-      } catch (err) {
-        setCsvError('Failed to read the CSV file. Please check the format.');
-        setOnDemandSubmitting(false);
-        return;
       }
-    }
 
-    setOnDemandSubmitting(false);
-    setOnDemandSubmitted(true);
+      setOnDemandSubmitting(false);
+      setOnDemandSubmitted(true);
+    } catch (err) {
+      console.error('On-demand submission error:', err);
+      setCsvError('Failed to submit request. Please try again.');
+      setOnDemandSubmitting(false);
+    }
   };
 
   const handleOnDemandClose = () => {
@@ -348,7 +364,9 @@ const Home = ({ displayName }) => {
                   </div>
                   <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px' }}>Request Submitted</h3>
                   <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 24px', lineHeight: '1.6' }}>
-                    We'll get back to you within <strong>48 hours</strong>.
+                    {csvSubmittedCount > 0 && csvFile
+                      ? <>CSV file <strong>{csvFile.name}</strong> with <strong>{csvSubmittedCount} rows</strong> uploaded successfully. We'll process your data and get back to you within <strong>48 hours</strong>.</>
+                      : <>We'll get back to you within <strong>48 hours</strong>.</>}
                   </p>
                   <button onClick={handleOnDemandClose} style={{ padding: '9px 28px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Close</button>
                 </div>

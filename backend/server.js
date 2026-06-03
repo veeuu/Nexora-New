@@ -38,10 +38,12 @@ app.get('/sitemap.xml', (req, res) => {
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
 const buyingGroupRouter = require('./routes/buyingGroup');
+const onDemandRouter = require('./routes/onDemand');
 
 app.use('/api', rateLimiter);
 app.use('/api/auth', authRouter);
 app.use('/api/buying-groups', buyingGroupRouter);
+app.use('/api/on-demand', onDemandRouter);
 
 // ─── Admin analytics endpoint ─────────────────────────────────────────────────
 // GET /api/admin/analytics?key=nexora-admin-2026
