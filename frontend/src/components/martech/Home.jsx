@@ -269,7 +269,7 @@ const Home = ({ displayName }) => {
               <span style={{ position: 'relative', zIndex: 1 }}>On Demand</span>
             </button>
             <div className="home-ondemand-tooltip">
-              Need specific company data? Submit an on-demand request and our team will get back to you within 48 hours.
+              <strong>Your Demand, Our Priority!</strong><br />Request any company data and hear back within 48 hours.
             </div>
           </div>
         </div>
@@ -364,12 +364,12 @@ const Home = ({ displayName }) => {
                     <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#0f172a' }}>Request Data on Demand</h3>
                   </div>
                   <p style={{ margin: '0 0 20px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
-                    Our team will reach out within 48 hours.
+                    Enter the company domain or upload a file.
                   </p>
 
                   {/* Input row: text input + separate Upload CSV button */}
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Company Name or Domain</label>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Company Domain</label>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <input
                         type="text"
