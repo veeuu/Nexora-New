@@ -86,9 +86,13 @@ const Home = ({ displayName }) => {
   const [intentData, setIntentData] = useState([]);
   const [intentLoading, setIntentLoading] = useState(false);
   const [showOnDemand, setShowOnDemand] = useState(false);
+  const [onDemandMode, setOnDemandMode] = useState('single'); // 'single' | 'csv'
   const [onDemandQuery, setOnDemandQuery] = useState('');
+  const [csvFile, setCsvFile] = useState(null);
+  const [csvError, setCsvError] = useState('');
   const [onDemandSubmitting, setOnDemandSubmitting] = useState(false);
   const [onDemandSubmitted, setOnDemandSubmitted] = useState(false);
+  const [csvSubmittedCount, setCsvSubmittedCount] = useState(0);
   const dropdownRef = useRef(null);
 
   console.log('[Home] render, activeView=', activeView);
@@ -96,25 +100,66 @@ const Home = ({ displayName }) => {
   const handleOnDemandSubmit = async (e) => {
     e.preventDefault();
     setOnDemandSubmitting(true);
-    try {
-      await apiFetch('/api/on-demand-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestedName: onDemandQuery, filterType: 'General', searchValue: onDemandQuery, sourcePage: 'Home' })
-      });
-    } catch (_) {}
-    try {
-      const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
-      const entry = {
-        id: Date.now(),
-        query: onDemandQuery,
-        filterType: 'General',
-        section: 'Home',
-        status: 'Pending',
-        date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      };
-      localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
-    } catch (_) {}
+
+    if (onDemandMode === 'single') {
+      try {
+        await apiFetch('/api/on-demand-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestedName: onDemandQuery, filterType: 'General', searchValue: onDemandQuery, sourcePage: 'Home' })
+        });
+      } catch (_) {}
+      try {
+        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+        const entry = {
+          id: Date.now(),
+          query: onDemandQuery,
+          filterType: 'General',
+          section: 'Home',
+          status: 'Pending',
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        };
+        localStorage.setItem('onDemandHistory', JSON.stringify([entry, ...existing].slice(0, 50)));
+      } catch (_) {}
+    } else {
+      // CSV mode — parse and submit each row
+      try {
+        const text = await csvFile.text();
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        // Skip header if first line looks like a header
+        const startIdx = /^(company|domain|name)/i.test(lines[0]) ? 1 : 0;
+        const domains = lines.slice(startIdx).map(l => l.split(',')[0].trim()).filter(Boolean);
+
+        if (domains.length === 0) {
+          setCsvError('No valid entries found in the CSV.');
+          setOnDemandSubmitting(false);
+          return;
+        }
+
+        const existing = JSON.parse(localStorage.getItem('onDemandHistory') || '[]');
+        const newEntries = [];
+        const now = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+        for (const domain of domains.slice(0, 100)) {
+          try {
+            await apiFetch('/api/on-demand-request', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ requestedName: domain, filterType: 'General', searchValue: domain, sourcePage: 'Home' })
+            });
+          } catch (_) {}
+          newEntries.push({ id: Date.now() + Math.random(), query: domain, filterType: 'General', section: 'Home', status: 'Pending', date: now });
+        }
+
+        localStorage.setItem('onDemandHistory', JSON.stringify([...newEntries, ...existing].slice(0, 50)));
+        setCsvSubmittedCount(newEntries.length);
+      } catch (err) {
+        setCsvError('Failed to read the CSV file. Please check the format.');
+        setOnDemandSubmitting(false);
+        return;
+      }
+    }
+
     setOnDemandSubmitting(false);
     setOnDemandSubmitted(true);
   };
@@ -122,6 +167,10 @@ const Home = ({ displayName }) => {
   const handleOnDemandClose = () => {
     setShowOnDemand(false);
     setOnDemandQuery('');
+    setOnDemandMode('single');
+    setCsvFile(null);
+    setCsvError('');
+    setCsvSubmittedCount(0);
     setOnDemandSubmitted(false);
   };
 
@@ -298,37 +347,87 @@ const Home = ({ displayName }) => {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
                   <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px' }}>Request Submitted</h3>
-                  <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 24px', lineHeight: '1.6' }}>We'll get back to you within <strong>48 hours</strong>.</p>
+                  <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 24px', lineHeight: '1.6' }}>
+                    {csvSubmittedCount > 0
+                      ? <><strong>{csvSubmittedCount}</strong> {csvSubmittedCount === 1 ? 'company' : 'companies'} submitted. We'll get back to you within <strong>48 hours</strong>.</>
+                      : <>We'll get back to you within <strong>48 hours</strong>.</>}
+                  </p>
                   <button onClick={handleOnDemandClose} style={{ padding: '9px 28px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Close</button>
                 </div>
               ) : (
                 <form onSubmit={handleOnDemandSubmit}>
+                  {/* Header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="#3b82f6"/></svg>
                     </div>
                     <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '700', color: '#0f172a' }}>Request Data on Demand</h3>
                   </div>
-                  <p style={{ margin: '0 0 22px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
-                    Enter the company name or domain and our team will reach out within 48 hours.
+                  <p style={{ margin: '0 0 20px', fontSize: '13px', color: '#64748b', lineHeight: '1.6', paddingLeft: '52px' }}>
+                    Our team will reach out within 48 hours.
                   </p>
+
+                  {/* Input row: text input + separate Upload CSV button */}
                   <div style={{ marginBottom: '20px' }}>
                     <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Company Name or Domain</label>
-                    <input
-                      type="text"
-                      required
-                      autoFocus
-                      placeholder="e.g. acmecorp.com"
-                      value={onDemandQuery}
-                      onChange={e => setOnDemandQuery(e.target.value)}
-                      style={{ width: '100%', padding: '10px 14px', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none', color: '#0f172a', transition: 'border-color 0.15s' }}
-                      onFocus={e => e.target.style.borderColor = '#3b82f6'}
-                      onBlur={e => e.target.style.borderColor = '#e2e8f0'}
-                    />
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        required={!csvFile}
+                        autoFocus
+                        placeholder="e.g. acmecorp.com"
+                        value={onDemandQuery}
+                        onChange={e => setOnDemandQuery(e.target.value)}
+                        disabled={!!csvFile}
+                        style={{
+                          flex: 1, padding: '10px 14px', border: '1.5px solid #e2e8f0',
+                          borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box',
+                          outline: 'none', color: csvFile ? '#94a3b8' : '#0f172a', transition: 'border-color 0.15s',
+                          background: csvFile ? '#f8fafc' : '#fff', minWidth: 0,
+                        }}
+                        onFocus={e => { if (!csvFile) e.target.style.borderColor = '#3b82f6'; }}
+                        onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { if (csvFile) { setCsvFile(null); setCsvError(''); setOnDemandMode('single'); } else { document.getElementById('csv-upload-input').click(); } }}
+                        style={{
+                          flexShrink: 0, padding: '10px 14px', fontSize: '13px', fontWeight: '600',
+                          cursor: 'pointer', borderRadius: '8px', transition: 'all 0.15s', whiteSpace: 'nowrap',
+                          color: csvFile ? '#ef4444' : '#6b7280',
+                          background: csvFile ? '#fef2f2' : '#f3f4f6',
+                          border: `1px solid ${csvFile ? '#fecaca' : '#e5e7eb'}`,
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = csvFile ? '#fee2e2' : '#e9eaec'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = csvFile ? '#fef2f2' : '#f3f4f6'; }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          {csvFile ? (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                          ) : (
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                          )}
+                          {csvFile ? 'Remove' : 'Upload File'}
+                        </span>
+                      </button>
+                      <input id="csv-upload-input" type="file" accept=".csv" style={{ display: 'none' }} onChange={e => { const f = e.target.files[0]; if (f) { setCsvFile(f); setCsvError(''); setOnDemandQuery(''); setOnDemandMode('csv'); } e.target.value = ''; }} />
+                    </div>
+                    {csvFile && (
+                      <p style={{ margin: '5px 0 0', fontSize: '12px', color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        {csvFile.name}
+                      </p>
+                    )}
+                    {csvError && <p style={{ margin: '5px 0 0', fontSize: '12px', color: '#ef4444' }}>{csvError}</p>}
                   </div>
+
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button type="button" onClick={handleOnDemandClose} style={{ flex: 1, padding: '10px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>Cancel</button>
-                    <button type="submit" disabled={onDemandSubmitting} style={{ flex: 1, padding: '10px', background: onDemandSubmitting ? '#93c5fd' : 'linear-gradient(135deg, #3b82f6, #0891b2)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: onDemandSubmitting ? 'not-allowed' : 'pointer' }}>
+                    <button
+                      type="submit"
+                      disabled={onDemandSubmitting}
+                      style={{ flex: 1, padding: '10px', background: onDemandSubmitting ? '#93c5fd' : 'linear-gradient(135deg, #3b82f6, #0891b2)', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: onDemandSubmitting ? 'not-allowed' : 'pointer' }}
+                    >
                       {onDemandSubmitting ? 'Submitting...' : 'Submit Request'}
                     </button>
                   </div>
