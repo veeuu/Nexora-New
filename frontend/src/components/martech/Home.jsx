@@ -139,7 +139,7 @@ const Home = ({ displayName }) => {
         const formData = new FormData();
         formData.append('csvFile', csvFile);
         
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/on-demand/upload-csv`, {
+        const response = await fetch('/api/on-demand/upload-csv', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
