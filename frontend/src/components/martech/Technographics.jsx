@@ -3123,6 +3123,7 @@ const Technographics = () => {
                   </div>
                   {(() => {
                     const allTechs = getUniqueOptions('technology')
+                      .filter(t => t !== 'Not Detected' && t !== 'NOT detected' && t !== 'not detected')
                       .sort((a, b) => getCompanyCountByTechnology(b) - getCompanyCountByTechnology(a));
                     const filtered = allTechs.filter(t => t.toLowerCase().includes(technologySearchTerm.toLowerCase()));
                     return (
