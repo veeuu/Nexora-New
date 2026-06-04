@@ -1648,14 +1648,16 @@ const Technographics = () => {
       return 0;
     });
 
+  const ND = (v) => v === 'Not Detected' || v === 'NOT detected' || v === 'not detected';
+
   const groupedData = filteredData.reduce((acc, row) => {
     const key = `${row.companyName}|${row.domain}|${row.industry}|${row.region}|${row.employeeSize}|${row.revenue}`;
     
     if (!acc[key]) {
       acc[key] = {
         ...row,
-        technologies: [row.technology],
-        technologyDates: [
+        technologies: ND(row.technology) ? [] : [row.technology],
+        technologyDates: ND(row.technology) ? [] : [
           {
             technology: row.technology,
             previousDetectedDate: row.previousDetectedDate,
@@ -1664,7 +1666,7 @@ const Technographics = () => {
         ]
       };
     } else {
-      if (!acc[key].technologies.includes(row.technology)) {
+      if (!ND(row.technology) && !acc[key].technologies.includes(row.technology)) {
         acc[key].technologies.push(row.technology);
         acc[key].technologyDates.push({
           technology: row.technology,
@@ -2505,11 +2507,8 @@ const Technographics = () => {
                 </div>
                 {(() => {
                   const allCats = getAvailableCategoriesForCompanies()
-                    .sort((a, b) => {
-                      if (a === 'Not Detected') return 1;
-                      if (b === 'Not Detected') return -1;
-                      return getCompanyCountByCategory(b) - getCompanyCountByCategory(a);
-                    });
+                    .filter(a => a !== 'Not Detected' && a !== 'NOT detected' && a !== 'not detected')
+                    .sort((a, b) => getCompanyCountByCategory(b) - getCompanyCountByCategory(a));
                   const filtered = allCats.filter(c => c.toLowerCase().includes(categorySearchTerm.toLowerCase()));
                   return (
                     <>

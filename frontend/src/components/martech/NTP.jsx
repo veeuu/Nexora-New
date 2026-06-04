@@ -678,11 +678,13 @@ const NTP = () => {
 
   const PREDICTION_ORDER = { High: 0, Medium: 1, Low: 2 };
 
+  const isNotDetected = (v) => v === 'Not Detected' || v === 'NOT detected' || v === 'not detected';
+
   const filteredData = useMemo(() => {
-    // Backend handles filters - just exclude "Not Detected" records client-side
+    // Exclude "Not Detected" records client-side
     return tableData
       .filter(row => {
-        if (row.category === 'Not Detected' || row.purchasePrediction === 'Not Detected' || row.purchasePrediction === 'NOT detected') {
+        if (isNotDetected(row.category) || isNotDetected(row.purchasePrediction) || isNotDetected(row.technology)) {
           return false;
         }
         return true;
@@ -1111,11 +1113,8 @@ const NTP = () => {
               </div>
               <div className="ntp-filter-dropdown-wrapper">
                 {getUniqueOptions('technology')
+                  .filter(option => option !== 'Not Detected' && option !== 'NOT detected' && option !== 'not detected')
                   .sort((a, b) => {
-                    const aND = a === 'Not Detected' || a === 'NOT detected';
-                    const bND = b === 'Not Detected' || b === 'NOT detected';
-                    if (aND) return 1;
-                    if (bND) return -1;
                     const countA = getCompanyCountByTechnology(a);
                     const countB = getCompanyCountByTechnology(b);
                     return countB - countA;

@@ -1011,6 +1011,9 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
 
     const filteredData = tableData.filter(row => {
 
+        // Exclude Not Detected values
+        if (row.category === 'Not Detected' || row.category === 'NOT detected' || row.category === 'not detected') return false;
+
         // Show all data by default (no mandatory filters required)
         const companyMatch = filters.companyName.length === 0 || filters.companyName.includes(row.companyName);
         const categoryMatch = filters.category.length === 0 || filters.category.includes(row.category);
@@ -1644,6 +1647,7 @@ if (aQtr.year !== bQtr.year) {
                       overflowY: 'auto'
                     }}>
                       {getUniqueCategories()
+                        .filter(option => option !== 'Not Detected' && option !== 'NOT detected' && option !== 'not detected')
                         .sort((a, b) => {
                           const countA = getAccountCountByCategory(a);
                           const countB = getAccountCountByCategory(b);
