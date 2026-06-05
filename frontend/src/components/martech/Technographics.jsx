@@ -4196,12 +4196,14 @@ const Technographics = () => {
                         <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#666' }}>
                           <strong>Prediction:</strong> {item.purchasePrediction}
                         </p>
+                        {/* NTP Analysis hidden - uncomment to restore
                         <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e5e7eb' }}>
                           <p style={{ margin: '0 0 4px 0', fontSize: '11px', fontWeight: '600', color: '#010810' }}>NTP Analysis:</p>
                           <p style={{ margin: '0', fontSize: '12px', color: '#555', lineHeight: '1.5' }}>
                             {item.ntpAnalysis || 'N/A'}
                           </p>
                         </div>
+                        */}
                       </div>
                     ))}
                   </div>
