@@ -70,7 +70,7 @@ const OnDemandModal = ({ filterType, searchValue, sourcePage, onClose }) => {
           }}
           onMouseEnter={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#94a3b8'; }}
-          >�</button>
+          >×</button>
 
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '12px 0 8px' }}>
@@ -289,7 +289,7 @@ const RenewalMeter = ({ renewalDate }) => {
 
   const getStatusLabel = (proximity) => {
     if (proximity >= 86) return '<1 year';
-    if (proximity >= 46) return '1�2 years';
+    if (proximity >= 46) return '1-2 years';
     return '2+ years';
   };
 
@@ -402,37 +402,17 @@ const CustomProductDropdown = ({ value, onChange, options, renderIcon }) => {
               cursor: 'pointer',
               backgroundColor: value === '' ? '#f3f4f6' : 'white',
               borderBottom: '1px solid #e5e7eb',
-              fontSize: '14px'
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}
             onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
             onMouseLeave={(e) => e.target.style.backgroundColor = value === '' ? '#f3f4f6' : 'white'}
           >
-            All
+            {renderIcon(option)}
+            {option}
           </div>
-          {options.map((option, idx) => (
-            <div
-              key={idx}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-              style={{
-                padding: '10px 12px',
-                cursor: 'pointer',
-                backgroundColor: value === option ? '#dbeafe' : 'white',
-                borderBottom: '1px solid #e5e7eb',
-                fontSize: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = value === option ? '#dbeafe' : 'white'}
-            >
-              {renderIcon(option)}
-              {option}
-            </div>
-          ))}
         </div>
       )}
     </div>
@@ -881,7 +861,7 @@ useEffect(() => {
     };
 
     const getUniqueRenewalProximity = () => {
-        return ['<1 year', '1�2 years', '2+ years'];
+        return ['<1 year', '1-2 years', '2+ years'];
     };
 
     const getUniqueCategories = () => {
@@ -1024,7 +1004,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         if (filters.renewalProximity.length > 0) {
             const proximity = getProximityValue(row.qtr);
             const status = getRenewalStatus(proximity);
-            const statusLabels = ['<1 year', '1�2 years', '2+ years'];
+            const statusLabels = ['<1 year', '1-2 years', '2+ years'];
             renewalProximityMatch = filters.renewalProximity.includes(statusLabels[status]);
         }
         
@@ -1453,7 +1433,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        �
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1629,7 +1609,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        �
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1759,7 +1739,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        �
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -1889,7 +1869,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        �
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -2019,7 +1999,7 @@ if (aQtr.year !== bQtr.year) {
                           lineHeight: '1'
                         }}
                       >
-                        �
+                        ×
                       </button>
                     </div>
                     <div style={{
@@ -2142,7 +2122,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      �
+                      ×
                     </button>
                   </div>
                 )}
@@ -2181,7 +2161,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      �
+                      ×
                     </button>
                   </div>
                 )}
@@ -2220,7 +2200,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      �
+                      ×
                     </button>
                   </div>
                 )}
@@ -2259,7 +2239,7 @@ if (aQtr.year !== bQtr.year) {
                         lineHeight: '1'
                       }}
                     >
-                      �
+                      ×
                     </button>
                   </div>
                 )}
@@ -2437,14 +2417,15 @@ if (aQtr.year !== bQtr.year) {
                                                                 style={{
                                                                     display: 'inline-flex',
                                                                     alignItems: 'center',
-                                                                    justifyContent: 'center',
                                                                     gap: '6px',
                                                                     padding: '8px 10px',
                                                                     backgroundColor: isRevealed ? '#f3f4f6' : '#f0fdf4',
                                                                     border: isRevealed ? '1px solid #d1d5db' : '1px solid #bbf7d0',
                                                                     borderRadius: '6px',
                                                                     cursor: 'pointer',
-                                                                    transition: 'all 0.2s'
+                                                                    transition: 'all 0.2s',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center'
                                                                 }}
                                                                 onMouseEnter={(e) => {
                                                                     if (!isRevealed) {
@@ -3169,5 +3150,3 @@ td:nth-child(2), th:nth-child(2) {
 };
 
 export default RenewalIntelligence;
-
-
