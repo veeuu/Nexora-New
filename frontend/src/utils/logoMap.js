@@ -304,6 +304,8 @@ export const getLogoPath = (techName) => {
     "openstack": "OpenStack.svg",
     "openshift": "openshift.png",
     "red hat openshift": "openshift.png",
+    "red hat": "Red Hat.png",
+    "redhat": "Red Hat.png",
     "alibaba cloud": "Alibaba Cloud.png",
     "rackspace cloud": "Rackspace Cloud.jpg",
     "akamai": "Akamai.png",
