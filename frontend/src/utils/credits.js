@@ -3,8 +3,8 @@
 
 import apiFetch from './apiFetch';
 
-export const TOTAL_CREDITS = 250;
-export const SECTION_LIMIT = 50;
+export const TOTAL_CREDITS = 100;
+export const SECTION_LIMIT = 20;
 
 const SECTION_LABELS = {
   technographics: 'Technographics',
