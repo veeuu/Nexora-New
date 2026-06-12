@@ -12,8 +12,6 @@ Object.keys(logoModules).forEach(path => {
 });
 
 // Debug logging
-console.log('🎨 Logo modules loaded:', Object.keys(logoModules).length, 'files');
-console.log('📦 Logo path map keys:', Object.keys(logoPathMap).slice(0, 10), '... and', Object.keys(logoPathMap).length - 10, 'more');
 
 // Logo mapping - maps technology names to logo filenames
 export const getLogoPath = (techName) => {
@@ -53,10 +51,8 @@ export const getLogoPath = (techName) => {
   if (aimlConceptLogos[normalized]) {
     const logoFile = aimlConceptLogos[normalized].toLowerCase();
     if (logoPathMap[logoFile]) {
-      console.log(`✅ Found AI/ML logo for "${techName}":`, logoFile);
       return logoPathMap[logoFile];
     } else {
-      console.warn(`⚠️ AI/ML logo file not found in map: "${logoFile}"`);
     }
   }
   
@@ -822,15 +818,12 @@ export const getLogoPath = (techName) => {
   if (logoMap[normalized]) {
     const logoFile = logoMap[normalized];
     if (logoFile === null) {
-      console.log(`ℹ️ Logo explicitly set to null for "${techName}"`);
       return null;
     }
     const logoFileLower = logoFile.toLowerCase();
     if (logoPathMap[logoFileLower]) {
-      console.log(`✅ Found exact match logo for "${techName}":`, logoFile);
       return logoPathMap[logoFileLower];
     } else {
-      console.warn(`⚠️ Exact match logo file not found in map: "${logoFile}" (looking for: "${logoFileLower}")`);
     }
   }
   
@@ -843,13 +836,11 @@ export const getLogoPath = (techName) => {
       if (logoFile === null) continue;
       const logoFileLower = logoFile.toLowerCase();
       if (logoPathMap[logoFileLower]) {
-        console.log(`✅ Found partial match logo for "${techName}" (matched key: "${key}"):`, logoFile);
         return logoPathMap[logoFileLower];
       }
     }
   }
   
-  console.warn(`❌ No logo found for "${techName}" (normalized: "${normalized}")`);
   return null;
 };
 
@@ -917,13 +908,11 @@ export const getTechIcon = (techName) => {
   
   if (faIcons[normalized]) {
     const { component: IconComponent, color } = faIcons[normalized];
-    console.log(`✅ Found FA icon for "${techName}"`);
     return { component: IconComponent, color };
   }
   
   for (const [key, iconData] of Object.entries(faIcons)) {
     if ((normalized.includes(key) || key.includes(normalized)) && key.length > 2) {
-      console.log(`✅ Found FA icon (partial match) for "${techName}" (matched key: "${key}")`);
       return { component: iconData.component, color: iconData.color };
     }
   }
@@ -932,10 +921,8 @@ export const getTechIcon = (techName) => {
   if (siIconData) {
     const IconComponent = SiIcons[siIconData.name];
     if (IconComponent) {
-      console.log(`✅ Found SI icon for "${techName}"`);
       return { component: IconComponent, color: siIconData.color };
     } else {
-      console.warn(`⚠️ SI icon component not found: "${siIconData.name}"`);
     }
   }
   
@@ -943,12 +930,10 @@ export const getTechIcon = (techName) => {
     if ((normalized.includes(key) || key.includes(normalized)) && key.length > 2) {
       const IconComponent = SiIcons[iconData.name];
       if (IconComponent) {
-        console.log(`✅ Found SI icon (partial match) for "${techName}" (matched key: "${key}")`);
         return { component: IconComponent, color: iconData.color };
       }
     }
   }
   
-  console.warn(`❌ No icon found for "${techName}" (normalized: "${normalized}")`);
   return null;
 };

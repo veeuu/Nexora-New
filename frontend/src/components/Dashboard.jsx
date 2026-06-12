@@ -193,10 +193,10 @@ useEffect(() => {
                 </h3>
                 <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 0 24px' }}>
                   {creditPopup.section === 'total'
-                    ? 'You have used all 250 credits. Upgrade your plan to continue revealing data.'
+                    ? 'You have used all 100 credits. Upgrade your plan to continue revealing data.'
                     : creditPopup.partial
                       ? <>{creditPopup.revealed > 0 ? <><strong>{creditPopup.revealed}</strong> {creditPopup.revealed === 1 ? 'company was' : 'companies were'} revealed. </> : ''}The remaining <strong>{creditPopup.blocked}</strong> could not be revealed you've hit the 50-credit limit for <strong>{creditPopup.label}</strong>. Upgrade to unlock more.</>
-                      : <>You have used all <strong>50 credits</strong> for <strong>{creditPopup.label}</strong>. Upgrade your plan to unlock more.</>
+                      : <>You have used all <strong>20 credits</strong> for <strong>{creditPopup.label}</strong>. Upgrade your plan to unlock more.</>
                   }
                 </p>
                 <div style={{ display: 'flex', gap: '10px' }}>
