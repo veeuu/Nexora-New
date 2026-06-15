@@ -1247,10 +1247,7 @@ const NTP = () => {
                       }
                     });
                     const allCompaniesBulk = Array.from(companiesMapBulk.values()).sort((a, b) => {
-                      const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
-                      const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
-                      if (aRevealed && !bRevealed) return -1;
-                      if (!aRevealed && bRevealed) return 1;
+                      // previously revealed rows were prioritized here — removed per request
                       return 0;
                     });
                     const currentRevealed = new Set(revealedRows);
@@ -1333,10 +1330,7 @@ const NTP = () => {
               });
 
               const allCompanies = Array.from(companiesMap.values()).sort((a, b) => {
-                const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
-                const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
-                if (aRevealed && !bRevealed) return -1;
-                if (!aRevealed && bRevealed) return 1;
+                // previously revealed rows were prioritized here — removed per request
                 return 0;
               });
 

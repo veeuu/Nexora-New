@@ -1010,11 +1010,7 @@ const hasMandatoryFilters = filters.category.length > 0 && filters.qtr.length > 
         
         return companyMatch && categoryMatch && productMatch && qtrMatch && renewalProximityMatch;
     }).sort((a, b) => {
-        // Revealed rows first
-        const aKey = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
-        const bKey = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
-        if (aKey && !bKey) return -1;
-        if (!aKey && bKey) return 1;
+        // previously revealed rows were prioritized here — removed per request
 
         const proximityA = getProximityValue(a.qtr);
         const proximityB = getProximityValue(b.qtr);

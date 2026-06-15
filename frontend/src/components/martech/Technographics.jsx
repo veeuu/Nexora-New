@@ -1005,6 +1005,11 @@ const Technographics = () => {
 
   const normalizeKey = (value) => String(value || '').trim().toLowerCase();
 
+  const isCategorySelected = (opt) => {
+    if (!filters || !Array.isArray(filters.category)) return false;
+    return filters.category.some(c => normalizeKey(c) === normalizeKey(opt));
+  };
+
   const categoryTechMap = useMemo(() => {
     const map = new Map();
     (filterOptions || []).forEach((item) => {
@@ -1595,7 +1600,7 @@ const Technographics = () => {
       
       if (filters.companyName.length > 0 && !filters.companyName.includes(String(row.companyName))) return false;
 
-      if (filters.category.length > 0 && !filters.category.includes(String(row.category))) return false;
+      if (filters.category.length > 0 && !filters.category.some(cat => normalizeKey(cat) === normalizeKey(row.category))) return false;
 
       if (filters.region.length > 0 && !filters.region.includes(String(row.region))) return false;
 
@@ -1680,11 +1685,7 @@ const Technographics = () => {
   }, {});
 
   const groupedDataArray = Object.values(groupedData).sort((a, b) => {
-    // Revealed rows always first
-    const aRevealed = revealedRows.has(`reveal-${a.companyName}`);
-    const bRevealed = revealedRows.has(`reveal-${b.companyName}`);
-    if (aRevealed && !bRevealed) return -1;
-    if (!aRevealed && bRevealed) return 1;
+    // previously revealed rows were prioritized here — removed per request
 
     // Helper function to check if a row has complete data
     const isRowComplete = (row) => {
@@ -2518,15 +2519,15 @@ const Technographics = () => {
                           onClick={(e) => { e.stopPropagation(); handleFilterChange('category', option); }}
                           style={{
                             padding: '10px 12px', cursor: 'pointer',
-                            backgroundColor: filters.category.includes(option) ? '#dbeafe' : 'white',
+                            backgroundColor: isCategorySelected(option) ? '#dbeafe' : 'white',
                             borderBottom: '1px solid #e5e7eb', fontSize: '14px',
                             display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'space-between'
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = filters.category.includes(option) ? '#dbeafe' : 'white'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isCategorySelected(option) ? '#dbeafe' : 'white'}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <input type="checkbox" checked={filters.category.includes(option)}
+                            <input type="checkbox" checked={isCategorySelected(option)}
                               onChange={(e) => { e.stopPropagation(); handleFilterChange('category', option); }}
                               style={{ cursor: 'pointer' }} />
                             {renderTechLogo(option)}
@@ -3468,7 +3469,7 @@ const Technographics = () => {
                     setTooltip({
                       show: true,
                       text: companyName,
-                      hint: 'Click to view NTP Analysis',
+                      hint: 'Click to view Tech Purchase Probability',
                       x: rect.right - 20,
                       y: rect.bottom + 20,
                       isCompanyName: true,

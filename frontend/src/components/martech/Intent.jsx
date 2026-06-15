@@ -464,11 +464,7 @@ const getAccountCountByIntentStatus = (intentStatus) => {
       return searchMatches;
     })
     .sort((a, b) => {
-      // Revealed rows always first — match by company name
-      const aRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${a.companyName}`));
-      const bRevealed = Array.from(revealedRows).some(k => k.endsWith(`-${b.companyName}`));
-      if (aRevealed && !bRevealed) return -1;
-      if (!aRevealed && bRevealed) return 1;
+      // previously revealed rows were prioritized here — removed per request
 
       // Sort by Intent Status (High > Medium > Low)
       const intentStatusOrder = { 'high': 0, 'medium': 1, 'low': 2 };
