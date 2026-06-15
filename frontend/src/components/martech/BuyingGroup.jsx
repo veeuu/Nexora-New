@@ -469,6 +469,12 @@ const BuyingGroup = () => {
                                     .filter(company => 
                                         company.toLowerCase().includes(searchQuery.toLowerCase())
                                     )
+                                    .sort((a, b) => {
+                                        // Put revealed (unlocked) companies first
+                                        const aRevealed = orgChartRevealed.has(a) ? 1 : 0;
+                                        const bRevealed = orgChartRevealed.has(b) ? 1 : 0;
+                                        return bRevealed - aRevealed;
+                                    })
                                     .map((company, index) => (
                                         <div
                                             key={index}
@@ -480,7 +486,11 @@ const BuyingGroup = () => {
                                             className={`dropdown-item ${selectedCompany === company ? 'selected' : ''}`}
                                         >
                                             <span>{company}</span>
-                                            <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
+                                            {orgChartRevealed.has(company) ? (
+                                                <FaUnlock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
+                                            ) : (
+                                                <FaLock size={14} style={{ color: '#9ca3af', marginLeft: '8px' }} />
+                                            )}
                                         </div>
                                     ))}
                                 {companies.filter(c => c.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
