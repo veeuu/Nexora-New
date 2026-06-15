@@ -616,7 +616,7 @@ export const getLogoPath = (techName) => {
     "unitrends": "Unitrends Backup.png",
     "veeam": "Veeam.png",
     "veeam backup & replication": "Veeam Backup & Replication.png",
-    "veritas": "Veritas.png",
+    "veritas": "Veritas.jpg",
     "veritas netbackup": "Veritas NetBackup.png",
     "zerto": "Zerto.png",
     "pure storage platform": "Pure Storage Platform.png",
@@ -814,6 +814,18 @@ export const getLogoPath = (techName) => {
     "cisco intersight": "Cisco Intersight.png",
     "cisco meraki systems manager": "Cisco Meraki Systems Manager.png",
     "cisco meraki": "Cisco Meraki Systems Manager.png",
+    // OEMs
+    "oem": "OEMs.png",
+    "oems": "OEMs.png",
+    "oem vendors": "OEMs.png",
+    // Newly added single-file and utility logos
+    "backup & data protection vendor": "Backup & Data Protection Vendor.png",
+    "infrastructure vendor": "Infrastructure Vendor.png",
+    "os": "OS.png",
+    "telecom carriers": "Telecom Carriers.svg",
+    "telecom carrier": "Telecom Carriers.svg",
+    "uem / mdm platforms": "UEM  MDM Platforms.png",
+    "uem mdm platforms": "UEM  MDM Platforms.png",
   };
   
   // Try exact match first

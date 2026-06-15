@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256">
+  <!-- 
+    Telecom Carrier Icon
+    Background: Transparent 
+  -->
+  <g stroke="#0f172a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    
+    <!-- Tower Legs and Core -->
+    <path d="M22 60 L32 20 L42 60" />
+    <line x1="32" y1="60" x2="32" y2="20" />
+    
+    <!-- Crossbeams -->
+    <line x1="25" y1="48" x2="39" y2="48" />
+    <line x1="28" y1="34" x2="36" y2="34" />
+    
+    <!-- Signal Waves Left -->
+    <path d="M 22 10 A 12 12 0 0 0 22 26" stroke="#3b82f6" />
+    <path d="M 14 2 A 22 22 0 0 0 14 34" stroke="#3b82f6" />
+    
+    <!-- Signal Waves Right -->
+    <path d="M 42 10 A 12 12 0 0 1 42 26" stroke="#3b82f6" />
+    <path d="M 50 2 A 22 22 0 0 1 50 34" stroke="#3b82f6" />
+  </g>
+  
+  <!-- Transmitter Top -->
+  <circle cx="32" cy="18" r="4" fill="#ef4444" />
+</svg>
