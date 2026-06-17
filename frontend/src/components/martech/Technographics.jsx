@@ -62,25 +62,32 @@ const countryCodeMap = {
   'Kenya': 'KE', 'KENYA': 'KE',
   'Hong Kong': 'HK', 'HONG KONG': 'HK',
   'Taiwan': 'TW', 'TAIWAN': 'TW',
+  'Iceland': 'IS', 'ICELAND': 'IS',
+  'Brunei': 'BN', 'BRUNEI': 'BN', 'Brunei Darussalam': 'BN',
+  'Cambodia': 'KH', 'CAMBODIA': 'KH',
+  'Myanmar': 'MM', 'MYANMAR': 'MM', 'Burma': 'MM',
+  'Sri Lanka': 'LK', 'SRI LANKA': 'LK',
 };
 
 const extractCountryCode = (region) => {
   if (!region) return '';
   const trimmed = String(region).trim();
+  if (!trimmed) return '';
 
-  if (countryCodeMap[trimmed]) {
-    return countryCodeMap[trimmed];
+  // Direct exact match
+  if (countryCodeMap[trimmed]) return countryCodeMap[trimmed];
+
+  // Case-insensitive match against map keys
+  const lower = trimmed.toLowerCase();
+  for (const key of Object.keys(countryCodeMap)) {
+    if (String(key).toLowerCase() === lower) {
+      return countryCodeMap[key];
+    }
   }
 
-  const upper = trimmed.toUpperCase();
-  if (countryCodeMap[upper]) {
-    return countryCodeMap[upper];
-  }
+  // Accept two-letter codes directly
+  if (trimmed.length === 2) return trimmed.toUpperCase();
 
-  if (trimmed.length === 2) {
-    return trimmed.toUpperCase();
-  }
-  
   return '';
 };
 
@@ -1372,7 +1379,11 @@ const Technographics = () => {
           filterOptionsData = Array.isArray(raw) ? raw : (raw?.data || []);
         }
 
-        setMetadata(metadataData);
+        // Ensure regions are sorted alphabetically for consistent UI
+        const metaRegions = Array.isArray(metadataData.regions) ? metadataData.regions.slice() : [];
+        metaRegions.sort((a, b) => String(a || '').localeCompare(String(b || '')));
+        const metadataSorted = { ...metadataData, regions: metaRegions };
+        setMetadata(metadataSorted);
         setSummary(summaryData);
         setFilterOptions(filterOptionsData);
 
@@ -1391,7 +1402,9 @@ const Technographics = () => {
 
         setTechnologyData(techDataWithPercentages);
         const regionList = (summaryData.regions || []).map(r => r.label).filter(Boolean);
-        setAvailableRegions(regionList.length > 0 ? regionList : (metadataData.regions || []));
+        const combined = regionList.length > 0 ? regionList : (metaRegions || []);
+        const sortedRegions = Array.from(new Set(combined)).slice().sort((a, b) => String(a).localeCompare(String(b)));
+        setAvailableRegions(sortedRegions);
 
         await fetchPage(1);
       } catch (e) {
@@ -2324,11 +2337,8 @@ const Technographics = () => {
                   }}
                 >
                   {getUniqueOptions('region')
-                    .sort((a, b) => {
-                      const countA = getCompanyCountByRegion(a);
-                      const countB = getCompanyCountByRegion(b);
-                      return countB - countA;
-                    })
+                    .slice()
+                    .sort((a, b) => String(a || '').localeCompare(String(b || '')))
                     .map((region) => (
                     <div
                       key={region}
