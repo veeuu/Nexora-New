@@ -100,6 +100,8 @@ const BuyingGroup = () => {
     const [orgChartUrl, setOrgChartUrl] = useState('');
     const [zoomLevel, setZoomLevel] = useState(80);
     const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+    const categoryDropdownRef = useRef(null);
     const [revealedEmails, setRevealedEmails] = useState(() => {
         const data = getRevealedLocal();
         return new Set(Array.isArray(data.buyingGroupEmails) ? data.buyingGroupEmails : []);
@@ -165,15 +167,13 @@ const BuyingGroup = () => {
             try {
                 const response = await apiFetch('/api/buying-groups/categories');
                 const data = await response.json();
-                let fetchedCategories = data.categories || [];
-
-                fetchedCategories = fetchedCategories.map(cat => cat === 'AI' ? 'AI/ML' : cat);
-
-                const desiredOrder = ['AI/ML', 'CRM', 'Database', 'Cloud'];
-
-                setCategories(desiredOrder);
+                const fetchedCategories = (data.categories || [])
+                    .map(cat => cat === 'AI' ? 'AI/ML' : cat)
+                    .filter(cat => cat && cat.trim())
+                    .sort();
+                setCategories(fetchedCategories);
             } catch (err) {
-                setCategories(['AI/ML', 'CRM', 'Database', 'Cloud']);
+                setCategories([]);
             }
         };
         fetchCategories();
@@ -311,6 +311,18 @@ const BuyingGroup = () => {
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [isCompanyDropdownOpen]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+                setIsCategoryDropdownOpen(false);
+            }
+        };
+        if (isCategoryDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isCategoryDropdownOpen]);
 
     const handleImageClick = () => {
         if (!orgChartRevealed.has(selectedCompany)) {
@@ -452,7 +464,7 @@ const BuyingGroup = () => {
                             className="dropdown-button"
                         >
                             <span>{selectedCompany || 'Search companies...'}</span>
-                            <span className="dropdown-arrow">▼</span>
+                            <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
                         
                         {isCompanyDropdownOpen && (
@@ -519,34 +531,38 @@ const BuyingGroup = () => {
                     </div>
                 </div>
                 <div className="filter-group filter-group-highlight">
-                    <div className="highlight-roles-box">Highlight Roles</div>
-                    <div className="buying-group-filters">
+                    <label>Highlight Roles</label>
+                    <div ref={categoryDropdownRef} className="dropdown-container">
                         <button
-                            onClick={() => {
-                                setSelectedCategories(new Set());
-                                setSelectedCategory('ALL');
-                            }}
-                            className={`category-button ${selectedCategories.size === categories.length && categories.length > 0 ? 'active' : ''}`}
+                            onClick={() => setIsCategoryDropdownOpen(prev => !prev)}
+                            className="dropdown-button"
                         >
-                            Reset
+                            <span>{selectedCategory && selectedCategory !== 'ALL' && selectedCategory !== 'All' ? selectedCategory : 'Select Category...'}</span>
+                            <svg className="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isCategoryDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                        {categories.map((category, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    if (selectedCategories.has(category)) {
-                                        setSelectedCategories(new Set());
-                                        setSelectedCategory('All');
-                                    } else {
-                                        setSelectedCategories(new Set([category]));
-                                        setSelectedCategory(category);
-                                    }
-                                }}
-                                className={`category-button ${selectedCategories.has(category) ? 'active' : ''}`}
-                            >
-                                {category}
-                            </button>
-                        ))}
+
+                        {isCategoryDropdownOpen && (
+                            <div className="dropdown-menu" style={{ minWidth: '180px', maxHeight: '260px', overflowY: 'auto' }}>
+                                {categories.map((category, index) => (
+                                    <div
+                                        key={index}
+                                        className={`dropdown-item ${selectedCategories.has(category) ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            if (selectedCategories.has(category)) {
+                                                setSelectedCategories(new Set());
+                                                setSelectedCategory('All');
+                                            } else {
+                                                setSelectedCategories(new Set([category]));
+                                                setSelectedCategory(category);
+                                            }
+                                            setIsCategoryDropdownOpen(false);
+                                        }}
+                                    >
+                                        {category}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
