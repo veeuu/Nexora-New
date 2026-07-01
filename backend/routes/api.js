@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -65,7 +65,7 @@ router.post('/on-demand-request', async (req, res) => {
 
 // --- CREDITS ROUTES
 
-// GET /api/revealed — fetch all revealed row keys for the user
+// GET /api/revealed � fetch all revealed row keys for the user
 router.get('/revealed', async (req, res) => {
   try {
     const user = await PgUser.findOne({ where: { email: req.user.email } });
@@ -76,7 +76,7 @@ router.get('/revealed', async (req, res) => {
   }
 });
 
-// POST /api/revealed — add a row key to a section's revealed list
+// POST /api/revealed � add a row key to a section's revealed list
 router.post('/revealed', async (req, res) => {
   const { section, key } = req.body;
   if (!section || !key) return res.status(400).json({ error: 'section and key required' });
@@ -96,7 +96,7 @@ router.post('/revealed', async (req, res) => {
   }
 });
 
-// GET /api/credits — fetch current user's credit state from DB
+// GET /api/credits � fetch current user's credit state from DB
 router.get('/credits', async (req, res) => {
   try {
     const user = await PgUser.findOne({ where: { email: req.user.email } });
@@ -110,7 +110,7 @@ router.get('/credits', async (req, res) => {
   }
 });
 
-// POST /api/credits/deduct — deduct credits for a section
+// POST /api/credits/deduct � deduct credits for a section
 router.post('/credits/deduct', async (req, res) => {
   const { section, amount = 1 } = req.body;
   const TOTAL = 250;
@@ -291,7 +291,7 @@ function parseEmployeeSizeLower(raw) {
   const s = String(raw).replace(/,/g, '').trim();
   const plusMatch = s.match(/^(\d+)\+?$/);
   if (plusMatch) return parseInt(plusMatch[1]);
-  const rangeMatch = s.match(/^(\d+)[–\-](\d+)$/);
+  const rangeMatch = s.match(/^(\d+)[�\-](\d+)$/);
   if (rangeMatch) return parseInt(rangeMatch[1]);
   return null;
 }
@@ -657,6 +657,8 @@ router.get('/ntp', cacheResponse(120), async (req, res) => {
       if (filters.prediction.length > 0) matchStage.purchasePrediction = { $in: filters.prediction };
     }
 
+    const NOT_DETECTED_VALUES = ['Not Detected', 'NOT detected', 'not detected'];
+
     const pipeline = [];
     if (!useFlat) pipeline.push({ $unwind: '$NTP' });
     if (Object.keys(matchStage).length > 0) pipeline.push({ $match: matchStage });
@@ -665,6 +667,26 @@ router.get('/ntp', cacheResponse(120), async (req, res) => {
       if (filters.technology.length > 0) pipeline.push({ $match: { 'NTP.Technology': { $in: filters.technology } } });
       if (filters.prediction.length > 0) pipeline.push({ $match: { 'NTP.Purchase Prediction': { $in: filters.prediction } } });
     }
+
+    // Exclude "Not Detected" records server-side so pagination counts are accurate
+    if (useFlat) {
+      pipeline.push({
+        $match: {
+          category: { $nin: NOT_DETECTED_VALUES },
+          technology: { $nin: NOT_DETECTED_VALUES },
+          purchasePrediction: { $nin: NOT_DETECTED_VALUES }
+        }
+      });
+    } else {
+      pipeline.push({
+        $match: {
+          'NTP.Category': { $nin: NOT_DETECTED_VALUES },
+          'NTP.Technology': { $nin: NOT_DETECTED_VALUES },
+          'NTP.Purchase Prediction': { $nin: NOT_DETECTED_VALUES }
+        }
+      });
+    }
+
     pipeline.push({
       $project: {
         _id: 0,
@@ -1096,7 +1118,7 @@ router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
       const plusMatch = s.match(/^(\d+)\+?$/);
       if (plusMatch) return parseInt(plusMatch[1]);
       // Handle "1001-5000" style
-      const rangeMatch = s.match(/^(\d+)[–\-](\d+)$/);
+      const rangeMatch = s.match(/^(\d+)[�\-](\d+)$/);
       if (rangeMatch) return parseInt(rangeMatch[1]); // use lower bound
       return null;
     };

@@ -678,17 +678,9 @@ const NTP = () => {
 
   const PREDICTION_ORDER = { High: 0, Medium: 1, Low: 2 };
 
-  const isNotDetected = (v) => v === 'Not Detected' || v === 'NOT detected' || v === 'not detected';
-
   const filteredData = useMemo(() => {
-    // Exclude "Not Detected" records client-side
+    // "Not Detected" records are now excluded server-side
     return tableData
-      .filter(row => {
-        if (isNotDetected(row.category) || isNotDetected(row.purchasePrediction) || isNotDetected(row.technology)) {
-          return false;
-        }
-        return true;
-      })
       .sort((a, b) => {
         const pa = PREDICTION_ORDER[a.purchasePrediction] ?? 99;
         const pb = PREDICTION_ORDER[b.purchasePrediction] ?? 99;
@@ -790,37 +782,35 @@ const NTP = () => {
           <div className="ntp-filters-left">
           
           {}
+          {/* Filters in order: Company Name, Category, Technology, Purchase Prediction */}
           <div className="ntp-filter-button-wrapper">
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setActiveFilterMenu('companyName')}
               className="ntp-filter-button"
             >
-              <span>+ Filter</span>
+              <span>Company Name</span>
             </button>
+          </div>
 
-            {}
-            {showFilters && (
-              <div className="ntp-filter-menu">
-                {[
-                  { label: 'Company Name', key: 'companyName', mandatory: false },
-                  { label: 'Technology', key: 'technology', mandatory: false }
-                ].map((filterOption) => (
-                  <div
-                    key={filterOption.key}
-                    onClick={() => {
-                      setActiveFilterMenu(filterOption.key);
-                      setShowFilters(false);
-                    }}
-                    className="ntp-filter-menu-item"
-                  >
-                    {filterOption.label}
-                    {filterOption.mandatory && (
-                      <span className="ntp-filter-required-badge">*</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+          {}
+          {activeFilterMenu !== 'category' && (
+            <div className="ntp-filter-button-wrapper">
+              <button
+                onClick={() => setActiveFilterMenu('category')}
+                className="ntp-filter-button"
+              >
+                <span>Category <span className="ntp-filter-required-badge">*</span></span>
+              </button>
+            </div>
+          )}
+
+          <div className="ntp-filter-button-wrapper">
+            <button
+              onClick={() => setActiveFilterMenu('technology')}
+              className="ntp-filter-button"
+            >
+              <span>Technology</span>
+            </button>
           </div>
 
           {}
@@ -993,18 +983,6 @@ const NTP = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          )}
-
-          {}
-          {activeFilterMenu !== 'category' && (
-            <div className="ntp-filter-button-wrapper">
-              <button
-                onClick={() => setActiveFilterMenu('category')}
-                className="ntp-filter-button"
-              >
-                <span>Category <span className="ntp-filter-required-badge">*</span></span>
-              </button>
             </div>
           )}
 
@@ -1236,7 +1214,7 @@ const NTP = () => {
                   }}
                 />
               </th>
-              <th style={{ textAlign: 'center', width: '140px' }}>
+              <th style={{ textAlign: 'center' }}>
                 <button
                   onClick={async () => {
                     if (selectedRows.size === 0) return;

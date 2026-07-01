@@ -639,18 +639,6 @@ useEffect(() => {
           <div className="filter-controls-left">
 
           {}
-          {activeFilterMenu !== 'intentStatus' && (
-            <div className="intent-status-filter-button">
-              <button
-                onClick={() => setActiveFilterMenu('intentStatus')}
-                className="filter-button"
-              >
-                <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
-              </button>
-            </div>
-          )}
-
-          {}
           {activeFilterMenu !== 'accountName' && (
             <div className="filter-dropdown-wrapper-relative">
               <button
@@ -658,6 +646,18 @@ useEffect(() => {
                 className="filter-button"
               >
                 <span>Company Name</span>
+              </button>
+            </div>
+          )}
+
+          {}
+          {activeFilterMenu !== 'intentStatus' && (
+            <div className="intent-status-filter-button">
+              <button
+                onClick={() => setActiveFilterMenu('intentStatus')}
+                className="filter-button"
+              >
+                <span>Intent Status <span style={{ color: '#ef4444', fontWeight: '600' }}>*</span></span>
               </button>
             </div>
           )}

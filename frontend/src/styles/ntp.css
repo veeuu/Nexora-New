@@ -558,7 +558,7 @@ td {
 /* col 2: unlock */
 .ntp-container th:nth-child(2),
 .ntp-container td:nth-child(2) {
-  width: 6% !important;
+  width: 8% !important;
   text-align: center !important;
   padding: 12px 8px !important;
   white-space: nowrap;
@@ -567,14 +567,14 @@ td {
 /* col 3: company name */
 .ntp-container th:nth-child(3),
 .ntp-container td:nth-child(3) {
-  width: 25% !important;
+  width: 26% !important;
   padding: 12px 16px !important;
 }
 
 /* col 4: technology */
 .ntp-container th:nth-child(4),
 .ntp-container td:nth-child(4) {
-  width: 25% !important;
+  width: 18% !important;
   padding: 12px 16px !important;
   text-align: left !important;
 }
@@ -582,7 +582,7 @@ td {
 /* col 5: purchase prediction */
 .ntp-container th:nth-child(5),
 .ntp-container td:nth-child(5) {
-  width: 20% !important;
+  width: 22% !important;
   text-align: center !important;
   padding: 12px 16px !important;
 }
@@ -590,8 +590,8 @@ td {
 /* col 6: purchase propensity */
 .ntp-container th:nth-child(6),
 .ntp-container td:nth-child(6) {
-  width: 20% !important;
-  text-align: right !important;
+  width: 22% !important;
+  text-align: center !important;
   padding: 12px 16px !important;
   white-space: nowrap;
 }
