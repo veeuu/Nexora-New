@@ -178,7 +178,7 @@ const EnterpriseIntel = () => {
                       <td>Marketing</td>
                       <td>🇬🇧 UK</td>
                       <td>51–200</td>
-                      <td>16 M</td>
+                      <td>$16 M</td>
                       <td><span className="st-tech-tag">Azure</span></td>
                       <td><span className="st-badge-sm st-badge-prev">Q2 2023</span></td>
                       <td><span className="st-badge-sm st-badge-y">Q4 2024</span></td>

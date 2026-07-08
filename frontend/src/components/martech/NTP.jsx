@@ -1509,10 +1509,6 @@ const NTP = () => {
 
         return (
           <div className="ntp-pagination-wrapper">
-            <div className="ntp-pagination-info">
-              Page {currentPage} of {totalPagesCount.toLocaleString()}
-            </div>
-
             {}
             <div className="ntp-pagination-controls">
               {(() => {
@@ -1579,16 +1575,7 @@ const NTP = () => {
                     ))}
 
                     {endPage < totalPagesCount && (
-                      <>
-                        {endPage < totalPagesCount - 1 && <span className="ntp-pagination-ellipsis">...</span>}
-                        <button
-                          key={totalPagesCount}
-                          onClick={() => setCurrentPage(totalPagesCount)}
-                          className="ntp-pagination-last-button"
-                        >
-                          {totalPagesCount}
-                        </button>
-                      </>
+                      <span className="ntp-pagination-ellipsis">...</span>
                     )}
 
                     {}

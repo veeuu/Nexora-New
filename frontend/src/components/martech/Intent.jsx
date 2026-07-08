@@ -1069,11 +1069,7 @@ useEffect(() => {
 
       {}
       {filteredData.length > rowsPerPage && (
-      <div className="pagination-container">
-          <div className="pagination-info">
-              Page {currentPage} of {Math.ceil(filteredData.length / rowsPerPage).toLocaleString()}
-          </div>
-
+      <div className="pagination-container intent-pagination-container">
           {}
           <div className="pagination-controls">
               {(() => {
@@ -1141,16 +1137,7 @@ useEffect(() => {
                           ))}
 
                           {endPage < totalPages && (
-                              <>
-                                  {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
-                                  <button
-                                      key={totalPages}
-                                      onClick={() => goToPage(totalPages)}
-                                      className="pagination-button"
-                                  >
-                                      {totalPages}
-                                  </button>
-                              </>
+                              <span className="pagination-ellipsis">...</span>
                           )}
 
                           {}

@@ -140,7 +140,7 @@ const ProfilePanel = ({ isOpen, onClose, username, onLogout }) => {
                   <div>
                     <p className="plan-card-name">{planLabel} Plan</p>
                     <p className="plan-card-desc">
-                      {isPaid ? 'Full access to all Nexora features' : '50 free credits · Limited access'}
+                      {isPaid ? 'Full access to all Nexora data intelligence suite' : '50 free credits · Limited access'}
                     </p>
                   </div>
                 </div>

@@ -654,12 +654,16 @@ tbody tr:hover {
 /* Pagination Styles */
 .pagination-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-top: 20px;
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e5e7eb;
+}
+
+.intent-pagination-container {
+  justify-content: center !important;
 }
 
 .pagination-info {

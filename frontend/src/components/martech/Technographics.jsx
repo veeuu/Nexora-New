@@ -3842,21 +3842,13 @@ const Technographics = () => {
         return (
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             alignItems: 'center',
             marginTop: '20px',
             marginBottom: '20px',
             paddingBottom: '15px',
             borderBottom: '1px solid #e5e7eb'
           }}>
-            <div style={{
-              fontSize: '14px',
-              color: '#1f2937',
-              fontWeight: '600'
-            }}>
-              Page {currentPage} of {totalPagesCount.toLocaleString()}
-            </div>
-
             {}
             <div style={{
               display: 'flex',
@@ -4003,35 +3995,7 @@ const Technographics = () => {
                     ))}
 
                     {endPage < totalPagesCount && (
-                      <>
-                        {endPage < totalPagesCount - 1 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                        <button
-                          key={totalPagesCount}
-                          onClick={() => setCurrentPage(totalPagesCount)}
-                          style={{
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            backgroundColor: 'white',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                            minWidth: '40px',
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }}
-                        >
-                          {totalPagesCount}
-                        </button>
-                      </>
+                      <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>
                     )}
 
                     {}
