@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { deductCredit } from '../../utils/credits';
 import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import { rowMatchesSearch, highlightText, Tooltip, createTooltipHandlers } from '../../utils/tableUtils';
-import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import { getLogoPath, getTechIcon, getCategoryLogoPath } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaLinkedin, FaGlobe, FaRobot, FaLock, FaUnlock, FaCopy } from 'react-icons/fa';
 import ChatBot from '../ChatBot';
@@ -1027,7 +1027,12 @@ const NTP = () => {
                           className="ntp-filter-option-item-checkbox"
                         />
                         <span className="ntp-category-tech-logo-span">
-                          {renderTechLogo(option)}
+                          {(() => {
+                            const catLogo = getCategoryLogoPath(option);
+                            return catLogo ? (
+                              <img src={catLogo} alt={option} style={{ width: '16px', height: '16px', objectFit: 'contain', marginRight: '4px', verticalAlign: 'middle' }} />
+                            ) : renderTechLogo(option);
+                          })()}
                           {option}
                         </span>
                       </div>

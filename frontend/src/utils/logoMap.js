@@ -1,15 +1,137 @@
 import * as SiIcons from 'react-icons/si';
 import { FaCloud, FaDatabase, FaQuestionCircle } from 'react-icons/fa';
 
-// Dynamic logo import
+// Dynamic logo import — tech logos
 const logoModules = import.meta.glob('../logos/*.{png,jpg,jpeg,webp,svg,avif}', { eager: true });
-
-// Create a map of logo filenames to their paths
 const logoPathMap = {};
 Object.keys(logoModules).forEach(path => {
   const filename = path.split('/').pop();
   logoPathMap[filename.toLowerCase()] = logoModules[path].default;
 });
+
+// Category logos
+const categoryModules = import.meta.glob('../Category-logos/*.{png,jpg,jpeg,webp,svg,avif}', { eager: true });
+const categoryPathMap = {};
+Object.keys(categoryModules).forEach(path => {
+  const filename = path.split('/').pop().replace(/\.[^.]+$/, ''); // strip extension
+  categoryPathMap[filename.toLowerCase()] = categoryModules[path].default;
+});
+
+// Country logos
+const countryModules = import.meta.glob('../country-logos/*.svg', { eager: true });
+const countryPathMap = {};
+Object.keys(countryModules).forEach(path => {
+  const filename = path.split('/').pop().replace('.svg', '');
+  countryPathMap[filename.toLowerCase()] = countryModules[path].default;
+});
+
+// Category name → logo filename mapping
+const CATEGORY_LOGO_MAP = {
+  'ai & ml':                         'AI & ML',
+  'ai/ml':                           'AI & ML',
+  'aiml':                            'AI & ML',
+  'artificial intelligence':         'AI & ML',
+  'machine learning':                'AI & ML',
+  'cad - cam':                       'CAD - CAM',
+  'cad/cam':                         'CAD - CAM',
+  'cloud & infrastructure':          'Cloud & Infrastructure',
+  'cloud':                           'Cloud & Infrastructure',
+  'cloud infrastructure':            'Cloud & Infrastructure',
+  'infrastructure':                  'Cloud & Infrastructure',
+  'collaboration & productivity':    'Collaboration & Productivity',
+  'collaboration':                   'Collaboration & Productivity',
+  'productivity':                    'Collaboration & Productivity',
+  'contact center':                  'Contact Center',
+  'content management':              'Content Management',
+  'cms':                             'Content Management',
+  'crm':                             'CRM',
+  'customer relationship management':'CRM',
+  'customer experience':             'Customer Experience',
+  'cx':                              'Customer Experience',
+  'cybersecurity':                   'Cybersecurity',
+  'security':                        'Cybersecurity',
+  'data & analytics':                'Data & Analytics',
+  'data analytics':                  'Data & Analytics',
+  'analytics':                       'Data & Analytics',
+  'data governance':                 'Data Governance',
+  'data protection & backup':        'Data Protection & Backup',
+  'data protection':                 'Data Protection & Backup',
+  'backup':                          'Data Protection & Backup',
+  'database platforms':              'Database Platforms',
+  'database':                        'Database Platforms',
+  'digital twin':                    'Digital Twin',
+  'digital workflow & forms':        'Digital Workflow & Forms',
+  'workflow':                        'Digital Workflow & Forms',
+  'endpoint management':             'Endpoint Management',
+  'mdm':                             'Endpoint Management',
+  'uem':                             'Endpoint Management',
+  'engineering simulation':          'Engineering Simulation',
+  'simulation':                      'Engineering Simulation',
+  'hardware & devices':              'Hardware & Devices',
+  'hardware':                        'Hardware & Devices',
+  'it operations & monitoring':      'IT Operations & Monitoring',
+  'it operations':                   'IT Operations & Monitoring',
+  'monitoring':                      'IT Operations & Monitoring',
+  'it service management':           'IT Service Management',
+  'itsm':                            'IT Service Management',
+  'low-code - no-code':              'Low-Code - No-Code',
+  'low-code':                        'Low-Code - No-Code',
+  'no-code':                         'Low-Code - No-Code',
+  'manufacturing operations & plm':  'Manufacturing Operations & PLM',
+  'manufacturing':                   'Manufacturing Operations & PLM',
+  'plm':                             'Manufacturing Operations & PLM',
+  'os':                              'OS',
+  'operating system':                'OS',
+  'unified communications':          'Unified Communications',
+  'uc':                              'Unified Communications',
+  'ucaas':                           'Unified Communications',
+  'workforce management':            'Workforce Management',
+  'workforce':                       'Workforce Management',
+  'hcm':                             'Workforce Management',
+};
+
+/**
+ * Returns the imported image path for a category name.
+ * Falls back to null if no match found.
+ */
+export const getCategoryLogoPath = (categoryName) => {
+  if (!categoryName) return null;
+  const normalized = categoryName.toLowerCase().trim();
+  const mapped = CATEGORY_LOGO_MAP[normalized];
+  if (mapped) {
+    return categoryPathMap[mapped.toLowerCase()] || null;
+  }
+  // Try direct filename match
+  return categoryPathMap[normalized] || null;
+};
+
+/**
+ * Returns the imported SVG path for a country/region name.
+ * Falls back to null if no match found.
+ */
+export const getCountryLogoPath = (countryName) => {
+  if (!countryName) return null;
+  const normalized = countryName.toLowerCase().trim();
+
+  // Common aliases
+  const aliases = {
+    'usa':                    'united states',
+    'us':                     'united states',
+    'united states of america':'united states',
+    'uk':                     'united kingdom',
+    'great britain':          'united kingdom',
+    'uae':                    'united arab emirates',
+    'south korea':            'south korea',
+    'republic of korea':      'south korea',
+    'north korea':            'north korea',
+    'russia':                 'russia',
+    'taiwan':                 'taiwan',
+    'hong kong':              'hong kong',
+  };
+
+  const key = aliases[normalized] || normalized;
+  return countryPathMap[key] || null;
+};
 
 // Debug logging
 
@@ -854,7 +976,31 @@ export const getLogoPath = (techName) => {
       }
     }
   }
-  
+
+  // Auto-discovery: try matching directly against logo filenames (strip extension)
+  // e.g. "Datadog" → logoPathMap["datadog.png"]
+  const extensions = ['.png', '.jpg', '.jpeg', '.webp', '.svg', '.avif'];
+  for (const ext of extensions) {
+    const candidate = normalized + ext;
+    if (logoPathMap[candidate]) return logoPathMap[candidate];
+  }
+
+  // Also try replacing spaces with nothing or common separators
+  const noSpaces = normalized.replace(/\s+/g, '');
+  for (const ext of extensions) {
+    const candidate = noSpaces + ext;
+    if (logoPathMap[candidate]) return logoPathMap[candidate];
+  }
+
+  // Try partial filename match — logo filename contains the tech name or vice versa
+  for (const [filename, path] of Object.entries(logoPathMap)) {
+    const nameOnly = filename.replace(/\.[^.]+$/, ''); // strip extension
+    if (nameOnly === normalized) return path;
+    if (nameOnly.length > 4 && normalized.length > 4) {
+      if (nameOnly.includes(normalized) || normalized.includes(nameOnly)) return path;
+    }
+  }
+
   return null;
 };
 

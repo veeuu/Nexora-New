@@ -4,7 +4,7 @@ import { deductCredit } from '../../utils/credits';
 import { isRevealed as isRevealedPersisted, markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import { useIndustry } from '../../context/IndustryContext';
 import Flag from 'country-flag-icons/react/3x2';
-import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import { getLogoPath, getTechIcon, getCategoryLogoPath, getCountryLogoPath } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaLinkedin, FaGlobe, FaEye, FaEyeSlash, FaLock, FaUnlock, FaLightbulb } from 'react-icons/fa';
 
@@ -102,12 +102,25 @@ const formatRegionLabel = (region) => {
 };
 
 const renderCountryFlag = (region) => {
+  if (!region) return null;
+  const trimmed = String(region).trim();
+  if (!trimmed) return null;
+
+  // Try SVG country logo first
+  const svgPath = getCountryLogoPath(trimmed);
+  if (svgPath) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '16px', borderRadius: '2px', overflow: 'hidden', flexShrink: 0 }}>
+        <img src={svgPath} alt={trimmed} style={{ width: '20px', height: '13px', objectFit: 'cover' }} />
+      </div>
+    );
+  }
+
+  // Fallback to react country-flag-icons
   const code = extractCountryCode(region);
   if (!code) return null;
-  
   const FlagComponent = Flag[code];
   if (!FlagComponent) return null;
-  
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '16px', borderRadius: '2px', overflow: 'hidden', flexShrink: 0 }}>
       <FlagComponent style={{ width: '20px', height: '13px' }} />
@@ -2579,7 +2592,12 @@ const Technographics = () => {
                             <input type="checkbox" checked={isCategorySelected(option)}
                               onChange={(e) => { e.stopPropagation(); handleFilterChange('category', option); }}
                               style={{ cursor: 'pointer' }} />
-                            {renderTechLogo(option)}
+                            {(() => {
+                              const catLogo = getCategoryLogoPath(option);
+                              return catLogo ? (
+                                <img src={catLogo} alt={option} style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }} />
+                              ) : renderTechLogo(option);
+                            })()}
                             <span>{option}</span>
                           </div>
                         </div>

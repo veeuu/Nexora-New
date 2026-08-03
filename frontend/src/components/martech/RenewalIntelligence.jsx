@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { deductCredit } from '../../utils/credits';
 import { markRevealed, getRevealedLocal, syncRevealedFromServer } from '../../utils/revealed';
 import * as SiIcons from 'react-icons/si';
-import { getLogoPath, getTechIcon } from '../../utils/logoMap';
+import { getLogoPath, getTechIcon, getCategoryLogoPath } from '../../utils/logoMap';
 import loadingGif from '../../assets/Data Loading GIF - Without Starhub.gif';
 import { FaGlobe, FaLinkedin, FaLock, FaUnlock } from 'react-icons/fa';
 import RenewalDashboard from './RenewalDashboard';
@@ -455,7 +455,8 @@ const RenewalIntelligence = () => {
 const renderCategoryLogo = (categoryName) => {
       if (!categoryName) return null;
 
-      const logoPath = getLogoPath(categoryName);
+      // Try category-specific logo first, fall back to tech logo
+      const logoPath = getCategoryLogoPath(categoryName) || getLogoPath(categoryName);
 
       if (logoPath) {
         return (
