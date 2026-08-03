@@ -2564,7 +2564,12 @@ const Technographics = () => {
                   
                   // Debug: log if no categories found
                   if (allCats.length === 0) {
-                    console.log('[Technographics] No categories available. Summary:', summary.categories);
+                    console.log('[Technographics] No categories available');
+                    console.log('[Technographics] Summary categories:', summary.categories);
+                    console.log('[Technographics] Summary keys:', Object.keys(summary));
+                    console.log('[Technographics] Total records:', summary.totalRecords);
+                    console.log('[Technographics] Technologies count:', summary.technologies?.length);
+                    console.log('[Technographics] Industries count:', summary.industries?.length);
                   }
                   
                   return (

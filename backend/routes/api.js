@@ -1139,6 +1139,14 @@ router.get('/technographics/summary', cacheResponse(300), async (req, res) => {
         return ai - bi;
       });
 
+    // Debug logging for categories
+    if (!result?.categories || result.categories.length === 0) {
+      console.log('[technographics/summary] WARNING: No categories found');
+      console.log('[technographics/summary] Using flat collection:', useFlat);
+      console.log('[technographics/summary] Sample result keys:', Object.keys(result || {}));
+      console.log('[technographics/summary] Categories result:', result?.categories);
+    }
+
     res.json({
       totalRecords: result?.total?.[0]?.count || 0,
       regions: result?.regions || [],
