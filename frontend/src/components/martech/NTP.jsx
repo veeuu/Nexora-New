@@ -1533,18 +1533,6 @@ const NTP = () => {
 
                 return (
                   <>
-                    {}
-                    <button
-                      key="first"
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      className="ntp-pagination-button"
-                      title="First page"
-                    >
-                      &laquo;
-                      </button>
-
-                    {}
                     <button
                       key="prev"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -1553,37 +1541,7 @@ const NTP = () => {
                       title="Previous page"
                     >
                       &lsaquo;
-                      </button>
-
-                    {}
-                    {startPage > 1 && (
-                      <>
-                        <button
-                          key={1}
-                          onClick={() => setCurrentPage(1)}
-                          className="ntp-pagination-button"
-                        >
-                          1
-                        </button>
-                        {startPage > 2 && <span className="ntp-pagination-ellipsis">...</span>}
-                      </>
-                    )}
-
-                    {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i)}
-                        className={`ntp-pagination-button ${i === currentPage ? 'active' : ''}`}
-                      >
-                        {i}
-                      </button>
-                    ))}
-
-                    {endPage < totalPagesCount && (
-                      <span className="ntp-pagination-ellipsis">...</span>
-                    )}
-
-                    {}
+                    </button>
                     <button
                       key="next"
                       onClick={() => setCurrentPage(Math.min(totalPagesCount, currentPage + 1))}
@@ -1592,18 +1550,7 @@ const NTP = () => {
                       title="Next page"
                     >
                       &rsaquo;
-                      </button>
-
-                    {}
-                    <button
-                      key="last"
-                      onClick={() => setCurrentPage(totalPagesCount)}
-                      disabled={currentPage === totalPagesCount}
-                      className="ntp-pagination-button"
-                      title="Last page"
-                    >
-                      &raquo;
-                      </button>
+                    </button>
                   </>
                 );
               })()}

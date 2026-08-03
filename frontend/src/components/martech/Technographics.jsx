@@ -3877,47 +3877,12 @@ const Technographics = () => {
               {(() => {
                 return (
                   <>
-                    {}
-                    <button
-                      key="first"
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      style={{
-                        padding: '8px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
-                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                        fontSize: '16px',
-                        color: currentPage === 1 ? '#d1d5db' : '#6b7280',
-                        fontWeight: '600',
-                        transition: 'all 0.2s',
-                        opacity: currentPage === 1 ? 0.5 : 1
-                      }}
-                      onMouseEnter={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
-                      title="First page"
-                    >
-                      &laquo;
-                      </button>
-
-                    {}
                     <button
                       key="prev"
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage === 1}
                       style={{
-                        padding: '8px 12px',
+                        padding: '8px 14px',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
                         backgroundColor: currentPage === 1 ? '#f3f4f6' : 'white',
@@ -3928,101 +3893,16 @@ const Technographics = () => {
                         transition: 'all 0.2s',
                         opacity: currentPage === 1 ? 0.5 : 1
                       }}
-                      onMouseEnter={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage > 1) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
                       title="Previous page"
                     >
                       &lsaquo;
-                      </button>
-
-                    {}
-                    {startPage > 1 && (
-                      <>
-                        <button
-                          key={1}
-                          onClick={() => setCurrentPage(1)}
-                          style={{
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            backgroundColor: 'white',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                            minWidth: '40px',
-                            transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }}
-                        >
-                          1
-                        </button>
-                        {startPage > 2 && <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>}
-                      </>
-                    )}
-
-                    {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i)}
-                        style={{
-                          padding: '8px 12px',
-                          border: i === currentPage ? '1px solid #3b82f6' : '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          backgroundColor: i === currentPage ? '#dbeafe' : 'white',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          color: i === currentPage ? '#1e40af' : '#6b7280',
-                          fontWeight: i === currentPage ? '600' : '500',
-                          minWidth: '40px',
-                          transition: 'all 0.2s',
-                          boxShadow: i === currentPage ? '0 2px 4px rgba(30, 64, 175, 0.2)' : 'none'
-                        }}
-                        onMouseEnter={(e) => {
-                          if (i !== currentPage) {
-                            e.target.style.backgroundColor = '#f9fafb';
-                            e.target.style.borderColor = '#9ca3af';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (i !== currentPage) {
-                            e.target.style.backgroundColor = 'white';
-                            e.target.style.borderColor = '#d1d5db';
-                          }
-                        }}
-                      >
-                        {i}
-                      </button>
-                    ))}
-
-                    {endPage < totalPagesCount && (
-                      <span style={{ color: '#d1d5db', padding: '0 4px' }}>...</span>
-                    )}
-
-                    {}
+                    </button>
                     <button
                       key="next"
                       onClick={() => setCurrentPage(Math.min(totalPagesCount, currentPage + 1))}
                       disabled={currentPage === totalPagesCount}
                       style={{
-                        padding: '8px 12px',
+                        padding: '8px 14px',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
                         backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
@@ -4032,57 +3912,11 @@ const Technographics = () => {
                         fontWeight: '600',
                         transition: 'all 0.2s',
                         opacity: currentPage === totalPagesCount ? 0.5 : 1
-                      }}
-                      onMouseEnter={(e) => {
-                        if (currentPage < totalPagesCount) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage < totalPagesCount) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
                       }}
                       title="Next page"
                     >
                       &rsaquo;
-                      </button>
-
-                    {}
-                    <button
-                      key="last"
-                      onClick={() => setCurrentPage(totalPagesCount)}
-                      disabled={currentPage === totalPagesCount}
-                      style={{
-                        padding: '8px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        backgroundColor: currentPage === totalPagesCount ? '#f3f4f6' : 'white',
-                        cursor: currentPage === totalPagesCount ? 'not-allowed' : 'pointer',
-                        fontSize: '16px',
-                        color: currentPage === totalPagesCount ? '#d1d5db' : '#6b7280',
-                        fontWeight: '600',
-                        transition: 'all 0.2s',
-                        opacity: currentPage === totalPagesCount ? 0.5 : 1
-                      }}
-                      onMouseEnter={(e) => {
-                        if (currentPage < totalPagesCount) {
-                          e.target.style.backgroundColor = '#f9fafb';
-                          e.target.style.borderColor = '#9ca3af';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentPage < totalPagesCount) {
-                          e.target.style.backgroundColor = 'white';
-                          e.target.style.borderColor = '#d1d5db';
-                        }
-                      }}
-                      title="Last page"
-                    >
-                      &raquo;
-                      </button>
+                    </button>
                   </>
                 );
               })()}

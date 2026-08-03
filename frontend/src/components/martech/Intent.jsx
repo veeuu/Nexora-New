@@ -1090,18 +1090,6 @@ useEffect(() => {
 
                   return (
                       <>
-                          {}
-                          <button
-                              key="first"
-                              onClick={() => goToPage(1)}
-                              disabled={currentPage === 1}
-                              className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
-                              title="First page"
-                          >
-                              &laquo;
-                              </button>
-
-                          {}
                           <button
                               key="prev"
                               onClick={() => goToPage(Math.max(1, currentPage - 1))}
@@ -1110,37 +1098,7 @@ useEffect(() => {
                               title="Previous page"
                           >
                               &lsaquo;
-                              </button>
-
-                          {}
-                          {startPage > 1 && (
-                              <>
-                                  <button
-                                      key={1}
-                                      onClick={() => goToPage(1)}
-                                      className="pagination-button"
-                                  >
-                                      1
-                                  </button>
-                                  {startPage > 2 && <span className="pagination-ellipsis">...</span>}
-                              </>
-                          )}
-
-                          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
-                              <button
-                                  key={i}
-                                  onClick={() => goToPage(i)}
-                                  className={`pagination-button ${i === currentPage ? 'active' : ''}`}
-                              >
-                                  {i}
-                              </button>
-                          ))}
-
-                          {endPage < totalPages && (
-                              <span className="pagination-ellipsis">...</span>
-                          )}
-
-                          {}
+                          </button>
                           <button
                               key="next"
                               onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
@@ -1149,18 +1107,7 @@ useEffect(() => {
                               title="Next page"
                           >
                               &rsaquo;
-                              </button>
-
-                          {}
-                          <button
-                              key="last"
-                              onClick={() => goToPage(totalPages)}
-                              disabled={currentPage === totalPages}
-                              className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
-                              title="Last page"
-                          >
-                              &raquo;
-                              </button>
+                          </button>
                       </>
                   );
               })()}

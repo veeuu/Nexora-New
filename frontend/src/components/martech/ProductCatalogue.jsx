@@ -406,16 +406,6 @@ const getProductCountBySubCategory = (subCategory) => {
                   return (
                       <>
                           <button
-                              key="first"
-                              onClick={() => setCurrentPage(1)}
-                              disabled={currentPage === 1}
-                              className="pagination-button nav"
-                              title="First page"
-                          >
-                              &laquo;
-                              </button>
-
-                          <button
                               key="prev"
                               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                               disabled={currentPage === 1}
@@ -423,44 +413,7 @@ const getProductCountBySubCategory = (subCategory) => {
                               title="Previous page"
                           >
                               &lsaquo;
-                              </button>
-
-                          {startPage > 1 && (
-                              <>
-                                  <button
-                                      key={1}
-                                      onClick={() => setCurrentPage(1)}
-                                      className="pagination-button"
-                                  >
-                                      1
-                                  </button>
-                                  {startPage > 2 && <span className="pagination-ellipsis">...</span>}
-                              </>
-                          )}
-
-                          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(i => (
-                              <button
-                                  key={i}
-                                  onClick={() => setCurrentPage(i)}
-                                  className={`pagination-button ${i === currentPage ? 'active' : ''}`}
-                              >
-                                  {i}
-                              </button>
-                          ))}
-
-                          {endPage < totalPages && (
-                              <>
-                                  {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
-                                  <button
-                                      key={totalPages}
-                                      onClick={() => setCurrentPage(totalPages)}
-                                      className="pagination-button"
-                                  >
-                                      {totalPages}
-                                  </button>
-                              </>
-                          )}
-
+                          </button>
                           <button
                               key="next"
                               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
@@ -469,17 +422,7 @@ const getProductCountBySubCategory = (subCategory) => {
                               title="Next page"
                           >
                               &rsaquo;
-                              </button>
-
-                          <button
-                              key="last"
-                              onClick={() => setCurrentPage(totalPages)}
-                              disabled={currentPage === totalPages}
-                              className="pagination-button nav"
-                              title="Last page"
-                          >
-                              &raquo;
-                              </button>
+                          </button>
                       </>
                   );
               })()}
