@@ -27,64 +27,109 @@ Object.keys(countryModules).forEach(path => {
 
 // Category name → logo filename mapping
 const CATEGORY_LOGO_MAP = {
+  // AI & ML
   'ai & ml':                         'AI & ML',
   'ai/ml':                           'AI & ML',
   'aiml':                            'AI & ML',
   'artificial intelligence':         'AI & ML',
   'machine learning':                'AI & ML',
+
+  // CAD - CAM (file: "CAD - CAM.svg", DB sends "CAD / CAM")
   'cad - cam':                       'CAD - CAM',
   'cad/cam':                         'CAD - CAM',
+  'cad / cam':                       'CAD - CAM',
+  'cad-cam':                         'CAD - CAM',
+
+  // Cloud & Infrastructure
   'cloud & infrastructure':          'Cloud & Infrastructure',
   'cloud':                           'Cloud & Infrastructure',
   'cloud infrastructure':            'Cloud & Infrastructure',
   'infrastructure':                  'Cloud & Infrastructure',
+
+  // Collaboration & Productivity
   'collaboration & productivity':    'Collaboration & Productivity',
   'collaboration':                   'Collaboration & Productivity',
   'productivity':                    'Collaboration & Productivity',
+
+  // Contact Center
   'contact center':                  'Contact Center',
+
+  // Content Management
   'content management':              'Content Management',
   'cms':                             'Content Management',
-  'crm':                             'CRM',
-  'customer relationship management':'CRM',
+
+  // Customer Experience
   'customer experience':             'Customer Experience',
   'cx':                              'Customer Experience',
+
+  // Cybersecurity
   'cybersecurity':                   'Cybersecurity',
   'security':                        'Cybersecurity',
-  'data & analytics':                'Data & Analytics',
-  'data analytics':                  'Data & Analytics',
-  'analytics':                       'Data & Analytics',
+
+  // Data Governance
   'data governance':                 'Data Governance',
+
+  // Data Protection & Backup
   'data protection & backup':        'Data Protection & Backup',
   'data protection':                 'Data Protection & Backup',
   'backup':                          'Data Protection & Backup',
+
+  // Database Platforms
   'database platforms':              'Database Platforms',
   'database':                        'Database Platforms',
+
+  // Digital Twin
   'digital twin':                    'Digital Twin',
+
+  // Digital Workflow & Forms
   'digital workflow & forms':        'Digital Workflow & Forms',
   'workflow':                        'Digital Workflow & Forms',
+
+  // Endpoint Management
   'endpoint management':             'Endpoint Management',
   'mdm':                             'Endpoint Management',
   'uem':                             'Endpoint Management',
+
+  // Engineering Simulation
   'engineering simulation':          'Engineering Simulation',
   'simulation':                      'Engineering Simulation',
+
+  // Hardware & Devices
   'hardware & devices':              'Hardware & Devices',
   'hardware':                        'Hardware & Devices',
+
+  // IT Operations & Monitoring
   'it operations & monitoring':      'IT Operations & Monitoring',
   'it operations':                   'IT Operations & Monitoring',
   'monitoring':                      'IT Operations & Monitoring',
+
+  // IT Service Management
   'it service management':           'IT Service Management',
   'itsm':                            'IT Service Management',
+
+  // Low-Code - No-Code (file: "Low-Code - No-Code.svg", DB sends "Low-Code / No-Code")
   'low-code - no-code':              'Low-Code - No-Code',
+  'low-code / no-code':              'Low-Code - No-Code',
+  'low code / no code':              'Low-Code - No-Code',
   'low-code':                        'Low-Code - No-Code',
   'no-code':                         'Low-Code - No-Code',
+  'lowcode':                         'Low-Code - No-Code',
+
+  // Manufacturing Operations & PLM
   'manufacturing operations & plm':  'Manufacturing Operations & PLM',
   'manufacturing':                   'Manufacturing Operations & PLM',
   'plm':                             'Manufacturing Operations & PLM',
+
+  // OS
   'os':                              'OS',
   'operating system':                'OS',
+
+  // Unified Communications
   'unified communications':          'Unified Communications',
   'uc':                              'Unified Communications',
   'ucaas':                           'Unified Communications',
+
+  // Workforce Management
   'workforce management':            'Workforce Management',
   'workforce':                       'Workforce Management',
   'hcm':                             'Workforce Management',
