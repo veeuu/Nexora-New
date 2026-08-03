@@ -1,0 +1,26 @@
+# Treat SVG files as binary to prevent LF/CRLF conversion warnings
+*.svg binary
+
+# Normalize line endings for source files
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.css  text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.md   text eol=lf
+*.sh   text eol=lf
+
+# Binary assets - no line ending conversion
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
