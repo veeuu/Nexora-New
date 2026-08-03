@@ -1054,13 +1054,7 @@ const Technographics = () => {
     
     const techNameLower = techName.toLowerCase().trim();
     
-    // Debug log
-    if (techNameLower.includes('generative')) {
-      console.log('DEBUG renderTechLogo:', { techName, techNameLower });
-    }
-    
     const logoPath = getLogoPath(techName);
-    console.log(`- renderTechLogo called for "${techName}":`, logoPath ? '? Logo found' : '? No logo');
 
     if (logoPath) {
       return (
@@ -1077,11 +1071,7 @@ const Technographics = () => {
             objectFit: 'contain'
           }}
           onError={(e) => {
-            console.error(`? Failed to load logo image for "${techName}":`, logoPath);
             e.target.style.display = 'none';
-          }}
-          onLoad={() => {
-            console.log(`? Logo image loaded successfully for "${techName}"`);
           }}
         />
       );
@@ -1090,7 +1080,6 @@ const Technographics = () => {
     const iconData = getTechIcon(techName);
     if (iconData) {
       const { component: IconComponent, color } = iconData;
-      console.log(`?? Using icon for "${techName}"`);
       return (
         <IconComponent
           size={16}
@@ -1107,7 +1096,6 @@ const Technographics = () => {
       );
     }
     
-    console.warn(`?? No logo or icon available for "${techName}"`);
     return null;
   };
 
