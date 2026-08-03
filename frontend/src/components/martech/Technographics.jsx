@@ -1502,12 +1502,12 @@ const Technographics = () => {
 
   const getUniqueOptions = (key) => {
     if (key === 'companyName') return summary.companies || [];
-    if (key === 'region') return (summary.regions || []).map(r => r.label);
-    if (key === 'category') return (summary.categories || []).map(c => c.label);
-    if (key === 'industry') return (summary.industries || []).map(i => i.label);
+    if (key === 'region') return (summary.regions || []).map(r => r.label).filter(Boolean);
+    if (key === 'category') return (summary.categories || []).map(c => c.label).filter(Boolean);
+    if (key === 'industry') return (summary.industries || []).map(i => i.label).filter(Boolean);
     if (key === 'technology') return getAvailableTechnologies();
-    if (key === 'employeeSize') return (summary.employeeSizes || []).map(e => e.label);
-    if (key === 'revenue') return (summary.revenues || []).map(r => r.label);
+    if (key === 'employeeSize') return (summary.employeeSizes || []).map(e => e.label).filter(Boolean);
+    if (key === 'revenue') return (summary.revenues || []).map(r => r.label).filter(Boolean);
 
     if (!tableData || tableData.length === 0) {
       return [];
@@ -1515,7 +1515,7 @@ const Technographics = () => {
 
     const allValues = tableData
       .map(item => item[key])
-      .filter(val => val !== undefined && val !== null);
+      .filter(val => val !== undefined && val !== null && val !== '');
 
     return [...new Set(allValues)].sort();
   };
@@ -2570,9 +2570,15 @@ const Technographics = () => {
                 </div>
                 {(() => {
                   const allCats = getAvailableCategoriesForCompanies()
-                    .filter(a => a !== 'Not Detected' && a !== 'NOT detected' && a !== 'not detected')
+                    .filter(a => a && a !== 'Not Detected' && a !== 'NOT detected' && a !== 'not detected')
                     .sort((a, b) => getCompanyCountByCategory(b) - getCompanyCountByCategory(a));
-                  const filtered = allCats.filter(c => c.toLowerCase().includes(categorySearchTerm.toLowerCase()));
+                  const filtered = allCats.filter(c => c && c.toLowerCase().includes(categorySearchTerm.toLowerCase()));
+                  
+                  // Debug: log if no categories found
+                  if (allCats.length === 0) {
+                    console.log('[Technographics] No categories available. Summary:', summary.categories);
+                  }
+                  
                   return (
                     <>
                       {filtered.map((option, idx) => (
@@ -3386,7 +3392,7 @@ const Technographics = () => {
             onClick={() => setActiveFilterMenu('employeeSize')}>
               <span>Employee Size</span>
               <button onClick={(e) => { e.stopPropagation(); setFilters(prev => ({ ...prev, employeeSize: [] })); setCurrentPage(1); setPageCache({}); setTotalRecords(0); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '0', color: '#1e40af', lineHeight: '1' }}>{'\u00d7'}</button>
-            </div>
+C:\Users\Swapnil\Nexora-new\Nexora-New\frontend\src\components\martech\Technographics.jsx            </div>
           )}
           {filters.revenue.length > 0 && activeFilterMenu !== 'revenue' && (
             <div style={{ backgroundColor: '#f0f9ff', border: '1px solid #bfdbfe', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', color: '#1e40af', cursor: 'pointer' }}
