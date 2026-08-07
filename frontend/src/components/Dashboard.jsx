@@ -11,7 +11,7 @@ import RenewalIntelligence from './martech/RenewalIntelligence';
 import MartechBuyingGroup from './martech/BuyingGroup';
 import ProductCatalogue from './martech/ProductCatalogue';
 import DataDictionary from './martech/DataDictionary';
-import Keywords from './martech/Keywords';
+// import Keywords from './martech/Keywords';
 import ContactUs from './ContactUs';
 import { syncCreditsFromServer } from '../utils/credits';
 import { syncRevealedFromServer } from '../utils/revealed';
@@ -41,7 +41,7 @@ const routeToSection = {
     '/dashboard/ntp': 'Next Tech Purchase®',
     '/dashboard/product-catalogue': 'Product Catalogue',
     '/dashboard/data-dictionary': 'Data Dictionary',
-    '/dashboard/keywords': 'Keywords Surge',
+    // '/dashboard/keywords': 'Keywords Surge',
     '/dashboard/contact-us': 'Contact Us'
   };
 
@@ -63,7 +63,7 @@ useEffect(() => {
       'Next Tech Purchase®': '/dashboard/ntp',
       'Product Catalogue': '/dashboard/product-catalogue',
       'Data Dictionary': '/dashboard/data-dictionary',
-      'Keywords Surge': '/dashboard/keywords',
+      // 'Keywords Surge': '/dashboard/keywords',
       'Contact Us': '/dashboard/contact-us'
     };
 
@@ -104,7 +104,7 @@ useEffect(() => {
   }, []);
 
   const getMenuItems = () => {
-    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®', 'Keywords Surge'];
+    return ['Home', 'Technographics', 'Renewal Intelligence', 'Intent', 'Buying Group', 'Next Tech Purchase®'/*, 'Keywords Surge'*/];
   };
 
   const renderActiveSection = () => {
@@ -124,8 +124,8 @@ useEffect(() => {
         return <MartechBuyingGroup />;
       case 'Product Catalogue':
         return <ProductCatalogue />;
-      case 'Keywords Surge':
-        return <Keywords />;
+      // case 'Keywords Surge':
+      //   return <Keywords />;
       case 'Contact Us':
         return <ContactUs username={username} />;
       default:
@@ -155,7 +155,7 @@ useEffect(() => {
               <Route path="/ntp" element={<MartechNTP />} />
               <Route path="/product-catalogue" element={<ProductCatalogue />} />
               <Route path="/data-dictionary" element={<DataDictionary />} />
-              <Route path="/keywords" element={<Keywords />} />
+              {/* <Route path="/keywords" element={<Keywords />} /> */}
               <Route path="/contact-us" element={<ContactUs username={username} />} />
               <Route path="/" element={<Home key={homeResetTrigger} displayName={displayName} />} />
             </Routes>
